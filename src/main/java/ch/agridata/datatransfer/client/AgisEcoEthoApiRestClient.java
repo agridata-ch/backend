@@ -1,5 +1,6 @@
 package ch.agridata.datatransfer.client;
 
+import ch.agridata.common.filters.RestClientLoggingFilter;
 import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteInboundFilter;
 import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteOutboundFilter;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
@@ -16,10 +17,11 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * REST client for interacting with the AGIS EcoEtho API. It applies security, request/response filters, and error mapping for reliable
  * communication.
  *
- * @CommentLastReviewed 2025-08-28
+ * @CommentLastReviewed 2025-10-15
  */
 
 @RegisterRestClient(configKey = "agis-eco-etho-api")
+@RegisterProvider(RestClientLoggingFilter.class)
 @RegisterProvider(JsonFieldRewriteInboundFilter.class)
 @RegisterProvider(JsonFieldRewriteOutboundFilter.class)
 @RegisterProvider(DataProviderExceptionMapper.class)

@@ -34,7 +34,7 @@ class ModuleArchitectureTest {
   static final List<String> ALLOWED_COMMON_DEPENDENCIES =
       List.of("ch.agridata.common.persistence", "ch.agridata.common.api", "ch.agridata.common.dto",
           "ch.agridata.common.utils", "ch.agridata.common.security", "ch.agridata.common.exceptions",
-          "ch.agridata.common.jsonfieldrewrite", "ch.agridata.common.persistence");
+          "ch.agridata.common.jsonfieldrewrite", "ch.agridata.common.persistence", "ch.agridata.common.filters");
   static final JavaClasses CLASSES = new ClassFileImporter()
       .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
       .importPackages(MAIN_PACKAGE);

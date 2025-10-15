@@ -5,6 +5,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import ch.agridata.datatransfer.dto.DataTransferResponse;
 import ch.agridata.datatransfer.service.DataTransferService;
 import ch.agridata.datatransfer.service.DeltaService;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +34,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * Exposes the API endpoint for requesting data transfers. It validates producer identification by UID or BUR, enforces consent
  * requirements, and forwards requests to the transfer service.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-15
  */
 @Path(DataTransferController.PATH)
 @Slf4j
@@ -46,6 +47,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
             + "This endpoint simply forwards the payload from the source system to the consumer."
     ))
 @RolesAllowed({CONSUMER_ROLE})
+@RunOnVirtualThread
 public class DataTransferController {
   public static final String PATH = "/api/data-transfer/v1";
   private final DataTransferService dataTransferService;
