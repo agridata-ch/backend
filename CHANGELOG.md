@@ -1,3 +1,9 @@
+## [1.1.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.1...v1.1.0-rc.1) (2025-10-15)
+
+### Features
+
+* **agis-logs:** add virtual threads, add json logging, improving agis logs ([785ba90](https://github.com/agridata-ch/backend/commit/785ba907d7f3100c2135ecc213ea4c67480f2336)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
 ## [1.0.1](https://github.com/agridata-ch/backend/compare/v1.0.0...v1.0.1) (2025-10-15)
 
 ### Bug Fixes
