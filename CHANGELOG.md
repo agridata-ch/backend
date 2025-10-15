@@ -4,6 +4,16 @@
 
 * **agis-logs:** add virtual threads, add json logging, improving agis logs ([785ba90](https://github.com/agridata-ch/backend/commit/785ba907d7f3100c2135ecc213ea4c67480f2336)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
 
+### Bug Fixes
+
+* **semantic-release:** triggers semenatic release after cleaning invalid tags ([082b1f1](https://github.com/agridata-ch/backend/commit/082b1f19664f06e40adaf7787da8dd47948c14f2)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
+## [1.1.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.1...v1.1.0-rc.1) (2025-10-15)
+
+### Features
+
+* **agis-logs:** add virtual threads, add json logging, improving agis logs ([785ba90](https://github.com/agridata-ch/backend/commit/785ba907d7f3100c2135ecc213ea4c67480f2336)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
 ## [1.0.1](https://github.com/agridata-ch/backend/compare/v1.0.0...v1.0.1) (2025-10-15)
 
 ### Bug Fixes
