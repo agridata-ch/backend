@@ -38,11 +38,11 @@ jobs:
     needs: [ checkstyle, check-comments, gitleaks ]
     secrets: inherit
 
-#  unit-test-sonarqube:
-#    name: "."
-#    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
-#    needs: [ checkstyle, check-comments, gitleaks ]
-#    secrets: inherit
+  unit-test-sonarqube:
+    name: "."
+    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
+    needs: [ checkstyle, check-comments, gitleaks ]
+    secrets: inherit
 
   trivy-image-scan:
     name: "."
@@ -54,30 +54,30 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     name: "."
     uses: ./.github/workflows/reusable__semantic_release.yml
-    needs: [ owasp-dependency-check, trivy-image-scan ]
+    needs: [ unit-test-sonarqube, owasp-dependency-check, trivy-image-scan ]
     secrets: inherit
 
-#  build-push-image:
-#    if: github.ref == 'refs/heads/develop'
-#    name: "."
-#    uses: ./.github/workflows/reusable__build_push_image.yml
-#    needs: [ semantic-release ]
-#    with:
-#      account-id: 183295418748 # production
-#      ecr-repository-name: backend
-#      version: ${{ needs.semantic-release.outputs.version }}
-#    secrets: inherit
-#
-#  deploy:
-#    if: github.ref == 'refs/heads/develop'
-#    name: "."
-#    uses: ./.github/workflows/reusable__deploy.yml
-#    needs: build-push-image
-#    with:
-#      account-id: 108782064107 # develop
-#      image: ${{needs.build-push-image.outputs.image}}
-#      cluster: agridata-ecs-cluster
-#      service: agridata-backend
-#      task-definition-family: agridata-backend
-#      container-name: agridata-backend-service
-#    secrets: inherit
+  build-push-image:
+    if: github.ref == 'refs/heads/develop'
+    name: "."
+    uses: ./.github/workflows/reusable__build_push_image.yml
+    needs: [ semantic-release ]
+    with:
+      account-id: 183295418748 # production
+      ecr-repository-name: backend
+      version: ${{ needs.semantic-release.outputs.version }}
+    secrets: inherit
+
+  deploy:
+    if: github.ref == 'refs/heads/develop'
+    name: "."
+    uses: ./.github/workflows/reusable__deploy.yml
+    needs: build-push-image
+    with:
+      account-id: 108782064107 # develop
+      image: ${{needs.build-push-image.outputs.image}}
+      cluster: agridata-ecs-cluster
+      service: agridata-backend
+      task-definition-family: agridata-backend
+      container-name: agridata-backend-service
+    secrets: inherit
