@@ -11,6 +11,7 @@ import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.service.ConsentRequestMutationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ import org.jboss.resteasy.reactive.RestResponse;
         + "consumers can access consent requests linked to their data requests, "
         + "and admins have full access to all consent requests.")
 @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE})
+@RunOnVirtualThread
 public class ConsentRequestController {
 
   public static final String PATH = "/api/agreement/v1/consent-requests";

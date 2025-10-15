@@ -16,6 +16,7 @@ import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.service.BurAuthorizationService;
 import ch.agridata.user.service.UidAuthorizationService;
 import ch.agridata.user.service.UserService;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
@@ -38,7 +39,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * Handles user-related API requests. It provides operations to fetch authorized UIDs and BURs for a given user or producer,
  * restricted by role.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-15
  */
 
 @Path(PATH)
@@ -47,6 +48,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(
     name = "Users",
     description = "Provides access to UIDs and BURs authorized for specific data producers, based on their ktIdP or UID.")
+@RunOnVirtualThread
 public class UserController {
 
   public static final String PATH = "/api/user/v1";

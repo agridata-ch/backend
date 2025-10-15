@@ -6,6 +6,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import ch.agridata.uidregister.service.UidRegisterService;
 import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -31,6 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     name = "UID Register Search",
     description = "Provides access to organisation details retrieved from the official UID register.")
 @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+@RunOnVirtualThread
 public class UidRegisterController {
 
   public static final String PATH = "/api/uid-register/v1";
