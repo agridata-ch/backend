@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/agridata-ch/backend/compare/v1.0.0...v1.0.1) (2025-10-15)
+
+### Bug Fixes
+
+* **changelog:** import changelog ([d871576](https://github.com/agridata-ch/backend/commit/d871576e70f086d1b16d35a89d6569cbcb2cc86c))
+
 ## [1.0.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.0...v1.0.1-rc.1) (2025-10-15)
 
 ### Bug Fixes
