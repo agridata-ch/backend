@@ -126,5 +126,4 @@ public class UserController {
     return userService.getProducers(resourceQueryDto);
   }
 
-
 }
