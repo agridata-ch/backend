@@ -1,0 +1,25 @@
+### get request as admin
+GET {{baseUrl}}/agreement/v1/data-requests/3da3a459-d3c2-48af-b8d0-02bc95146468
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.stateCode === "ACTIVE", "Expected Response state code to be active got: " + response.body.stateCode)
+
+    })
+%}
+
+### Create a new consent request
+POST {{baseUrl}}/agreement/v1/consent-requests/3da3a459-d3c2-48af-b8d0-02bc95146468/create
+Authorization: Bearer {{$auth.token("producer-037")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 201, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.length === 1, "Expected 2 created consent requests but got: " + response.body.length)
+
+    })
+%}

@@ -1,0 +1,10 @@
+GET {{baseUrl}}/uid-register/v1/search
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+> {%
+    client.test("find uid in uid register", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+
+    })
+%}

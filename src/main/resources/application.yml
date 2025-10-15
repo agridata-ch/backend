@@ -1,0 +1,93 @@
+agridata:
+  exception-handling:
+    return-debug: true
+  json-field-rewrite:
+    enabled: true
+quarkus:
+  application:
+    name: agridata.ch
+  banner:
+    path: banner.txt
+  cxf:
+    client:
+      uid:
+        client-endpoint-url: https://www.uid-wse-a.admin.ch/V5.0/PublicServices.svc
+        service-interface: ch.admin.uid.xmlns.uid_wse.IPublicServices
+        wsdl: classpath:wsdl/uid-register.wsdl
+    codegen:
+      wsdl2java:
+        uid:
+          includes: wsdl/uid-register.wsdl
+  datasource:
+    db-kind: postgresql
+    jdbc:
+      driver: org.postgresql.Driver
+  flyway:
+    baseline-on-migrate: true
+    locations:
+      - classpath:db/migration
+    migrate-at-start: true
+  hibernate-orm:
+    mapping:
+      format:
+        global: ignore # See https://github.com/quarkusio/quarkus/wiki/Migration-Guide-3.26#jackson-based-json-serialization
+  http:
+    auth:
+      permission:
+        api-protected:
+          paths: /api/*
+          policy: authenticated
+        unprotected:
+          paths: /q/*
+          policy: permit
+          auth-mechanism: none
+    cors:
+      access-control-allow-credentials: true
+      enabled: true
+      headers:
+        - Authorization
+        - Content-Type
+        - X-Impersonated-KtIdP
+      methods:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - OPTIONS
+        - PATCH
+    port: 8060
+  log:
+    console:
+      format: >-
+        %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %s [%c] (%t) requestId: %X{requestId}, userId: %X{agateUserId},  api: %X{api}%e%n
+  oidc:
+    authentication:
+      pkce-required: true
+      user-info-required: true
+  oidc-client:
+    agis-api:
+      grant:
+        type: CLIENT
+  rest-client:
+    agis-register-api:
+      key-store-type: PKCS12
+    agis-structure-api:
+      key-store-type: PKCS12
+    agis-eco-etho-api:
+      key-store-type: PKCS12
+  smallrye-openapi:
+    info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users 
+    to discover, request, approve, and manage data sharing agreements."
+    info-title: agridata.ch API
+  swagger-ui:
+    theme: material
+    always-include: true
+    oauth-scopes: openid offline_access
+    oauth-use-pkce-with-authorization-code-grant: true
+    enabled: true
+mp:
+  openapi:
+    scan:
+      exclude:
+        packages:
+          - org.openapitools.api # excludes the automatically generated apis (e.g. AGIS) from the openapi documents

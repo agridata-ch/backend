@@ -1,0 +1,77 @@
+name: CI/CD Pipeline Main
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  merge_group:
+    branches: [ main ]
+
+jobs:
+  checkstyle:
+    name: "."
+    uses: ./.github/workflows/reusable__checkstyle.yml
+    secrets: inherit
+
+  gitleaks:
+    name: "."
+    uses: ./.github/workflows/reusable__gitleaks.yml
+    secrets: inherit
+
+  owasp-dependency-check:
+    name: "."
+    uses: ./.github/workflows/reusable__owasp_dependency_check.yml
+    needs: [ checkstyle, gitleaks ]
+    secrets: inherit
+
+#  unit-test-sonarqube:
+#    name: "."
+#    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
+#    needs: [ checkstyle, gitleaks ]
+#    secrets: inherit
+
+  trivy-image-scan:
+    name: "."
+    uses: ./.github/workflows/reusable__trivy_image_scan.yml
+    needs: [ checkstyle, gitleaks ]
+    secrets: inherit
+
+  semantic-release:
+    if: github.ref == 'refs/heads/main'
+    name: "."
+    uses: ./.github/workflows/reusable__semantic_release.yml
+    needs: [ owasp-dependency-check, trivy-image-scan ]
+    secrets: inherit
+
+#  build-push-image:
+#    if: github.ref == 'refs/heads/main'
+#    name: "."
+#    uses: ./.github/workflows/reusable__build_push_image.yml
+#    needs: [ semantic-release ]
+#    with:
+#      account-id: 183295418748 # production
+#      ecr-repository-name: backend
+#      version: ${{ needs.semantic-release.outputs.version }}
+#    secrets: inherit
+#
+#  deploy:
+#    if: github.ref == 'refs/heads/main'
+#    name: "."
+#    uses: ./.github/workflows/reusable__deploy.yml
+#    needs: build-push-image
+#    with:
+#      account-id: 863518438092 # integration
+#      image: ${{needs.build-push-image.outputs.image}}
+#      cluster: agridata-ecs-cluster
+#      service: agridata-backend
+#      task-definition-family: agridata-backend
+#      container-name: agridata-backend-service
+#    secrets: inherit
+
+  merge-main-develop:
+    if: github.ref == 'refs/heads/main'
+    name: "."
+    uses: ./.github/workflows/reusable__merge_main_develop.yml
+    needs: [ semantic-release ]
+    secrets: inherit

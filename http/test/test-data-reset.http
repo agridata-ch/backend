@@ -1,0 +1,9 @@
+POST {{baseUrl}}/test-data/reset
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    })
+%}

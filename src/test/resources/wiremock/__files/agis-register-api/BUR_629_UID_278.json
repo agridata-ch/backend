@@ -1,0 +1,75 @@
+{
+  "dataAmount": [],
+  "resultOffset": {
+    "from": null,
+    "to": null,
+    "totalHits": null
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": []
+    },
+    "personRelations": {
+      "person": []
+    },
+    "relevantFarms": {
+      "farm": [
+        {
+          "ktIdB": null,
+          "agisIdB": null,
+          "ber": "***629",
+          "uid": "CHE***278",
+          "farmParentRelations": {
+            "farmParentRelation": [
+              {
+                "ktIdB": null,
+                "agisIdB": null,
+                "ber": "***586",
+                "validSince": null
+              }
+            ]
+          },
+          "farmChildRelations": {
+            "farmChildRelation": [
+              {
+                "ktIdB": null,
+                "agisIdB": null,
+                "ber": "***440",
+                "validSince": null
+              },
+              {
+                "ktIdB": null,
+                "agisIdB": null,
+                "ber": "***414",
+                "validSince": null
+              }
+            ]
+          },
+          "farmType": null,
+          "localMunicipality": {
+            "municipalityName": null,
+            "municipalityId": null,
+            "cantonFlAbbreviation": null
+          },
+          "canton": null,
+          "addressInformation": {
+            "addressLine3": null,
+            "street": null,
+            "houseNumber": null,
+            "town": null,
+            "swissZipCode": null
+          },
+          "coordinatesEast": null,
+          "coordinatesNorth": null,
+          "altitude": null,
+          "agriculturalZone": null,
+          "agriculturalArea": null,
+          "validSince": null
+        }
+      ]
+    },
+    "farmRelations": {
+      "farm": []
+    }
+  }
+}

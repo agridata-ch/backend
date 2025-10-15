@@ -1,0 +1,290 @@
+### get UID register data of the company the consumer is registered with
+GET {{baseUrl}}/uid-register/v1/search
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+> {%
+    client.test("find uid in uid register", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+
+    })
+%}
+
+### Create a new data request draft
+POST {{baseUrl}}/agreement/v1/data-requests
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+{
+  "title": {
+    "de": "test data request",
+    "fr": "test data request"
+  },
+  "description": {
+    "de": "test data request description"
+  }
+}
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 201, "Expected Response status is 201, got: " + response.status)
+        client.assert(response.body.id !== null, "Expected Response results to contain an id")
+        client.global.set("dataRequestId", response.body.id)
+    })
+%}
+
+### GET products
+GET {{baseUrl}}/products/v1
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.length > 0, "Expected more than one products")
+        client.global.set("productId", response.body[0].id)
+        client.global.set("productId2", response.body[1].id)
+        client.global.set("productId3", response.body[2].id)
+
+    })
+%}
+
+### update the data request
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+{
+    "products": [
+        "{{productId}}",
+        "{{productId2}}"
+    ],
+    "title": {
+        "de": ""
+    }
+}
+
+> {%
+    client.test("Update a new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.products !== null, "Expected Response to contain products")
+        client.assert(response.body.products.length === 2, "Expected 2 products in the response, got: " + response.body.products.length)
+    })
+%}
+
+### update the data request remove one product, add a new one
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+{
+    "products": [
+        "{{productId}}",
+        "{{productId3}}"
+    ],
+    "title": {
+        "de": "test data request"
+    }
+}
+
+> {%
+    client.test("Update a new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.products !== null, "Expected Response to contain products")
+        client.assert(response.body.products.length === 2, "Expected 2 products in the response, got: " + response.body.products.length)
+
+        var products = response.body.products;
+        var product1 = client.global.get("productId");
+        var product3 = client.global.get("productId3");
+
+        client.assert(products.includes(product1), "Expected product1: " + product1 + " to be in the response, got: " + products)
+        client.assert(products.includes(product3), "Expected product3: " + product3 + " to be in the response, got: " + products)
+
+    })
+%}
+
+### get data request
+GET {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.products !== null, "Expected Response results to contain products")
+    })
+%}
+
+### set data request to in review with incomplete data
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+"IN_REVIEW"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 400, "Expected 400, got: " + response.status)
+    })
+%}
+
+### update data request with complete data
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+{
+    "description": {
+        "de": "test data request description",
+        "fr": "test data request description",
+        "it": "test data request description"
+    },
+    "products": [
+        "{{productId}}"
+    ],
+    "title": {
+        "de": "test data request",
+        "fr": "test data request",
+        "it": "test data request"
+    },
+    "purpose": {
+        "de": "test purpose",
+        "fr": "test purpose",
+        "it": "test purpose"
+    },
+      "dataConsumerDisplayName": "Bio Suisse",
+      "dataConsumerUid": 106506215,
+      "dataConsumerCity": "Basel",
+      "dataConsumerZip": "4052",
+      "dataConsumerStreet": "Peter Merian-Str. 34",
+      "dataConsumerCountry": "CH",
+      "contactEmailAddress": "test@biosuisse.ch",
+      "contactPhoneNumber": "+41 61 555 55 55",
+      "targetGroup": "Bio Suisse Mitglieder"
+}
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+### set data request to in review
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+"IN_REVIEW"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+### set data request to in draft to allow consumer to edit it again
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"DRAFT"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+
+### set data request to in review after making changes
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+"IN_REVIEW"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+### set data request to TO_BE_SIGNED after reviewing
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"TO_BE_SIGNED"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+### get request of different consumer
+GET {{baseUrl}}/agreement/v1/data-requests/453ea20d-fca9-437c-84ef-6b97f8a36735
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 404, "Expected Response status is 404, got: " + response.status)
+    })
+%}
+
+### get request as admin
+GET {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    })
+%}
+
+### get all request data
+GET {{baseUrl}}/agreement/v1/data-requests
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.products !== null, "Expected Response results to contain products")
+    })
+%}
+
+### set data request to ACTIVE
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"ACTIVE"
+
+
+> {%
+    client.test("Create a new data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+
+### Create a new consent request
+POST {{baseUrl}}/agreement/v1/consent-requests/{{dataRequestId}}/create
+Authorization: Bearer {{$auth.token("producer-037")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get new data request", function () {
+        client.assert(response.status === 201, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.length === 2, "Expected 2 created consent requests but got: " + response.body.length)
+
+    })
+%}

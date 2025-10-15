@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/agis/structure-data/1/structure",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"surveyYear\":\"[^\"]+\",\"ids\":\\{\"uid\":\"[^\"]+\"},\"dataTypes\":\\{\"structureType\":\\[\"animalSummeringData\"]},\"dataRequestType\":\\{\"finalData\":false}}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "data-products/uuid_a795d0b0-f177-4bb4-8e41-1ed12d358c79.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

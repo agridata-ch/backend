@@ -1,0 +1,712 @@
+openapi: 3.0.3
+info:
+  title: Agis Register webservice
+  description: Neue Register REST/Json webservice
+  version: 2025-01
+paths:
+  /registermutation:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterMutationDataRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFarmResponseType'
+  /register:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDataRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFarmResponseType'
+components:
+  schemas:
+    AddressInformationType:
+      type: object
+      properties:
+        addressLine1:
+          $ref: '#/components/schemas/AddressLineType'
+        addressLine3:
+          $ref: '#/components/schemas/AddressLineLargeType'
+        street:
+          $ref: '#/components/schemas/StreetType'
+        houseNumber:
+          $ref: '#/components/schemas/HouseNumberType'
+        postOfficeBoxNumber:
+          $ref: '#/components/schemas/PostOfficeBoxNumberType'
+        postOfficeBoxText:
+          $ref: '#/components/schemas/PostOfficeBoxTextType'
+        town:
+          $ref: '#/components/schemas/TownType'
+        swissZipCode:
+          $ref: '#/components/schemas/SwissZipCodeType'
+        foreignZipCode:
+          $ref: '#/components/schemas/ForeignZipCodeType'
+    AddressLineLargeType:
+      type: string
+    AddressLineType:
+      type: string
+    AddressType:
+      required:
+        - postalAddress
+      type: object
+      properties:
+        postalAddress:
+          $ref: '#/components/schemas/MailAddressType'
+    AnimalExistenceAtdType:
+      type: object
+      properties:
+        animalAtd:
+          type: array
+          items:
+            type: string
+            enum:
+              - CATTLE
+              - PIGS
+              - SHEEP
+              - GOATS
+              - CAMELID
+              - GAME
+              - EQUIDAE
+              - POULTRY
+              - AQUACULTURE
+    AtdInfoType:
+      type: object
+      properties:
+        atdStatus:
+          type: boolean
+        beesStatus:
+          $ref: '#/components/schemas/Bees012Type'
+        animalExistenceAtd:
+          $ref: '#/components/schemas/AnimalExistenceAtdType'
+        validSince:
+          type: string
+          format: date-time
+    Bees012Type:
+      type: integer
+    MunicipalityType:
+      type: object
+      properties:
+        municipalityName:
+          type: string
+          maxLength: 40
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        cantonFlAbbreviation:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+    ContactType:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/AddressType'
+        EGAID:
+          type: integer
+          format: int32
+          minimum: 100000000
+          maximum: 900000000
+        email:
+          $ref: '#/components/schemas/EmailType'
+        phone:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneType'
+    EmailType:
+      required:
+        - emailAddress
+      type: object
+      properties:
+        emailAddress:
+          type: string
+    FarmChildRelations:
+      required:
+        - farmChildRelation
+      type: object
+      properties:
+        farmChildRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdBRelationType'
+    FarmCharacteristicsType:
+      required:
+        - ZATypology
+        - surface
+        - livestockUnit
+        - structure
+        - summeringStructure
+        - surveyNorm
+        - bioContribution
+        - achieveOeln
+        - directPayment
+        - individualCultureContribution
+        - summeringContribution
+        - insituContribution
+        - cerealsContribution
+        - validSince
+      type: object
+      properties:
+        ZATypology:
+          type: string
+        surface:
+          type: integer
+        livestockUnit:
+          type: number
+          minimum: 0
+          multipleOf: 0.001
+        structure:
+          type: boolean
+        summeringStructure:
+          type: boolean
+        surveyNorm:
+          type: boolean
+        bioContribution:
+          type: boolean
+        achieveOeln:
+          type: boolean
+        directPayment:
+          type: boolean
+        individualCultureContribution:
+          type: boolean
+        summeringContribution:
+          type: boolean
+        insituContribution:
+          type: boolean
+        cerealsContribution:
+          type: boolean
+        validSince:
+          type: string
+          format: date-time
+    FarmParentRelations:
+      required:
+        - farmParentRelation
+      type: object
+      properties:
+        farmParentRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdBRelationType'
+    FarmRelations:
+      type: object
+      properties:
+        farm:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmType'
+    FarmToPersonRelations:
+      required:
+        - farmToPersonRelation
+      type: object
+      properties:
+        farmToPersonRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdPRelationType'
+    FarmType:
+      required:
+        - ktIdB
+        - agisIdB
+      type: object
+      properties:
+        ktIdB:
+          type: string
+        agisIdB:
+          type: integer
+          format: int32
+        ber:
+          type: string
+          pattern: '^[A-B][1-9][0-9]{7}$'
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        atd:
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+        beehouse:
+          type: string
+        farmParentRelations:
+          $ref: '#/components/schemas/FarmParentRelations'
+        farmChildRelations:
+          $ref: '#/components/schemas/FarmChildRelations'
+        farmToPersonRelations:
+          $ref: '#/components/schemas/FarmToPersonRelations'
+        farmType:
+          type: string
+        localMunicipality:
+          $ref: '#/components/schemas/MunicipalityType'
+        canton:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+        addressInformation:
+          $ref: '#/components/schemas/AddressInformationType'
+        coordinatesEast:
+          type: integer
+        coordinatesNorth:
+          type: integer
+        altitude:
+          type: integer
+        agriculturalZone:
+          type: string
+        agriculturalArea:
+          type: string
+        EGID:
+          type: integer
+          format: int32
+        EGAID:
+          type: integer
+          format: int32
+        validSince:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+        farmCharacteristics:
+          $ref: '#/components/schemas/FarmCharacteristicsType'
+        atdInfo:
+          $ref: '#/components/schemas/AtdInfoType'
+    FirstNameType:
+      type: string
+    ForeignZipCodeType:
+      type: string
+    HouseNumberType:
+      type: string
+    LastNameType:
+      type: string
+    KtIdBRelationType:
+      required:
+        - ktIdB
+        - agisIdB
+        - validSince
+      type: object
+      properties:
+        ktIdB:
+          type: string
+        agisIdB:
+          type: integer
+          format: int32
+        ber:
+          type: string
+        validSince:
+          type: string
+          format: date-time
+    KtIdPRelationType:
+      required:
+        - ktIdP
+        - agisIdP
+        - validSince
+      type: object
+      properties:
+        ktIdP:
+          type: string
+        agisIdP:
+          type: integer
+          format: int32
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        validSince:
+          type: string
+          format: date-time
+    MailAddressType:
+      type: object
+      properties:
+        organisation:
+          $ref: '#/components/schemas/OrganisationMailAddressInfoType'
+        person:
+          $ref: '#/components/schemas/PersonMailAddressInfoType'
+        addressInformation:
+          $ref: '#/components/schemas/AddressInformationType'
+    MrMrsExtendedType:
+      type: string
+    OrganisationMailAddressInfoType:
+      required:
+        - organisationName
+      type: object
+      properties:
+        organisationName:
+          $ref: '#/components/schemas/OrganisationNameType'
+        organisationNameAddOn1:
+          $ref: '#/components/schemas/OrganisationNameType'
+        organisationNameAddOn2:
+          $ref: '#/components/schemas/OrganisationNameType'
+        firstName:
+          $ref: '#/components/schemas/FirstNameType'
+        lastName:
+          $ref: '#/components/schemas/LastNameType'
+    OrganisationNameType:
+      type: string
+    PersonChildRelations:
+      required:
+        - personChildRelation
+      type: object
+      properties:
+        personChildRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdPRelationType'
+    RelationDepthEnum:
+      type: string
+      enum:
+        - personToFarmRelations
+        - personToPersonRelations
+        - farmToFarmRelations
+        - allRelations
+    DataAmountEnum:
+      type: string
+      enum:
+        - withAtd
+        - withFarmOverview
+    CantonFlAbbreviationType:
+      type: string
+      enum:
+        - ZH
+        - BE
+        - LU
+        - UR
+        - SZ
+        - OW
+        - NW
+        - GL
+        - ZG
+        - FR
+        - SO
+        - BS
+        - BL
+        - SH
+        - AR
+        - AI
+        - SG
+        - GR
+        - AG
+        - TG
+        - TI
+        - VD
+        - VS
+        - NE
+        - GE
+        - JU
+        - FL
+    PersonFarmResponseType:
+      required:
+        - personFarmTree
+      type: object
+      properties:
+        relationDepth:
+          $ref: '#/components/schemas/RelationDepthEnum'
+        dataAmount:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataAmountEnum'
+        resultOffset:
+          $ref: '#/components/schemas/ResultOffsetType'
+        personFarmTree:
+          $ref: '#/components/schemas/PersonFarmTreeType'
+    PersonFarmTreeType:
+      required:
+        - farmRelations
+        - personRelations
+        - relevantFarms
+        - relevantPersons
+      type: object
+      properties:
+        relevantPersons:
+          $ref: '#/components/schemas/RelevantPersons'
+        personRelations:
+          $ref: '#/components/schemas/PersonRelations'
+        relevantFarms:
+          $ref: '#/components/schemas/RelevantFarms'
+        farmRelations:
+          $ref: '#/components/schemas/FarmRelations'
+    PersonMailAddressInfoType:
+      type: object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/FirstNameType'
+        lastName:
+          $ref: '#/components/schemas/LastNameType'
+        mrMrsExtended:
+          $ref: '#/components/schemas/MrMrsExtendedType'
+    PersonParentRelations:
+      required:
+        - personParentRelation
+      type: object
+      properties:
+        personParentRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdPRelationType'
+    PersonRelations:
+      type: object
+      properties:
+        person:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonType'
+    PersonToFarmRelations:
+      required:
+        - personToFarmRelation
+      type: object
+      properties:
+        personToFarmRelation:
+          type: array
+          items:
+            $ref: '#/components/schemas/KtIdBRelationType'
+    PersonType:
+      required:
+        - legalForm
+        - ktIdP
+        - agisIdP
+      type: object
+      properties:
+        ktIdP:
+          type: string
+        agisIdP:
+          type: integer
+          format: int32
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        personParentRelations:
+          $ref: '#/components/schemas/PersonParentRelations'
+        personChildRelations:
+          $ref: '#/components/schemas/PersonChildRelations'
+        personToFarmRelations:
+          $ref: '#/components/schemas/PersonToFarmRelations'
+        jobTitle:
+          type: string
+        legalForm:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        foundationDate:
+          type: integer
+          format: int32
+        languageOfCorrespondance:
+          type: string
+        residenceMunicipality:
+          $ref: '#/components/schemas/MunicipalityType'
+        canton:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+        contact:
+          $ref: '#/components/schemas/ContactType'
+        validSince:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+    PhoneType:
+      required:
+        - phoneNumber
+      type: object
+      properties:
+        phoneCategory:
+          type: string
+        phoneNumber:
+          type: string
+    PostOfficeBoxNumberType:
+      type: integer
+      format: int32
+    PostOfficeBoxTextType:
+      type: string
+    RelevantFarms:
+      type: object
+      properties:
+        farm:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmType'
+    RelevantPersons:
+      type: object
+      properties:
+        person:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonType'
+    ResultOffsetType:
+      type: object
+      properties:
+        from:
+          type: integer
+          format: int32
+        to:
+          type: integer
+          format: int32
+        totalHits:
+          type: integer
+          format: int32
+    StreetType:
+      type: string
+    SwissZipCodeType:
+      type: integer
+      format: int32
+      minimum: 1000
+      maximum: 9999
+    TownType:
+      type: string
+    RegisterMutationDataRequest:
+      required:
+        - from
+        - mutationDataType
+        - mutationType
+        - to
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        mutationType:
+          type: string
+          enum:
+            - added
+            - modified
+            - deleted
+        mutationDataType:
+          type: string
+          enum:
+            - person
+            - farm
+            - personToPersonRelation
+            - farmToFarmRelation
+            - personToFarmRelation
+            - atdVeterinary
+        resultOffset:
+          $ref: '#/components/schemas/RequestOffsetType'
+    RequestOffsetType:
+      type: object
+      properties:
+        from:
+          type: integer
+          format: int32
+        to:
+          type: integer
+          format: int32
+    DataRequestType:
+      type: object
+      properties:
+        relationDepth:
+          $ref: '#/components/schemas/RelationDepthEnum'
+        dataAmount:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataAmountEnum'
+    FarmSearchParametersType:
+      type: object
+      properties:
+        ktIdB:
+          type: string
+        agisIdB:
+          type: integer
+          format: int32
+        ber:
+          type: string
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        atd:
+          type: string
+        street:
+          type: string
+        houseNumber:
+          type: string
+        zipCode:
+          type: string
+        town:
+          type: string
+        municipalityName:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalArea:
+          type: string
+        EGID:
+          type: integer
+          format: int32
+        EGAID:
+          type: integer
+          format: int32
+        agriculturalZone:
+          type: string
+        cantonFlAbbreviation:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+        farmType:
+          type: string
+    RegisterDataRequest:
+      type: object
+      properties:
+        personSearchParameters:
+          $ref: '#/components/schemas/PersonSearchParametersType'
+        farmSearchParameters:
+          $ref: '#/components/schemas/FarmSearchParametersType'
+        dataRequestType:
+          $ref: '#/components/schemas/DataRequestType'
+        resultOffset:
+          $ref: '#/components/schemas/RequestOffsetType'
+    PersonSearchParametersType:
+      type: object
+      properties:
+        ktIdP:
+          type: string
+        agisIdP:
+          type: integer
+          format: int32
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        firstName:
+          type: string
+        lastName:
+          type: string
+        organisationName01:
+          type: string
+        organisationName02:
+          type: string
+        street:
+          type: string
+        houseNumber:
+          type: string
+        zipCode:
+          type: string
+        town:
+          type: string
+        EGAID:
+          type: integer
+          format: int32
+        residenceCommunalName:
+          type: string
+        residenceCommunalNumber:
+          type: string
+        canton:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+        legalForm:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

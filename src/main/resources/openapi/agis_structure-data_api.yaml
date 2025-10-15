@@ -1,0 +1,971 @@
+openapi: 3.0.3
+info:
+  title: Agis Struktur webservice
+  description: Neue Struktur REST/Json webservice
+  version: 2025-01
+paths:
+  /structure:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StructureDataRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StructureResponseType'
+components:
+  schemas:
+    AddressInformationType:
+      type: object
+      properties:
+        addressLine1:
+          type: string
+        addressLine3:
+          type: string
+        street:
+          type: string
+        houseNumber:
+          type: string
+        town:
+          type: string
+        swissZipCode:
+          type: integer
+          format: int32
+          minimum: 1000
+          maximum: 9999
+        foreignZipCode:
+          type: string
+    AnimalDataType:
+      required:
+        - animalStock
+      type: object
+      properties:
+        animalStock:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimalStock'
+    AnimalStock:
+      required:
+        - animalCategory
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        animalCategory:
+          type: string
+        atdData:
+          $ref: '#/components/schemas/AtdDataType'
+        selfreportedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelfReportedDataType'
+        BTSRAUS:
+          type: integer
+          format: int32
+
+    AnimalSummeringDataType:
+      required:
+        - animalStock
+      type: object
+      properties:
+        animalStock:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimalSummeringStock'
+    AnimalSummeringStock:
+      required:
+        - animalCategory
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        animalCategory:
+          type: string
+        atdData:
+          $ref: '#/components/schemas/AtdSummeringDataType'
+        selfreportedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelfReportedSummeringDataType'
+    ApicultureDataType:
+      required:
+        - farmApicultureData
+      type: object
+      properties:
+        farmApicultureData:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmApicultureData'
+    AquacultureDataType:
+      required:
+        - aquaticAnimalData
+      type: object
+      properties:
+        aquaticAnimalData:
+          type: array
+          items:
+            $ref: '#/components/schemas/AquaticAnimalData'
+    AquaticAnimalData:
+      required:
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        aquaticAnimalTypes:
+          $ref: '#/components/schemas/AquaticAnimalTypes'
+        breedingTypes:
+          $ref: '#/components/schemas/BreedingTypes'
+        productionForms:
+          $ref: '#/components/schemas/ProductionForms'
+        waterSupplyTypes:
+          $ref: '#/components/schemas/WaterSupplyTypes'
+        waterDrainTypes:
+          $ref: '#/components/schemas/WaterDrainTypes'
+    AquaticAnimalPerCategory:
+      required:
+        - aquaticAnimalType
+      type: object
+      properties:
+        aquaticAnimalType:
+          type: string
+        productionQuantity:
+          type: integer
+    AquaticAnimalTypes:
+      required:
+        - aquaticAnimalPerCategory
+      type: object
+      properties:
+        aquaticAnimalPerCategory:
+          type: array
+          items:
+            $ref: '#/components/schemas/AquaticAnimalPerCategory'
+    AtdDataFinalType:
+      required:
+        - surveyFarmDetails
+      type: object
+      properties:
+        quantityTotal:
+          type: number
+        livestockUnitTotal:
+          type: number
+        surveyFarmDetails:
+          $ref: '#/components/schemas/SurveyFarmDetails'
+        summeringInlandDetails:
+          $ref: '#/components/schemas/SummeringInlandDetails'
+        summeringAbroadDetails:
+          $ref: '#/components/schemas/SummeringAbroadDetails'
+    AtdDataType:
+      required:
+        - atdDataFinal
+      type: object
+      properties:
+        atdDataFinal:
+          $ref: '#/components/schemas/AtdDataFinalType'
+    AtdSummeringDataFinalType:
+      type: object
+      properties:
+        quantityTotal:
+          type: number
+        livestockUnit:
+          type: number
+        normedLivestockUnit:
+          type: number
+        averageAnimalDurationSum:
+          type: integer
+    AtdSummeringDataType:
+      required:
+        - atdDataFinal
+      type: object
+      properties:
+        atdDataFinal:
+          $ref: '#/components/schemas/AtdSummeringDataFinalType'
+    BiodiversitySurface:
+      required:
+        - areaNet
+        - cultivationType
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        cultureId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalZone:
+          type: string
+        cultivationType:
+          type: string
+        cultivationTypeAttribute:
+          type: string
+        areaGross:
+          type: integer
+        areaNet:
+          type: integer
+        biodiversityCategory:
+          type: string
+        biodiversityCommitmentStart:
+          type: integer
+          format: int32
+        natureProtectionSurface:
+          type: boolean
+        natureProtectionCommitmentStart:
+          type: integer
+          format: int32
+        cultivated:
+          type: boolean
+        contributionAuthorization:
+          type: boolean
+    BiodiversitySurfaceDataType:
+      required:
+        - biodiversitySurface
+      type: object
+      properties:
+        biodiversitySurface:
+          type: array
+          items:
+            $ref: '#/components/schemas/BiodiversitySurface'
+    BreedingTypes:
+      required:
+        - breedingType
+      type: object
+      properties:
+        breedingType:
+          type: array
+          items:
+            type: string
+    MunicipalityType:
+      type: object
+      properties:
+        municipalityName:
+          type: string
+          maxLength: 40
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        cantonFlAbbreviation:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+    CountrysideQualityDataType:
+      required:
+        - countrysideQualityProject
+      type: object
+      properties:
+        countrysideQualityProject:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrysideQualityProject'
+    CountrysideQualityProject:
+      required:
+        - projectElements
+        - projectName
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        projectName:
+          type: string
+        projectElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectElementsType'
+    DataRequestTypeType:
+      type: object
+      properties:
+        aggregatedResults:
+          type: boolean
+        finalData:
+          type: boolean
+    FarmApicultureData:
+      required:
+        - colonyCount
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        colonyCount:
+          type: integer
+    FarmCharacteristicsType:
+      required:
+        - ZATypology
+        - surface
+        - livestockUnit
+        - structure
+        - summeringStructure
+        - surveyNorm
+        - bioContribution
+        - achieveOeln
+        - directPayment
+        - individualCultureContribution
+        - summeringContribution
+        - insituContribution
+        - cerealsContribution
+        - validSince
+      type: object
+      properties:
+        ZATypology:
+          type: string
+        surface:
+          type: integer
+        livestockUnit:
+          type: number
+          minimum: 0
+          multipleOf: 0.001
+        structure:
+          type: boolean
+        summeringStructure:
+          type: boolean
+        surveyNorm:
+          type: boolean
+        bioContribution:
+          type: boolean
+        achieveOeln:
+          type: boolean
+        directPayment:
+          type: boolean
+        individualCultureContribution:
+          type: boolean
+        summeringContribution:
+          type: boolean
+        insituContribution:
+          type: boolean
+        cerealsContribution:
+          type: boolean
+        validSince:
+          type: string
+          format: date-time
+    FarmDetailsType:
+      required:
+        - farmType
+      type: object
+      properties:
+        farmType:
+          type: string
+        localMunicipality:
+          $ref: '#/components/schemas/MunicipalityType'
+        coordinatesEast:
+          type: integer
+          minimum: 2460000
+          maximum: 2844000
+        coordinatesNorth:
+          type: integer
+          minimum: 1063000
+          maximum: 1306000
+        altitude:
+          type: integer
+          minimum: 0
+        agriculturalZone:
+          type: string
+        agriculturalArea:
+          type: string
+        EGID:
+          type: integer
+          format: int32
+        EGAID:
+          type: integer
+          format: int32
+    FarmGeneralData:
+      required:
+        - code
+        - quantity
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        code:
+          type: string
+        quantity:
+          type: integer
+    FarmGeneralDataDeclaration:
+      required:
+        - code
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        code:
+          type: string
+        relevant:
+          type: boolean
+    FarmPersonDetailsType:
+      required:
+        - farmDetails
+        - personDetails
+        - farmCharacteristics
+      type: object
+      properties:
+        farmDetails:
+          $ref: '#/components/schemas/FarmDetailsType'
+        personDetails:
+          $ref: '#/components/schemas/PersonDetailsType'
+        farmCharacteristics:
+          $ref: '#/components/schemas/FarmCharacteristicsType'
+    GeneralDataType:
+      type: object
+      properties:
+        farmGeneralData:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmGeneralData'
+        farmGeneralDataDeclaration:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmGeneralDataDeclaration'
+    GeneralSurfaceDataType:
+      required:
+        - surface
+      type: object
+      properties:
+        surface:
+          type: array
+          items:
+            $ref: '#/components/schemas/Surface'
+    GrapeSurface:
+      required:
+        - cultivationType
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        cultureId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalZone:
+          type: string
+        cultivationType:
+          type: string
+        slopeGrape30To50Area:
+          type: integer
+        slopeGrape50PlusArea:
+          type: integer
+        slopeGrapeTerrace:
+          type: integer
+        bioContribution:
+          type: boolean
+        contributionAuthorization:
+          type: boolean
+    GrapeSurfaceDataType:
+      required:
+        - grapeSurface
+      type: object
+      properties:
+        grapeSurface:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrapeSurface'
+    NetworkContribution:
+      required:
+        - organization
+      type: object
+      properties:
+        organization:
+          type: string
+        organizationName:
+          type: string
+        federalAmountUsed:
+          type: boolean
+        contributionAmount:
+          type: number
+    NetworkSurface:
+      required:
+        - areaNet
+        - cultivationType
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        cultureId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalZone:
+          type: string
+        cultivationType:
+          type: string
+        cultivationTypeAttribute:
+          type: string
+        areaGross:
+          type: integer
+        areaNet:
+          type: integer
+        networkCommitmentStart:
+          type: integer
+          format: int32
+        networkContribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkContribution'
+        contributionAuthorization:
+          type: boolean
+    NetworkSurfaceDataType:
+      required:
+        - networkSurface
+      type: object
+      properties:
+        networkSurface:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkSurface'
+    PersonDetailsType:
+      required:
+        - legalForm
+      type: object
+      properties:
+        legalForm:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        foundationYear:
+          type: integer
+          format: int32
+        languageOfCorrespondance:
+          type: string
+        postalAddress:
+          $ref: '#/components/schemas/PersonMailAddressType'
+        residenceMunicipality:
+          $ref: '#/components/schemas/MunicipalityType'
+        EGAID:
+          type: integer
+          format: int32
+    PersonMailAddressInfoType:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+    PersonMailAddressType:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonMailAddressInfoType'
+        addressInformation:
+          $ref: '#/components/schemas/AddressInformationType'
+    ProductionForms:
+      required:
+        - productionForm
+      type: object
+      properties:
+        productionForm:
+          type: array
+          items:
+            type: string
+    ProjectElementsType:
+      required:
+        - contributionAmount
+        - measureId
+        - quantity
+      type: object
+      properties:
+        measureId:
+          type: string
+        category:
+          type: string
+        quantity:
+          type: number
+        contributionAmount:
+          type: number
+        contributionAuthorization:
+          type: boolean
+    SelfReportedDataType:
+      type: object
+      properties:
+        declarationDayQuantity:
+          type: integer
+        averageQuantity:
+          type: integer
+        keepingType:
+          type: string
+        summeringQuantity:
+          type: integer
+        summeringDuration:
+          type: integer
+    SelfReportedSummeringDataType:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        summeringDuration:
+          type: integer
+    SlopeSurface:
+      required:
+        - cultivationType
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        cultureId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalZone:
+          type: string
+        cultivationType:
+          type: string
+        slope18To35Area:
+          type: integer
+        slope35To50Area:
+          type: integer
+        slope50PlusArea:
+          type: integer
+        cultivated:
+          type: boolean
+        contributionAuthorization:
+          type: boolean
+    SlopeSurfaceDataType:
+      required:
+        - slopeSurface
+      type: object
+      properties:
+        slopeSurface:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlopeSurface'
+    StructuralDataRootType:
+      type: object
+      properties:
+        generalData:
+          $ref: '#/components/schemas/GeneralDataType'
+        animalData:
+          $ref: '#/components/schemas/AnimalDataType'
+        animalSummeringData:
+          $ref: '#/components/schemas/AnimalSummeringDataType'
+        generalSurfaceData:
+          $ref: '#/components/schemas/GeneralSurfaceDataType'
+        slopeSurfaceData:
+          $ref: '#/components/schemas/SlopeSurfaceDataType'
+        grapeSurfaceData:
+          $ref: '#/components/schemas/GrapeSurfaceDataType'
+        biodiversitySurfaceData:
+          $ref: '#/components/schemas/BiodiversitySurfaceDataType'
+        networkSurfaceData:
+          $ref: '#/components/schemas/NetworkSurfaceDataType'
+        countrysideQualityData:
+          $ref: '#/components/schemas/CountrysideQualityDataType'
+        aquacultureData:
+          $ref: '#/components/schemas/AquacultureDataType'
+        apicultureData:
+          $ref: '#/components/schemas/ApicultureDataType'
+    StructuralDataType:
+      required:
+        - farmPersonDetails
+        - ktIdB
+        - ktIdP
+      type: object
+      properties:
+        ktIdB:
+          type: string
+          maxLength: 20
+        ber:
+          type: string
+          pattern: '^[A-B][1-9][0-9]{7}$'
+        ktIdP:
+          type: string
+          maxLength: 20
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+        farmPersonDetails:
+          $ref: '#/components/schemas/FarmPersonDetailsType'
+        structuralDataRoot:
+          $ref: '#/components/schemas/StructuralDataRootType'
+    StructureResponseType:
+      required:
+        - cantonFlAbbreviation
+        - dataRequestType
+        - structuralData
+        - surveyYear
+      type: object
+      properties:
+        cantonFlAbbreviation:
+          $ref: '#/components/schemas/CantonFlAbbreviationType'
+        surveyYear:
+          type: integer
+          format: int32
+        dataRequestType:
+          $ref: '#/components/schemas/DataRequestTypeType'
+        structuralData:
+          type: array
+          items:
+            $ref: '#/components/schemas/StructuralDataType'
+    SummeringAbroadDetails:
+      type: object
+      properties:
+        livestockUnit:
+          type: number
+    SummeringInlandDetails:
+      type: object
+      properties:
+        livestockUnit:
+          type: number
+        normedLivestockUnit:
+          type: number
+    Surface:
+      required:
+        - areaNet
+        - cultivationType
+        - surveyKtIdB
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date
+        surveyKtIdB:
+          type: string
+        ber:
+          type: string
+        surfaceId:
+          type: string
+        cultureId:
+          type: string
+        locality:
+          type: string
+        municipalityId:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+        agriculturalZone:
+          type: string
+        cultivationType:
+          type: string
+        cultivationTypeAttribute:
+          type: string
+        areaGross:
+          type: integer
+        areaNet:
+          type: integer
+        cultivated:
+          type: boolean
+        natureProtectionSurface:
+          type: boolean
+        psSoilMildTreatment:
+          type: boolean
+        psmArableFarming:
+          type: boolean
+        psmVegetablesBerries:
+          type: boolean
+        psmPerennialCulture:
+          type: boolean
+        psmBioAids:
+          type: boolean
+        psmHerbicide:
+          type: boolean
+        bio:
+          type: boolean
+        culturalLandscapeContribution:
+          type: boolean
+        individualCultureContribution:
+          type: boolean
+    SurveyFarmDetails:
+      type: object
+      properties:
+        declarationDayQuantity:
+          type: integer
+        quantity:
+          type: number
+        livestockUnit:
+          type: number
+    WaterDrainTypes:
+      required:
+        - waterDrainType
+      type: object
+      properties:
+        waterDrainType:
+          type: array
+          items:
+            type: string
+    WaterSupplyTypes:
+      required:
+        - waterSupplyType
+      type: object
+      properties:
+        waterSupplyType:
+          type: array
+          items:
+            type: string
+    DataTypesType:
+      type: object
+      properties:
+        structureType:
+          type: array
+          items:
+            type: string
+            enum:
+              - generalData
+              - animalData
+              - animalSummeringData
+              - generalSurfaceData
+              - slopeSurfaceData
+              - grapeSurfaceData
+              - biodiversitySurfaceData
+              - networkSurfaceData
+              - countrysideQualityData
+              - aquacultureData
+              - apicultureData
+    StructureDataRequest:
+      required:
+        - ids
+        - surveyYear
+      type: object
+      properties:
+        surveyYear:
+          type: integer
+          format: int32
+        ids:
+          $ref: '#/components/schemas/IdsType'
+        dataTypes:
+          $ref: '#/components/schemas/DataTypesType'
+        dataRequestType:
+          $ref: '#/components/schemas/DataRequestTypeType'
+    IdsType:
+      type: object
+      properties:
+        ktIdB:
+          type: string
+        agisIdB:
+          type: integer
+          format: int32
+        ber:
+          type: string
+        ktIdP:
+          type: string
+        agisIdP:
+          type: integer
+          format: int32
+        uid:
+          type: string
+          pattern: '^CHE[1-9][0-9]{8}$'
+    CantonFlAbbreviationType:
+      type: string
+      enum:
+        - ZH
+        - BE
+        - LU
+        - UR
+        - SZ
+        - OW
+        - NW
+        - GL
+        - ZG
+        - FR
+        - SO
+        - BS
+        - BL
+        - SH
+        - AR
+        - AI
+        - SG
+        - GR
+        - AG
+        - TG
+        - TI
+        - VD
+        - VS
+        - NE
+        - GE
+        - JU
+        - FL
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

@@ -1,0 +1,124 @@
+agridata:
+  json-field-rewrite:
+    enabled: true
+    config: |
+      [
+        {
+          "path": "/agis/register-data/1/register",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/register-data/1/register",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/structure-data/1/structure",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/structure-data/1/structure",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/eco-etho-data/1/ecoetho",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/eco-etho-data/1/ecoetho",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        }
+      ]
+      |
+quarkus:
+  hibernate-orm:
+    log:
+      sql: false
+      format-sql: true
+  console:
+    color: true
+  cxf:
+    client:
+      uid:
+        http-conduit-factory: URLConnectionHTTPConduitFactory
+        client-endpoint-url: http://localhost:8050/uid-register/findByUid
+  datasource:
+    devservices:
+      db-name: agridata
+      enabled: true
+      password: secret
+      port: 5432
+      username: admin
+  flyway:
+    locations:
+      - classpath:db/migration
+  http:
+    cors:
+      origins:
+        - http://localhost:4200
+  keycloak:
+    devservices:
+      port: 6999
+      realm-path: agate_realm.json
+  log:
+    category:
+      ch.agridata.common.filters:
+        level: DEBUG
+      io.quarkiverse.wiremock.devservice.WireMockServer:
+        level: WARN
+      'io.quarkus.oidc.client ':
+        level: DEBUG
+      io.quarkus.rest.client:
+        level: DEBUG
+      org.jboss.resteasy.reactive.client.logging:
+        level: DEBUG
+      org.jboss.resteasy.reactive.server.logging:
+        level: DEBUG
+    level: INFO
+  oidc:
+    token:
+      audience: agridata-backend
+  oidc-client:
+    agis-api:
+      token-path: http://localhost:8050/agate/token
+  rest-client:
+    agis-register-api:
+      url: http://localhost:8050/agis/register-data/1
+    agis-structure-api:
+      url: http://localhost:8050/agis/structure-data/1
+    agis-eco-etho-api:
+      url: http://localhost:8050/agis/eco-etho-data/1
+    logging:
+      body-limit: 10240
+      scope: request-response
+  swagger-ui:
+    oauth-client-id: agridata-ui
+    oauth-client-secret: secret
+  wiremock:
+    devservices:
+      enabled: true
+      files-mapping: src/test/resources/wiremock
+      port: 8050

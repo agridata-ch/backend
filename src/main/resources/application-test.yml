@@ -1,0 +1,91 @@
+agridata:
+  json-field-rewrite:
+    enabled: true
+    config: |
+      [
+        {
+          "path": "/agis/register-data/1/register",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/register-data/1/register",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/structure-data/1/structure",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/structure-data/1/structure",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/eco-etho-data/1/ecoetho",
+          "method": "POST",
+          "direction": "OUTBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        },
+        {
+          "path": "/agis/eco-etho-data/1/ecoetho",
+          "method": "POST",
+          "direction": "INBOUND",
+          "whitelistProperties": [],
+          "fallbackRewriteRule": {},
+          "rewriteRules": []
+        }
+      ]
+      |
+quarkus:
+  console:
+    color: true
+  cxf:
+    client:
+      uid:
+        http-conduit-factory: URLConnectionHTTPConduitFactory
+        client-endpoint-url: http://localhost:8051/uid-register/findByUid
+  flyway:
+    locations:
+      - classpath:db/migration
+      - classpath:db/testdata
+  keycloak:
+    devservices:
+      realm-path: agate_realm.json
+  log:
+    level: WARN
+    category:
+      ch.agridata.common.filters:
+        level: WARN
+  oidc-client:
+    agis-api:
+      token-path: http://localhost:8051/agate/token
+  rest-client:
+    agis-register-api:
+      url: http://localhost:8051/agis/register-data/1
+    agis-structure-api:
+      url: http://localhost:8051/agis/structure-data/1
+    agis-eco-etho-api:
+      url: http://localhost:8051/agis/eco-etho-data/1
+  wiremock:
+    devservices:
+      enabled: true
+      files-mapping: src/test/resources/wiremock
+      port: 8051
+      reload: true

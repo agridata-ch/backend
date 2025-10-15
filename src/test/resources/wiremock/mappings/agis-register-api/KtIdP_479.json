@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"personSearchParameters\":{\"ktIdP\":\"***479\"},\"dataRequestType\":{\"relationDepth\":\"allRelations\"}}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "agis-register-api/KtIdP_479.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

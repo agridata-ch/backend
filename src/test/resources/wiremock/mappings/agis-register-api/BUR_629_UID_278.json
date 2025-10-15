@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"farmSearchParameters\":{\"ber\":\"***629\"}}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "agis-register-api/BUR_629_UID_278.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

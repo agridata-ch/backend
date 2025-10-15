@@ -1,0 +1,57 @@
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "The version released by semantic-release"
+        value: ${{ jobs.semantic-release.outputs.version }}
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.semantic-release.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Create temporary package.json and install dependencies
+        run: |
+          echo '{}' > package.json
+          npm install \
+            @semantic-release/git@10.0.1 \
+            @semantic-release/changelog@6.0.3 \
+            @semantic-release/github@11.0.2 \
+            @semantic-release/exec@7.0.3 \
+            @semantic-release/commit-analyzer@13.0.1 \
+            @semantic-release/release-notes-generator@14.0.3 \
+            conventional-changelog-conventionalcommits@8.0.0
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        env:
+          GITHUB_APP_SEMANTIC_RELEASE_APP_ID: 1236243
+        with:
+          app-id: ${{ env.GITHUB_APP_SEMANTIC_RELEASE_APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY_GITHUB_APP_SEMANTIC_RELEASE }}
+
+      - name: Semantic Release
+        id: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: npx semantic-release --debug

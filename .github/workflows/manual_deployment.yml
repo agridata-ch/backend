@@ -1,0 +1,35 @@
+name: Manual Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select AWS Environment"
+        required: true
+        type: choice
+        options:
+          - "develop"
+          - "integration"
+          - "production"
+      image-tag:
+        description: "Set Image Tag (e.g. 1.0.0)"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: "."
+    uses: ./.github/workflows/reusable__deploy.yml
+    with:
+      account-id: |-
+        ${{ fromJson('{
+          "develop": "108782064107",
+          "integration": "863518438092",
+          "production": "183295418748"
+        }')[github.event.inputs.environment] }}
+      image: 183295418748.dkr.ecr.eu-central-2.amazonaws.com/backend:${{ github.event.inputs.image-tag }}
+      cluster: agridata-ecs-cluster
+      service: agridata-backend
+      task-definition-family: agridata-backend
+      container-name: agridata-backend-service
+    secrets: inherit

@@ -1,0 +1,65 @@
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+      account-id:
+        required: true
+        type: string
+      container-name:
+        required: true
+        type: string
+      task-definition-family:
+        required: true
+        type: string
+      service:
+        required: true
+        type: string
+      cluster:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_REGION: eu-central-2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.account-id }}:role/agridata-application-deployment-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          container-name: ${{inputs.container-name}}
+          task-definition-family: ${{inputs.task-definition-family}}
+          image: ${{ inputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{inputs.service}}
+          cluster: ${{inputs.cluster}}
+          wait-for-service-stability: true
+
+      - name: Update SSM Parameter with deployed image
+        run: |
+          aws ssm put-parameter \
+            --name "/backend/image" \
+            --value "${{ inputs.image}}" \
+            --type "String" \
+            --overwrite

@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/uid-register/findByUid"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "boisuisse-uid-search-response.xml",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8"
+    }
+  }
+}

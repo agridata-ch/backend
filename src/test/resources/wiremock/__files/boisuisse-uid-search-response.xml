@@ -1,0 +1,79 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <GetByUIDResponse xmlns="http://www.uid.admin.ch/xmlns/uid-wse">
+            <GetByUIDResult>
+                <organisationType>
+                    <organisation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <organisationIdentification xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
+                            <uid xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <uidOrganisationIdCategorie>CHE</uidOrganisationIdCategorie>
+                                <uidOrganisationId>101708094</uidOrganisationId>
+                            </uid>
+                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <organisationIdCategory>CH.HR</organisationIdCategory>
+                                <organisationId>CH28069163185</organisationId>
+                            </OtherOrganisationId>
+                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <organisationIdCategory>CH.AK</organisationIdCategory>
+                                <organisationId>171.96</organisationId>
+                            </OtherOrganisationId>
+                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <organisationIdCategory>CH.ESTVID</organisationIdCategory>
+                                <organisationId>052.0097.7841</organisationId>
+                            </OtherOrganisationId>
+                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <organisationIdCategory>CH.EHRAID</organisationIdCategory>
+                                <organisationId>427343</organisationId>
+                            </OtherOrganisationId>
+                            <organisationName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">Bio Suisse, Vereinigung
+                                Schweizer Biolandbau-Organisationen
+                            </organisationName>
+                            <organisationLegalName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">Bio Suisse, Vereinigung
+                                Schweizer Biolandbau-Organisationen
+                            </organisationLegalName>
+                            <legalForm xmlns="http://www.ech.ch/xmlns/eCH-0097/5">0109</legalForm>
+                        </organisationIdentification>
+                        <address xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
+                            <addressCategory>LEGAL</addressCategory>
+                            <street>Peter Merian-Str.</street>
+                            <houseNumber>34</houseNumber>
+                            <town>Basel</town>
+                            <swissZipCode>4052</swissZipCode>
+                            <swissZipCodeAddOn>00</swissZipCodeAddOn>
+                            <municipalityId>2701</municipalityId>
+                            <cantonAbbreviation>BS</cantonAbbreviation>
+                            <EGID>2081525</EGID>
+                            <countryIdISO2>CH</countryIdISO2>
+                            <deliverableYesNo>true</deliverableYesNo>
+                            <dateOfLastCheck>2025-04-04</dateOfLastCheck>
+                        </address>
+                    </organisation>
+                    <uidregInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <uidregStatusEnterpriseDetail>3</uidregStatusEnterpriseDetail>
+                        <uidregPublicStatus>1</uidregPublicStatus>
+                        <uidregUidService>false</uidregUidService>
+                    </uidregInformation>
+                    <commercialRegisterInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <commercialRegisterStatus>2</commercialRegisterStatus>
+                        <commercialRegisterEntryStatus>1</commercialRegisterEntryStatus>
+                        <commercialRegisterNameTranslation>(Uniun svizra da las organisaziuns d'agricultura biologica)
+                            (Associazione svizzera delle organizzazioni per l'agricoltura biologica) (Association suisse
+                            des organisations d'agriculture biologique)
+                        </commercialRegisterNameTranslation>
+                        <commercialRegisterEnterpriseType>2</commercialRegisterEnterpriseType>
+                    </commercialRegisterInformation>
+                    <vatRegisterInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <vatStatus>2</vatStatus>
+                        <vatEntryStatus>1</vatEntryStatus>
+                        <vatEntryDate>1995-01-01</vatEntryDate>
+                        <uidVat>
+                            <uidOrganisationIdCategorie xmlns="http://www.ech.ch/xmlns/eCH-0097/5">CHE
+                            </uidOrganisationIdCategorie>
+                            <uidOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">101708094</uidOrganisationId>
+                        </uidVat>
+                    </vatRegisterInformation>
+                </organisationType>
+            </GetByUIDResult>
+        </GetByUIDResponse>
+    </s:Body>
+</s:Envelope>
