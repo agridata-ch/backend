@@ -25,16 +25,16 @@ jobs:
     needs: [ checkstyle, gitleaks ]
     secrets: inherit
 
-#  unit-test-sonarqube:
-#    name: "."
-#    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
-#    needs: [ checkstyle, gitleaks ]
-#    secrets: inherit
+  unit-test-sonarqube:
+    name: "."
+    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
+    needs: [ checkstyle, gitleaks ]
+    secrets: inherit
 
   trivy-image-scan:
     name: "."
     uses: ./.github/workflows/reusable__trivy_image_scan.yml
-    needs: [ checkstyle, gitleaks ]
+    needs: [ unit-test-sonarqube, checkstyle, gitleaks ]
     secrets: inherit
 
   semantic-release:
@@ -44,30 +44,30 @@ jobs:
     needs: [ owasp-dependency-check, trivy-image-scan ]
     secrets: inherit
 
-#  build-push-image:
-#    if: github.ref == 'refs/heads/main'
-#    name: "."
-#    uses: ./.github/workflows/reusable__build_push_image.yml
-#    needs: [ semantic-release ]
-#    with:
-#      account-id: 183295418748 # production
-#      ecr-repository-name: backend
-#      version: ${{ needs.semantic-release.outputs.version }}
-#    secrets: inherit
-#
-#  deploy:
-#    if: github.ref == 'refs/heads/main'
-#    name: "."
-#    uses: ./.github/workflows/reusable__deploy.yml
-#    needs: build-push-image
-#    with:
-#      account-id: 863518438092 # integration
-#      image: ${{needs.build-push-image.outputs.image}}
-#      cluster: agridata-ecs-cluster
-#      service: agridata-backend
-#      task-definition-family: agridata-backend
-#      container-name: agridata-backend-service
-#    secrets: inherit
+  build-push-image:
+    if: github.ref == 'refs/heads/main'
+    name: "."
+    uses: ./.github/workflows/reusable__build_push_image.yml
+    needs: [ semantic-release ]
+    with:
+      account-id: 183295418748 # production
+      ecr-repository-name: backend
+      version: ${{ needs.semantic-release.outputs.version }}
+    secrets: inherit
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    name: "."
+    uses: ./.github/workflows/reusable__deploy.yml
+    needs: build-push-image
+    with:
+      account-id: 863518438092 # integration
+      image: ${{needs.build-push-image.outputs.image}}
+      cluster: agridata-ecs-cluster
+      service: agridata-backend
+      task-definition-family: agridata-backend
+      container-name: agridata-backend-service
+    secrets: inherit
 
   merge-main-develop:
     if: github.ref == 'refs/heads/main'
