@@ -34,14 +34,14 @@ jobs:
   trivy-image-scan:
     name: "."
     uses: ./.github/workflows/reusable__trivy_image_scan.yml
-    needs: [ unit-test-sonarqube, checkstyle, gitleaks ]
+    needs: [ checkstyle, gitleaks ]
     secrets: inherit
 
   semantic-release:
     if: github.ref == 'refs/heads/main'
     name: "."
     uses: ./.github/workflows/reusable__semantic_release.yml
-    needs: [ owasp-dependency-check, trivy-image-scan ]
+    needs: [ unit-test-sonarqube, owasp-dependency-check, trivy-image-scan ]
     secrets: inherit
 
   build-push-image:
