@@ -56,6 +56,14 @@ quarkus:
         - OPTIONS
         - PATCH
     port: 8060
+  micrometer:
+    enabled: true
+    binder:
+      jvm: true
+      system: true
+      http-server:
+        enabled: true
+
   log:
     category:
       "ch.agridata.common.filters":
@@ -93,8 +101,6 @@ quarkus:
     oauth-scopes: openid offline_access
     oauth-use-pkce-with-authorization-code-grant: true
     enabled: true
-  jackson:
-    indent-output: false
 mp:
   openapi:
     scan:

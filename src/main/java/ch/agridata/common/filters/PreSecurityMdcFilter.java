@@ -30,6 +30,8 @@ public class PreSecurityMdcFilter {
     MDC.put(USER_ID_MDC_FIELD, getUserId(ctx));
     String path = ctx.request().path();
     MDC.put(API_MDC_FIELD, path);
+    String query = ctx.request().query();
+    MDC.put("query", query != null ? query : "");
 
     ctx.next();
   }
