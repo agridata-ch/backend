@@ -44,11 +44,18 @@ public class PreSecurityLogFilter {
       "application/x-protobuf"
   );
 
+  private String getUriWithQuery(RoutingContext ctx) {
+    String path = ctx.request().path();
+    String query = ctx.request().query();
+    return (query != null && !query.isEmpty()) ? path + "?" + query : path;
+  }
+
   @RouteFilter(1500)
   void logRequests(RoutingContext ctx) {
     if (logEnabled(ctx)) {
       long startTime = System.currentTimeMillis();
       ctx.put(START_TIME_KEY, startTime);
+      String uriWithQuery = getUriWithQuery(ctx);
 
       if (log.isEnabledForLevel(Level.DEBUG) && !contentTypeIsBinary(ctx)) {
         logRequestWithBody(ctx);
@@ -56,7 +63,7 @@ public class PreSecurityLogFilter {
         var logBuilder = log.atInfo()
             .addKeyValue("operation", "rest.request")
             .addKeyValue("method", ctx.request().method())
-            .addKeyValue("uri", ctx.request().path())
+            .addKeyValue("uri", uriWithQuery)
             .addKeyValue("contentType", getContentType(ctx));
 
         String impersonationInfo = getImpersonationInfo(ctx);
@@ -64,8 +71,8 @@ public class PreSecurityLogFilter {
           logBuilder = logBuilder.addKeyValue("impersonation", impersonationInfo);
         }
 
-        logBuilder.log("REQUEST: {} {} {} {}", ctx.request().method(), ctx.request().path(),
-            getContentType(ctx), impersonationInfo);
+        logBuilder.log("REQUEST: {} {} {} {} {}", ctx.request().method(), uriWithQuery,
+            getContentType(ctx), ctx.request().query(), impersonationInfo);
       }
       logResponse(ctx);
     }
@@ -74,13 +81,13 @@ public class PreSecurityLogFilter {
 
   private void logRequestWithBody(RoutingContext ctx) {
     ctx.request().bodyHandler(buffer -> {
-
       String bodyString = buffer.toString();
+      String uriWithQuery = getUriWithQuery(ctx);
 
       var logBuilder = log.atDebug()
           .addKeyValue("operation", "rest.request")
           .addKeyValue("method", ctx.request().method())
-          .addKeyValue("uri", ctx.request().path())
+          .addKeyValue("uri", uriWithQuery)
           .addKeyValue("contentType", getContentType(ctx))
           .addKeyValue("body", bodyString);
 
@@ -89,11 +96,10 @@ public class PreSecurityLogFilter {
         logBuilder = logBuilder.addKeyValue("impersonating", impersonationInfo);
       }
 
-      logBuilder.log("REQUEST: {} {} {}", ctx.request().method(),
-          ctx.request().path(), getContentType(ctx));
+      logBuilder.log("REQUEST: {} {} {} {}", ctx.request().method(),
+          uriWithQuery, getContentType(ctx), impersonationInfo);
 
       logResponse(ctx);
-
     });
   }
 
@@ -102,15 +108,16 @@ public class PreSecurityLogFilter {
       int status = ctx.response().getStatusCode();
       Long startTime = ctx.get(START_TIME_KEY);
       long duration = startTime != null ? System.currentTimeMillis() - startTime : -1;
+      String uriWithQuery = getUriWithQuery(ctx);
 
       log.atInfo()
           .addKeyValue("operation", "rest.response")
           .addKeyValue("method", ctx.request().method())
-          .addKeyValue("uri", ctx.request().path())
+          .addKeyValue("uri", uriWithQuery)
           .addKeyValue("status", status)
           .addKeyValue("duration", duration)
           .log("RESPONSE: {} {} status: {} duration: {} ms", ctx.request().method(),
-              ctx.request().path(), status, duration);
+              uriWithQuery, status, duration);
     });
   }
 

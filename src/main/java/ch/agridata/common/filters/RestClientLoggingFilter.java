@@ -37,11 +37,16 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
 
     String method = requestContext.getMethod();
     String uri = requestContext.getUri().toString();
+    String query = requestContext.getUri().getQuery();
 
     var logBuilder = log.atInfo()
         .addKeyValue("operation", "rest.client.request")
         .addKeyValue("method", method)
         .addKeyValue("uri", uri);
+
+    if (query != null && !query.isEmpty()) {
+      logBuilder = logBuilder.addKeyValue("query", query);
+    }
 
     if (log.isDebugEnabled() && requestContext.hasEntity()) {
       String requestBody = getEntityAsString(requestContext);
@@ -59,20 +64,29 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
 
     String method = requestContext.getMethod();
     String uri = requestContext.getUri().toString();
+    String query = requestContext.getUri().getQuery();
     int status = responseContext.getStatus();
     Long startTime = (Long) requestContext.getProperty(START_TIME_PROPERTY);
     long duration = startTime != null ? System.currentTimeMillis() - startTime : -1;
 
     StringBuilder logMessage = new StringBuilder();
-    logMessage.append("REST Client Response: ").append(method).append(" ").append(uri).append(" -> Status: ").append(status)
+    logMessage.append("REST Client Response: ").append(method).append(" ").append(uri);
+    if (query != null && !query.isEmpty()) {
+      logMessage.append("?").append(query);
+    }
+    logMessage.append(" -> Status: ").append(status)
         .append(", Duration: ").append(duration).append(" ms");
 
     var logBuilder = log.atInfo()
         .addKeyValue("operation", "rest.client.response")
         .addKeyValue("method", method)
         .addKeyValue("uri", uri)
-        .addKeyValue("Duration", duration)
+        .addKeyValue("duration", duration)
         .addKeyValue("status", status);
+
+    if (query != null && !query.isEmpty()) {
+      logBuilder = logBuilder.addKeyValue("query", query);
+    }
 
     if (log.isTraceEnabled() && responseContext.hasEntity()) {
       String responseBody = getResponseBodyAsString(responseContext);

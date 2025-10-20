@@ -1,3 +1,14 @@
+### get request as producer
+GET {{baseUrl}}/agreement/v1/consent-requests?dataProducerUid=CHE***278
+Authorization: Bearer {{$auth.token("producer-266")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get consent request for uid", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    })
+%}
+
 ### get request as admin
 GET {{baseUrl}}/agreement/v1/data-requests/3da3a459-d3c2-48af-b8d0-02bc95146468
 Authorization: Bearer {{$auth.token("admin")}}
