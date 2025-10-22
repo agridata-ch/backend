@@ -8,6 +8,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,10 @@ import org.hibernate.type.SqlTypes;
  * @CommentLastReviewed 2025-08-25
  */
 @Entity
-@Table(name = "data_product")
+@Table(name = "data_product",
+    indexes = {
+        @Index(name = "idx_data_product_data_source_system_code", columnList = "data_source_system_code")
+    })
 @SQLDelete(sql = "UPDATE data_product SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
