@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -33,7 +34,10 @@ import org.hibernate.type.SqlTypes;
  * @CommentLastReviewed 2025-10-02
  */
 @Entity
-@Table(name = "data_request")
+@Table(name = "data_request",
+    indexes = {
+        @Index(name = "idx_data_request_data_consumer_uid", columnList = "data_consumer_uid")
+    })
 @SQLDelete(sql = "UPDATE data_request SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder

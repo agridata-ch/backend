@@ -4,6 +4,7 @@ import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -22,7 +23,12 @@ import org.hibernate.annotations.SQLRestriction;
  */
 
 @Entity
-@Table(name = "users") //Using plural 'users' because 'user' is a reserved keyword in PostgreSQL
+@Table(name = "users", //Using plural 'users' because 'user' is a reserved keyword in PostgreSQL
+    indexes = {
+        @Index(name = "idx_users_kt_id_p", columnList = "kt_id_p"),
+        @Index(name = "idx_users_agate_login_id", columnList = "agate_login_id"),
+        @Index(name = "idx_users_uid", columnList = "uid"),
+    })
 @SQLDelete(sql = "UPDATE user SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
