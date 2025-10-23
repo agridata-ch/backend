@@ -1,3 +1,13 @@
+## [1.1.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2025-10-23)
+
+### Features
+
+* **indexes:** add database indexes ([8c4b371](https://github.com/agridata-ch/backend/commit/8c4b371936a0ba1c16ed8d5b26c9b5c42b23df76)), closes [DIGIB2-968](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-968)
+
+### Bug Fixes
+
+* **duration:** fixes case in rest client duration log / migrates to micrometer (as recommended by Quarkus) ([cf82f54](https://github.com/agridata-ch/backend/commit/cf82f54a25c27d68372efff80fe10661a672c78b)), closes [DIGIB2-958](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-958)
+
 ## [1.1.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.1...v1.1.0-rc.1) (2025-10-15)
 
 ### Features
