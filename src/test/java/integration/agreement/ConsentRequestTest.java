@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.CreateConsentRequestDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import io.quarkus.test.junit.QuarkusTest;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @RequiredArgsConstructor
 class ConsentRequestTest {
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Test
   void givenProducer_whenConsentRequestAreRequestedWithoutExplicitUid_thenAllConsentRequestsReturned() {
@@ -50,10 +54,14 @@ class ConsentRequestTest {
   }
 
   @Test
-  void givenProducer_whenCreateConsentRequests_thenCreatedConsentRequestReturned() {
+  void givenProducer_whenCreateConsentRequests_thenCreatedConsentRequestReturned() throws JsonProcessingException {
+    var createDtos = PRODUCER_032.getCompanyUids().stream()
+        .map(uid -> CreateConsentRequestDto.builder().dataRequestId(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid()).uid(uid).build())
+        .toList();
     List<ConsentRequestCreatedDto> createdConsentRequests = AuthTestUtils.requestAs(PRODUCER_032)
         .contentType(JSON)
-        .when().post(ConsentRequestController.PATH + "/" + TestDataIdentifiers.DataRequest.BIO_SUISSE_01 + "/create")
+        .body(MAPPER.writeValueAsString(createDtos))
+        .when().post(ConsentRequestController.PATH)
         .then().statusCode(201)
         .extract().as(new TypeRef<>() {
         });
