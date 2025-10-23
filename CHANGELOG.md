@@ -1,3 +1,9 @@
+## [1.1.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.2...v1.1.0-rc.3) (2025-10-23)
+
+### Features
+
+* **consent-request:** rewrites consent request create endpoint to better conform to Rest standards and allow to create consent requests per uid ([39c1c3e](https://github.com/agridata-ch/backend/commit/39c1c3eb94daae506c65fef7ccd7c27589f20b0c)), closes [DIGIB2-887](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-887)
+
 ## [1.1.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2025-10-23)
 
 ### Features
