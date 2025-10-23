@@ -18,12 +18,16 @@ import static org.hamcrest.Matchers.nullValue;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.product.controller.DataProductController;
 import ch.agridata.product.dto.DataProductDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
@@ -37,11 +41,11 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 @Slf4j
 class DataRequestProcessTest {
+  private final ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  void givenValidRequestFlow_whenDraftUpdatedAndSubmitted_thenAllStepsSucceed() {
+  void givenValidRequestFlow_whenDraftUpdatedAndSubmitted_thenAllStepsSucceed() throws JsonProcessingException {
     RequestSpecification consumer = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE);
-
     // Load a valid product ID via API
     List<DataProductDto> products = consumer
         .when().get(DataProductController.PATH)
@@ -120,9 +124,13 @@ class DataRequestProcessTest {
         .body("stateCode", equalTo(DataRequestStateEnum.ACTIVE.name()));
 
     // As producer use consent request creation link
+    var createDtos = PRODUCER_032.getCompanyUids().stream()
+        .map(uid -> CreateConsentRequestDto.builder().dataRequestId(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid()).uid(uid).build())
+        .toList();
     List<ConsentRequestCreatedDto> createdConsentRequests = AuthTestUtils.requestAs(PRODUCER_032)
+        .body(mapper.writeValueAsString(createDtos))
         .contentType(JSON)
-        .when().post(ConsentRequestController.PATH + "/" + dataRequestId + "/create")
+        .when().post(ConsentRequestController.PATH)
         .then().statusCode(201)
         .extract().as(new TypeRef<>() {
         });

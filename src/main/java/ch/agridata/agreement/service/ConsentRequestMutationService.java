@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
+import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -25,7 +26,7 @@ import org.hibernate.SessionFactory;
 /**
  * Provides business logic for consent requests. It coordinates creation, validation, and updates across related entities.
  *
- * @CommentLastReviewed 2025-09-10
+ * @CommentLastReviewed 2025-10-23
  */
 
 @ApplicationScoped
@@ -58,23 +59,34 @@ public class ConsentRequestMutationService {
     addLogEntry(targetState, consentRequestEntity.getId());
   }
 
-  public List<ConsentRequestCreatedDto> createConsentRequestForDataRequest(UUID dataRequestId) {
-    var dataRequest =
-        dataRequestRepository.findByIdOptional(dataRequestId).orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
-    if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
-      throw new IllegalStateException("Data request: " + dataRequestId + " must be in ACTIVE state to create a consent request.");
-    }
+  public List<ConsentRequestCreatedDto> createConsentRequestForDataRequest(List<CreateConsentRequestDto> createConsentRequestDtos) {
     var uids = getAuthorizedUids(identity.getKtIdpOfUserOrImpersonatedUser());
-    var existingConsentRequests = consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, uids);
+
     return sessionFactory.fromTransaction(state ->
-        uids.stream()
-            .map(uid ->
-                existingConsentRequests.stream()
-                    .filter(cr -> cr.getDataProducerUid().equals(uid))
-                    .findFirst()
-                    .map(existingRequest -> consentRequestMapper.toConsentRequestCreatedDto(existingRequest, false))
-                    .orElseGet(() -> createConsentRequest(uid, dataRequest))
-            ).toList());
+        createConsentRequestDtos.stream().map(dto -> {
+          if (!uids.contains(dto.uid())) {
+            throw new IllegalArgumentException(
+                "Current user is not authorized to create consent request for data producer UID: " + dto.uid());
+          }
+
+          var dataRequest =
+              dataRequestRepository.findByIdOptional(dto.dataRequestId())
+                  .orElseThrow(() -> new NotFoundException(dto.dataRequestId().toString()));
+
+          if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
+            throw new IllegalStateException(
+                "Data request: " + dto.dataRequestId() + " must be in ACTIVE state to create a consent request.");
+          }
+
+          return consentRequestRepository.findByDataRequestIdAndDataProducerUid(dto.dataRequestId(), dto.uid())
+              .map(existingRequest -> consentRequestMapper.toConsentRequestCreatedDto(existingRequest, false))
+              .orElseGet(() ->
+                  createConsentRequest(dto.uid(), dataRequest)
+              );
+        }).toList()
+    );
+
+
   }
 
   private ConsentRequestCreatedDto createConsentRequest(String uid, DataRequestEntity dataRequest) {

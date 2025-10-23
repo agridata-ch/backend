@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Manages persistence of consent requests. It supports querying and updating consent-related records.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-23
  */
 
 @ApplicationScoped
@@ -53,6 +53,12 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
         .setParameter("dataProducerUid", dataProducerUid)
         .setParameter("dataProductId", dataProductId)
         .getResultList();
+
+  }
+
+  public Optional<ConsentRequestEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+    return find("dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid",
+        Parameters.with("dataRequestId", dataRequestId).and("dataProducerUid", dataProducerUid)).firstResultOptional();
 
   }
 
