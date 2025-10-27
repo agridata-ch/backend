@@ -57,7 +57,8 @@ public class DataTransferController {
   @Path("/product/{productId}/data")
   @Operation(
       operationId = "dataTransfer",
-      description = "Retrieves data defined by productId for a specified uid or bur local unit."
+      description = "Retrieves data defined by productId. The needed query parameters are depending on the requested productId. "
+          + "Please consult documentation to find the necessary parameters"
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
