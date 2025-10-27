@@ -1,3 +1,9 @@
+## [1.1.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.3...v1.1.0-rc.4) (2025-10-27)
+
+### Features
+
+* **maintenance:** add maintenance mode to ExceptionEnum ([c805375](https://github.com/agridata-ch/backend/commit/c80537545b041c27dc21c4419ccd05948da30d73)), closes [DIGIB2-261](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-261)
+
 ## [1.1.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.2...v1.1.0-rc.3) (2025-10-23)
 
 ### Features
