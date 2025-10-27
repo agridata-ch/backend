@@ -9,4 +9,5 @@ public enum ExceptionEnum {
   GENERIC,
   UID_MISSING,
   EXTERNAL_SERVICE_ERROR,
+  MAINTENANCE // Used by the AWS load balancer to indicate that the service is temporarily unavailable due to maintenance
 }
