@@ -69,10 +69,10 @@ class PreSecurityLogFilterTest {
     assertThat(LOG_HANDLER.getRecords())
         .anySatisfy(evt ->
             assertThat(evt.getMessage())
-                .isEqualTo("REQUEST: POST /api/test application/json "))
+                .contains("operation=rest.request method=POST uri=/api/test contentType=application/json"))
         .anySatisfy(evt ->
             assertThat(evt.getMessage())
-                .contains("RESPONSE: POST /api/test status: 200"));
+                .contains("rest.response method=POST uri=/api/test status=200"));
 
   }
 
@@ -92,10 +92,10 @@ class PreSecurityLogFilterTest {
     assertThat(LOG_HANDLER.getRecords())
         .anySatisfy(evt ->
             assertThat(evt.getMessage())
-                .isEqualTo("REQUEST: POST /api/test application/json  body: hello world"))
+                .contains("operation=rest.request method=POST uri=/api/test contentType=application/json body=hello world"))
         .anySatisfy(evt ->
             assertThat(evt.getMessage())
-                .contains("RESPONSE: POST /api/test status: 200"));
+                .contains("operation=rest.response method=POST uri=/api/test status=200"));
 
   }
 }

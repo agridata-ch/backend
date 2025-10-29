@@ -17,11 +17,12 @@ import org.slf4j.event.Level;
  * Logs incoming requests and outgoing responses with configurable filters. It avoids logging sensitive or large binary payloads while
  * ensuring visibility into API interactions.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-15
  */
 
 @Slf4j
 public class PreSecurityLogFilter {
+  private static final String START_TIME_KEY = "request.startTime";
   private static final List<String> URIS_TO_APPLY = List.of("/api");
   private static final List<String> CONTENT_TYPE_LOG_BLACKLIST = List.of(
       "multipart/form-data",
@@ -43,15 +44,35 @@ public class PreSecurityLogFilter {
       "application/x-protobuf"
   );
 
+  private String getUriWithQuery(RoutingContext ctx) {
+    String path = ctx.request().path();
+    String query = ctx.request().query();
+    return (query != null && !query.isEmpty()) ? path + "?" + query : path;
+  }
+
   @RouteFilter(1500)
   void logRequests(RoutingContext ctx) {
     if (logEnabled(ctx)) {
+      long startTime = System.currentTimeMillis();
+      ctx.put(START_TIME_KEY, startTime);
+      String uriWithQuery = getUriWithQuery(ctx);
+
       if (log.isEnabledForLevel(Level.DEBUG) && !contentTypeIsBinary(ctx)) {
         logRequestWithBody(ctx);
       } else {
+        var logBuilder = log.atInfo()
+            .addKeyValue("operation", "rest.request")
+            .addKeyValue("method", ctx.request().method())
+            .addKeyValue("uri", uriWithQuery)
+            .addKeyValue("contentType", getContentType(ctx));
 
-        log.info("REQUEST: {} {} {} {}", ctx.request().method(), ctx.request().path(),
-            getContentType(ctx), getImpersonationInfo(ctx));
+        String impersonationInfo = getImpersonationInfo(ctx);
+        if (!impersonationInfo.isEmpty()) {
+          logBuilder = logBuilder.addKeyValue("impersonation", impersonationInfo);
+        }
+
+        logBuilder.log("REQUEST: {} {} {} {} {}", ctx.request().method(), uriWithQuery,
+            getContentType(ctx), ctx.request().query(), impersonationInfo);
       }
       logResponse(ctx);
     }
@@ -59,17 +80,44 @@ public class PreSecurityLogFilter {
   }
 
   private void logRequestWithBody(RoutingContext ctx) {
-    ctx.request().bodyHandler(buf -> {
-      log.info("REQUEST: {} {} {} {} body: {}", ctx.request().method(),
-          ctx.request().path(), getContentType(ctx), getImpersonationInfo(ctx), buf.toString());
+    ctx.request().bodyHandler(buffer -> {
+      String bodyString = buffer.toString();
+      String uriWithQuery = getUriWithQuery(ctx);
+
+      var logBuilder = log.atDebug()
+          .addKeyValue("operation", "rest.request")
+          .addKeyValue("method", ctx.request().method())
+          .addKeyValue("uri", uriWithQuery)
+          .addKeyValue("contentType", getContentType(ctx))
+          .addKeyValue("body", bodyString);
+
+      String impersonationInfo = getImpersonationInfo(ctx);
+      if (!impersonationInfo.isEmpty()) {
+        logBuilder = logBuilder.addKeyValue("impersonating", impersonationInfo);
+      }
+
+      logBuilder.log("REQUEST: {} {} {} {}", ctx.request().method(),
+          uriWithQuery, getContentType(ctx), impersonationInfo);
+
+      logResponse(ctx);
     });
   }
 
   private void logResponse(RoutingContext ctx) {
     ctx.addBodyEndHandler(v -> {
       int status = ctx.response().getStatusCode();
-      log.info("RESPONSE: {} {} status: {}", ctx.request().method(),
-          ctx.request().path(), status);
+      Long startTime = ctx.get(START_TIME_KEY);
+      long duration = startTime != null ? System.currentTimeMillis() - startTime : -1;
+      String uriWithQuery = getUriWithQuery(ctx);
+
+      log.atInfo()
+          .addKeyValue("operation", "rest.response")
+          .addKeyValue("method", ctx.request().method())
+          .addKeyValue("uri", uriWithQuery)
+          .addKeyValue("status", status)
+          .addKeyValue("duration", duration)
+          .log("RESPONSE: {} {} status: {} duration: {} ms", ctx.request().method(),
+              uriWithQuery, status, duration);
     });
   }
 
@@ -79,7 +127,7 @@ public class PreSecurityLogFilter {
   }
 
   boolean logEnabled(RoutingContext ctx) {
-    if (!log.isEnabledForLevel(Level.INFO)) {
+    if (!log.isInfoEnabled()) {
       return false;
     }
     if (!applyFilterForPath(ctx.request().path())) {
@@ -111,7 +159,7 @@ public class PreSecurityLogFilter {
     if (header == null) {
       return "";
     }
-    return "impersonating: " + header;
+    return header;
   }
 
 }

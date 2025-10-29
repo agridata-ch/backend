@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,7 +26,11 @@ import org.hibernate.annotations.SQLRestriction;
  * @CommentLastReviewed 2025-08-25
  */
 @Entity
-@Table(name = "audit_log")
+@Table(name = "audit_log",
+    indexes = {
+        @Index(name = "idx_audit_log_actor_id", columnList = "actor_id"),
+        @Index(name = "idx_audit_log_request_id", columnList = "request_id")
+    })
 @SQLDelete(sql = "UPDATE audit_log SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder

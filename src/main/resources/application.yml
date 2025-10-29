@@ -56,8 +56,24 @@ quarkus:
         - OPTIONS
         - PATCH
     port: 8060
+  micrometer:
+    enabled: true
+    binder:
+      jvm: true
+      system: true
+      http-server:
+        enabled: true
+
   log:
+    category:
+      "ch.agridata.common.filters":
+        min-level: TRACE
+      "ch.agridata.common.filters.RestClientLoggingFilter":
+        min-level: TRACE
     console:
+      json:
+        enabled: true
+        pretty-print: false
       format: >-
         %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %s [%c] (%t) requestId: %X{requestId}, userId: %X{agateUserId},  api: %X{api}%e%n
   oidc:

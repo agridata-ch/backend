@@ -1,3 +1,47 @@
+## [1.1.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.4...v1.1.0-rc.5) (2025-10-29)
+
+### Bug Fixes
+
+* **flakey-test:** increases test timeout ([f42e046](https://github.com/agridata-ch/backend/commit/f42e046d353d5b21624f749120f777f5e821da4b)), closes [DIGIB2-975](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-975)
+
+## [1.1.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.3...v1.1.0-rc.4) (2025-10-27)
+
+### Features
+
+* **maintenance:** add maintenance mode to ExceptionEnum ([c805375](https://github.com/agridata-ch/backend/commit/c80537545b041c27dc21c4419ccd05948da30d73)), closes [DIGIB2-261](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-261)
+
+## [1.1.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.2...v1.1.0-rc.3) (2025-10-23)
+
+### Features
+
+* **consent-request:** rewrites consent request create endpoint to better conform to Rest standards and allow to create consent requests per uid ([39c1c3e](https://github.com/agridata-ch/backend/commit/39c1c3eb94daae506c65fef7ccd7c27589f20b0c)), closes [DIGIB2-887](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-887)
+
+## [1.1.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2025-10-23)
+
+### Features
+
+* **indexes:** add database indexes ([8c4b371](https://github.com/agridata-ch/backend/commit/8c4b371936a0ba1c16ed8d5b26c9b5c42b23df76)), closes [DIGIB2-968](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-968)
+
+### Bug Fixes
+
+* **duration:** fixes case in rest client duration log / migrates to micrometer (as recommended by Quarkus) ([cf82f54](https://github.com/agridata-ch/backend/commit/cf82f54a25c27d68372efff80fe10661a672c78b)), closes [DIGIB2-958](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-958)
+
+## [1.1.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.1...v1.1.0-rc.1) (2025-10-15)
+
+### Features
+
+* **agis-logs:** add virtual threads, add json logging, improving agis logs ([785ba90](https://github.com/agridata-ch/backend/commit/785ba907d7f3100c2135ecc213ea4c67480f2336)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
+### Bug Fixes
+
+* **semantic-release:** triggers semenatic release after cleaning invalid tags ([082b1f1](https://github.com/agridata-ch/backend/commit/082b1f19664f06e40adaf7787da8dd47948c14f2)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
+## [1.1.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.0.1...v1.1.0-rc.1) (2025-10-15)
+
+### Features
+
+* **agis-logs:** add virtual threads, add json logging, improving agis logs ([785ba90](https://github.com/agridata-ch/backend/commit/785ba907d7f3100c2135ecc213ea4c67480f2336)), closes [DIGIB2-914](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-914)
+
 ## [1.0.1](https://github.com/agridata-ch/backend/compare/v1.0.0...v1.0.1) (2025-10-15)
 
 ### Bug Fixes

@@ -84,6 +84,9 @@ quarkus:
       port: 6999
       realm-path: agate_realm.json
   log:
+    console:
+      json:
+        enabled: false
     category:
       ch.agridata.common.filters:
         level: DEBUG
@@ -94,8 +97,10 @@ quarkus:
       io.quarkus.rest.client:
         level: DEBUG
       org.jboss.resteasy.reactive.client.logging:
-        level: DEBUG
+        level: WARN
       org.jboss.resteasy.reactive.server.logging:
+        level: WARN
+      ch.agridata.common.filters.RestClientLoggingFilter:
         level: DEBUG
     level: INFO
   oidc:

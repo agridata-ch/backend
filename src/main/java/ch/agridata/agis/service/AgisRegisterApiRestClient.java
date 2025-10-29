@@ -2,6 +2,7 @@ package ch.agridata.agis.service;
 
 import ch.agridata.agis.dto.AgisPersonFarmResponseType;
 import ch.agridata.agis.dto.AgisRegisterDataRequest;
+import ch.agridata.common.filters.RestClientLoggingFilter;
 import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteInboundFilter;
 import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteOutboundFilter;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
@@ -17,10 +18,11 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * Declares the REST client interface for the AGIS Register API. It defines the endpoint for submitting register data requests, with filters
  * for JSON field rewriting, error handling, and OIDC authentication.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-15
  */
 
 @RegisterRestClient(configKey = "agis-register-api")
+@RegisterProvider(RestClientLoggingFilter.class)
 @RegisterProvider(JsonFieldRewriteInboundFilter.class)
 @RegisterProvider(JsonFieldRewriteOutboundFilter.class)
 @RegisterProvider(AgisClientExceptionMapper.class)

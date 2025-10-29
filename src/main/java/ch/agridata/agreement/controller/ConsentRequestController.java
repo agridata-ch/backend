@@ -9,8 +9,10 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
+import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.service.ConsentRequestMutationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -38,7 +40,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 /**
  * Manages endpoints related to consent requests. It handles producer and consumer interactions with the consent lifecycle.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-10-23
  */
 
 @Path(PATH)
@@ -51,6 +53,7 @@ import org.jboss.resteasy.reactive.RestResponse;
         + "consumers can access consent requests linked to their data requests, "
         + "and admins have full access to all consent requests.")
 @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE})
+@RunOnVirtualThread
 public class ConsentRequestController {
 
   public static final String PATH = "/api/agreement/v1/consent-requests";
@@ -101,17 +104,16 @@ public class ConsentRequestController {
   }
 
   @POST
-  @Path("/{dataRequestId}/create")
   @Operation(
       operationId = "createConsentRequests",
-      description = "Creates consent requests for all accessible UIDs of the given data request ID, skipping any that already exist. "
-          + "Returns all consent requests associated with that data request and the user’s UIDs."
+      description = "Creates consent requests for given uids, provided the user actually has access to those uids."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
-  public List<ConsentRequestCreatedDto> createConsentRequests(@Valid @NotNull @PathParam("dataRequestId") UUID dataRequestId) {
-    return consentRequestMutationService.createConsentRequestForDataRequest(dataRequestId);
+  public List<ConsentRequestCreatedDto> createConsentRequests(
+      @Valid @NotNull @RequestBody List<CreateConsentRequestDto> createConsentRequestDtos) {
+    return consentRequestMutationService.createConsentRequestForDataRequest(createConsentRequestDtos);
   }
 
 }

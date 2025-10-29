@@ -10,6 +10,7 @@ import static ch.agridata.product.controller.DataProductController.PATH;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.service.DataProductService;
 import io.quarkus.security.Authenticated;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -34,6 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     description = "Enables retrieval of available data products that can be requested "
         + "and used by Users in the data sharing process.")
 @Authenticated
+@RunOnVirtualThread
 public class DataProductController {
   public static final String PATH = "/api/products/v1";
   private final DataProductService dataProductService;

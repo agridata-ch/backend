@@ -22,4 +22,17 @@ Content-Type: application/json
     })
 %}
 
+### get authorized uids
+GET {{baseUrl}}/user/v1/authorized-uids
+Authorization: Bearer {{$auth.token("producer-266")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get producer users", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+    })
+%}
+
+
 

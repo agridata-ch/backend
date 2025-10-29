@@ -53,7 +53,7 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH + "/1/kt-id-p/1/consent-requests",
         CONSUMER_BIO_SUISSE, CONSUMER_IP_SUISSE, ADMIN);
 
-    AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH + "/3da3a459-d3c2-48af-b8d0-02bc95146468/create",
+    AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH,
         PRODUCER_032);
   }
 

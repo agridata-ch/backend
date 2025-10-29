@@ -13,6 +13,7 @@ import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -50,6 +51,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
         + "Consumers can create, update, submit, and retrieve their own data requests, "
         + "while admins have full access to all data requests and their associated consent requests.")
 @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+@RunOnVirtualThread
 public class DataRequestController {
 
   public static final String PATH = "/api/agreement/v1/data-requests";

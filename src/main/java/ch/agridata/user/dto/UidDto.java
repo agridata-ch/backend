@@ -1,5 +1,6 @@
 package ch.agridata.user.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -12,7 +13,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(description = "Data transfer object representing an uid")
 @Builder
 public record UidDto(
-
+    @NotNull
     String uid,
     String name,
     LegalFormEnum legalFormCode

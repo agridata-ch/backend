@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.mapper.ConsentRequestMapperImpl;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,6 +59,15 @@ class ConsentRequestMutationServiceTest {
   @InjectMocks
   private ConsentRequestMutationService service;
 
+  @BeforeEach
+  void setup() {
+    when(sessionFactory.fromTransaction(any())).thenAnswer(invocation -> {
+      Function<Object, List<ConsentRequestCreatedDto>> transactionFunction = invocation.getArgument(0);
+      return transactionFunction.apply(null);
+
+    });
+  }
+
   @Test
   void givenActiveDataRequestAndAuthorizedUids_whenCreateConsentRequestForDataRequest_thenCreateConsentRequestsTransactional() {
     // Given
@@ -65,6 +75,8 @@ class ConsentRequestMutationServiceTest {
     String ktIdP = "test-kt-id";
 
     List<String> authorizedUids = List.of(UID1, UID2, UID3);
+    List<CreateConsentRequestDto> createConsentRequestDtos =
+        authorizedUids.stream().map(uid -> CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid(uid).build()).toList();
     List<UidDto> uidDtos = authorizedUids.stream().map(uid -> UidDto.builder().uid(uid).build()).toList();
 
     DataRequestEntity dataRequest = DataRequestEntity.builder()
@@ -76,8 +88,6 @@ class ConsentRequestMutationServiceTest {
     ConsentRequestEntity existingConsentRequest = ConsentRequestEntity.builder()
         .dataProducerUid(UID2)
         .build();
-    List<ConsentRequestEntity> existingConsentRequests = List.of(existingConsentRequest);
-
 
     ConsentRequestCreatedDto dto1 = ConsentRequestCreatedDto.builder()
         .id(UUID.randomUUID())
@@ -102,8 +112,12 @@ class ConsentRequestMutationServiceTest {
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(dataRequest));
     when(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser()).thenReturn(ktIdP);
     when(userApi.getAuthorizedUids(ktIdP)).thenReturn(uidDtos);
-    when(consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, authorizedUids))
-        .thenReturn(existingConsentRequests);
+    when(consentRequestRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
+        .thenReturn(Optional.of(existingConsentRequest));
+    when(consentRequestRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
+        .thenReturn(Optional.empty());
+    when(consentRequestRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
+        .thenReturn(Optional.empty());
     doAnswer(invocation -> {
       ConsentRequestEntity e = invocation.getArgument(0);
       // behave based on e.getDataProducerUid()
@@ -114,24 +128,15 @@ class ConsentRequestMutationServiceTest {
       }
       return null; // void method
     }).when(consentRequestRepository).persist(any(ConsentRequestEntity.class));
-    // Mock the session factory transaction
-    when(sessionFactory.fromTransaction(any())).thenAnswer(invocation -> {
-      Function<Object, List<ConsentRequestCreatedDto>> transactionFunction = invocation.getArgument(0);
-      return transactionFunction.apply(null);
-
-    });
 
     // When
-    List<ConsentRequestCreatedDto> result = service.createConsentRequestForDataRequest(dataRequestId);
+    List<ConsentRequestCreatedDto> result = service.createConsentRequestForDataRequest(createConsentRequestDtos);
 
     // Then
     assertThat(result)
         .hasSize(3)
         .containsExactlyInAnyOrder(dto1, dto2, dto3);
 
-
-    // Verify that only the UIDs without existing consent requests were processed
-    verify(consentRequestRepository).findByDataRequestIdAndDataProducerUids(dataRequestId, authorizedUids);
   }
 
   @Test
@@ -144,9 +149,11 @@ class ConsentRequestMutationServiceTest {
         .build();
 
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(inactiveDataRequest));
+    when(userApi.getAuthorizedUids(any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
-    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(dataRequestId))
+    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("test").build())))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining(dataRequestId.toString());
   }
@@ -156,11 +163,29 @@ class ConsentRequestMutationServiceTest {
     // Given
     UUID dataRequestId = UUID.randomUUID();
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.empty());
+    when(userApi.getAuthorizedUids(any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
-    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(dataRequestId))
+    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("test").build()))
+    )
         .isInstanceOf(NotFoundException.class)
         .hasMessage(dataRequestId.toString());
+  }
+
+  @Test
+  void givenNoAccessTouid_whenCreateConsentRequestForDataRequest_thenThrowIllegalArgumentException() {
+    // Given
+    UUID dataRequestId = UUID.randomUUID();
+
+
+    when(userApi.getAuthorizedUids(any())).thenReturn(List.of());
+
+    // When & Then
+    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("testuid").build())))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("testuid");
   }
 
 }
