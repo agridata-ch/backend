@@ -74,7 +74,9 @@ public class SchemaGeneratorMain {
    */
   private static void writeSchemaToFile(ObjectNode schema, String outputPath, ObjectMapper mapper)
       throws Exception {
-    File output = new File(outputPath);
+
+    String baseDir = System.getProperty("project.basedir");
+    File output = new File(baseDir, outputPath);
     output.getParentFile().mkdirs();
     Files.writeString(output.toPath(),
         mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));

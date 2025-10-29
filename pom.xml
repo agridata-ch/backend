@@ -308,6 +308,12 @@
                             </goals>
                             <configuration>
                                 <mainClass>ch.agridata.common.utils.SchemaGeneratorMain</mainClass>
+                                <systemProperties>
+                                    <property>
+                                        <key>project.basedir</key>
+                                        <value>${project.basedir}</value>
+                                    </property>
+                                </systemProperties>
                                 <arguments>
                                     <argument>ch.agridata.agreement.dto.DataRequestUpdateDto</argument>
                                 </arguments>
@@ -442,7 +448,8 @@
                                 <goal>generate</goal>
                             </goals>
                             <configuration>
-                                <inputSpec>src/main/resources/openapi/agis_register_api.yaml</inputSpec>
+                                <inputSpec>${project.basedir}/src/main/resources/openapi/agis_register_api.yaml
+                                </inputSpec>
                                 <generatorName>jaxrs-spec</generatorName>
                                 <modelNamePrefix>Agis</modelNamePrefix>
                                 <output>${project.build.directory}/generated-sources/openapi/agis-register-api</output>
