@@ -1,3 +1,9 @@
+## [1.1.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.4...v1.1.0-rc.5) (2025-10-29)
+
+### Bug Fixes
+
+* **flakey-test:** increases test timeout ([f42e046](https://github.com/agridata-ch/backend/commit/f42e046d353d5b21624f749120f777f5e821da4b)), closes [DIGIB2-975](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-975)
+
 ## [1.1.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.1.0-rc.3...v1.1.0-rc.4) (2025-10-27)
 
 ### Features

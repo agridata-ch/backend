@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.1.0-rc.4</version>
+    <version>1.1.0-rc.5</version>
 
     <properties>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
