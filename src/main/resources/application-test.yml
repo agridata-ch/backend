@@ -54,6 +54,8 @@ agridata:
       ]
       |
 quarkus:
+  http:
+    test-timeout: 60s
   console:
     color: true
   cxf:
