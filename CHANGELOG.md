@@ -1,3 +1,13 @@
+## [1.2.0](https://github.com/agridata-ch/backend/compare/v1.1.0...v1.2.0) (2025-10-31)
+
+### Features
+
+* **products:** improve names and description of data products ([7a4a27b](https://github.com/agridata-ch/backend/commit/7a4a27b9cebeca38d01b6fe1d3e374ff0956b821)), closes [DIGIB2-1004](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1004)
+
+### Bug Fixes
+
+* **logo:** disable logo upload functionality temporarily ([3fdcb30](https://github.com/agridata-ch/backend/commit/3fdcb3058be3d35adca1057e3a3e48e3319f066a))
+
 ## [1.2.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.2.0-rc.1...v1.2.0-rc.2) (2025-10-31)
 
 ### Bug Fixes
