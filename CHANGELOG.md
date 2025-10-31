@@ -1,3 +1,9 @@
+## [1.2.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.2.0-rc.1...v1.2.0-rc.2) (2025-10-31)
+
+### Bug Fixes
+
+* **logo:** disable logo upload functionality temporarily ([3fdcb30](https://github.com/agridata-ch/backend/commit/3fdcb3058be3d35adca1057e3a3e48e3319f066a))
+
 ## [1.2.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.1.0...v1.2.0-rc.1) (2025-10-31)
 
 ### Features
