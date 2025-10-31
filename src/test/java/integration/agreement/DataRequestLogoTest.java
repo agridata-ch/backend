@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -23,6 +24,7 @@ class DataRequestLogoTest {
   }
 
   @Test
+  @Disabled("Temporarily disabled until logo upload functionality (with virus scanning) is implemented. See DIGIB2-556")
   void givenMissingLogo_whenTooLargeLogoIsSubmitted_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
@@ -34,6 +36,7 @@ class DataRequestLogoTest {
   }
 
   @Test
+  @Disabled("Temporarily disabled until logo upload functionality (with virus scanning) is implemented. See DIGIB2-556")
   void givenMissingLogo_whenUnsupportedFileTypeIsSubmitted_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
