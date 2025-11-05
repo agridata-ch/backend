@@ -4,7 +4,7 @@
     "url": "/agis/register-data/1/register",
     "bodyPatterns": [
       {
-        "matches": "\\{\"farmSearchParameters\":\\{\"uid\":\"[^\"]+\"}}"
+        "matches": "\\{\"farmSearchParameters\":\\{\"uid\":\"[^\"]+\"},\"dataRequestType\":\\{\"relationDepth\":\"personToFarmRelations\"}}"
       }
     ]
   },
