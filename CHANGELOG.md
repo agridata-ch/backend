@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/agridata-ch/backend/compare/v1.2.0...v1.2.1) (2025-11-05)
+
+### Bug Fixes
+
+* **product:** change request template of data product ([6f6fdc3](https://github.com/agridata-ch/backend/commit/6f6fdc3db6035e5c11fa4591898362a3f1abce7d)), closes [DIGIB2-1015](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1015)
+
 ## [1.2.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.2.0...v1.2.1-rc.1) (2025-11-05)
 
 ### Bug Fixes
