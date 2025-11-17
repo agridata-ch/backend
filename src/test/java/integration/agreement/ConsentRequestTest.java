@@ -1,5 +1,7 @@
 package integration.agreement;
 
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE_860;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE_917;
 import static integration.testutils.TestUserEnum.PRODUCER_032;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +24,24 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class ConsentRequestTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
+
+  @Test
+  void givenProducer_whenGetConsentRequest_thenConsentRequestReturned() {
+    AuthTestUtils.requestAs(PRODUCER_032)
+        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE_860)
+        .then().statusCode(200)
+        .body("id", equalTo(IP_SUISSE_01_CHE_860.toString()))
+        .extract().as(new TypeRef<>() {
+        });
+  }
+
+  @Test
+  void givenProducer_whenGetConsentRequestOfDifferentUser_thenShouldReturnNotFound() {
+    AuthTestUtils.requestAs(PRODUCER_032)
+        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE_917)
+        .then().statusCode(404);
+
+  }
 
   @Test
   void givenProducer_whenConsentRequestAreRequestedWithoutExplicitUid_thenAllConsentRequestsReturned() {

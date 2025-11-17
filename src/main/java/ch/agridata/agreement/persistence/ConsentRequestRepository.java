@@ -86,4 +86,5 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
         .setParameter("since", since)
         .getResultList();
   }
+
 }

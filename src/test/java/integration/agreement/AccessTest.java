@@ -3,6 +3,7 @@ package integration.agreement;
 import static integration.testutils.AccessTestUtils.HttpMethod.GET;
 import static integration.testutils.AccessTestUtils.HttpMethod.POST;
 import static integration.testutils.AccessTestUtils.HttpMethod.PUT;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE_860;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
@@ -55,6 +56,9 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH,
         PRODUCER_032);
+
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE_860,
+        PRODUCER_032, SUPPORT);
   }
 
 }
