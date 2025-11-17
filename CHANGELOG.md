@@ -1,3 +1,14 @@
+## [1.3.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.2.1...v1.3.0-rc.1) (2025-11-17)
+
+### Features
+
+* **consent-request:** adds endpoint to get single consent request ([441741f](https://github.com/agridata-ch/backend/commit/441741f82f38bc56abb4ffec8c211f20aee1a58b)), closes [DIGIB2-1020](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1020)
+* **deps:** update actions/setup-node action to v6 ([f6a91f8](https://github.com/agridata-ch/backend/commit/f6a91f8f54bb6804d38532b81c5870fd9230edc9))
+* **deps:** update amazoncorretto docker tag to v25 ([21946ec](https://github.com/agridata-ch/backend/commit/21946ec55cfcf429dd40c443f88b3349559fd248))
+* **deps:** update dependency node to v24 ([0357c8b](https://github.com/agridata-ch/backend/commit/0357c8bbbdee08822313b210a474f4c7ece9f932))
+* **deps:** update renovatebot/github-action action to v44 ([5fdbcdd](https://github.com/agridata-ch/backend/commit/5fdbcdd104b9b7c41e6c0de84c9b55c29d34c889))
+* **openapi-gernation:** improves api generation at build time ([235f8c5](https://github.com/agridata-ch/backend/commit/235f8c52790747cc8c5a07fe5953006893609620)), closes [DIGIB2-995](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-995)
+
 ## [1.2.1](https://github.com/agridata-ch/backend/compare/v1.2.0...v1.2.1) (2025-11-05)
 
 ### Bug Fixes
