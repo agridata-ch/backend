@@ -85,6 +85,22 @@ public class ConsentRequestController {
     return consentRequestQueryService.getConsentRequestsAsCurrentDataProducer(dataProducerUid);
   }
 
+  @Path("/{id}")
+  @GET()
+  @Operation(
+      operationId = "getConsentRequest",
+      description = "Retrieves consent request with {id} if the authenticated data producer is assigned to it. "
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
+  public ConsentRequestProducerViewDto getConsentRequest(
+      @PathParam("id")
+      UUID id
+  ) {
+    return consentRequestQueryService.getConsentRequest(id);
+  }
+
   @PUT
   @Path("/{id}/status")
   @Operation(

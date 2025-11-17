@@ -63,6 +63,16 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
         .toList();
   }
 
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
+  public ConsentRequestProducerViewDto getConsentRequest(@NotNull UUID id) {
+    var uids = getAuthorizedUids(identity.getKtIdpOfUserOrImpersonatedUser());
+    return consentRequestRepository.findByDataProducerUids(uids).stream()
+        .filter(consentRequests -> consentRequests.getId().equals(id))
+        .map(this::toConsentRequestProducerViewDto)
+        .findFirst()
+        .orElseThrow(() -> new NotFoundException("Consent request with id " + id + " not found for current data producer"));
+  }
+
   @RolesAllowed(ADMIN_ROLE)
   public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestForKtIdP(UUID dataRequestId, String ktIdP) {
     var existingConsentRequests = getConsentRequestsOfDataRequest(dataRequestId);
@@ -143,4 +153,5 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
                 .build()))
         .toList();
   }
+
 }

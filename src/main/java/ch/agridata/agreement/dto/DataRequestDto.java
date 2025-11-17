@@ -25,6 +25,7 @@ public record DataRequestDto(
         description = "Unique identifier of the data request",
         examples = {"3fa85f64-5717-4562-b3fc-2c963f66afb7"}
     )
+    @NotNull
     UUID id,
 
     @Schema(
