@@ -95,6 +95,8 @@ quarkus:
     info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users 
     to discover, request, approve, and manage data sharing agreements."
     info-title: agridata.ch API
+    store-schema-directory: target/openapi
+    store-schema-file-name: agridata-api
   swagger-ui:
     theme: material
     always-include: true

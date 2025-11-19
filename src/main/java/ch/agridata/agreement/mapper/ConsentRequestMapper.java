@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ValueMapping;
 
 /**
@@ -20,7 +19,7 @@ import org.mapstruct.ValueMapping;
  * @CommentLastReviewed 2025-08-25
  */
 
-@Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "jakarta")
 public interface ConsentRequestMapper {
 
   static LocalDate toLocalDate(LocalDateTime dateTime) {
