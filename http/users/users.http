@@ -34,5 +34,24 @@ Content-Type: application/json
     })
 %}
 
+### set preferences
+PUT {{baseUrl}}/user/v1/preferences
+Authorization: Bearer {{$auth.token("producer-266")}}
+Content-Type: application/json
+
+{
+  "mainMenuOpened": false,
+  "activeUid": "123123",
+  "dismissedMigratedIds": [
+    "123123",
+    "12312323"
+  ]
+}
+
+> {%
+    client.test("Get producer users", function () {
+        client.assert(response.status === 201, "Expected Response status is 201, got: " + response.status)
+    })
+%}
 
 

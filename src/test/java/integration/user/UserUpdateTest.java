@@ -12,17 +12,23 @@ import static org.hamcrest.Matchers.not;
 
 import ch.agridata.user.controller.UserController;
 import ch.agridata.user.dto.UserInfoDto;
+import ch.agridata.user.dto.UserPreferencesDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class UserUpdateTest {
 
+  private final ObjectMapper mapper;
 
   @Test
   void givenAdminWithoutSomeAttributesSet_testUpdateUserData_isSuccessful() {
@@ -102,5 +108,29 @@ class UserUpdateTest {
         .body("ktIdP", not(emptyOrNullString()))
         .body("ktIdP", equalTo(PRODUCER_032.getKtIdP()));
 
+  }
+
+  @Test
+  void givenValidPreferences_whenUpdateUserPreferences_thenReturnCreated()
+      throws com.fasterxml.jackson.core.JsonProcessingException {
+    var preferences =
+        UserPreferencesDto.builder().activeUid("123").mainMenuOpened(true).dismissedMigratedIds(List.of("mig-1", "mig-2")).build();
+
+
+    AuthTestUtils.requestAs(PRODUCER_032)
+        .when()
+        .contentType(ContentType.JSON)
+        .body(mapper.writeValueAsString(preferences))
+        .put(UserController.PATH + "/preferences")
+        .then()
+        .statusCode(RestResponse.StatusCode.CREATED);
+
+    UserInfoDto userInfo = AuthTestUtils.requestAs(PRODUCER_032)
+        .when()
+        .get(UserController.PATH + "/user-info")
+        .then()
+        .statusCode(200).extract().as(UserInfoDto.class);
+
+    assertThat(userInfo.userPreferences()).usingRecursiveComparison().isEqualTo(preferences);
   }
 }
