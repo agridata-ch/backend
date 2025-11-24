@@ -13,8 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Represents a persisted user in the system. It includes identifiers, login details, email, and optional metadata.
@@ -77,4 +79,10 @@ public class UserEntity extends AuditableEntity {
 
   @Column(name = "last_login_date")
   private LocalDateTime lastLoginDate;
+
+  @Column(name = "user_preferences")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private UserEntityPreferencesDto userPreferences;
+
+
 }

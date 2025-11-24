@@ -13,6 +13,7 @@ import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.dto.UserInfoDto;
+import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.service.BurAuthorizationService;
 import ch.agridata.user.service.UidAuthorizationService;
 import ch.agridata.user.service.UserService;
@@ -22,6 +23,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -33,7 +35,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.ResponseStatus;
+import org.jboss.resteasy.reactive.RestResponse;
 
 /**
  * Handles user-related API requests. It provides operations to fetch authorized UIDs and BURs for a given user or producer,
@@ -106,6 +111,20 @@ public class UserController {
       return userService.getUserIdByKtIdP(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser());
     }
     return userService.updateUserData();
+  }
+
+  @PUT
+  @Path("/preferences")
+  @Operation(
+      operationId = "updateUserPreferences",
+      description = "updates preferences for the currently authenticated user.")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
+  @ResponseStatus(RestResponse.StatusCode.CREATED)
+  public void updateUserPreferences(@Valid @RequestBody UserPreferencesDto userPreferences) {
+    if (!agridataSecurityIdentity.isImpersonating()) {
+      userService.updateUserPreferences(userPreferences);
+    }
   }
 
   @GET
