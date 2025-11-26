@@ -1,3 +1,9 @@
+## [1.4.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.0-rc.1...v1.4.0-rc.2) (2025-11-26)
+
+### Bug Fixes
+
+* **test-controller:** prevents content type errors in frontend on reset. ([0432fee](https://github.com/agridata-ch/backend/commit/0432feeb6908ae133f477b0d8d0086ff1f4ef724))
+
 ## [1.4.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.3.0...v1.4.0-rc.1) (2025-11-24)
 
 ### Features
