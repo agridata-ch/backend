@@ -1,10 +1,12 @@
 package ch.agridata.testdata;
 
 import io.quarkus.security.Authenticated;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -40,28 +42,25 @@ public class TestDataController {
 
   @POST
   @Path("/reset")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Operation(operationId = "resetTestData")
   @Authenticated
-  public Response resetTestData() {
+  public void resetTestData() {
     if (!ENABLED_PROFILES.contains(activeProfile)) {
       throw new NotFoundException(activeProfile);
     }
     log.info("test data reset initiated.");
-    try {
-      Flyway flyway = Flyway.configure()
-          .dataSource(dataSource)
-          .locations(
-              Stream.concat(
-                  Stream.of(TEST_DATA_SCRIPT),
-                  defaultFlywayLocations.stream()
-              ).toArray(String[]::new))
-          .load();
+    Flyway flyway = Flyway.configure()
+        .dataSource(dataSource)
+        .locations(
+            Stream.concat(
+                Stream.of(TEST_DATA_SCRIPT),
+                defaultFlywayLocations.stream()
+            ).toArray(String[]::new))
+        .load();
 
-      flyway.migrate();
-      log.info("test data reset completed.");
-      return Response.ok("Manual migration executed").build();
-    } catch (Exception e) {
-      return Response.serverError().entity("Migration failed: " + e.getMessage()).build();
-    }
+    flyway.migrate();
+    log.info("test data reset completed.");
   }
 }
