@@ -1,3 +1,14 @@
+## [1.4.0](https://github.com/agridata-ch/backend/compare/v1.3.0...v1.4.0) (2025-11-27)
+
+### Features
+
+* **user-preferences:** adds user preferences ([4845e53](https://github.com/agridata-ch/backend/commit/4845e5348e499a8845d9e1d0e5f75003f4893574)), closes [DIGIB2-586](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-586)
+
+### Bug Fixes
+
+* **test-controller:** prevents content type errors in frontend on reset. ([0432fee](https://github.com/agridata-ch/backend/commit/0432feeb6908ae133f477b0d8d0086ff1f4ef724))
+* **test-data:** fix test data reset ([9058629](https://github.com/agridata-ch/backend/commit/9058629af897b6ff62e32f4547a38b0b80a27d87)), closes [DIGIB2-1069](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1069)
+
 ## [1.4.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.4.0-rc.2...v1.4.0-rc.3) (2025-11-27)
 
 ### Bug Fixes
