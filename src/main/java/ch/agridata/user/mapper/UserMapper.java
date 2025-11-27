@@ -2,7 +2,9 @@ package ch.agridata.user.mapper;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.user.dto.UserInfoDto;
+import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.persistence.UserEntity;
+import ch.agridata.user.persistence.UserEntityPreferencesDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -20,4 +22,7 @@ public interface UserMapper {
   PageResponseDto<UserInfoDto> toPagedUserInfoDto(PageResponseDto<UserEntity> pagedProducerEntities);
 
 
+  UserPreferencesDto toUserPreferencesDto(UserEntityPreferencesDto userEntityPreferences);
+
+  UserEntityPreferencesDto toUserPreferenceEntity(UserPreferencesDto dto);
 }

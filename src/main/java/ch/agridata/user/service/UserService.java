@@ -6,11 +6,13 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.dto.UserInfoDto;
+import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.mapper.UserMapper;
 import ch.agridata.user.persistence.UserRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 
@@ -62,5 +64,11 @@ public class UserService {
   public UserInfoDto getUserIdByKtIdP(String impersonatedKtIdP) {
     return userRepository.findByKtIdP(impersonatedKtIdP).map(userMapper::toUserInfoDto)
         .orElseThrow(() -> new IllegalArgumentException("No user found for ktIdP: " + impersonatedKtIdP));
+  }
+
+  @Transactional
+  public void updateUserPreferences(@Valid UserPreferencesDto userPreferences) {
+    var user = userRepository.findById(identity.getUserId());
+    user.setUserPreferences(userMapper.toUserPreferenceEntity(userPreferences));
   }
 }

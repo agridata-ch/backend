@@ -77,7 +77,11 @@ public record UserInfoDto(
         description = "Date and time when the user last logged into the system.",
         examples = {"2025-08-27T14:35:00"}
     )
-    LocalDateTime lastLoginDate
+    LocalDateTime lastLoginDate,
 
+    @Schema(
+        description = "Preferences of the user in the frontend"
+    )
+    UserPreferencesDto userPreferences
 ) {
 }
