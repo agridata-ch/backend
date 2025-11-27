@@ -1,12 +1,9 @@
 package ch.agridata.testdata;
 
 import io.quarkus.security.Authenticated;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -42,8 +39,6 @@ public class TestDataController {
 
   @POST
   @Path("/reset")
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   @Operation(operationId = "resetTestData")
   @Authenticated
   public void resetTestData() {
