@@ -1,3 +1,9 @@
+## [1.4.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.4.0-rc.2...v1.4.0-rc.3) (2025-11-27)
+
+### Bug Fixes
+
+* **test-data:** fix test data reset ([9058629](https://github.com/agridata-ch/backend/commit/9058629af897b6ff62e32f4547a38b0b80a27d87)), closes [DIGIB2-1069](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1069)
+
 ## [1.4.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.0-rc.1...v1.4.0-rc.2) (2025-11-26)
 
 ### Bug Fixes
