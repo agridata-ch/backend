@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/agridata-ch/backend/compare/v1.4.0...v1.4.1) (2025-12-01)
+
+### Bug Fixes
+
+* **agis:** add refresh-token-time-skew for agis api ([8e3c7e6](https://github.com/agridata-ch/backend/commit/8e3c7e674df9e24a814d56a81149e1b428228d3e)), closes [DIGIB2-1071](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1071)
+
 ## [1.4.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.0...v1.4.1-rc.1) (2025-12-01)
 
 ### Bug Fixes
