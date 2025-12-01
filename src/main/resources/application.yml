@@ -84,6 +84,7 @@ quarkus:
     agis-api:
       grant:
         type: CLIENT
+      refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
     agis-register-api:
       key-store-type: PKCS12
