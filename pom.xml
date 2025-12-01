@@ -13,8 +13,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.28.1</quarkus.platform.version>
-        <quarkus.cxf.version>3.27.0</quarkus.cxf.version>
+        <quarkus.platform.version>3.30.1</quarkus.platform.version>
+        <quarkus.cxf.version>3.30.0</quarkus.cxf.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
@@ -257,7 +257,7 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>${quarkus.platform.group-id}</groupId>
+                    <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${quarkus-maven-plugin.version}</version>
                     <extensions>true</extensions>
@@ -486,7 +486,7 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>${quarkus.platform.group-id}</groupId>
+                <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
             </plugin>
             <plugin>
