@@ -3,6 +3,7 @@ package ch.agridata.user.filters;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.persistence.UserEntity;
 import ch.agridata.user.persistence.UserRepository;
+import ch.agridata.user.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,7 @@ public class UserInitializerFilter implements ContainerRequestFilter {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final UserRepository userRepository;
   private final EntityManager entityManager;
+  private final UserService userService;
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
@@ -41,11 +43,10 @@ public class UserInitializerFilter implements ContainerRequestFilter {
     var newUser = UserEntity.builder()
         .id(agridataSecurityIdentity.getUserId())
         .agateLoginId(agridataSecurityIdentity.getAgateLoginId())
-        .ktIdP(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser())
-        .email(agridataSecurityIdentity.getEmail())
         .build();
 
     persist(newUser);
+    userService.updateUserData();
   }
 
   /**
@@ -56,8 +57,8 @@ public class UserInitializerFilter implements ContainerRequestFilter {
   @Transactional
   void persist(UserEntity user) {
     entityManager.createNativeQuery("""
-            INSERT INTO users (id, archived, modified_at, created_at, created_by, modified_by, agate_login_id, kt_id_p, email)
-            VALUES (:id, :archived, :modifiedAt, :createdAt, :createdBy, :modifiedBy, :agateLoginId, :ktIdP, :email)
+            INSERT INTO users (id, archived, modified_at, created_at, created_by, modified_by, agate_login_id)
+            VALUES (:id, :archived, :modifiedAt, :createdAt, :createdBy, :modifiedBy, :agateLoginId)
             ON CONFLICT (id) DO NOTHING
             """)
         .setParameter("id", user.getId())
@@ -67,8 +68,6 @@ public class UserInitializerFilter implements ContainerRequestFilter {
         .setParameter("createdBy", user.getId())
         .setParameter("modifiedBy", user.getId())
         .setParameter("agateLoginId", user.getAgateLoginId())
-        .setParameter("ktIdP", user.getKtIdP())
-        .setParameter("email", user.getEmail())
         .executeUpdate();
   }
 }
