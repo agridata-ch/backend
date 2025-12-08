@@ -1,3 +1,9 @@
+## [1.4.2-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.1...v1.4.2-rc.1) (2025-12-08)
+
+### Bug Fixes
+
+* **users:** add all user data when creating a new user ([11d6715](https://github.com/agridata-ch/backend/commit/11d6715e92140305107f34006b4c2891787b23be)), closes [DIGIB2-1063](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1063)
+
 ## [1.4.1](https://github.com/agridata-ch/backend/compare/v1.4.0...v1.4.1) (2025-12-01)
 
 ### Bug Fixes
