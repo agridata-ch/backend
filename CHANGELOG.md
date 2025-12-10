@@ -1,3 +1,9 @@
+## [1.4.2-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.2-rc.1...v1.4.2-rc.2) (2025-12-10)
+
+### Bug Fixes
+
+* **image:** change image to alpine linux ([1c343ee](https://github.com/agridata-ch/backend/commit/1c343eed7d0217742b87f3bd8caf83551b540e1f)), closes [DIGIB2-1084](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1084)
+
 ## [1.4.2-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.1...v1.4.2-rc.1) (2025-12-08)
 
 ### Bug Fixes
