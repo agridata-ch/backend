@@ -172,6 +172,20 @@ class DataRequestTest {
   }
 
   @Test
+  void givenTooLongFields_whenCreateDraft_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
+        .title(new DataRequestTitleDto(
+            "test more than 255".repeat(100),
+            "abc",
+            "abc"))
+        .products(List.of())
+        .build();
+
+    createDataRequest(invalidDto).then()
+        .statusCode(400);
+  }
+
+  @Test
   void givenMissingSubmitFields_whenSubmit_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
@@ -193,6 +207,19 @@ class DataRequestTest {
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(IN_REVIEW.name()));
+  }
+
+  @Test
+  void givenValidDraftAndAdmin_whenSubmitStateChange_thenReturnBadRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    updateDataRequest(id, getDataRequestDto().build())
+        .then()
+        .statusCode(200);
+
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, ADMIN)
+        .then()
+        .statusCode(400);
   }
 
 }

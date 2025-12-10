@@ -48,9 +48,14 @@ public class DataRequestTestFactory {
 
   @SneakyThrows
   public static Response createDataRequest() {
+    return createDataRequest(getPartialDataRequestUpdateDtoBuilder().build());
+  }
+
+  @SneakyThrows
+  public static Response createDataRequest(DataRequestUpdateDto dto) {
     return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
         .contentType(JSON)
-        .body(MAPPER.writeValueAsString(getPartialDataRequestUpdateDtoBuilder().build()))
+        .body(MAPPER.writeValueAsString(dto))
         .when()
         .post(DataRequestController.PATH);
   }
