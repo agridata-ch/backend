@@ -126,7 +126,7 @@ public class DataRequestController {
   @Consumes(MediaType.APPLICATION_JSON)
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   @RolesAllowed(CONSUMER_ROLE)
-  public DataRequestDto createDataRequestDraft(DataRequestUpdateDto dataRequestDto) {
+  public DataRequestDto createDataRequestDraft(@Valid DataRequestUpdateDto dataRequestDto) {
     return dataRequestMutationService.createDataRequestDraft(dataRequestDto);
   }
 
