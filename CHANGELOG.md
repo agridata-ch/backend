@@ -1,3 +1,9 @@
+## [1.4.3-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.2...v1.4.3-rc.1) (2025-12-11)
+
+### Bug Fixes
+
+* **dataRequest:** Prevent submission of data requests with values that don't adhere to size constraints ([1cf3636](https://github.com/agridata-ch/backend/commit/1cf363607befe27618a6cb47bc5345b0ae02502c)), closes [DIGIB2-1051](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1051)
+
 ## [1.4.2](https://github.com/agridata-ch/backend/compare/v1.4.1...v1.4.2) (2025-12-10)
 
 ### Bug Fixes
