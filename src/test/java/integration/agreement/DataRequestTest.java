@@ -30,6 +30,7 @@ import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @RequiredArgsConstructor
 class DataRequestTest {
+  private static final UUID NONEXISTENT_PRODUCT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
   private final Flyway flyway;
   private final DataRequestRepository dataRequestRepository;
 
@@ -121,6 +123,28 @@ class DataRequestTest {
         .body("dataConsumerLegalName", notNullValue());
   }
 
+  @Test
+  void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(NONEXISTENT_PRODUCT_UUID))
+        .build();
+    createDataRequest(invalidDto).then().statusCode(400);
+  }
+
+  @Test
+  void givenInvalidProducts_whenUpdateDraft_thenReturnInvalidRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto firstUpdate = getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(NONEXISTENT_PRODUCT_UUID))
+        .build();
+
+    updateDataRequest(id, firstUpdate)
+        .then()
+        .statusCode(400);
+
+  }
 
   @Test
   void givenChangingProducts_whenUpdateDraft_thenReturnUpdatedRequest() {

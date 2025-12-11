@@ -28,13 +28,12 @@ public class DataRequestTestUtils {
     return entity;
   }
 
-  public static DataRequestUpdateDto buildUpdateDto() {
+  public static DataRequestUpdateDto.DataRequestUpdateDtoBuilder updateDtoBuilder() {
     return DataRequestUpdateDto.builder()
         .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
         .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
         .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
-        .products(List.of(UUID.randomUUID()))
-        .build();
+        .products(List.of(UUID.randomUUID()));
   }
 
   public static DataProductDto buildDataProductDto(UUID id) {
