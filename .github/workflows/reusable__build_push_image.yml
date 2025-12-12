@@ -41,7 +41,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Restore Maven Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ needs.checkstyle.outputs.cache-date }}-${{ hashFiles('**/pom.xml') }}
