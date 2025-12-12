@@ -121,6 +121,28 @@ class DataRequestTest {
         .body("dataConsumerLegalName", notNullValue());
   }
 
+  @Test
+  void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(TestDataIdentifiers.DataProduct.UUID_00000000.uuid()))
+        .build();
+    createDataRequest(invalidDto).then().statusCode(400);
+  }
+
+  @Test
+  void givenInvalidProducts_whenUpdateDraft_thenReturnInvalidRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto firstUpdate = getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(TestDataIdentifiers.DataProduct.UUID_00000000.uuid(), TestDataIdentifiers.DataProduct.UUID_A795D0B0.uuid()))
+        .build();
+
+    updateDataRequest(id, firstUpdate)
+        .then()
+        .statusCode(400);
+
+  }
 
   @Test
   void givenChangingProducts_whenUpdateDraft_thenReturnUpdatedRequest() {

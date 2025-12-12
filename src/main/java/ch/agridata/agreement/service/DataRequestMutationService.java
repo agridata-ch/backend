@@ -8,6 +8,7 @@ import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.product.api.DataProductApi;
 import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Implements mutations on data requests. It ensures consistent state changes and enforces validation.
@@ -31,6 +33,7 @@ public class DataRequestMutationService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final UidRegisterServiceApi uidRegisterServiceApi;
   private final HumanFriendlyIdService humanFriendlyIdService;
+  private final DataProductApi dataProductApi;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
@@ -60,9 +63,24 @@ public class DataRequestMutationService {
 
   private DataRequestDto updateEntityWithDto(DataRequestUpdateDto dataRequestDto,
                                              DataRequestEntity entity) {
+    validateDataProducts(dataRequestDto);
     dataRequestMapper.updateEntity(dataRequestDto, entity);
     dataRequestRepository.persist(entity);
     return dataRequestMapper.toDto(entity);
   }
 
+  private void validateDataProducts(@NotNull DataRequestUpdateDto dataRequestDto) {
+    if (dataRequestDto.products() == null) {
+      return;
+    }
+    for (UUID product : dataRequestDto.products()) {
+      try {
+        dataProductApi.getProductById(product);
+      } catch (NotFoundException e) {
+        throw new IllegalStateException(
+            "Cannot process request: data product " + product + " not found", e
+        );
+      }
+    }
+  }
 }

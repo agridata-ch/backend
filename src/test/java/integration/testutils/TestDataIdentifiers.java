@@ -90,6 +90,7 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_64E39DF0 = id("64e39df0-2e56-4204-9c44-a43e1e26a2e8");
     public static final Identifier<DataProductEntity> UUID_1DAD9F91 = id("1dad9f91-30d8-45c9-8c82-ad72f4cb22e7");
     public static final Identifier<DataProductEntity> UUID_46F8A883 = id("46f8a883-da7c-49b3-b986-10a24b1e09ef");
+    public static final Identifier<DataProductEntity> UUID_00000000 = id("00000000-0000-0000-0000-000000000000");
   }
 
   public static class Uid {
