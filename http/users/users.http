@@ -1,6 +1,6 @@
 ### get self
 GET {{baseUrl}}/user/v1/user-info
-Authorization: Bearer {{$auth.token("producer-266")}}
+Authorization: Bearer {{$auth.token("producer-a")}}
 Content-Type: application/json
 
 > {%
@@ -24,7 +24,7 @@ Content-Type: application/json
 
 ### get authorized uids
 GET {{baseUrl}}/user/v1/authorized-uids
-Authorization: Bearer {{$auth.token("producer-266")}}
+Authorization: Bearer {{$auth.token("producer-a")}}
 Content-Type: application/json
 
 > {%
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 ### set preferences
 PUT {{baseUrl}}/user/v1/preferences
-Authorization: Bearer {{$auth.token("producer-266")}}
+Authorization: Bearer {{$auth.token("producer-a")}}
 Content-Type: application/json
 
 {

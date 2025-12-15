@@ -25,53 +25,53 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_C661EA48.uuid().toString(),
-            Uid.CHE948,
-            ConsentRequest.BIO_SUISSE_01_CHE_948.uuid().toString()),
+            Uid.CHE102000002.name(),
+            ConsentRequest.BIO_SUISSE_01_CHE102000002.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_147E8C40.uuid().toString(),
-            Uid.CHE948,
-            ConsentRequest.BIO_SUISSE_01_CHE_948.uuid().toString()),
+            Uid.CHE102000002.name(),
+            ConsentRequest.BIO_SUISSE_01_CHE102000002.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_46F8A883.uuid().toString(),
-            Uid.CHE948,
-            ConsentRequest.BIO_SUISSE_01_CHE_948.uuid().toString()),
+            Uid.CHE102000002.name(),
+            ConsentRequest.BIO_SUISSE_01_CHE102000002.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_085E4B72.uuid().toString(),
-            Uid.CHE278,
-            ConsentRequest.BIO_SUISSE_02_CHE_278.uuid().toString()),
+            Uid.CHE103000001.name(),
+            ConsentRequest.BIO_SUISSE_02_CHE103000001.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_A795D0B0.uuid().toString(),
-            Uid.CHE278,
-            ConsentRequest.BIO_SUISSE_02_CHE_278.uuid().toString()),
+            Uid.CHE103000001.name(),
+            ConsentRequest.BIO_SUISSE_02_CHE103000001.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_0A808700.uuid().toString(),
-            Uid.CHE299,
-            ConsentRequest.IP_SUISSE_02_CHE_299.uuid().toString()),
+            Uid.CHE101000001.name(),
+            ConsentRequest.IP_SUISSE_02_CHE101000001.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_EF4F42DD.uuid().toString(),
-            Uid.CHE299,
-            ConsentRequest.IP_SUISSE_02_CHE_299.uuid().toString()),
+            Uid.CHE101000001.name(),
+            ConsentRequest.IP_SUISSE_02_CHE101000001.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_2375219C.uuid().toString(),
-            Uid.CHE299,
-            ConsentRequest.IP_SUISSE_02_CHE_299.uuid().toString()),
+            Uid.CHE101000001.name(),
+            ConsentRequest.IP_SUISSE_02_CHE101000001.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_64E39DF0.uuid().toString(),
-            Uid.CHE142,
-            ConsentRequest.IP_SUISSE_01_CHE_142.uuid().toString()),
+            Uid.CHE102000002.name(),
+            ConsentRequest.IP_SUISSE_01_CHE102000002.uuid().toString()),
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_1DAD9F91.uuid().toString(),
-            Uid.CHE299,
-            ConsentRequest.IP_SUISSE_02_CHE_299.uuid().toString())
+            Uid.CHE101000001.name(),
+            ConsentRequest.IP_SUISSE_02_CHE101000001.uuid().toString())
     );
   }
 

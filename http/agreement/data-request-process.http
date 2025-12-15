@@ -278,7 +278,7 @@ Content-Type: application/json
 
 ### Create a new consent request
 POST {{baseUrl}}/agreement/v1/consent-requests/{{dataRequestId}}/create
-Authorization: Bearer {{$auth.token("producer-037")}}
+Authorization: Bearer {{$auth.token("producer-b")}}
 Content-Type: application/json
 
 > {%

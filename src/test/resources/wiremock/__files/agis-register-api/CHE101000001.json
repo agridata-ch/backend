@@ -1,0 +1,225 @@
+{
+  "relationDepth": "allRelations",
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 4,
+    "totalHits": 4
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": [
+        {
+          "ktIdP": "FLXXA0001",
+          "agisIdP": 70334993,
+          "uid": "CHE101000001",
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXA0002",
+                "agisIdB": 10377021,
+                "ber": "A99910002",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "foundationDate": 1959,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Erika",
+                  "lastName": "Musterfrau",
+                  "mrMrsExtended": "1"
+                },
+                "addressInformation": {
+                  "street": "Beispielgasse",
+                  "houseNumber": "42",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "erika.musterfrau@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000003"
+              },
+              {
+                "phoneNumber": "0000000004"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "personRelations": {
+      "person": []
+    },
+    "relevantFarms": {
+      "farm": [
+        {
+          "ktIdB": "FLXXA0002",
+          "agisIdB": 10377021,
+          "ber": "A99910002",
+          "uid": "CHE101000001",
+          "farmChildRelations": {
+            "farmChildRelation": [
+              {
+                "ktIdB": "FLXXA0003",
+                "agisIdB": 70334993,
+                "ber": "A99910003",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              },
+              {
+                "ktIdB": "FLXXA0004",
+                "agisIdB": 70334993,
+                "ber": "A99910004",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              },
+              {
+                "ktIdB": "FLXXA0005",
+                "agisIdB": 70334993,
+                "ber": "A99910005",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXA0001",
+                "agisIdP": 70334993,
+                "uid": "CHE101000001",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "farmType": "01",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Musterfrau Erika",
+            "street": "Beispielgasse",
+            "houseNumber": "42",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2698770,
+          "coordinatesNorth": 1181860,
+          "altitude": 500,
+          "agriculturalZone": "51",
+          "agriculturalArea": "02",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXA0003",
+          "agisIdB": 10377022,
+          "ber": "A99910003",
+          "uid": "CHE101000001",
+          "atd": 1010003,
+          "farmParentRelations": {
+            "farmParentRelation": [
+              {
+                "ktIdB": "FLXXA0002",
+                "agisIdB": 0,
+                "ber": "A99910002",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmType": "02",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Musterfrau Erika",
+            "street": "Beispielgasse 42",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2501344,
+          "coordinatesNorth": 1146927,
+          "altitude": 413,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXA0004",
+          "agisIdB": 10377023,
+          "ber": "A99910004",
+          "uid": "CHE101000001",
+          "atd": 1010004,
+          "farmType": "02",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Musterfrau Erika",
+            "street": "Beispielgasse",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2613024,
+          "coordinatesNorth": 1199856,
+          "altitude": 600,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXA0005",
+          "agisIdB": 10377024,
+          "ber": "A99910005",
+          "uid": "CHE101000001",
+          "atd": 1010005,
+          "farmType": "02",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Musterfrau Erika",
+            "street": "Beispielstrasse",
+            "houseNumber": "55",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2710414,
+          "coordinatesNorth": 1242200,
+          "altitude": 500,
+          "agriculturalZone": "41",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    },
+    "farmRelations": {
+      "farm": []
+    }
+  }
+}

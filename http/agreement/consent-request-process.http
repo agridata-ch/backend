@@ -1,6 +1,6 @@
 ### get request as producer
-GET {{baseUrl}}/agreement/v1/consent-requests?dataProducerUid=CHE***278
-Authorization: Bearer {{$auth.token("producer-266")}}
+GET {{baseUrl}}/agreement/v1/consent-requests?dataProducerUid=CHE101000001
+Authorization: Bearer {{$auth.token("producer-a")}}
 Content-Type: application/json
 
 > {%
@@ -24,17 +24,17 @@ Content-Type: application/json
 
 ### Create a new consent request
 POST {{baseUrl}}/agreement/v1/consent-requests
-Authorization: Bearer {{$auth.token("producer-037")}}
+Authorization: Bearer {{$auth.token("producer-b")}}
 Content-Type: application/json
 
 [
   {
     "dataRequestId": "3da3a459-d3c2-48af-b8d0-02bc95146468",
-    "uid": "CHE***553"
+    "uid": "CHE102000001"
   },
   {
     "dataRequestId": "3da3a459-d3c2-48af-b8d0-02bc95146468",
-    "uid": "CHE***860"
+    "uid": "CHE102000002"
   }
 ]
 
