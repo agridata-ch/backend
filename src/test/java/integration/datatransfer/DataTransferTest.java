@@ -1,9 +1,5 @@
 package integration.datatransfer;
 
-import static integration.testutils.TestDataIdentifiers.Uid.CHE142;
-import static integration.testutils.TestDataIdentifiers.Uid.CHE278;
-import static integration.testutils.TestDataIdentifiers.Uid.CHE299;
-import static integration.testutils.TestDataIdentifiers.Uid.CHE860;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -12,6 +8,7 @@ import ch.agridata.datatransfer.controller.DataTransferController;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.ConsentRequest;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -24,12 +21,12 @@ class DataTransferTest {
   void givenAcceptedConsentRequest_whenProductRequested_thenProductReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .pathParam("productId", TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())
-        .queryParam("uid", CHE278)
+        .queryParam("uid", Uid.CHE103000001)
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(200)
         .body("dataTransferRequestId", notNullValue())
-        .body("consentRequestId", equalTo(ConsentRequest.BIO_SUISSE_02_CHE_278.toString()))
+        .body("consentRequestId", equalTo(ConsentRequest.BIO_SUISSE_02_CHE103000001.toString()))
         .body("data.encryptedDataOfProduct", equalTo(TestDataIdentifiers.DataProduct.UUID_085E4B72.toString()));
   }
 
@@ -37,13 +34,13 @@ class DataTransferTest {
   void givenOpenConsentRequest_whenProductRequested_thenExceptionThrown() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .pathParam("productId", TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())
-        .queryParam("uid", CHE860)
+        .queryParam("uid", Uid.CHE102000002)
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(400)
         .body("debugMessage", equalTo(String.format("no consent for uid: %s and productId: %s found",
-            CHE860,
+            Uid.CHE102000002,
             TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())));
   }
 
@@ -51,13 +48,13 @@ class DataTransferTest {
   void givenDeclinedConsentRequest_whenProductRequested_thenExceptionThrown() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .pathParam("productId", TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())
-        .queryParam("uid", CHE142)
+        .queryParam("uid", Uid.CHE102000001)
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(400)
         .body("debugMessage", equalTo(String.format("no consent for uid: %s and productId: %s found",
-            CHE142,
+            Uid.CHE102000001,
             TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())));
   }
 
@@ -66,13 +63,13 @@ class DataTransferTest {
   void givenNoExistingConsentRequest_whenProductRequested_thenExceptionThrown() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .pathParam("productId", TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())
-        .queryParam("uid", CHE299)
+        .queryParam("uid", Uid.CHE101000001)
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(400)
         .body("debugMessage", equalTo(String.format("no consent for uid: %s and productId: %s found",
-            CHE299,
+            Uid.CHE101000001,
             TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())));
   }
 
@@ -89,7 +86,7 @@ class DataTransferTest {
   void givenNoYear_whenProductRequested_thenBadRequest() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .pathParam("productId", TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid())
-        .queryParam("uid", CHE278)
+        .queryParam("uid", Uid.CHE103000001)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(400);
   }

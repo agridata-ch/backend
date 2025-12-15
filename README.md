@@ -59,22 +59,18 @@ git config --local core.hooksPath hooks && chmod +x hooks/*
 
 These are predefined users in the local agate realm:
 
-| Username     | Password | Roles                               | KT_ID_P | loginid  |
-|--------------|----------|-------------------------------------|---------|----------|
-| producer-032 | secret   | agridata.ch.Agridata_Einwilliger    | ***032  | 3477562  |
-| producer-037 | secret   | agridata.ch.Agridata_Einwilliger    | ***037  | 3477563  |
-| producer-081 | secret   | agridata.ch.Agridata_Einwilliger    | ***081  | 3477561  |
-| producer-266 | secret   | agridata.ch.Agridata_Einwilliger    | ***266  | 3477560  |
-| producer-307 | secret   | agridata.ch.Agridata_Einwilliger    | ***307  | 3477558  |
-| producer-401 | secret   | agridata.ch.Agridata_Einwilliger    | ***401  | 3477564  |
-| producer-451 | secret   | agridata.ch.Agridata_Einwilliger    | ***451  | 3477565  |
-| producer-479 | secret   | agridata.ch.Agridata_Einwilliger    | ***479  | 3477559  |
-| producer-724 | secret   | agridata.ch.Agridata_Einwilliger    | ***724  | 3477557  |
-| consumer     | secret   | agridata.ch.Agridata_Datenbezueger  |         | 20154600 |
-| provider     | secret   | agridata.ch.Agridata_Datenanbieters |         | 3477553  |
-| admin        | secret   | agridata.ch.Agridata_Admin          |         | 3477554  |
-| support      | secret   | agridata.ch.Agridata_Support        |         | 3477555  |
-| guest        | secret   | -                                   | -       | -        |
+| Username     | Password | Roles                               | KT_ID_P   | loginid  |
+|--------------|----------|-------------------------------------|-----------|----------|
+| producer-a   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXA0001 | 3477580  |
+| producer-b   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXB0001 | 3477581  |
+| producer-b-3 | secret   | agridata.ch.Agridata_Einwilliger    | FLXXB0003 | 3477582  |
+| producer-c   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXC0001 | 3477583  |
+| producer-d   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXD0001 | 3477584  |
+| consumer     | secret   | agridata.ch.Agridata_Datenbezueger  |           | 20154600 |
+| provider     | secret   | agridata.ch.Agridata_Datenanbieters |           | 3477553  |
+| admin        | secret   | agridata.ch.Agridata_Admin          |           | 3477554  |
+| support      | secret   | agridata.ch.Agridata_Support        |           | 3477555  |
+| guest        | secret   | -                                   | -         | -        |
 
 ## Managing Keycloak Configuration
 

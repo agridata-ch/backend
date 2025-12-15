@@ -1,7 +1,7 @@
 package integration.agreement;
 
 import static ch.agridata.agreement.dto.ConsentRequestStateEnum.NOT_CREATED;
-import static integration.testutils.TestDataIdentifiers.Uid.CHE435;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE102000001;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static java.util.Collections.emptyList;
@@ -43,11 +43,11 @@ class ConsentRequestsOfDataRequestTest {
     assertThat(consentRequests).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(
         List.of(
             buildDto(TestDataLoader.of(consentRequestRepository).load(
-                ConsentRequest.IP_SUISSE_01_CHE_860)),
+                ConsentRequest.IP_SUISSE_01_CHE102000002)),
             ConsentRequestConsumerViewDto.builder()
                 .id(null)
                 .stateCode(NOT_CREATED)
-                .dataProducerUid(CHE435)
+                .dataProducerUid(CHE102000001.name())
                 .build()));
   }
 
@@ -76,8 +76,8 @@ class ConsentRequestsOfDataRequestTest {
 
     assertThat(consentRequests).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(
         TestDataLoader.of(consentRequestRepository).load(
-                ConsentRequest.BIO_SUISSE_01_CHE_435,
-                ConsentRequest.BIO_SUISSE_01_CHE_860).stream()
+                ConsentRequest.BIO_SUISSE_01_CHE102000001,
+                ConsentRequest.BIO_SUISSE_01_CHE102000002).stream()
             .map(this::buildDto)
             .toList());
   }

@@ -4,7 +4,7 @@ TRUNCATE TABLE users, data_request, consent_request, audit_log, data_request_dat
 -- data_request
 -- ===============================================
 INSERT INTO data_request (id, human_friendly_id,  archived,  created_at,  modified_at,  data_consumer_uid,  title,  description,  purpose,  state_code, submission_date, data_consumer_city,  data_consumer_country,  data_consumer_legal_name,  data_consumer_display_name,  data_consumer_street,  data_consumer_zip, contact_phone_number, contact_email_address, target_group, valid_redirect_uri_regex)
- VALUES
+VALUES
 ('3da3a459-d3c2-48af-b8d0-02bc95146468','SV29', false, NOW(), NOW(), 'CHE101708094', jsonb_build_object('de','Basisdaten für Zertifizierung Bio Suisse','fr','Données de base pour la certification Bio Suisse','it','Dati di base per la certificazione Bio Suisse'), jsonb_build_object('de','Übermittlung von Personen- und Betriebsdaten zur Prüfung der Grundvoraussetzungen für eine Bio Suisse-Zertifizierung.','fr','Transmission des données personnelles et d''exploitation pour vérifier les conditions de base de la certification Bio Suisse.','it','Trasmissione dei dati personali e aziendali per la verifica dei requisiti base per la certificazione Bio Suisse.'), jsonb_build_object('de','Vereinfachung der Erstprüfung im Zertifizierungsprozess und Reduktion manueller Dateneingabe.','fr','Simplification du contrôle initial dans le processus de certification et réduction de la saisie manuelle des données.','it','Semplificazione del controllo iniziale nel processo di certificazione e riduzione dell’inserimento manuale dei dati.'), 'ACTIVE', '2025-03-11 09:27:55'::timestamp, 'Basel', 'CH', 'INTERNATIONAL CERTIFICATION BIO SUISSE AG', 'Bio Suisse', 'Peter Merian-Str. 34', '4052', '+41 61 204 66 66', 'bio@bio-suisse.ch', 'Alle Bio Suisse Produzenten', '^https:\/\/([A-Za-z0-9-]+\.)*bio-suisse\.[A-Za-z0-9.-]+(\/.*)?$'),
 ('81ae8571-9497-413a-99c5-237e72621ca7', 'TE33',false, NOW(), NOW(), 'CHE101708094', jsonb_build_object('de','Tierdaten zur Kontrolle der Richtlinienkonformität','fr','Données animales pour le contrôle de conformité aux directives','it','Dati sugli animali per il controllo della conformità alle direttive'), jsonb_build_object('de','Übermittlung von Tierdaten zur Prüfung der Haltungsform, Fütterung und Tieranzahl gemäss den Bio Suisse-Richtlinien.','fr','Transmission de données sur les animaux pour vérifier le mode d''élevage, l''alimentation et le nombre d’animaux selon les directives Bio Suisse.','it','Trasmissione dei dati relativi agli animali per verificare il tipo di allevamento, l’alimentazione e il numero di capi secondo le direttive Bio Suisse.'), jsonb_build_object('de','Sicherstellung der Einhaltung der Tierwohl- und Haltungsanforderungen im Bio Suisse-System.','fr','Assurer le respect des exigences en matière de bien-être animal et d’élevage dans le système Bio Suisse.','it','Garantire il rispetto dei requisiti relativi al benessere animale e all’allevamento nel sistema Bio Suisse.'), 'IN_REVIEW','2025-02-08 14:22:23'::timestamp, 'Basel', 'CH', 'INTERNATIONAL CERTIFICATION BIO SUISSE AG', 'Bio Suisse', 'Peter Merian-Str. 34', '4052', '+41 61 204 66 66', 'bio@bio-suisse.ch', 'Alle Bio Suisse Produzenten','^https:\/\/([A-Za-z0-9-]+\.)*bio-suisse\.[A-Za-z0-9.-]+(\/.*)?$'),
 ('98a35e61-0162-4986-9e9e-ee5c65f86316', 'KP76',false, NOW(), NOW(), 'CHE110013660', jsonb_build_object('de','Rebbau und Biodiversität im IP-Suisse Programm','fr','Viticulture et biodiversité dans le programme IP-Suisse','it','Viticoltura e biodiversità nel programma IP-Suisse'), jsonb_build_object('de','Erhebung von Rebflächen in Hanglagen und biodiversitätsfördernden Strukturen zur Förderung nachhaltiger Anbaumethoden im Rebbau.','fr','Collecte des surfaces viticoles en pente et des structures favorisant la biodiversité pour promouvoir des méthodes durables en viticulture.','it','Raccolta di superfici vitate in pendenza e strutture che promuovono la biodiversità per sostenere metodi sostenibili nella viticoltura.'), jsonb_build_object('de','Verbesserung der ökologischen Bewertung von Rebflächen und gezielte Förderung biodiversitätsfreundlicher Massnahmen.','fr','Amélioration de l’évaluation écologique des surfaces viticoles et promotion ciblée de mesures favorables à la biodiversité.','it','Miglioramento della valutazione ecologica delle superfici vitate e promozione mirata di misure favorevoli alla biodiversità.'), 'IN_REVIEW','2025-04-01 07:12:05'::timestamp, 'Zollikofen', 'CH', 'Schweizerische Vereinigung integriert produzierender Bauern und Bäuerinnen (IP-SUISSE)', 'IP-SUISSE', 'Molkereistrasse 21', '3052', '+41 31 910 60 00', 'info@ipsuisse.ch', 'Alle IP-SUISSE Produzenten','^.*$'),
@@ -52,78 +52,31 @@ WHERE id IN ('0d626d4b-b0ea-4841-971c-10a34310a605');
 -- consent_request
 -- ===============================================
 INSERT INTO consent_request (id, archived, created_at, modified_at, data_producer_uid, state_code, data_request_id, request_date, last_state_change_date) VALUES
--- CHE***142
-('99544917-1d65-4d28-90f0-f1269242fed7'::uuid, false, NOW(), NOW(), 'CHE***142', 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-04-02 15:29:50'::timestamp, '2025-04-08 17:01:00'::timestamp),
-('a5b1d2e3-4f6a-2b7c-6d0e-9f1a3b5c7d9e'::uuid, false, NOW(), NOW(), 'CHE***142', 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-05-05 10:15:00'::timestamp, '2025-05-08 13:00:00'::timestamp),
-('b6c2e3f4-5a7b-3c8d-7e1f-0a2b4c6d8e0f'::uuid, false, NOW(), NOW(), 'CHE***142', 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-07-18 14:30:00'::timestamp, NULL::timestamp),
+-- CHE101000001
+('07813a3a-7b8d-4b68-847b-f34ce7037397'::uuid, false, NOW(), NOW(), 'CHE101000001', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp),
+('5542ff84-ab93-417a-925a-9c7711a20fff'::uuid, false, NOW(), NOW(), 'CHE101000001', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-18 14:30:00'::timestamp, '2025-04-21 10:00:00'::timestamp),
+('ef35df35-2051-416a-98ad-47ab35c8a77c'::uuid, false, NOW(), NOW(), 'CHE101000001', 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp),
 
--- CHE***278
-('66363629-9bf3-439c-8c87-c3dab54e63bb'::uuid, false, NOW(), NOW(), 'CHE***278', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-05-03 11:02:05'::timestamp, NULL::timestamp),
-('07b11d34-e33d-4a80-8e61-66ace084408c'::uuid, false, NOW(), NOW(), 'CHE***278', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-05 10:18:11'::timestamp, '2025-06-10 08:00:00'::timestamp),
-('f8a4c5d6-7e9f-5a0b-9c3d-2e4f6a8b0c2d'::uuid, false, NOW(), NOW(), 'CHE***278', 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-05 12:00:00'::timestamp, '2025-04-08 15:30:00'::timestamp),
+-- CHE102000001
+('94e4f8e3-70b1-43ae-bdfa-78b27f86958e'::uuid, false, NOW(), NOW(), 'CHE102000001', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp),
+('2643cbd7-8077-4378-8c47-27d2b31dd554'::uuid, false, NOW(), NOW(), 'CHE102000001', 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-01-25 13:20:15'::timestamp, '2025-01-30 09:35:00'::timestamp),
+('68c0e430-00b8-44ca-a2f7-be6197ff64a9'::uuid, false, NOW(), NOW(), 'CHE102000001', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-02-23 16:00:00'::timestamp, '2025-02-25 10:00:00'::timestamp),
 
--- CHE***280
-('ca5ad276-4805-4bf9-a34e-e448cc6bd7b1'::uuid, false, NOW(), NOW(), 'CHE***280', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-05-10 07:55:33'::timestamp, '2025-05-12 13:45:00'::timestamp),
-('3f18e5ac-f49a-4f20-b04d-669b3f08d8b8'::uuid, false, NOW(), NOW(), 'CHE***280', 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-22 13:11:44'::timestamp, NULL::timestamp),
-('0f602be3-52c5-4e18-ac82-1ee9d9b615c8'::uuid, false, NOW(), NOW(), 'CHE***280', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-03-11 07:30:00'::timestamp, '2025-03-15 09:45:00'::timestamp),
-('e3f9b0c1-2d4e-0f5a-4b8c-7d9e1f3a5b7c'::uuid, false, NOW(), NOW(), 'CHE***280', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-14 08:45:00'::timestamp, '2025-02-17 12:30:00'::timestamp),
+-- CHE102000002
+('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, NULL::timestamp),
+('1272346f-7983-4845-b038-329116d67e08'::uuid, false, NOW(), NOW(), 'CHE102000002', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-02-18 11:44:59'::timestamp, NULL::timestamp),
+('fea87d49-857a-45e4-8274-fec6885697c4'::uuid, false, NOW(), NOW(), 'CHE102000002', 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-14 12:30:00'::timestamp, '2025-06-20 14:30:00'::timestamp),
+('2f8ec662-9fce-417e-9b82-3ed042adb482'::uuid, false, NOW(), NOW(), 'CHE102000002', 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp),
 
--- CHE***286
-('e28377b3-372a-4c94-9bd1-fbce932bdc2e'::uuid, false, NOW(), NOW(), 'CHE***286', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-02-16 09:45:00'::timestamp, '2025-02-20 10:00:00'::timestamp),
-('9d65735b-78bb-4c6a-9b58-8eacbb485084'::uuid, false, NOW(), NOW(), 'CHE***286', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-06 09:00:00'::timestamp, '2025-06-08 09:00:00'::timestamp),
-('c9d5f6a7-8b0c-6d1e-0f4a-3b5c7d9e1f3a'::uuid, false, NOW(), NOW(), 'CHE***286', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-05 11:45:00'::timestamp, NULL::timestamp),
+-- CHE103000001
+('5e439777-8564-4954-9d01-7ebeabf4fc39'::uuid, false, NOW(), NOW(), 'CHE103000001', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp),
+('235aed61-7da2-41ac-94c4-bcca91328ad6'::uuid, false, NOW(), NOW(), 'CHE103000001', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-03-22 08:20:00'::timestamp, '2025-03-25 10:15:00'::timestamp),
+('0dd93ea9-5a14-40a4-a36e-eafb2585ece3'::uuid, false, NOW(), NOW(), 'CHE103000001', 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-28 14:00:00'::timestamp, NULL::timestamp),
 
--- CHE***299
-('c77d4675-a8ba-4b69-bbfa-4a446e7a2045'::uuid, false, NOW(), NOW(), 'CHE***299', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-05-08 15:20:45'::timestamp, '2025-05-10 09:00:00'::timestamp),
-('93d551e1-054f-4263-9862-20567a191f66'::uuid, false, NOW(), NOW(), 'CHE***299', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-05-26 11:00:00'::timestamp, '2025-05-27 13:00:00'::timestamp),
-('f2a8c9d0-1e3f-9a4b-3c7d-6e8f0a2b4c6d'::uuid, false, NOW(), NOW(), 'CHE***299', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-12 10:30:00'::timestamp, NULL::timestamp),
-
--- CHE***435
-('8cb5ecef-43bf-4469-9b51-fa8f49a6105c'::uuid, false, NOW(), NOW(), 'CHE***435', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp),
-('638ec4e3-796a-4505-bc3e-9c8d5895df75'::uuid, false, NOW(), NOW(), 'CHE***435', 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-01-25 13:20:15'::timestamp, '2025-01-30 09:35:00'::timestamp),
-('ff6c18e2-5219-415b-b12a-0328c0a26121'::uuid, false, NOW(), NOW(), 'CHE***435', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-02-23 16:00:00'::timestamp, '2025-02-25 10:00:00'::timestamp),
-
--- CHE***505
-('f2f2cf9b-c09d-4d20-86f3-8095f47c5216'::uuid, false, NOW(), NOW(), 'CHE***505', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-04-22 09:55:41'::timestamp, NULL::timestamp),
-('d6e2a3b4-5c7d-3e8f-7a1b-0c2d4e6f8a0b'::uuid, false, NOW(), NOW(), 'CHE***505', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-05-20 11:15:00'::timestamp, '2025-05-23 14:45:00'::timestamp),
-('e7f3b4c5-6d8e-4f9a-8b2c-1d3e5f7a9b1c'::uuid, false, NOW(), NOW(), 'CHE***505', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-15 08:30:00'::timestamp, '2025-06-18 16:00:00'::timestamp),
-
--- CHE***553
-('5d0e1a01-bebb-4936-be41-afc910d05ea7'::uuid, false, NOW(), NOW(), 'CHE***553', 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-01-05 08:00:00'::timestamp, '2025-01-07 14:00:00'::timestamp),
-('b4c0e1f2-3a5b-1c6d-5e9f-8a0b2c4d6e8f'::uuid, false, NOW(), NOW(), 'CHE***553', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-02-28 15:45:00'::timestamp, '2025-03-03 09:20:00'::timestamp),
-('c5d1f2a3-4b6c-2d7e-6f0a-9b1c3d5e7f9a'::uuid, false, NOW(), NOW(), 'CHE***553', 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-07-08 13:00:00'::timestamp, NULL::timestamp),
-
--- CHE***632
-('323e24e8-a296-4e15-a793-ad97dd46dd55'::uuid, false, NOW(), NOW(), 'CHE***632', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp),
-('d0e6a7b8-9c1d-7e2f-1a5b-4c6d8e0f2a4b'::uuid, false, NOW(), NOW(), 'CHE***632', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-03-22 08:20:00'::timestamp, '2025-03-25 10:15:00'::timestamp),
-('e1f7b8c9-0d2e-8f3a-2b6c-5d7e9f1a3b5c'::uuid, false, NOW(), NOW(), 'CHE***632', 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-28 14:00:00'::timestamp, NULL::timestamp),
-
--- CHE***744
-('5ed45bdf-8e7d-4982-91f4-97246b013beb'::uuid, false, NOW(), NOW(), 'CHE***744', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp),
-('c1d7f8a9-0b2c-8d3e-2f6a-5b7c9d1e3f5a'::uuid, false, NOW(), NOW(), 'CHE***744', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-18 14:30:00'::timestamp, '2025-04-21 10:00:00'::timestamp),
-('d2e8a9b0-1c3d-9e4f-3a7b-6c8d0e2f4a6b'::uuid, false, NOW(), NOW(), 'CHE***744', 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp),
-
--- CHE***801
-('9165a46d-c48d-4141-b03f-40a0f8a3b932'::uuid, false, NOW(), NOW(), 'CHE***801', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-07-01 09:00:00'::timestamp, '2025-07-03 10:10:00'::timestamp),
-('3c74ef78-3343-475f-bc91-040c27e8b2a3'::uuid, false, NOW(), NOW(), 'CHE***801', 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-03-04 08:00:00'::timestamp, '2025-03-06 14:00:00'::timestamp),
-('183f2c04-ceea-45d6-853d-c0df5defd467'::uuid, false, NOW(), NOW(), 'CHE***801', 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-07-10 08:45:00'::timestamp, NULL::timestamp),
-('f4a0c1d2-3e5f-1a6b-5c9d-8e0f2a4b6c8d'::uuid, false, NOW(), NOW(), 'CHE***801', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-04-28 15:00:00'::timestamp, '2025-05-01 09:45:00'::timestamp),
-
--- CHE***860
-('d4f9a2a2-be5b-42df-9ec0-c5d922e90ecc'::uuid, false, NOW(), NOW(), 'CHE***860', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, NULL::timestamp),
-('4077affa-c024-4555-99e4-2b30fa997180'::uuid, false, NOW(), NOW(), 'CHE***860', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-02-18 11:44:59'::timestamp, NULL::timestamp),
-('2cbcaa08-74f6-4356-9e52-bfa247b3e56e'::uuid, false, NOW(), NOW(), 'CHE***860', 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-14 12:30:00'::timestamp, '2025-06-20 14:30:00'::timestamp),
-('a3b9d0e1-2f4a-0b5c-4d8e-7f9a1b3c5d7e'::uuid, false, NOW(), NOW(), 'CHE***860', 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp),
-
--- CHE***917
-('39806f21-0dfd-4aeb-9c00-4898f21b65d5'::uuid, false, NOW(), NOW(), 'CHE***917', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp),
-('a7b3d4e5-6f8a-4b9c-8d2e-1f3a5b7c9d1e'::uuid, false, NOW(), NOW(), 'CHE***917', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-05-15 10:30:00'::timestamp, '2025-05-18 14:20:00'::timestamp),
-('b8c4e5f6-7a9b-5c0d-9e3f-2a4b6c8d0e2f'::uuid, false, NOW(), NOW(), 'CHE***917', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-20 09:15:00'::timestamp, NULL::timestamp),
-
--- CHE***948
-('6243cb1d-fcd6-41cf-94d7-41041bfb19e0'::uuid, false, NOW(), NOW(), 'CHE***948', 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-06-13 08:30:19'::timestamp, '2025-06-18 10:27:55'::timestamp),
-('a9b5d6e7-8f0a-6b1c-0d4e-3f5a7b9c1d3e'::uuid, false, NOW(), NOW(), 'CHE***948', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-03-30 10:45:00'::timestamp, '2025-04-02 13:15:00'::timestamp),
-('b0c6e7f8-9a1b-7c2d-1e5f-4a6b8c0d2e4f'::uuid, false, NOW(), NOW(), 'CHE***948', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-07-15 09:00:00'::timestamp, NULL::timestamp);
+-- CHE103000002
+('adbc6d5a-331d-4dd9-b80c-ee1945716293'::uuid, false, NOW(), NOW(), 'CHE103000002', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp),
+('629322ea-19ea-42a2-8bb9-1d1d2e47dda0'::uuid, false, NOW(), NOW(), 'CHE103000002', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-05-15 10:30:00'::timestamp, '2025-05-18 14:20:00'::timestamp),
+('584c3587-517b-49ef-aaec-cb6e0179f78c'::uuid, false, NOW(), NOW(), 'CHE103000002', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-20 09:15:00'::timestamp, NULL::timestamp);
 
 -- ===============================================
 -- set migrated_from_maf for BioSuisse consent-requests

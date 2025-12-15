@@ -1,7 +1,7 @@
 package integration.agreement;
 
-import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE_860;
-import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE_917;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE101000001;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE102000002;
 import static integration.testutils.TestUserEnum.PRODUCER_032;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.util.List;
@@ -28,9 +29,9 @@ class ConsentRequestTest {
   @Test
   void givenProducer_whenGetConsentRequest_thenConsentRequestReturned() {
     AuthTestUtils.requestAs(PRODUCER_032)
-        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE_860)
+        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE102000002)
         .then().statusCode(200)
-        .body("id", equalTo(IP_SUISSE_01_CHE_860.toString()))
+        .body("id", equalTo(IP_SUISSE_01_CHE102000002.toString()))
         .extract().as(new TypeRef<>() {
         });
   }
@@ -38,7 +39,7 @@ class ConsentRequestTest {
   @Test
   void givenProducer_whenGetConsentRequestOfDifferentUser_thenShouldReturnNotFound() {
     AuthTestUtils.requestAs(PRODUCER_032)
-        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE_917)
+        .when().get(ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE101000001)
         .then().statusCode(404);
 
   }
@@ -56,7 +57,7 @@ class ConsentRequestTest {
   @Test
   void givenProducer_whenConsentRequestAreRequestedWithExplicitUid_thenFilteredConsentRequestsReturned() {
     AuthTestUtils.requestAs(PRODUCER_032)
-        .when().get(ConsentRequestController.PATH + "?dataProducerUid=CHE***435")
+        .when().get(ConsentRequestController.PATH + "?dataProducerUid=" + Uid.CHE102000001)
         .then().statusCode(200)
         .body("size()", equalTo(3))
         .extract().as(new TypeRef<>() {
@@ -66,7 +67,7 @@ class ConsentRequestTest {
   @Test
   void givenProducer_whenConsentRequestAreRequestedWithUncorrelatedUid_thenNoConsentRequestsReturned() {
     AuthTestUtils.requestAs(PRODUCER_032)
-        .when().get(ConsentRequestController.PATH + "?dataProducerUid=CHE***280")
+        .when().get(ConsentRequestController.PATH + "?dataProducerUid=" + Uid.CHE101000001)
         .then().statusCode(200)
         .body("size()", equalTo(0))
         .extract().as(new TypeRef<>() {

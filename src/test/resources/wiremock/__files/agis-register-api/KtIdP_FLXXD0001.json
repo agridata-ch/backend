@@ -1,0 +1,190 @@
+{
+  "relationDepth": "allRelations",
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 1,
+    "totalHits": 1
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": [
+        {
+          "ktIdP": "FLXXD0001",
+          "agisIdP": 70335000,
+          "personParentRelations": {
+            "personParentRelation": [
+              {
+                "ktIdP": "FLXXD0002",
+                "agisIdP": 0,
+                "uid": "CHE104000002",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "foundationDate": 0,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Lara",
+                  "lastName": "Beispiel",
+                  "mrMrsExtended": "1"
+                },
+                "addressInformation": {
+                  "street": "Beispielallee",
+                  "houseNumber": "9",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "phone": []
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "personRelations": {
+      "person": [
+        {
+          "ktIdP": "FLXXD0002",
+          "agisIdP": 70335001,
+          "uid": "CHE104000002",
+          "personChildRelations": {
+            "personChildRelation": [
+              {
+                "ktIdP": "FLXXD0001",
+                "agisIdP": 70335000,
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXD0003",
+                "agisIdB": 10377031,
+                "ber": "A99940003",
+                "validSince": "2025-12-11T11:06:40+01:00"
+              },
+              {
+                "ktIdB": "FLXXD0004",
+                "agisIdB": 10377032,
+                "ber": "A99940004",
+                "validSince": "2025-12-11T11:06:40+01:00"
+              }
+            ]
+          },
+          "legalForm": "06",
+          "foundationDate": 0,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "organisation": {
+                  "organisationName": "Testbetrieb AG"
+                },
+                "addressInformation": {
+                  "street": "Beispielallee",
+                  "houseNumber": "9",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "info@agis.test.blw.admin.ch"
+            },
+            "phone": []
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "relevantFarms": {
+      "farm": []
+    },
+    "farmRelations": {
+      "farm": [
+        {
+          "ktIdB": "FLXXD0003",
+          "agisIdB": 10377031,
+          "ber": "A99940003",
+          "uid": "CHE104000002",
+          "atd": 1040003,
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXD0002",
+                "agisIdP": 70335001,
+                "uid": "CHE104000002",
+                "validSince": "2025-12-11T08:23:28+01:00"
+              }
+            ]
+          },
+          "farmType": "12",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Testbetrieb AG",
+            "street": "Beispielallee",
+            "houseNumber": "9",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2682362,
+          "coordinatesNorth": 1185036,
+          "altitude": 0,
+          "agriculturalZone": "99",
+          "agriculturalArea": "99",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXD0004",
+          "agisIdB": 10377032,
+          "ber": "A99940004",
+          "uid": "CHE104000002",
+          "atd": 1040004,
+          "farmType": "12",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Testbetrieb AG",
+            "street": "Beispielallee 9",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2713590,
+          "coordinatesNorth": 1110935,
+          "altitude": 900,
+          "agriculturalZone": "99",
+          "agriculturalArea": "99",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    }
+  }
+}

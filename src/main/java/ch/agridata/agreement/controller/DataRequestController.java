@@ -108,7 +108,7 @@ public class DataRequestController {
       @PathParam("id") UUID dataRequestId,
       @Parameter(
           description = "The kt-id-p identifier of the producer",
-          example = "***081"
+          example = "FLXXA0001"
       )
       @PathParam("kt-id-p") String ktIdP) {
     if (isAdmin()) {

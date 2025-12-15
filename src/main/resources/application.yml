@@ -1,8 +1,6 @@
 agridata:
   exception-handling:
     return-debug: true
-  json-field-rewrite:
-    enabled: true
 quarkus:
   application:
     name: agridata.ch

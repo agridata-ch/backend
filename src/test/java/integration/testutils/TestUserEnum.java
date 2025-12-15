@@ -1,8 +1,5 @@
 package integration.testutils;
 
-import static integration.testutils.TestDataIdentifiers.Uid.CHE435;
-import static integration.testutils.TestDataIdentifiers.Uid.CHE860;
-
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TestUserEnum {
-  PRODUCER_032("producer-032", List.of(CHE860, CHE435), "***032"),
+  PRODUCER_032("producer-b", List.of("CHE102000001", "CHE102000002"), "FLXXB0001"),
   CONSUMER_BIO_SUISSE("consumer", List.of(), null),
   CONSUMER_IP_SUISSE("consumer-ip-suisse", List.of(), null),
   PROVIDER("provider", List.of(), null),
