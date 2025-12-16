@@ -1,3 +1,9 @@
+## [1.4.3-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.1...v1.4.3-rc.2) (2025-12-16)
+
+### Bug Fixes
+
+* **dataRequest:** Prevent submission of data requests with non-existent data products ([140ab24](https://github.com/agridata-ch/backend/commit/140ab2434220e14de77f658efca605713ba28614)), closes [DIGIB2-1052](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1052)
+
 ## [1.4.3-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.2...v1.4.3-rc.1) (2025-12-11)
 
 ### Bug Fixes
