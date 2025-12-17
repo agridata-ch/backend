@@ -19,21 +19,21 @@
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version> <!-- or latest -->
-        <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
         <lombok.version>1.18.38</lombok.version>
         <assertj.version>3.27.4</assertj.version>
-        <java-uuid-generator.version>5.1.0</java-uuid-generator.version>
+        <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.4.1</archunit-junit5.version>
         <wiremock.version>1.5.1</wiremock.version>
-        <openapi-generator.version>7.15.0</openapi-generator.version>
+        <openapi-generator.version>7.17.0</openapi-generator.version>
 
         <!-- plugin versions -->
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
-        <exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
+        <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>11.0.0</checkstyle.version>
+        <checkstyle.version>12.1.2</checkstyle.version>
         <dependency-check-maven.version>12.1.3</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.15.0</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.17.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>
