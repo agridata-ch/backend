@@ -1,3 +1,9 @@
+## [1.5.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.2...v1.5.0-rc.1) (2025-12-17)
+
+### Features
+
+* **test-users:** add new test users and remove json rewrite ([e601a7c](https://github.com/agridata-ch/backend/commit/e601a7c89f63932e8ce68039a186f9295a9c6eda)), closes [DIGIB2-1075](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1075)
+
 ## [1.4.3-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.1...v1.4.3-rc.2) (2025-12-16)
 
 ### Bug Fixes
