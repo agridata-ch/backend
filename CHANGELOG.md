@@ -1,3 +1,9 @@
+## [1.5.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.2...v1.5.0-rc.3) (2025-12-18)
+
+### Features
+
+* **deps:** Require approval for renovate-bot PRs and update multiple dependencies: ([60e43ce](https://github.com/agridata-ch/backend/commit/60e43ce1af61ed776c81582cfa221e32fa1dda3c)), closes [DIGIB2-1164](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1164)
+
 ## [1.5.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2025-12-18)
 
 ### Features
