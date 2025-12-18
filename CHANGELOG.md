@@ -1,3 +1,9 @@
+## [1.5.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2025-12-18)
+
+### Features
+
+* **deps:** Updating multiple dependencies: ([7d3a0c4](https://github.com/agridata-ch/backend/commit/7d3a0c48d9d95766bbb7a176b1134c1c9ac81382)), closes [DIGIB2-1164](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1164)
+
 ## [1.5.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.2...v1.5.0-rc.1) (2025-12-17)
 
 ### Features
