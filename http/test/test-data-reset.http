@@ -1,9 +1,75 @@
+### Reset all test data (full reset)
 POST {{baseUrl}}/test-data/reset
 Authorization: Bearer {{$auth.token("admin")}}
 Content-Type: application/json
 
 > {%
-    client.test("Create a new data request", function () {
-        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    client.test("Reset all test data", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
+    })
+%}
+
+###
+
+### Reset test data for user CHE101000001 (Erika Musterfrau)
+POST {{baseUrl}}/test-data/reset/user/CHE101000001
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Reset test data for CHE101000001", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
+    })
+%}
+
+###
+
+### Reset test data for user CHE102000001 (Jonas Testmann)
+POST {{baseUrl}}/test-data/reset/user/CHE102000001
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Reset test data for CHE102000001", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
+    })
+%}
+
+###
+
+### Reset test data for user CHE102000002 (Sofia Mustermann)
+POST {{baseUrl}}/test-data/reset/user/CHE102000002
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Reset test data for CHE102000002", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
+    })
+%}
+
+###
+
+### Reset test data for user CHE103000001 (Max Mustermann)
+POST {{baseUrl}}/test-data/reset/user/CHE103000001
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Reset test data for CHE103000001", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
+    })
+%}
+
+###
+
+### Reset test data for user CHE103000002 (Lara Beispiel)
+POST {{baseUrl}}/test-data/reset/user/CHE103000002
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+    client.test("Reset test data for CHE103000002", function () {
+        client.assert(response.status === 204, "Expected Response status is 204, got: " + response.status)
     })
 %}
