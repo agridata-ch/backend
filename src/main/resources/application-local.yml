@@ -1,3 +1,6 @@
+agridata:
+  tvd-equid-owner-dropdown:
+    enabled: true
 quarkus:
   hibernate-orm:
     log:
@@ -61,6 +64,8 @@ quarkus:
       url: http://localhost:8050/agis/structure-data/1
     agis-eco-etho-api:
       url: http://localhost:8050/agis/eco-etho-data/1
+    tvd-animal-tracing-api:
+      url: http://localhost:8050/tvd/animal-tracing/v1.0
     logging:
       body-limit: 10240
       scope: request-response

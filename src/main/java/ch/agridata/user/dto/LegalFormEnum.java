@@ -31,6 +31,7 @@ public enum LegalFormEnum {
   BEZIRK("32"),
   GEMEINDE("33"),
   OEFF_RECHT_KOERPERSCHAFT_BETRIEB("34"),
+  EQUIDENEIGENTUEMER("-1"),
   UNKNOWN("-1");
 
   private static final Map<String, LegalFormEnum> CODE_MAP = new HashMap<>();

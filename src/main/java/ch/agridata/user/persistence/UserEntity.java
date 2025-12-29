@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -84,5 +85,7 @@ public class UserEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   private UserEntityPreferencesDto userPreferences;
 
-
+  @Column(name = "roles_at_last_login")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private Set<String> rolesAtLastLogin;
 }
