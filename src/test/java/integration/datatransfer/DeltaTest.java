@@ -4,7 +4,7 @@ import static ch.agridata.agreement.dto.ConsentRequestStateEnum.GRANTED;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE102000001;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE102000002;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
-import static integration.testutils.TestUserEnum.PRODUCER_032;
+import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
@@ -29,12 +29,12 @@ class DeltaTest {
 
     assertThat(getDeltaIds(testStartTime)).isEmpty();
 
-    AuthTestUtils.requestAs(PRODUCER_032).contentType(ContentType.JSON)
+    AuthTestUtils.requestAs(PRODUCER_B).contentType(ContentType.JSON)
         .body(String.format("\"%s\"", GRANTED)).when()
         .put(ConsentRequestController.PATH + "/" + TestDataIdentifiers.ConsentRequest.BIO_SUISSE_02_CHE102000001 + "/status")
         .then().statusCode(204);
 
-    AuthTestUtils.requestAs(PRODUCER_032).contentType(ContentType.JSON)
+    AuthTestUtils.requestAs(PRODUCER_B).contentType(ContentType.JSON)
         .body(String.format("\"%s\"", GRANTED)).when()
         .put(ConsentRequestController.PATH + "/" + TestDataIdentifiers.ConsentRequest.BIO_SUISSE_02_CHE102000002 + "/status")
         .then().statusCode(204);

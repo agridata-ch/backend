@@ -1,5 +1,6 @@
 package ch.agridata.user.service;
 
+import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.dto.PageResponseDto;
@@ -13,7 +14,9 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,7 +34,7 @@ public class UserService {
 
   @RolesAllowed({SUPPORT_ROLE})
   public PageResponseDto<UserInfoDto> getProducers(ResourceQueryDto resourceQueryDto) {
-    var pagedProducerEntities = userRepository.findByKtIdpNotNull(resourceQueryDto);
+    var pagedProducerEntities = userRepository.findByRoleAtLastLogin(resourceQueryDto, PRODUCER_ROLE);
     return userMapper.toPagedUserInfoDto(pagedProducerEntities);
   }
 
@@ -48,6 +51,7 @@ public class UserService {
     user.setFamilyName(userInfo.getString("family_name"));
     user.setPhoneNumber(userInfo.getString("phone_number"));
 
+    user.setRolesAtLastLogin(identity.getRoles());
     user.setLastLoginDate(LocalDateTime.now());
 
     var address = userInfo.getObject("address");
@@ -61,9 +65,10 @@ public class UserService {
     return userMapper.toUserInfoDto(user);
   }
 
-  public UserInfoDto getUserIdByKtIdP(String impersonatedKtIdP) {
-    return userRepository.findByKtIdP(impersonatedKtIdP).map(userMapper::toUserInfoDto)
-        .orElseThrow(() -> new IllegalArgumentException("No user found for ktIdP: " + impersonatedKtIdP));
+  public UserInfoDto getUserInfo(@NonNull String agateLoginId) {
+    return userRepository.findByAgateLoginId(agateLoginId)
+        .map(userMapper::toUserInfoDto)
+        .orElseThrow(() -> new NotFoundException(agateLoginId));
   }
 
   @Transactional

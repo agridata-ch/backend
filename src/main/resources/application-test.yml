@@ -1,3 +1,6 @@
+agridata:
+  tvd-equid-owner-dropdown:
+    enabled: true
 quarkus:
   http:
     test-timeout: 60s
@@ -30,6 +33,8 @@ quarkus:
       url: http://localhost:8051/agis/structure-data/1
     agis-eco-etho-api:
       url: http://localhost:8051/agis/eco-etho-data/1
+    tvd-animal-tracing-api:
+      url: http://localhost:8051/tvd/animal-tracing/v1.0
   wiremock:
     devservices:
       enabled: true

@@ -43,6 +43,7 @@ public class UserInitializerFilter implements ContainerRequestFilter {
     var newUser = UserEntity.builder()
         .id(agridataSecurityIdentity.getUserId())
         .agateLoginId(agridataSecurityIdentity.getAgateLoginId())
+        .rolesAtLastLogin(agridataSecurityIdentity.getRoles())
         .build();
 
     persist(newUser);
