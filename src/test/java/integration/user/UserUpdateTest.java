@@ -1,9 +1,12 @@
 package integration.user;
 
-import static ch.agridata.common.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.DEFAULT_AGATE_ROLES;
+import static ch.agridata.user.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
-import static integration.testutils.TestUserEnum.PRODUCER_032;
+import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static integration.testutils.TestUserEnum.SUPPORT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
@@ -20,6 +23,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.Test;
@@ -43,6 +47,7 @@ class UserUpdateTest {
         .ignoringCollectionOrder()
         .ignoringFields("lastLoginDate")
         .isEqualTo(UserInfoDto.builder()
+            .agateLoginId(ADMIN.getAgateLoginId())
             .ktIdP(null)
             .uid(null)
             .givenName("Tom")
@@ -53,6 +58,7 @@ class UserUpdateTest {
             .addressLocality(null)
             .addressPostalCode(null)
             .addressCountry(null)
+            .rolesAtLastLogin(Stream.concat(Stream.of(ADMIN_ROLE), DEFAULT_AGATE_ROLES.stream()).toList())
             .build());
 
     assertThat(actualResult.lastLoginDate())
@@ -73,6 +79,7 @@ class UserUpdateTest {
         .ignoringCollectionOrder()
         .ignoringFields("lastLoginDate")
         .isEqualTo(UserInfoDto.builder()
+            .agateLoginId(CONSUMER_BIO_SUISSE.getAgateLoginId())
             .ktIdP(null)
             .uid("CHE101708094")
             .givenName("Lea")
@@ -83,6 +90,7 @@ class UserUpdateTest {
             .addressLocality("Thun")
             .addressPostalCode("3600")
             .addressCountry("CH")
+            .rolesAtLastLogin(Stream.concat(Stream.of(CONSUMER_ROLE), DEFAULT_AGATE_ROLES.stream()).toList())
             .build());
 
     assertThat(actualResult.lastLoginDate())
@@ -93,7 +101,7 @@ class UserUpdateTest {
   @Test
   void givenImpersonationHeader_whenGetUserInfo_thenReturnUserInfoOfImpersonatedUser() {
     // make sure the producer exists
-    AuthTestUtils.requestAs(PRODUCER_032)
+    AuthTestUtils.requestAs(PRODUCER_B)
         .when()
         .get(UserController.PATH + "/user-info")
         .then()
@@ -101,12 +109,12 @@ class UserUpdateTest {
 
     AuthTestUtils.requestAs(SUPPORT)
         .when()
-        .header(IMPERSONATION_HEADER, PRODUCER_032.getKtIdP())
+        .header(IMPERSONATION_HEADER, PRODUCER_B.getAgateLoginId())
         .get(UserController.PATH + "/user-info")
         .then()
         .statusCode(200)
-        .body("ktIdP", not(emptyOrNullString()))
-        .body("ktIdP", equalTo(PRODUCER_032.getKtIdP()));
+        .body("agateLoginId", not(emptyOrNullString()))
+        .body("agateLoginId", equalTo(PRODUCER_B.getAgateLoginId()));
 
   }
 
@@ -117,7 +125,7 @@ class UserUpdateTest {
         UserPreferencesDto.builder().activeUid("123").mainMenuOpened(true).dismissedMigratedIds(List.of("mig-1", "mig-2")).build();
 
 
-    AuthTestUtils.requestAs(PRODUCER_032)
+    AuthTestUtils.requestAs(PRODUCER_B)
         .when()
         .contentType(ContentType.JSON)
         .body(mapper.writeValueAsString(preferences))
@@ -125,7 +133,7 @@ class UserUpdateTest {
         .then()
         .statusCode(RestResponse.StatusCode.CREATED);
 
-    UserInfoDto userInfo = AuthTestUtils.requestAs(PRODUCER_032)
+    UserInfoDto userInfo = AuthTestUtils.requestAs(PRODUCER_B)
         .when()
         .get(UserController.PATH + "/user-info")
         .then()

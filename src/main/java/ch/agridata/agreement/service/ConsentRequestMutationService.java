@@ -46,7 +46,7 @@ public class ConsentRequestMutationService {
   @Transactional
   public void updateConsentRequestStateAsCurrentDataProducer(UUID consentRequestId,
                                                              ConsentRequestStateEnum state) {
-    var uids = getAuthorizedUids(identity.getKtIdpOfUserOrImpersonatedUser());
+    var uids = getAuthorizedUidsAsCurrentProducer();
     var consentRequestEntity = consentRequestRepository.findByIdAndDataProducerUids(consentRequestId, uids)
         .orElseThrow(() -> new NotFoundException(consentRequestId.toString()));
     var targetState = consentRequestMapper.toEntityStateEnum(state);
@@ -59,8 +59,9 @@ public class ConsentRequestMutationService {
     addLogEntry(targetState, consentRequestEntity.getId());
   }
 
+  @RolesAllowed(PRODUCER_ROLE)
   public List<ConsentRequestCreatedDto> createConsentRequestForDataRequest(List<CreateConsentRequestDto> createConsentRequestDtos) {
-    var uids = getAuthorizedUids(identity.getKtIdpOfUserOrImpersonatedUser());
+    var uids = getAuthorizedUidsAsCurrentProducer();
 
     return sessionFactory.fromTransaction(state ->
         createConsentRequestDtos.stream().map(dto -> {
@@ -86,7 +87,6 @@ public class ConsentRequestMutationService {
         }).toList()
     );
 
-
   }
 
   private ConsentRequestCreatedDto createConsentRequest(String uid, DataRequestEntity dataRequest) {
@@ -108,7 +108,9 @@ public class ConsentRequestMutationService {
     }
   }
 
-  private List<String> getAuthorizedUids(String ktIdP) {
-    return userApi.getAuthorizedUids(ktIdP).stream().map(UidDto::uid).toList();
+  private List<String> getAuthorizedUidsAsCurrentProducer() {
+    return userApi.getAuthorizedUids(identity.getKtIdP(), identity.getAgateLoginId()).stream()
+        .map(UidDto::uid)
+        .toList();
   }
 }

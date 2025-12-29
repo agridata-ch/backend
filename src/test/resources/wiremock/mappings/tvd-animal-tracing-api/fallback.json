@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1\\.0/customer/legalunits/equidowner/.*"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "data": [],
+      "totalCount": null
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

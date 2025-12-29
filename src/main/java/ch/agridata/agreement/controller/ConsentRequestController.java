@@ -77,8 +77,8 @@ public class ConsentRequestController {
           example = "CHE101000001"
       )
       @Pattern(
-          regexp = "^CHE\\d{9}$",
-          message = "Invalid UID format. Expected format is 'CHE' followed by 9 digits."
+          regexp = "^(?:CHE|ZZZ)\\d{9}$",
+          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
       )
       @QueryParam("dataProducerUid") String dataProducerUid
   ) {
@@ -128,7 +128,7 @@ public class ConsentRequestController {
   @RolesAllowed({PRODUCER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   public List<ConsentRequestCreatedDto> createConsentRequests(
-      @Valid @NotNull @RequestBody List<CreateConsentRequestDto> createConsentRequestDtos) {
+      @NotNull @RequestBody List<@Valid @NotNull CreateConsentRequestDto> createConsentRequestDtos) {
     return consentRequestMutationService.createConsentRequestForDataRequest(createConsentRequestDtos);
   }
 
