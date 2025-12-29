@@ -1,5 +1,6 @@
 package ch.agridata.common.utils;
 
+import java.util.List;
 import lombok.NoArgsConstructor;
 
 /**
@@ -15,4 +16,6 @@ public class AuthenticationUtil {
   public static final String PROVIDER_ROLE = "agridata.ch.Agridata_Datenanbieter";
   public static final String ADMIN_ROLE = "agridata.ch.Agridata_Admin";
   public static final String SUPPORT_ROLE = "agridata.ch.Agridata_Support";
+
+  public static final List<String> DEFAULT_AGATE_ROLES = List.of("default-roles-agate", "offline_access", "uma_authorization");
 }

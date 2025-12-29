@@ -2,6 +2,7 @@ package ch.agridata.user.api;
 
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import lombok.NonNull;
 
@@ -14,5 +15,5 @@ public interface UserApi {
 
   List<BurDto> getAuthorizedBurs(@NonNull String uid);
 
-  List<UidDto> getAuthorizedUids(@NonNull String ktIdP);
+  List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId);
 }

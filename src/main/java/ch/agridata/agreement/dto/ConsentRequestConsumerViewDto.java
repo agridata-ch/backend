@@ -8,11 +8,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Provides a consumer-facing view of a consent request. It focuses on identifiers, producer references, and the state of the request.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2025-12-31
+ * @deprecated Replaced by {@link ConsentRequestConsumerViewV2Dto}
  */
-
 @Schema(description = "Data transfer object representing a consent request")
 @Builder
+@Deprecated(since = "1.5")
 public record ConsentRequestConsumerViewDto(
 
     @Schema(

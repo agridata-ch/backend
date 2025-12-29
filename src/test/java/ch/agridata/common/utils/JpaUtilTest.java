@@ -37,7 +37,7 @@ class JpaUtilTest {
   void givenNoFields_createContainsWhereClause_createDummy() {
     var whereClause =
         JpaUtil.createContainsWhereClause(" test  input search ", List.of(), List.of());
-    assertThat(whereClause.parameters().size()).isZero();
+    assertThat(whereClause.parameters()).isEmpty();
     assertThat(whereClause.clause()).isEqualTo(JpaUtil.DUMMY_WHERE_CLAUSE);
   }
 

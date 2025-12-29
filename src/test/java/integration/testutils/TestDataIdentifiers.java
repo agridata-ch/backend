@@ -1,9 +1,17 @@
 package integration.testutils;
 
+import static ch.agridata.user.dto.LegalFormEnum.AKTIENGESELLSCHAFT;
+import static ch.agridata.user.dto.LegalFormEnum.EINFACHE_GESELLSCHAFT;
+import static ch.agridata.user.dto.LegalFormEnum.EQUIDENEIGENTUEMER;
+import static ch.agridata.user.dto.LegalFormEnum.NATUERLICHE_PERSON;
+
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.product.persistence.DataProductEntity;
+import ch.agridata.user.dto.LegalFormEnum;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 public class TestDataIdentifiers {
@@ -61,13 +69,20 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_46F8A883 = id("46f8a883-da7c-49b3-b986-10a24b1e09ef");
   }
 
+  @Getter
+  @RequiredArgsConstructor
   public enum Uid {
-    CHE101000001,
-    CHE102000001,
-    CHE102000002,
-    CHE103000001,
-    CHE103000002,
-    CHE104000002
+    CHE101000001("Erika Musterfrau", NATUERLICHE_PERSON),
+    CHE102000001("Jonas Testmann", NATUERLICHE_PERSON),
+    CHE102000002("Testpartner GmbH", EINFACHE_GESELLSCHAFT),
+    CHE103000001("Max Mustermann", NATUERLICHE_PERSON),
+    CHE103000002("Testfirma GmbH", EINFACHE_GESELLSCHAFT),
+    CHE104000002("Testbetrieb AG", AKTIENGESELLSCHAFT),
+    ZZZ199978837("Equideneigentümer TestUser2000306", EQUIDENEIGENTUEMER),
+    ZZZ199981609("Reitgemeinschaft 1 Tom & Jerry Reitgemeinschaft", EQUIDENEIGENTUEMER);
+
+    private final String uidName;
+    private final LegalFormEnum legalForm;
   }
 
   public enum Bur {

@@ -209,6 +209,10 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
@@ -459,6 +463,9 @@
                                     <useJakartaEe>true</useJakartaEe>
                                     <modelPackage>ch.agridata.agis.dto</modelPackage>
                                     <dateLibrary>java8</dateLibrary>
+                                    <!-- Bean Validation disabled because @Valid was applied to a list
+                                    and caused Hibernate validation error HV000271 -->
+                                    <useBeanValidation>false</useBeanValidation>
                                 </configOptions>
                             </configuration>
                         </execution>

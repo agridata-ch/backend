@@ -1,6 +1,7 @@
 package ch.agridata.agreement.mapper;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
@@ -33,6 +34,11 @@ public interface ConsentRequestMapper {
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
 
   ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestEntity entity);
+
+  ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestConsumerViewV2Dto v2);
+
+  @Mapping(target = "name", source = "uidName")
+  ConsentRequestConsumerViewV2Dto toConsentRequestConsumerViewV2Dto(ConsentRequestEntity entity, String uidName);
 
   @ValueMapping(source = "NOT_CREATED", target = MappingConstants.NULL)
   ConsentRequestEntity.StateEnum toEntityStateEnum(ConsentRequestStateEnum stateEnum);

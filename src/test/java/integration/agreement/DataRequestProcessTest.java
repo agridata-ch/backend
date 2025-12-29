@@ -6,9 +6,11 @@ import static integration.agreement.DataRequestTestFactory.getPartialDataRequest
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.agreement.DataRequestTestFactory.updateLogo;
+import static integration.testutils.TestDataIdentifiers.DataRequest;
+import static integration.testutils.TestDataIdentifiers.Uid;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
-import static integration.testutils.TestUserEnum.PRODUCER_032;
+import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -27,7 +29,6 @@ import ch.agridata.product.dto.DataProductDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
-import integration.testutils.TestDataIdentifiers;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
@@ -124,20 +125,19 @@ class DataRequestProcessTest {
         .body("stateCode", equalTo(DataRequestStateEnum.ACTIVE.name()));
 
     // As producer use consent request creation link
-    var createDtos = PRODUCER_032.getCompanyUids().stream()
-        .map(uid -> CreateConsentRequestDto.builder().dataRequestId(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid()).uid(uid).build())
+    var createDtos = PRODUCER_B.getCompanyUids().stream()
+        .map(uid -> CreateConsentRequestDto.builder().dataRequestId(DataRequest.BIO_SUISSE_01.uuid()).uid(uid.name())
+            .build())
         .toList();
-    List<ConsentRequestCreatedDto> createdConsentRequests = AuthTestUtils.requestAs(PRODUCER_032)
+    List<ConsentRequestCreatedDto> createdConsentRequests = AuthTestUtils.requestAs(PRODUCER_B)
         .body(mapper.writeValueAsString(createDtos))
         .contentType(JSON)
         .when().post(ConsentRequestController.PATH)
         .then().statusCode(201)
         .extract().as(new TypeRef<>() {
         });
-    assertThat(createdConsentRequests).hasSize(2).extracting(ConsentRequestCreatedDto::dataProducerUid)
-        .containsExactlyInAnyOrderElementsOf(PRODUCER_032.getCompanyUids());
-
-
+    assertThat(createdConsentRequests).hasSize(4).extracting(ConsentRequestCreatedDto::dataProducerUid)
+        .containsExactlyInAnyOrderElementsOf(PRODUCER_B.getCompanyUids().stream().map(Uid::name).toList());
   }
 
 }
