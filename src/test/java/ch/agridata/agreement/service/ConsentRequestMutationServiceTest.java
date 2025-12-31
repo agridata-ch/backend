@@ -72,7 +72,8 @@ class ConsentRequestMutationServiceTest {
   void givenActiveDataRequestAndAuthorizedUids_whenCreateConsentRequestForDataRequest_thenCreateConsentRequestsTransactional() {
     // Given
     UUID dataRequestId = UUID.randomUUID();
-    String ktIdP = "test-kt-id";
+    String ktIdP = "test-kt-id-p";
+    String agateLoginId = "test-agateLoginId";
 
     List<String> authorizedUids = List.of(UID1, UID2, UID3);
     List<CreateConsentRequestDto> createConsentRequestDtos =
@@ -110,8 +111,9 @@ class ConsentRequestMutationServiceTest {
 
     // Mock interactions
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(dataRequest));
-    when(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser()).thenReturn(ktIdP);
-    when(userApi.getAuthorizedUids(ktIdP)).thenReturn(uidDtos);
+    when(agridataSecurityIdentity.getKtIdP()).thenReturn(ktIdP);
+    when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(agateLoginId);
+    when(userApi.getAuthorizedUids(ktIdP, agateLoginId)).thenReturn(uidDtos);
     when(consentRequestRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
         .thenReturn(Optional.of(existingConsentRequest));
     when(consentRequestRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
@@ -149,7 +151,7 @@ class ConsentRequestMutationServiceTest {
         .build();
 
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(inactiveDataRequest));
-    when(userApi.getAuthorizedUids(any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
+    when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
     assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
@@ -163,7 +165,7 @@ class ConsentRequestMutationServiceTest {
     // Given
     UUID dataRequestId = UUID.randomUUID();
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.empty());
-    when(userApi.getAuthorizedUids(any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
+    when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
     assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
@@ -179,7 +181,7 @@ class ConsentRequestMutationServiceTest {
     UUID dataRequestId = UUID.randomUUID();
 
 
-    when(userApi.getAuthorizedUids(any())).thenReturn(List.of());
+    when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of());
 
     // When & Then
     assertThatThrownBy(() -> service.createConsentRequestForDataRequest(

@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "$type": "LegalUnitPersonResponse",
+      "lastName": "TestUser2000306",
+      "firstName": "Equideneigentümer",
+      "uid": "ZZZ199978837",
+      "correspondenceLanguage": "de"
+    },
+    {
+      "$type": "LegalUnitOrganisationResponse",
+      "name": "Reitgemeinschaft 1",
+      "nameAddOn1": "Tom & Jerry",
+      "nameAddOn2": "Reitgemeinschaft",
+      "uid": "ZZZ199981609",
+      "correspondenceLanguage": "de"
+    }
+  ],
+  "totalCount": null
+}

@@ -1,6 +1,6 @@
 package integration.user;
 
-import static integration.testutils.TestUserEnum.PRODUCER_032;
+import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static integration.testutils.TestUserEnum.SUPPORT;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,7 +83,7 @@ class GetUsersTest {
   @Test
   void givenRecentlyCreatedProducer_getProducers_returnsProducerWithAllUserData() {
     // Trigger any authenticated request as a producer to ensure the user record is created and stored
-    AuthTestUtils.requestAs(PRODUCER_032)
+    AuthTestUtils.requestAs(PRODUCER_B)
         .header("Content-Type", MediaType.APPLICATION_JSON)
         .when()
         .get(ConsentRequestController.PATH)
@@ -102,7 +102,7 @@ class GetUsersTest {
 
     var producer = actualResult.items().getFirst();
 
-    assertThat(producer.ktIdP()).isEqualTo(PRODUCER_032.getKtIdP());
+    assertThat(producer.ktIdP()).isEqualTo(PRODUCER_B.getKtIdP());
     assertThat(producer.lastLoginDate()).isBetween(LocalDateTime.now().minusSeconds(5), LocalDateTime.now().plusSeconds(5));
     assertThat(
         List.of(

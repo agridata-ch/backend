@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class DataTransferFailedException extends RuntimeException {
 
-  private int status;
+  private final int status;
 
   public DataTransferFailedException(int status, String message, Throwable cause) {
     super(message, cause);

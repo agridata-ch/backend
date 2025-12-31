@@ -6,7 +6,6 @@ import ch.agridata.common.dto.ResourceQueryDto;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +38,12 @@ class BaseSearchRepositoryTest {
 
     // Additional assertions for sorting if specified
     if (testCase.sortParams != null && !testCase.sortParams.isEmpty() && !results.items().isEmpty()) {
-      var sortParam = testCase.sortParams.get(0);
+      var sortParam = testCase.sortParams.getFirst();
       if (sortParam.equals("-description")) {
         // Verify descending sort by description
         var descriptions = results.items().stream()
             .map(entity -> entity.description)
-            .collect(Collectors.toList());
+            .toList();
         assertThat(descriptions).isSortedAccordingTo(Collections.reverseOrder());
       }
     }

@@ -1,5 +1,6 @@
 package ch.agridata.common.security;
 
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.exceptions.UidMissingException;
@@ -9,8 +10,8 @@ import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.RequestScoped;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +32,12 @@ public class AgridataSecurityIdentity {
   public static final UUID AGRIDATA_AGATE_LOGIN_NAMESPACE =
       UUID.nameUUIDFromBytes("agridata-agate-login-id".getBytes(StandardCharsets.UTF_8));
   private static final String ACCESS_TOKEN_CLAIM_UID = "uid";
-
-
   private static final String ACCESS_TOKEN_CLAIM_KT_ID_P = "KT_ID_P";
-  private static final String ACCESS_TOKEN_CLAIM_EMAIL = "email";
 
   private final SecurityIdentity securityIdentity;
-  @Getter
+
+  @Setter
+  private String impersonatedAgateLoginId;
   @Setter
   private String impersonatedKtIdP;
 
@@ -53,14 +53,16 @@ public class AgridataSecurityIdentity {
     return extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_AGATE_LOGIN_ID);
   }
 
-  public String getKtIdpOfUserOrImpersonatedUser() {
-    return isSupport()
-        ? impersonatedKtIdP
-        : extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_KT_ID_P);
+  public String getAgateLoginIdOrImpersonatedAgateLoginId() {
+    return isImpersonating() ? impersonatedAgateLoginId : getAgateLoginId();
   }
 
-  public String getEmail() {
-    return extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_EMAIL);
+  public String getKtIdP() {
+    return extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_KT_ID_P);
+  }
+
+  public String getKtIdpOrImpersonatedKtIdP() {
+    return isImpersonating() ? impersonatedKtIdP : getKtIdP();
   }
 
   public String getUidOrElseThrow() {
@@ -81,11 +83,19 @@ public class AgridataSecurityIdentity {
   }
 
   public boolean isImpersonating() {
-    return impersonatedKtIdP != null;
+    return impersonatedAgateLoginId != null;
   }
 
   public boolean isSupport() {
     return securityIdentity.hasRole(SUPPORT_ROLE);
+  }
+
+  public boolean isAdmin() {
+    return securityIdentity.hasRole(ADMIN_ROLE);
+  }
+
+  public Set<String> getRoles() {
+    return securityIdentity.getRoles();
   }
 
   private String extractClaim(SecurityIdentity securityIdentity, String claimName) {
