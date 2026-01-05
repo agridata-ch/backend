@@ -45,7 +45,7 @@ quarkus:
       headers:
         - Authorization
         - Content-Type
-        - X-Impersonated-KtIdP
+        - X-Impersonated-AgateLoginId
       methods:
         - GET
         - PUT
@@ -80,6 +80,10 @@ quarkus:
       user-info-required: true
   oidc-client:
     agis-api:
+      grant:
+        type: CLIENT
+      refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
+    tvd-api:
       grant:
         type: CLIENT
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues

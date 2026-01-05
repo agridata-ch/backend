@@ -7,7 +7,7 @@ import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
-import static integration.testutils.TestUserEnum.PRODUCER_032;
+import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
@@ -42,7 +42,7 @@ class ConsentRequestStatusChangeTest {
 
   @Test
   void givenApplicationRunning_whenApiCalled_thenStatusOk() {
-    AuthTestUtils.requestAs(PRODUCER_032).when().get(ConsentRequestController.PATH).then()
+    AuthTestUtils.requestAs(PRODUCER_B).when().get(ConsentRequestController.PATH).then()
         .statusCode(200);
   }
 
@@ -101,7 +101,7 @@ class ConsentRequestStatusChangeTest {
   }
 
   private ConsentRequestProducerViewDto findConsentRequest(Predicate<ConsentRequestProducerViewDto> filter) {
-    return AuthTestUtils.requestAs(PRODUCER_032).accept(ContentType.JSON).when()
+    return AuthTestUtils.requestAs(PRODUCER_B).accept(ContentType.JSON).when()
         .get(ConsentRequestController.PATH).then().statusCode(200)
         .extract()
         .as(new TypeRef<List<ConsentRequestProducerViewDto>>() {
@@ -110,7 +110,7 @@ class ConsentRequestStatusChangeTest {
 
   private void updateConsentRequestStatus(UUID id, ConsentRequestStateEnum newStatus,
                                           int expectedStatusCode) {
-    AuthTestUtils.requestAs(PRODUCER_032).contentType(ContentType.JSON)
+    AuthTestUtils.requestAs(PRODUCER_B).contentType(ContentType.JSON)
         .body(String.format("\"%s\"", newStatus)).when()
         .put(ConsentRequestController.PATH + "/" + id + "/status")
         .then().statusCode(expectedStatusCode);

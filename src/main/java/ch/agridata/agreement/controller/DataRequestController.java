@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -12,7 +13,7 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
-import io.quarkus.security.identity.SecurityIdentity;
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
@@ -24,6 +25,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
@@ -61,7 +63,7 @@ public class DataRequestController {
   private final DataRequestMutationService dataRequestMutationService;
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
-  private final SecurityIdentity securityIdentity;
+  private final AgridataSecurityIdentity identity;
 
   @GET
   @Operation(
@@ -71,7 +73,7 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   public List<DataRequestDto> getDataRequests() {
-    if (isAdmin()) {
+    if (identity.isAdmin()) {
       return dataRequestQueryService.getAllDataRequests();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
@@ -86,20 +88,32 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
-    if (isAdmin()) {
+    if (identity.isAdmin()) {
       return dataRequestQueryService.getDataRequest(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
 
+  /**
+   * This method is deprecated, because it does not return the UIDs of equid owners. They don't have a KtIdP and need to be identified
+   * by their agateLoginId.
+   *
+   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestAndProducer(UUID, String, String)}
+   */
+  @Deprecated(since = "1.5.0")
   @GET
   @Path("/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequest",
-      description = "Retrieves all consent requests associated with a specific data request. "
-          + "Accessible to admin users or the consumer who owns the data request."
+      description =
+          "<strong>This endpoint is deprecated. Please use "
+              + "[data-requests/{id}/consent-requests](#/Data%20Requests/getConsentRequestsOfDataRequestAndProducer) "
+              + "instead.</strong><br><br>"
+              + "Retrieves all consent requests associated with a specific data request. "
+              + "Accessible to the consumer who owns the data request."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
   public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequest(
       @Parameter(
           description = "The UUID of the data request",
@@ -111,10 +125,52 @@ public class DataRequestController {
           example = "FLXXA0001"
       )
       @PathParam("kt-id-p") String ktIdP) {
-    if (isAdmin()) {
-      return consentRequestQueryService.getConsentRequestsOfDataRequestForKtIdP(dataRequestId, ktIdP);
-    }
     return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(dataRequestId, ktIdP);
+  }
+
+  @GET
+  @Path("/{id}/consent-requests")
+  @Operation(
+      operationId = "getConsentRequestsOfDataRequestAndProducer",
+      description =
+          """
+              Returns the consent requests for a given data request, filtered by producer identifiers.
+              <br><br>
+              Admin users can retrieve consent requests for any data request. Consumers users can only retrieve
+              consent requests for data requests they own.
+              <br><br>
+              Both query parameters are optional, but at least one must be provided:<br>
+              If neither "kt-id-p" nor "agate-login-id" is provided, an empty list is returned.<br>
+              If "kt-id-p" is provided, consent requests related to the farmer (KT_ID_P) are returned.<br>
+              If "agate-login-id" is provided, consent requests related to the equid owner (AgateLoginId) are returned.<br>
+              If both are provided, the result contains the union of both sets."""
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  /*
+  TODO: Only allow access for the consumer role after verifying that, from a data protection perspective,
+   it is safe to inform the consumer that a person is an equid owner.
+   */
+  @RolesAllowed(ADMIN_ROLE)
+  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndProducer(
+      @Parameter(
+          description = "The UUID of the data request",
+          example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
+      )
+      @PathParam("id") UUID dataRequestId,
+      @Parameter(
+          description = "The kt-id-p identifier of the producer",
+          example = "FLXXA0001"
+      )
+      @QueryParam("kt-id-p") String ktIdP,
+      @Parameter(
+          description = "The agateLoginId of the producer",
+          example = "1234567"
+      )
+      @QueryParam("agate-login-id") String agateLoginId) {
+    if (identity.isAdmin()) {
+      return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, agateLoginId);
+    }
+    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, agateLoginId);
   }
 
   @POST
@@ -156,7 +212,7 @@ public class DataRequestController {
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   public DataRequestDto setDataRequestStatus(@PathParam("id") UUID requestId,
                                              @Valid DataRequestStateEnum stateCode) {
-    if (isAdmin()) {
+    if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
     }
     return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
@@ -178,10 +234,5 @@ public class DataRequestController {
     // See https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-556
     // dataRequestLogoService.updateDataRequestLogo(requestId, logo);
   }
-
-  private boolean isAdmin() {
-    return securityIdentity.hasRole(ADMIN_ROLE);
-  }
-
 
 }

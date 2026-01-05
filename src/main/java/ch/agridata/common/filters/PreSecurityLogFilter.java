@@ -1,6 +1,6 @@
 package ch.agridata.common.filters;
 
-import static ch.agridata.common.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
+import static ch.agridata.user.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
 
 import io.quarkus.vertx.web.RouteFilter;
 import io.vertx.core.http.HttpHeaders;
