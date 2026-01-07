@@ -37,8 +37,8 @@ public class DataRequestQueryService {
   }
 
   @RolesAllowed(ADMIN_ROLE)
-  public List<DataRequestDto> getAllDataRequests() {
-    return dataRequestRepository.findAll().list().stream()
+  public List<DataRequestDto> getAllNonDraftDataRequests() {
+    return dataRequestRepository.findAllNotDraft().stream()
         .map(dataRequestMapper::toDto)
         .toList();
   }
@@ -51,8 +51,8 @@ public class DataRequestQueryService {
   }
 
   @RolesAllowed({ADMIN_ROLE})
-  public DataRequestDto getDataRequest(UUID requestId) {
-    return dataRequestRepository.findByIdOptional(requestId)
+  public DataRequestDto getNonDraftDataRequest(UUID requestId) {
+    return dataRequestRepository.findByIdAndStateCodeNotDraft(requestId)
         .map(dataRequestMapper::toDto)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }

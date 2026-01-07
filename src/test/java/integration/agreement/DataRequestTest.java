@@ -53,11 +53,11 @@ class DataRequestTest {
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH).then()
         .statusCode(200)
-        .body("size()", equalTo(3));
+        .body("size()", equalTo(4));
   }
 
   @Test
-  void givenAdmin_whenGetDataRequests_thenAllDataRequestsReturned() {
+  void givenAdmin_whenGetDataRequests_thenAllNonDraftDataRequestsReturned() {
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH).then()
         .statusCode(200)
         .body("size()", equalTo(8));
@@ -77,6 +77,14 @@ class DataRequestTest {
         .get(DataRequestController.PATH + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestAndAdmin_whenGetDataRequest_thenReturnNotFound() {
+    AuthTestUtils.requestAs(ADMIN).when()
+        .get(DataRequestController.PATH + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .then()
+        .statusCode(404);
   }
 
   @Test
