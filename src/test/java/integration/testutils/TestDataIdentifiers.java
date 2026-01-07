@@ -22,6 +22,7 @@ public class TestDataIdentifiers {
   public static class DataRequest {
     public static final Identifier<DataRequestEntity> BIO_SUISSE_01 = id("3da3a459-d3c2-48af-b8d0-02bc95146468");
     public static final Identifier<DataRequestEntity> BIO_SUISSE_02 = id("81ae8571-9497-413a-99c5-237e72621ca7");
+    public static final Identifier<DataRequestEntity> BIO_SUISSE_DRAFT = id("dbc991ef-b717-48d7-94da-e475e607e8bc");
     public static final Identifier<DataRequestEntity> IP_SUISSE_01 = id("98a35e61-0162-4986-9e9e-ee5c65f86316");
     public static final Identifier<DataRequestEntity> IP_SUISSE_02 = id("341f558a-781c-4eb5-bab7-c2f39216b9f2");
   }

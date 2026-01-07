@@ -72,7 +72,7 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   public List<DataRequestDto> getDataRequests() {
     if (isAdmin()) {
-      return dataRequestQueryService.getAllDataRequests();
+      return dataRequestQueryService.getAllNonDraftDataRequests();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
@@ -87,7 +87,7 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
     if (isAdmin()) {
-      return dataRequestQueryService.getDataRequest(requestId);
+      return dataRequestQueryService.getNonDraftDataRequest(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
