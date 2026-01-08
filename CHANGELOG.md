@@ -1,3 +1,9 @@
+## [1.5.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.3...v1.5.0-rc.4) (2026-01-08)
+
+### Features
+
+* **admin:** Only return non-draft datarequests for Admin calling getDataRequest and getDataRequests endpoint. ([40b24a4](https://github.com/agridata-ch/backend/commit/40b24a42e29d464948368c2fef7535e2fb856d4c)), closes [DIGIB2-302](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-302)
+
 ## [1.5.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.2...v1.5.0-rc.3) (2025-12-18)
 
 ### Features
