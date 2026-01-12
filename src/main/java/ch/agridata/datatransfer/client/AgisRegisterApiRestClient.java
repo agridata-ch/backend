@@ -2,6 +2,7 @@ package ch.agridata.datatransfer.client;
 
 import ch.agridata.common.filters.RestClientLoggingFilter;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
+import io.quarkus.oidc.token.propagation.common.AccessToken;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -23,6 +24,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterProvider(DataProviderExceptionMapper.class)
 @OidcClientFilter("agis-api")
 @Path("/")
+@AccessToken
 public interface AgisRegisterApiRestClient extends DataProviderRestClient {
 
   @POST
