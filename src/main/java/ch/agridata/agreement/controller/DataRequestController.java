@@ -174,9 +174,7 @@ public class DataRequestController {
   @RolesAllowed(CONSUMER_ROLE)
   public void updateDataRequestLogo(@PathParam("id") UUID requestId,
                                     @RestForm("logo") FileUpload logo) {
-    // TODO Enable after virus scanning for uploaded files is implemented
-    // See https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-556
-    // dataRequestLogoService.updateDataRequestLogo(requestId, logo);
+    dataRequestLogoService.updateDataRequestLogo(requestId, logo);
   }
 
   private boolean isAdmin() {
