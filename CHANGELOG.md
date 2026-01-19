@@ -1,3 +1,9 @@
+## [1.5.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.4...v1.5.0-rc.5) (2026-01-19)
+
+### Bug Fixes
+
+* **security:** Improve security for logo upload. ([13ac7fc](https://github.com/agridata-ch/backend/commit/13ac7fcb6b0bb717cb6a4aff6dd5947ab271884a)), closes [DIGIB2-556](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-556)
+
 ## [1.5.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.3...v1.5.0-rc.4) (2026-01-08)
 
 ### Features
