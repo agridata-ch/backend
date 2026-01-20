@@ -1,3 +1,9 @@
+## [1.5.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.5...v1.5.0-rc.6) (2026-01-20)
+
+### Features
+
+* **equid-owners:** add equid owner uids in dropdown and ensure impersonation can handle this ([13659b8](https://github.com/agridata-ch/backend/commit/13659b820f01f7a67f3484f21bbed7be37b7a8a5)), closes [DIGIB2-1094](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1094)
+
 ## [1.5.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.4...v1.5.0-rc.5) (2026-01-19)
 
 ### Bug Fixes
