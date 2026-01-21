@@ -25,7 +25,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +44,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  */
 
 @Slf4j
-@Path(DataRequestController.PATH)
+@Path("")
 @RequiredArgsConstructor
 @Tag(
     name = "Data Requests",
@@ -56,7 +55,8 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @RunOnVirtualThread
 public class DataRequestController {
 
-  public static final String PATH = "/api/agreement/v1/data-requests";
+  public static final String PATH_V1 = "/api/agreement/v1/data-requests";
+  public static final String PATH_V2 = "/api/agreement/v2/data-requests";
 
   private final DataRequestLogoService dataRequestLogoService;
   private final DataRequestQueryService dataRequestQueryService;
@@ -66,6 +66,7 @@ public class DataRequestController {
   private final AgridataSecurityIdentity identity;
 
   @GET
+  @Path(PATH_V1)
   @Operation(
       operationId = "getDataRequests",
       description = "Retrieves a list of data requests. Admin users receive all data requests, "
@@ -80,7 +81,7 @@ public class DataRequestController {
   }
 
   @GET
-  @Path("/{id}")
+  @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "getDataRequest",
       description = "Retrieves a specific data request by its ID. Accessible to admin users "
@@ -95,26 +96,25 @@ public class DataRequestController {
   }
 
   /**
-   * This method is deprecated, because it does not return the UIDs of equid owners. They don't have a KtIdP and need to be identified
-   * by their agateLoginId.
+   * This method is deprecated, because it does not return the name of the UIDs
    *
-   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestAndProducer(UUID, String, String)}
+   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestAndKtIdPv2(UUID, String)}
    */
   @Deprecated(since = "1.5.0")
   @GET
-  @Path("/{id}/kt-id-p/{kt-id-p}/consent-requests")
+  @Path(PATH_V1 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
-      operationId = "getConsentRequestsOfDataRequest",
+      operationId = "getConsentRequestsOfDataRequestAndKtIdP",
       description =
-          "<strong>This endpoint is deprecated. Please use "
-              + "[data-requests/{id}/consent-requests](#/Data%20Requests/getConsentRequestsOfDataRequestAndProducer) "
+          "<strong>This endpoint is deprecated, because it does not return the name of the UIDs. Please use "
+              + "[/v2/data-requests/{id}/kt-id-p/{kt-id-p}/consent-requests](#/Data%20Requests/getConsentRequestsOfDataRequestAndKtIdPv2) "
               + "instead.</strong><br><br>"
-              + "Retrieves all consent requests associated with a specific data request. "
+              + "Retrieves all consent requests associated with a specific data request and kt-id-p. "
               + "Accessible to the consumer who owns the data request."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed(CONSUMER_ROLE)
-  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequest(
+  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestAndKtIdP(
       @Parameter(
           description = "The UUID of the data request",
           example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
@@ -129,29 +129,14 @@ public class DataRequestController {
   }
 
   @GET
-  @Path("/{id}/consent-requests")
+  @Path(PATH_V2 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
-      operationId = "getConsentRequestsOfDataRequestAndProducer",
-      description =
-          """
-              Returns the consent requests for a given data request, filtered by producer identifiers.
-              <br><br>
-              Admin users can retrieve consent requests for any data request. Consumers users can only retrieve
-              consent requests for data requests they own.
-              <br><br>
-              Both query parameters are optional, but at least one must be provided:<br>
-              If neither "kt-id-p" nor "agate-login-id" is provided, an empty list is returned.<br>
-              If "kt-id-p" is provided, consent requests related to the farmer (KT_ID_P) are returned.<br>
-              If "agate-login-id" is provided, consent requests related to the equid owner (AgateLoginId) are returned.<br>
-              If both are provided, the result contains the union of both sets."""
+      operationId = "getConsentRequestsOfDataRequestAndKtIdPv2",
+      description = "Retrieves all consent requests associated with a specific data request and kt-id-p. "
+          + "Accessible to the consumer who owns the data request and for admin users."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  /*
-  TODO: Only allow access for the consumer role after verifying that, from a data protection perspective,
-   it is safe to inform the consumer that a person is an equid owner.
-   */
-  @RolesAllowed(ADMIN_ROLE)
-  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndProducer(
+  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndKtIdPv2(
       @Parameter(
           description = "The UUID of the data request",
           example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
@@ -161,19 +146,15 @@ public class DataRequestController {
           description = "The kt-id-p identifier of the producer",
           example = "FLXXA0001"
       )
-      @QueryParam("kt-id-p") String ktIdP,
-      @Parameter(
-          description = "The agateLoginId of the producer",
-          example = "1234567"
-      )
-      @QueryParam("agate-login-id") String agateLoginId) {
+      @PathParam("kt-id-p") String ktIdP) {
     if (identity.isAdmin()) {
-      return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, agateLoginId);
+      return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
     }
-    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, agateLoginId);
+    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null);
   }
 
   @POST
+  @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
       description = "Creates a new data request in draft status. Only accessible to users with the consumer role."
@@ -187,7 +168,7 @@ public class DataRequestController {
   }
 
   @PUT()
-  @Path("/{id}")
+  @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "updateDataRequestDetails",
       description = "Updates the details of an existing data request. Only accessible to the consumer who owns the data request."
@@ -201,7 +182,7 @@ public class DataRequestController {
   }
 
   @PUT
-  @Path("/{id}/status")
+  @Path(PATH_V1 + "/{id}/status")
   @Operation(
       operationId = "setDataRequestStatus",
       description = "sets status of data request. Only accessible to the consumer who owns the data request and to admins. "
@@ -220,7 +201,7 @@ public class DataRequestController {
   }
 
   @PUT
-  @Path("/{id}/logo")
+  @Path(PATH_V1 + "/{id}/logo")
   @Operation(
       operationId = "updateDataRequestLogo",
       description = "Updates the logo of a specific data request. Only accessible to the consumer who owns the data request."

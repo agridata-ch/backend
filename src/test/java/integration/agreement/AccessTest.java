@@ -32,28 +32,28 @@ class AccessTest {
 
   @Test
   void testAccess_DataRequestController() {
-    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH,
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1,
         CONSUMER_ROLE, ADMIN_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(POST, DataRequestController.PATH,
+    AccessTestUtils.assertForbiddenForAllExcept(POST, DataRequestController.PATH_V1,
         CONSUMER_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH + "/1",
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1",
         CONSUMER_ROLE, ADMIN_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH + "/1",
+    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1",
         CONSUMER_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH + "/1/consent-requests",
-        ADMIN_ROLE);
-
-    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH + "/1/logo", MULTIPART,
+    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/logo", MULTIPART,
         CONSUMER_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH + "/1/status",
+    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/status",
         CONSUMER_ROLE, ADMIN_ROLE);
 
-    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH + "/1/kt-id-p/1/consent-requests",
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1/kt-id-p/1/consent-requests",
+        CONSUMER_ROLE, ADMIN_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V2 + "/1/kt-id-p/1/consent-requests",
         CONSUMER_ROLE, ADMIN_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH,
