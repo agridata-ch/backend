@@ -1,3 +1,9 @@
+## [1.5.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.6...v1.5.0-rc.7) (2026-01-21)
+
+### Features
+
+* **api:** refactor api paths to align with REST principles ([d336d65](https://github.com/agridata-ch/backend/commit/d336d65ce7b49062ed6b84b0eb85bb8f7083c43b)), closes [DIGIB2-1094](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1094)
+
 ## [1.5.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.5...v1.5.0-rc.6) (2026-01-20)
 
 ### Features
