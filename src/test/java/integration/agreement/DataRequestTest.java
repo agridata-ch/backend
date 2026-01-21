@@ -51,14 +51,14 @@ class DataRequestTest {
 
   @Test
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
-    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH).then()
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(4));
   }
 
   @Test
   void givenAdmin_whenGetDataRequests_thenAllNonDraftDataRequestsReturned() {
-    AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH).then()
+    AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(8));
   }
@@ -66,7 +66,7 @@ class DataRequestTest {
   @Test
   void givenExistingDataRequestWithDifferentUID_whenGetDataRequest_thenReturnNotFound() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.IP_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(404);
   }
@@ -74,7 +74,7 @@ class DataRequestTest {
   @Test
   void givenExistingDataRequestAndAdmin__whenGetDataRequest_thenReturnFound() {
     AuthTestUtils.requestAs(ADMIN).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.IP_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
   }
@@ -82,7 +82,7 @@ class DataRequestTest {
   @Test
   void givenExistingDraftDataRequestAndAdmin_whenGetDataRequest_thenReturnNotFound() {
     AuthTestUtils.requestAs(ADMIN).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
         .then()
         .statusCode(404);
   }
@@ -91,7 +91,7 @@ class DataRequestTest {
   void givenExistingId_whenGetDataRequest_thenReturnRequest() {
 
     DataRequestDto dataRequestDto = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.BIO_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
         .then()
         .statusCode(200)
         .extract().as(new TypeRef<>() {
