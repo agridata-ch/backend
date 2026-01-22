@@ -1,6 +1,8 @@
 package integration.agreement;
 
 import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
+import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
@@ -23,6 +25,7 @@ import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import integration.auditing.utils.AuditLogTestUtils;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.DataRequest;
@@ -42,6 +45,7 @@ class DataRequestTest {
   private static final UUID NONEXISTENT_PRODUCT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
   private final Flyway flyway;
   private final DataRequestRepository dataRequestRepository;
+  private final AuditLogTestUtils auditLogTestUtils;
 
   @BeforeEach
   void setUp() {
@@ -72,7 +76,7 @@ class DataRequestTest {
   }
 
   @Test
-  void givenExistingDataRequestAndAdmin__whenGetDataRequest_thenReturnFound() {
+  void givenExistingDataRequestAndAdmin_whenGetDataRequest_thenReturnFound() {
     AuthTestUtils.requestAs(ADMIN).when()
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
@@ -129,6 +133,8 @@ class DataRequestTest {
         .body("stateCode", equalTo(DataRequestStateEnum.DRAFT.toString()))
         .body("dataConsumerUid", equalTo("CHE" + UID_BIO_SUISSE_WITHOUT_PREFIX))
         .body("dataConsumerLegalName", notNullValue());
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
   }
 
   @Test
@@ -187,7 +193,7 @@ class DataRequestTest {
   }
 
   @Test
-  void givenToLongFields_whenUpdateDraft_thenReturnBadRequest() {
+  void givenTooLongFields_whenUpdateDraft_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
 
@@ -201,6 +207,8 @@ class DataRequestTest {
     updateDataRequest(id, invalidDto)
         .then()
         .statusCode(400);
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
   }
 
   @Test
@@ -215,6 +223,8 @@ class DataRequestTest {
 
     createDataRequest(invalidDto).then()
         .statusCode(400);
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
   }
 
   @Test
@@ -225,6 +235,8 @@ class DataRequestTest {
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE)
         .then()
         .statusCode(400);
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
   }
 
   @Test
@@ -239,6 +251,12 @@ class DataRequestTest {
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(IN_REVIEW.name()));
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).satisfies(log -> {
+      assertThat(log.getEntityTypeCode()).isEqualTo(DATA_REQUEST.name());
+      assertThat(log.getEntityId()).isEqualTo(UUID.fromString(id));
+      assertThat(log.getActionCode()).isEqualTo(DATA_REQUEST_SUBMITTED.name());
+    });
   }
 
   @Test
@@ -252,6 +270,8 @@ class DataRequestTest {
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, ADMIN)
         .then()
         .statusCode(400);
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
   }
 
 }

@@ -25,12 +25,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Manages state transitions of data requests and enforces transition rules. Handles validation and submission logic related to changing
  * request states.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-01-22
  */
 
 @ApplicationScoped
@@ -52,6 +53,8 @@ public class DataRequestStateService {
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Validator validator;
+  private final AuditingService auditingService;
+
 
   public static void verifyStatusTransition(DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to) {
     if (!ALLOWED_TRANSITIONS.getOrDefault(from, Set.of()).contains(to)) {
@@ -63,40 +66,44 @@ public class DataRequestStateService {
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto setStateAsConsumer(UUID requestId, DataRequestStateEnum state) {
-    if (!List.of(DRAFT, IN_REVIEW).contains(state)) {
-      throw new IllegalStateException("Only DRAFT and IN_REVIEW state can be set by consumer");
+    verifyConsumerStateAllowed(state);
+    var entity = loadEntityForConsumer(requestId);
+    var oldStateCode = entity.getStateCode();
+    var newStateCode = toEntityState(state);
+
+    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
+      validate(dataRequestMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
     }
-    var entity = dataRequestRepository.findByIdAndDataConsumerUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
-        .orElseThrow(() -> new NotFoundException(requestId.toString()));
-    var dataRequestDto = dataRequestMapper.toUpdateDto(entity);
-    var newStateCode = DataRequestEntity.DataRequestStateEnum.valueOf(state.name());
 
-    validate(dataRequestDto, ValidationSchemaGenerator.Submit.class);
-    return setStateTo(entity, newStateCode);
+    verifyStatusTransition(oldStateCode, newStateCode);
 
+    var dto = setStateTo(entity, newStateCode);
+
+    auditConsumerStatusTransition(requestId, oldStateCode, newStateCode);
+
+    return dto;
   }
 
   @RolesAllowed(ADMIN_ROLE)
   @Transactional
   public DataRequestDto setStateAsAdmin(UUID requestId, DataRequestStateEnum state) {
-    var entity = dataRequestRepository.findByIdOptional(requestId)
-        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+    var entity = loadEntityForAdmin(requestId);
 
-    var oldStateCode = DataRequestStateEnum.valueOf(entity.getStateCode().name());
-    if (DRAFT == oldStateCode) {
-      throw new IllegalStateException(
-          "Cannot change state from DRAFT - data request must be set to IN_REVIEW by the consumer first");
-    }
+    var oldStateCode = entity.getStateCode();
+    var newStateCode = toEntityState(state);
 
-    var newStateCode = DataRequestEntity.DataRequestStateEnum.valueOf(state.name());
+    verifyAdminMayChangeFrom(oldStateCode);
+    verifyStatusTransition(oldStateCode, newStateCode);
 
-    return setStateTo(entity, newStateCode);
+    var dto = setStateTo(entity, newStateCode);
+
+    auditAdminStatusTransition(requestId, oldStateCode, newStateCode);
+
+    return dto;
   }
 
-  private DataRequestDto setStateTo(DataRequestEntity entity, DataRequestEntity.DataRequestStateEnum newStateDto) {
-    var newStateCode = DataRequestEntity.DataRequestStateEnum.valueOf(newStateDto.name());
-
-    verifyStatusTransition(entity.getStateCode(), newStateCode);
+  private DataRequestDto setStateTo(DataRequestEntity entity, DataRequestEntity.DataRequestStateEnum newStateCode) {
 
     entity.setStateCode(newStateCode);
 
@@ -114,6 +121,57 @@ public class DataRequestStateService {
     Set<ConstraintViolation<T>> violations = validator.validate(object, groups);
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
+    }
+  }
+
+  private static void verifyConsumerStateAllowed(DataRequestStateEnum state) {
+    if (!List.of(DRAFT, IN_REVIEW).contains(state)) {
+      throw new IllegalStateException("Only DRAFT and IN_REVIEW state can be set by consumer");
+    }
+  }
+
+  private static DataRequestEntity.@NotNull DataRequestStateEnum toEntityState(DataRequestStateEnum state) {
+    return DataRequestEntity.DataRequestStateEnum.valueOf(state.name());
+  }
+
+  private DataRequestEntity loadEntityForConsumer(UUID requestId) {
+    return dataRequestRepository.findByIdAndDataConsumerUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+  }
+
+  private void auditAdminStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
+                                          DataRequestEntity.DataRequestStateEnum newStateCode) {
+    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW && newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
+      auditingService.logDataRequestRejected(requestId);
+    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED) {
+      auditingService.logDataRequestApproved(requestId);
+    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.ACTIVE) {
+      auditingService.logDataRequestActivated(requestId);
+    }
+  }
+
+  private static void verifyAdminMayChangeFrom(DataRequestEntity.DataRequestStateEnum oldStateCode) {
+    if (DataRequestEntity.DataRequestStateEnum.DRAFT == oldStateCode) {
+      throw new IllegalStateException(
+          "Cannot change state from DRAFT - data request must be set to IN_REVIEW by the consumer first");
+    }
+  }
+
+  private DataRequestEntity loadEntityForAdmin(UUID requestId) {
+    return dataRequestRepository.findByIdOptional(requestId)
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+  }
+
+  private void auditConsumerStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
+                                             DataRequestEntity.DataRequestStateEnum newStateCode) {
+    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
+      auditingService.logDataRequestWithdrawn(requestId);
+    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
+      auditingService.logDataRequestSubmitted(requestId);
     }
   }
 }
