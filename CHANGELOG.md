@@ -1,3 +1,57 @@
+## [1.5.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.6...v1.5.0-rc.7) (2026-01-21)
+
+### Features
+
+* **api:** refactor api paths to align with REST principles ([d336d65](https://github.com/agridata-ch/backend/commit/d336d65ce7b49062ed6b84b0eb85bb8f7083c43b)), closes [DIGIB2-1094](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1094)
+
+## [1.5.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.5...v1.5.0-rc.6) (2026-01-20)
+
+### Features
+
+* **equid-owners:** add equid owner uids in dropdown and ensure impersonation can handle this ([13659b8](https://github.com/agridata-ch/backend/commit/13659b820f01f7a67f3484f21bbed7be37b7a8a5)), closes [DIGIB2-1094](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1094)
+
+## [1.5.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.4...v1.5.0-rc.5) (2026-01-19)
+
+### Bug Fixes
+
+* **security:** Improve security for logo upload. ([13ac7fc](https://github.com/agridata-ch/backend/commit/13ac7fcb6b0bb717cb6a4aff6dd5947ab271884a)), closes [DIGIB2-556](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-556)
+
+## [1.5.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.3...v1.5.0-rc.4) (2026-01-08)
+
+### Features
+
+* **admin:** Only return non-draft datarequests for Admin calling getDataRequest and getDataRequests endpoint. ([40b24a4](https://github.com/agridata-ch/backend/commit/40b24a42e29d464948368c2fef7535e2fb856d4c)), closes [DIGIB2-302](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-302)
+
+## [1.5.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.2...v1.5.0-rc.3) (2025-12-18)
+
+### Features
+
+* **deps:** Require approval for renovate-bot PRs and update multiple dependencies: ([60e43ce](https://github.com/agridata-ch/backend/commit/60e43ce1af61ed776c81582cfa221e32fa1dda3c)), closes [DIGIB2-1164](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1164)
+
+## [1.5.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2025-12-18)
+
+### Features
+
+* **deps:** Updating multiple dependencies: ([7d3a0c4](https://github.com/agridata-ch/backend/commit/7d3a0c48d9d95766bbb7a176b1134c1c9ac81382)), closes [DIGIB2-1164](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1164)
+
+## [1.5.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.2...v1.5.0-rc.1) (2025-12-17)
+
+### Features
+
+* **test-users:** add new test users and remove json rewrite ([e601a7c](https://github.com/agridata-ch/backend/commit/e601a7c89f63932e8ce68039a186f9295a9c6eda)), closes [DIGIB2-1075](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1075)
+
+## [1.4.3-rc.2](https://github.com/agridata-ch/backend/compare/v1.4.3-rc.1...v1.4.3-rc.2) (2025-12-16)
+
+### Bug Fixes
+
+* **dataRequest:** Prevent submission of data requests with non-existent data products ([140ab24](https://github.com/agridata-ch/backend/commit/140ab2434220e14de77f658efca605713ba28614)), closes [DIGIB2-1052](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1052)
+
+## [1.4.3-rc.1](https://github.com/agridata-ch/backend/compare/v1.4.2...v1.4.3-rc.1) (2025-12-11)
+
+### Bug Fixes
+
+* **dataRequest:** Prevent submission of data requests with values that don't adhere to size constraints ([1cf3636](https://github.com/agridata-ch/backend/commit/1cf363607befe27618a6cb47bc5345b0ae02502c)), closes [DIGIB2-1051](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1051)
+
 ## [1.4.2](https://github.com/agridata-ch/backend/compare/v1.4.1...v1.4.2) (2025-12-10)
 
 ### Bug Fixes

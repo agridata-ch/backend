@@ -27,6 +27,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.ResponseStatus;
@@ -58,22 +58,10 @@ public class UserController {
 
   public static final String PATH = "/api/user/v1";
 
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final AgridataSecurityIdentity identity;
   private final UidAuthorizationService uidAuthorizationService;
   private final BurAuthorizationService burAuthorizationService;
   private final UserService userService;
-
-  @GET
-  @Path("/ktIdP/{ktIdP}/authorized-uids")
-  @Operation(
-      operationId = "getAuthorizedUidsByKtIdP",
-      description = "Retrieves all UIDs authorized for the specified ktIdP. Only accessible to admin users.")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({ADMIN_ROLE})
-  public List<UidDto> getAuthorizedUidsByKtIdP(@PathParam("ktIdP") String ktIdP) {
-    return uidAuthorizationService.getAuthorizedUids(ktIdP);
-  }
 
   @GET
   @Path("/authorized-uids")
@@ -82,9 +70,24 @@ public class UserController {
       description = "Retrieves all UIDs authorized for the currently authenticated data producer.")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
-  public List<UidDto> getAuthorizedUids() {
-    return uidAuthorizationService.getAuthorizedUids(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser());
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE})
+  public List<UidDto> getAuthorizedUids(
+      @Parameter(
+          description = "The kt-id-p identifier of the producer (only relevant for admin users)",
+          example = "FLXXA0001"
+      )
+      @QueryParam("kt-id-p") String ktIdP,
+      @Parameter(
+          description = "The agateLoginId of the producer (only relevant for admin users)",
+          example = "1234567"
+      )
+      @QueryParam("agate-login-id") String agateLoginId) {
+    if (identity.isAdmin()) {
+      return uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
+    }
+    return uidAuthorizationService.getAuthorizedUids(
+        identity.getKtIdpOrImpersonatedKtIdP(),
+        identity.getAgateLoginIdOrImpersonatedAgateLoginId());
   }
 
   @GET
@@ -107,8 +110,8 @@ public class UserController {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
   public UserInfoDto getUserInfo() {
-    if (agridataSecurityIdentity.isSupport() && agridataSecurityIdentity.isImpersonating()) {
-      return userService.getUserIdByKtIdP(agridataSecurityIdentity.getKtIdpOfUserOrImpersonatedUser());
+    if (identity.isSupport() && identity.isImpersonating()) {
+      return userService.getUserInfo(identity.getAgateLoginIdOrImpersonatedAgateLoginId());
     }
     return userService.updateUserData();
   }
@@ -122,7 +125,7 @@ public class UserController {
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   public void updateUserPreferences(@Valid @RequestBody UserPreferencesDto userPreferences) {
-    if (!agridataSecurityIdentity.isImpersonating()) {
+    if (!identity.isImpersonating()) {
       userService.updateUserPreferences(userPreferences);
     }
   }
@@ -132,11 +135,9 @@ public class UserController {
   @Operation(
       operationId = "getProducers",
       description = "Retrieves users mathing the given query parameters.")
-  @Parameters({
-      @Parameter(name = "resourceQueryDto",
-          description = "Query parameters",
-          schema = @Schema(implementation = ResourceQueryDto.class))
-  })
+  @Parameter(name = "resourceQueryDto",
+      description = "Query parameters",
+      schema = @Schema(implementation = ResourceQueryDto.class))
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({SUPPORT_ROLE})
   public PageResponseDto<UserInfoDto> getProducers(

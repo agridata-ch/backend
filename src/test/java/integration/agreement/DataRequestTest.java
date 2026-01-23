@@ -30,6 +30,7 @@ import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @RequiredArgsConstructor
 class DataRequestTest {
+  private static final UUID NONEXISTENT_PRODUCT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
   private final Flyway flyway;
   private final DataRequestRepository dataRequestRepository;
 
@@ -49,14 +51,14 @@ class DataRequestTest {
 
   @Test
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
-    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH).then()
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(3));
+        .body("size()", equalTo(4));
   }
 
   @Test
-  void givenAdmin_whenGetDataRequests_thenAllDataRequestsReturned() {
-    AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH).then()
+  void givenAdmin_whenGetDataRequests_thenAllNonDraftDataRequestsReturned() {
+    AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(8));
   }
@@ -64,7 +66,7 @@ class DataRequestTest {
   @Test
   void givenExistingDataRequestWithDifferentUID_whenGetDataRequest_thenReturnNotFound() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.IP_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(404);
   }
@@ -72,16 +74,24 @@ class DataRequestTest {
   @Test
   void givenExistingDataRequestAndAdmin__whenGetDataRequest_thenReturnFound() {
     AuthTestUtils.requestAs(ADMIN).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.IP_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestAndAdmin_whenGetDataRequest_thenReturnNotFound() {
+    AuthTestUtils.requestAs(ADMIN).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .then()
+        .statusCode(404);
   }
 
   @Test
   void givenExistingId_whenGetDataRequest_thenReturnRequest() {
 
     DataRequestDto dataRequestDto = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
-        .get(DataRequestController.PATH + "/" + DataRequest.BIO_SUISSE_01)
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
         .then()
         .statusCode(200)
         .extract().as(new TypeRef<>() {
@@ -121,6 +131,28 @@ class DataRequestTest {
         .body("dataConsumerLegalName", notNullValue());
   }
 
+  @Test
+  void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(NONEXISTENT_PRODUCT_UUID))
+        .build();
+    createDataRequest(invalidDto).then().statusCode(400);
+  }
+
+  @Test
+  void givenInvalidProducts_whenUpdateDraft_thenReturnInvalidRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto firstUpdate = getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(NONEXISTENT_PRODUCT_UUID))
+        .build();
+
+    updateDataRequest(id, firstUpdate)
+        .then()
+        .statusCode(400);
+
+  }
 
   @Test
   void givenChangingProducts_whenUpdateDraft_thenReturnUpdatedRequest() {
@@ -172,6 +204,20 @@ class DataRequestTest {
   }
 
   @Test
+  void givenTooLongFields_whenCreateDraft_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
+        .title(new DataRequestTitleDto(
+            "test more than 255".repeat(100),
+            "abc",
+            "abc"))
+        .products(List.of())
+        .build();
+
+    createDataRequest(invalidDto).then()
+        .statusCode(400);
+  }
+
+  @Test
   void givenMissingSubmitFields_whenSubmit_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
@@ -193,6 +239,19 @@ class DataRequestTest {
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(IN_REVIEW.name()));
+  }
+
+  @Test
+  void givenValidDraftAndAdmin_whenSubmitStateChange_thenReturnBadRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    updateDataRequest(id, getDataRequestDto().build())
+        .then()
+        .statusCode(200);
+
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, ADMIN)
+        .then()
+        .statusCode(400);
   }
 
 }

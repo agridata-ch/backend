@@ -2681,474 +2681,6 @@
   },
   "users": [
     {
-      "username": "producer-032",
-      "attributes": {
-        "KT_ID_P": [
-          "***032"
-        ],
-        "loginid": [
-          "3477562"
-        ],
-        "street": [
-          "Beispielweg 12"
-        ],
-        "locality": [
-          "Zürich"
-        ],
-        "postal_code": [
-          "8001"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-032@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "032",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-037",
-      "attributes": {
-        "KT_ID_P": [
-          "***037"
-        ],
-        "loginid": [
-          "3477563"
-        ],
-        "street": [
-          "Fantasiestrasse 88"
-        ],
-        "locality": [
-          "Bern"
-        ],
-        "postal_code": [
-          "3001"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-037@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "037",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-081",
-      "attributes": {
-        "KT_ID_P": [
-          "***081"
-        ],
-        "loginid": [
-          "3477561"
-        ],
-        "street": [
-          "Testgasse 5"
-        ],
-        "locality": [
-          "Basel"
-        ],
-        "postal_code": [
-          "4051"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-081@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "081",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-266",
-      "attributes": {
-        "KT_ID_P": [
-          "***266"
-        ],
-        "loginid": [
-          "3477560"
-        ],
-        "street": [
-          "Demoallee 42"
-        ],
-        "locality": [
-          "Genf"
-        ],
-        "postal_code": [
-          "1201"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-266@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "266",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-307",
-      "attributes": {
-        "KT_ID_P": [
-          "***307"
-        ],
-        "loginid": [
-          "3477558"
-        ],
-        "street": [
-          "Platzhalterstrasse 7"
-        ],
-        "locality": [
-          "Luzern"
-        ],
-        "postal_code": [
-          "6003"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-307@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "307",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-401",
-      "attributes": {
-        "KT_ID_P": [
-          "***401"
-        ],
-        "loginid": [
-          "3477564"
-        ],
-        "street": [
-          "Fiktionweg 19"
-        ],
-        "locality": [
-          "St. Gallen"
-        ],
-        "postal_code": [
-          "9000"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-401@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "401",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-451",
-      "attributes": {
-        "KT_ID_P": [
-          "***451"
-        ],
-        "loginid": [
-          "3477565"
-        ],
-        "street": [
-          "Probestrasse 33"
-        ],
-        "locality": [
-          "Winterthur"
-        ],
-        "postal_code": [
-          "8400"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-451@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "451",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-479",
-      "attributes": {
-        "KT_ID_P": [
-          "***479"
-        ],
-        "loginid": [
-          "3477559"
-        ],
-        "street": [
-          "Erfundenerweg 77"
-        ],
-        "locality": [
-          "Lausanne"
-        ],
-        "postal_code": [
-          "1003"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-479@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "479",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
-      "username": "producer-724",
-      "attributes": {
-        "KT_ID_P": [
-          "***724"
-        ],
-        "loginid": [
-          "3477557"
-        ],
-        "street": [
-          "Dummystrasse 21"
-        ],
-        "locality": [
-          "Chur"
-        ],
-        "postal_code": [
-          "7000"
-        ],
-        "country": [
-          "CH"
-        ],
-        "phoneNumber": [
-          "+4179123456789"
-        ]
-      },
-      "createdTimestamp": 1753048800000,
-      "credentials": [
-        {
-          "createdDate": 1753048800000,
-          "type": "password",
-          "userLabel": "My password",
-          "value": "secret"
-        }
-      ],
-      "disableableCredentialTypes": [
-      ],
-      "email": "producer-724@blw.admin.ch",
-      "emailVerified": true,
-      "enabled": true,
-      "firstName": "Producer",
-      "groups": [
-      ],
-      "lastName": "724",
-      "notBefore": 0,
-      "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
-      ],
-      "requiredActions": [
-      ],
-      "totp": false
-    },
-    {
       "username": "consumer",
       "attributes": {
         "loginid": [
@@ -3375,6 +2907,266 @@
       "notBefore": 0,
       "realmRoles": [
         "default-roles-agate"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-a",
+      "attributes": {
+        "KT_ID_P": [
+          "FLXXA0001"
+        ],
+        "loginid": [
+          "3477580"
+        ],
+        "street": [
+          "Beispielgasse 42"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-a@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Erika",
+      "groups": [
+      ],
+      "lastName": "Musterfrau",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-b",
+      "attributes": {
+        "KT_ID_P": [
+          "FLXXB0001"
+        ],
+        "loginid": [
+          "3477581"
+        ],
+        "street": [
+          "Hauptstrasse 2"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-b@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Jonas",
+      "groups": [
+      ],
+      "lastName": "Testmann",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-b-3",
+      "attributes": {
+        "KT_ID_P": [
+          "FLXXB0003"
+        ],
+        "loginid": [
+          "3477582"
+        ],
+        "street": [
+          "Hauptstrasse 138"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-b-3@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Sofia",
+      "groups": [
+      ],
+      "lastName": "Mustermann",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-c",
+      "attributes": {
+        "KT_ID_P": [
+          "FLXXC0001"
+        ],
+        "loginid": [
+          "3477583"
+        ],
+        "street": [
+          "Musterweg 1"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-c@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Max",
+      "groups": [
+      ],
+      "lastName": "Mustermann",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-d",
+      "attributes": {
+        "KT_ID_P": [
+          "FLXXD0001"
+        ],
+        "loginid": [
+          "3477584"
+        ],
+        "street": [
+          "Beispielallee 9"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-d@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Lara",
+      "groups": [
+      ],
+      "lastName": "Beispiel",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
       ],
       "requiredActions": [
       ],

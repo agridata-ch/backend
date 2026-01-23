@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -12,7 +13,7 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
-import io.quarkus.security.identity.SecurityIdentity;
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
@@ -43,7 +44,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  */
 
 @Slf4j
-@Path(DataRequestController.PATH)
+@Path("")
 @RequiredArgsConstructor
 @Tag(
     name = "Data Requests",
@@ -54,16 +55,18 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @RunOnVirtualThread
 public class DataRequestController {
 
-  public static final String PATH = "/api/agreement/v1/data-requests";
+  public static final String PATH_V1 = "/api/agreement/v1/data-requests";
+  public static final String PATH_V2 = "/api/agreement/v2/data-requests";
 
   private final DataRequestLogoService dataRequestLogoService;
   private final DataRequestQueryService dataRequestQueryService;
   private final DataRequestMutationService dataRequestMutationService;
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
-  private final SecurityIdentity securityIdentity;
+  private final AgridataSecurityIdentity identity;
 
   @GET
+  @Path(PATH_V1)
   @Operation(
       operationId = "getDataRequests",
       description = "Retrieves a list of data requests. Admin users receive all data requests, "
@@ -71,14 +74,14 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   public List<DataRequestDto> getDataRequests() {
-    if (isAdmin()) {
-      return dataRequestQueryService.getAllDataRequests();
+    if (identity.isAdmin()) {
+      return dataRequestQueryService.getAllNonDraftDataRequests();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
 
   @GET
-  @Path("/{id}")
+  @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "getDataRequest",
       description = "Retrieves a specific data request by its ID. Accessible to admin users "
@@ -86,21 +89,32 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
-    if (isAdmin()) {
-      return dataRequestQueryService.getDataRequest(requestId);
+    if (identity.isAdmin()) {
+      return dataRequestQueryService.getNonDraftDataRequest(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
 
+  /**
+   * This method is deprecated, because it does not return the name of the UIDs
+   *
+   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestAndKtIdPv2(UUID, String)}
+   */
+  @Deprecated(since = "1.5.0")
   @GET
-  @Path("/{id}/kt-id-p/{kt-id-p}/consent-requests")
+  @Path(PATH_V1 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
-      operationId = "getConsentRequestsOfDataRequest",
-      description = "Retrieves all consent requests associated with a specific data request. "
-          + "Accessible to admin users or the consumer who owns the data request."
+      operationId = "getConsentRequestsOfDataRequestAndKtIdP",
+      description =
+          "<strong>This endpoint is deprecated, because it does not return the name of the UIDs. Please use "
+              + "[/v2/data-requests/{id}/kt-id-p/{kt-id-p}/consent-requests](#/Data%20Requests/getConsentRequestsOfDataRequestAndKtIdPv2) "
+              + "instead.</strong><br><br>"
+              + "Retrieves all consent requests associated with a specific data request and kt-id-p. "
+              + "Accessible to the consumer who owns the data request."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequest(
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestAndKtIdP(
       @Parameter(
           description = "The UUID of the data request",
           example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
@@ -108,16 +122,39 @@ public class DataRequestController {
       @PathParam("id") UUID dataRequestId,
       @Parameter(
           description = "The kt-id-p identifier of the producer",
-          example = "***081"
+          example = "FLXXA0001"
       )
       @PathParam("kt-id-p") String ktIdP) {
-    if (isAdmin()) {
-      return consentRequestQueryService.getConsentRequestsOfDataRequestForKtIdP(dataRequestId, ktIdP);
-    }
     return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(dataRequestId, ktIdP);
   }
 
+  @GET
+  @Path(PATH_V2 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
+  @Operation(
+      operationId = "getConsentRequestsOfDataRequestAndKtIdPv2",
+      description = "Retrieves all consent requests associated with a specific data request and kt-id-p. "
+          + "Accessible to the consumer who owns the data request and for admin users."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndKtIdPv2(
+      @Parameter(
+          description = "The UUID of the data request",
+          example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
+      )
+      @PathParam("id") UUID dataRequestId,
+      @Parameter(
+          description = "The kt-id-p identifier of the producer",
+          example = "FLXXA0001"
+      )
+      @PathParam("kt-id-p") String ktIdP) {
+    if (identity.isAdmin()) {
+      return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
+    }
+    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null);
+  }
+
   @POST
+  @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
       description = "Creates a new data request in draft status. Only accessible to users with the consumer role."
@@ -126,12 +163,12 @@ public class DataRequestController {
   @Consumes(MediaType.APPLICATION_JSON)
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   @RolesAllowed(CONSUMER_ROLE)
-  public DataRequestDto createDataRequestDraft(DataRequestUpdateDto dataRequestDto) {
+  public DataRequestDto createDataRequestDraft(@Valid DataRequestUpdateDto dataRequestDto) {
     return dataRequestMutationService.createDataRequestDraft(dataRequestDto);
   }
 
   @PUT()
-  @Path("/{id}")
+  @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "updateDataRequestDetails",
       description = "Updates the details of an existing data request. Only accessible to the consumer who owns the data request."
@@ -145,7 +182,7 @@ public class DataRequestController {
   }
 
   @PUT
-  @Path("/{id}/status")
+  @Path(PATH_V1 + "/{id}/status")
   @Operation(
       operationId = "setDataRequestStatus",
       description = "sets status of data request. Only accessible to the consumer who owns the data request and to admins. "
@@ -156,7 +193,7 @@ public class DataRequestController {
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   public DataRequestDto setDataRequestStatus(@PathParam("id") UUID requestId,
                                              @Valid DataRequestStateEnum stateCode) {
-    if (isAdmin()) {
+    if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
     }
     return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
@@ -164,7 +201,7 @@ public class DataRequestController {
   }
 
   @PUT
-  @Path("/{id}/logo")
+  @Path(PATH_V1 + "/{id}/logo")
   @Operation(
       operationId = "updateDataRequestLogo",
       description = "Updates the logo of a specific data request. Only accessible to the consumer who owns the data request."
@@ -174,14 +211,7 @@ public class DataRequestController {
   @RolesAllowed(CONSUMER_ROLE)
   public void updateDataRequestLogo(@PathParam("id") UUID requestId,
                                     @RestForm("logo") FileUpload logo) {
-    // TODO Enable after virus scanning for uploaded files is implemented
-    // See https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-556
-    // dataRequestLogoService.updateDataRequestLogo(requestId, logo);
+    dataRequestLogoService.updateDataRequestLogo(requestId, logo);
   }
-
-  private boolean isAdmin() {
-    return securityIdentity.hasRole(ADMIN_ROLE);
-  }
-
 
 }

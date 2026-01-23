@@ -1,58 +1,6 @@
 agridata:
-  json-field-rewrite:
+  tvd-equid-owner-dropdown:
     enabled: true
-    config: |
-      [
-        {
-          "path": "/agis/register-data/1/register",
-          "method": "POST",
-          "direction": "INBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        },
-        {
-          "path": "/agis/register-data/1/register",
-          "method": "POST",
-          "direction": "OUTBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        },
-        {
-          "path": "/agis/structure-data/1/structure",
-          "method": "POST",
-          "direction": "OUTBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        },
-        {
-          "path": "/agis/structure-data/1/structure",
-          "method": "POST",
-          "direction": "INBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        },
-        {
-          "path": "/agis/eco-etho-data/1/ecoetho",
-          "method": "POST",
-          "direction": "OUTBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        },
-        {
-          "path": "/agis/eco-etho-data/1/ecoetho",
-          "method": "POST",
-          "direction": "INBOUND",
-          "whitelistProperties": [],
-          "fallbackRewriteRule": {},
-          "rewriteRules": []
-        }
-      ]
-      |
 quarkus:
   hibernate-orm:
     log:
@@ -116,6 +64,8 @@ quarkus:
       url: http://localhost:8050/agis/structure-data/1
     agis-eco-etho-api:
       url: http://localhost:8050/agis/eco-etho-data/1
+    tvd-animal-tracing-api:
+      url: http://localhost:8050/tvd/animal-tracing/v1.0
     logging:
       body-limit: 10240
       scope: request-response

@@ -1,6 +1,7 @@
 package ch.agridata.user.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -12,6 +13,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(description = "Represents basic user information, such as name, contact details, and address.")
 @Builder
 public record UserInfoDto(
+
+    @Schema(
+        description = "AgateLoginId of the user.",
+        examples = {"1234567"}
+    )
+    String agateLoginId,
 
     @Schema(
         description = "KtIdP of the user. Only set for data producers",
@@ -82,6 +89,11 @@ public record UserInfoDto(
     @Schema(
         description = "Preferences of the user in the frontend"
     )
-    UserPreferencesDto userPreferences
+    UserPreferencesDto userPreferences,
+
+    @Schema(
+        description = "Roles of the user at the last login"
+    )
+    List<String> rolesAtLastLogin
 ) {
 }

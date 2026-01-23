@@ -3,8 +3,6 @@ package ch.agridata.agis.service;
 import ch.agridata.agis.dto.AgisPersonFarmResponseType;
 import ch.agridata.agis.dto.AgisRegisterDataRequest;
 import ch.agridata.common.filters.RestClientLoggingFilter;
-import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteInboundFilter;
-import ch.agridata.common.jsonfieldrewrite.JsonFieldRewriteOutboundFilter;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -23,8 +21,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "agis-register-api")
 @RegisterProvider(RestClientLoggingFilter.class)
-@RegisterProvider(JsonFieldRewriteInboundFilter.class)
-@RegisterProvider(JsonFieldRewriteOutboundFilter.class)
 @RegisterProvider(AgisClientExceptionMapper.class)
 @OidcClientFilter("agis-api")
 @Path("/")

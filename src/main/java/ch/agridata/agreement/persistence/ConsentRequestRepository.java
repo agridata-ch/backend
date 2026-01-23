@@ -33,10 +33,6 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
         .firstResultOptional();
   }
 
-  public List<ConsentRequestEntity> findByDataRequestId(UUID dataRequestId) {
-    return find("dataRequest.id", dataRequestId).list();
-  }
-
   public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(String dataConsumerUid,
                                                                                String dataProducerUid,
                                                                                UUID dataProductId) {

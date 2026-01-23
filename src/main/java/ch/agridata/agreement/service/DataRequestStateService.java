@@ -81,6 +81,13 @@ public class DataRequestStateService {
   public DataRequestDto setStateAsAdmin(UUID requestId, DataRequestStateEnum state) {
     var entity = dataRequestRepository.findByIdOptional(requestId)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
+
+    var oldStateCode = DataRequestStateEnum.valueOf(entity.getStateCode().name());
+    if (DRAFT == oldStateCode) {
+      throw new IllegalStateException(
+          "Cannot change state from DRAFT - data request must be set to IN_REVIEW by the consumer first");
+    }
+
     var newStateCode = DataRequestEntity.DataRequestStateEnum.valueOf(state.name());
 
     return setStateTo(entity, newStateCode);

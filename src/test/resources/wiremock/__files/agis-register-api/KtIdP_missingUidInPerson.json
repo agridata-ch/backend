@@ -1,0 +1,317 @@
+{
+  "relationDepth": "allRelations",
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 1,
+    "totalHits": 1
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": [
+        {
+          "ktIdP": "FLXXB0001",
+          "agisIdP": 70334994,
+          "personParentRelations": {
+            "personParentRelation": [
+              {
+                "ktIdP": "FLXXB0002",
+                "agisIdP": 0,
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXB0004",
+                "agisIdB": 10377025,
+                "ber": "A99920004",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "dateOfBirth": "1981-04-01",
+          "foundationDate": 1981,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Jonas",
+                  "lastName": "Testmann",
+                  "mrMrsExtended": "1"
+                },
+                "addressInformation": {
+                  "street": "Hauptstrasse",
+                  "houseNumber": "2",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "jonas.testmann@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000005"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "personRelations": {
+      "person": [
+        {
+          "ktIdP": "FLXXB0002",
+          "agisIdP": 70334995,
+          "personChildRelations": {
+            "personChildRelation": [
+              {
+                "ktIdP": "FLXXB0001",
+                "agisIdP": 70334994,
+                "validSince": "2025-12-11T08:23:33+01:00"
+              },
+              {
+                "ktIdP": "FLXXB0003",
+                "agisIdP": 70334996,
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXB0005",
+                "agisIdB": 10377026,
+                "ber": "A99920005",
+                "validSince": "2025-12-11T11:06:40+01:00"
+              }
+            ]
+          },
+          "legalForm": "02",
+          "foundationDate": 2016,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "organisation": {
+                  "organisationName": "Testpartner GmbH",
+                  "organisationNameAddOn1": "Sofia und Jonas",
+                  "organisationNameAddOn2": "Frau und Herr"
+                },
+                "addressInformation": {
+                  "street": "Hauptstrasse",
+                  "houseNumber": "138",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "info@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000009"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        },
+        {
+          "ktIdP": "FLXXB0003",
+          "agisIdP": 70334996,
+          "personParentRelations": {
+            "personParentRelation": [
+              {
+                "ktIdP": "FLXXB0002",
+                "agisIdP": 70334995,
+                "uid": "CHE102000002",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "dateOfBirth": "1980-01-05",
+          "foundationDate": 1980,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Sofia",
+                  "lastName": "Mustermann",
+                  "mrMrsExtended": "2"
+                },
+                "addressInformation": {
+                  "street": "Hauptstrasse",
+                  "houseNumber": "138",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "sofia.mustermann@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000008"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "relevantFarms": {
+      "farm": [
+        {
+          "ktIdB": "FLXXB0004",
+          "agisIdB": 10377025,
+          "ber": "A99920004",
+          "uid": "CHE102000001",
+          "atd": 1020004,
+          "farmChildRelations": {
+            "farmChildRelation": [
+              {
+                "ktIdB": "FLXXB0006",
+                "agisIdB": 70334994,
+                "ber": "A99920006",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXB0001",
+                "agisIdP": 70334994,
+                "uid": "CHE102000001",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "farmType": "01",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Testmann Jonas",
+            "street": "Hauptstrasse 2",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2596733,
+          "coordinatesNorth": 1140649,
+          "altitude": 700,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    },
+    "farmRelations": {
+      "farm": [
+        {
+          "ktIdB": "FLXXB0005",
+          "agisIdB": 10377026,
+          "ber": "A99920005",
+          "uid": "CHE102000002",
+          "atd": 1020005,
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXB0002",
+                "agisIdP": 70334995,
+                "uid": "CHE102000002",
+                "validSince": "2025-12-11T08:23:28+01:00"
+              }
+            ]
+          },
+          "farmType": "01",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Sofia und Jonas",
+            "street": "Testpartner GmbH",
+            "houseNumber": "138",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2784697,
+          "coordinatesNorth": 1179679,
+          "altitude": 400,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXB0006",
+          "agisIdB": 10377027,
+          "ber": "A99920006",
+          "uid": "CHE102000001",
+          "farmParentRelations": {
+            "farmParentRelation": [
+              {
+                "ktIdB": "FLXXB0004",
+                "agisIdB": 10377025,
+                "ber": "A99920004",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmType": "20",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Testmann Jonas",
+            "street": "Hauptstrasse",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2581267,
+          "coordinatesNorth": 1100349,
+          "altitude": 0,
+          "agriculturalZone": "99",
+          "agriculturalArea": "99",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    }
+  }
+}

@@ -73,7 +73,7 @@ public class DataTransferController {
       @Parameter(
           name = "uid",
           description = "Optional filter to retrieve data of a producer identified by the uid",
-          example = "CHE***278"
+          example = "CHE101000001"
       )
       @QueryParam("uid") @Valid String uid,
 

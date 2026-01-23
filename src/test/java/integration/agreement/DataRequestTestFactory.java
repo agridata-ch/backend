@@ -48,11 +48,16 @@ public class DataRequestTestFactory {
 
   @SneakyThrows
   public static Response createDataRequest() {
+    return createDataRequest(getPartialDataRequestUpdateDtoBuilder().build());
+  }
+
+  @SneakyThrows
+  public static Response createDataRequest(DataRequestUpdateDto dto) {
     return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
         .contentType(JSON)
-        .body(MAPPER.writeValueAsString(getPartialDataRequestUpdateDtoBuilder().build()))
+        .body(MAPPER.writeValueAsString(dto))
         .when()
-        .post(DataRequestController.PATH);
+        .post(DataRequestController.PATH_V1);
   }
 
 
@@ -62,7 +67,7 @@ public class DataRequestTestFactory {
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(dto))
         .when()
-        .put(DataRequestController.PATH + "/" + requestId);
+        .put(DataRequestController.PATH_V1 + "/" + requestId);
   }
 
 
@@ -72,7 +77,7 @@ public class DataRequestTestFactory {
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(stateCode))
         .when()
-        .put(DataRequestController.PATH + "/" + requestId + "/status");
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/status");
   }
 
   @SneakyThrows
@@ -81,6 +86,6 @@ public class DataRequestTestFactory {
     return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
         .multiPart("logo", logo, Files.probeContentType(logo.toPath()))
         .when()
-        .put(DataRequestController.PATH + "/" + requestId + "/logo/");
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/logo/");
   }
 }

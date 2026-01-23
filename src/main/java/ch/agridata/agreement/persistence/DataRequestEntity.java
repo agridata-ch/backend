@@ -13,6 +13,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Models a data request for persistence. It aligns DTO structures with stored records.
  *
- * @CommentLastReviewed 2025-10-02
+ * @CommentLastReviewed 2025-12-09
  */
 @Entity
 @Table(name = "data_request",
@@ -57,14 +58,17 @@ public class DataRequestEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "title")
+  @Valid
   private TranslationPersistenceDto title;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "description")
+  @Valid
   private TranslationPersistenceDto description;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "purpose")
+  @Valid
   private TranslationPersistenceDto purpose;
 
   @NotNull

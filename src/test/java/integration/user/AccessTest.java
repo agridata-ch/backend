@@ -1,9 +1,9 @@
 package integration.user;
 
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static integration.testutils.AccessTestUtils.HttpMethod.GET;
-import static integration.testutils.TestUserEnum.ADMIN;
-import static integration.testutils.TestUserEnum.PRODUCER_032;
-import static integration.testutils.TestUserEnum.SUPPORT;
 
 import ch.agridata.user.controller.UserController;
 import integration.testutils.AccessTestUtils;
@@ -18,13 +18,11 @@ class AccessTest {
   @Test
   void testAccess() {
     AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/authorized-uids", PRODUCER_032, SUPPORT);
+        UserController.PATH + "/authorized-uids", PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/ktIdP/1/authorized-uids", ADMIN);
+        UserController.PATH + "/uid/1/authorized-burs", ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/uid/1/authorized-burs", ADMIN);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/producers", SUPPORT);
+        UserController.PATH + "/producers", SUPPORT_ROLE);
   }
 
 }

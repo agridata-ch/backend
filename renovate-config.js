@@ -1,7 +1,7 @@
 module.exports = {
     branchPrefix: 'renovate/',
     repositories: ['agridata-ch/backend'],
-    extends: [':semanticCommitTypeAll(feat)', ":dependencyDashboard"],
+    extends: [':semanticCommitTypeAll(feat)', ":dependencyDashboard", ":dependencyDashboardApproval"],
     separateMinorPatch: true,
     patch: {
         enabled: false

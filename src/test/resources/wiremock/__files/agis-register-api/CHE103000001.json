@@ -1,0 +1,354 @@
+{
+  "relationDepth": "allRelations",
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 1,
+    "totalHits": 1
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": [
+        {
+          "ktIdP": "FLXXC0001",
+          "agisIdP": 70334997,
+          "uid": "CHE103000001",
+          "personParentRelations": {
+            "personParentRelation": [
+              {
+                "ktIdP": "FLXXC0002",
+                "agisIdP": 0,
+                "uid": "CHE103000002",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXC0004",
+                "agisIdB": 10377028,
+                "ber": "A99930004",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "foundationDate": 1975,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Max",
+                  "lastName": "Mustermann",
+                  "mrMrsExtended": "1"
+                },
+                "addressInformation": {
+                  "street": "Musterweg",
+                  "houseNumber": "1",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "max.mustermann@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000001"
+              },
+              {
+                "phoneNumber": "0000000002"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "personRelations": {
+      "person": [
+        {
+          "ktIdP": "FLXXC0002",
+          "agisIdP": 70334998,
+          "uid": "CHE103000002",
+          "personChildRelations": {
+            "personChildRelation": [
+              {
+                "ktIdP": "FLXXC0001",
+                "agisIdP": 70334997,
+                "uid": "CHE103000001",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              },
+              {
+                "ktIdP": "FLXXC0003",
+                "agisIdP": 70334999,
+                "uid": "CHE103000003",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXC0005",
+                "agisIdB": 10377029,
+                "ber": "A99930005",
+                "validSince": "2025-12-11T11:06:40+01:00"
+              }
+            ]
+          },
+          "legalForm": "02",
+          "foundationDate": 2008,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "organisation": {
+                  "organisationName": "Testfirma GmbH",
+                  "lastName": "c/o Max Mustermann"
+                },
+                "addressInformation": {
+                  "street": "Musterweg",
+                  "houseNumber": "1",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "phone": []
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        },
+        {
+          "ktIdP": "FLXXC0003",
+          "agisIdP": 70334999,
+          "uid": "CHE103000003",
+          "personParentRelations": {
+            "personParentRelation": [
+              {
+                "ktIdP": "FLXXC0002",
+                "agisIdP": 70334998,
+                "uid": "CHE103000002",
+                "validSince": "2025-12-11T08:23:33+01:00"
+              }
+            ]
+          },
+          "personToFarmRelations": {
+            "personToFarmRelation": [
+              {
+                "ktIdB": "FLXXC0006",
+                "agisIdB": 10377030,
+                "ber": "A99930006",
+                "validSince": "2025-12-11T11:06:40+01:00"
+              }
+            ]
+          },
+          "legalForm": "01",
+          "dateOfBirth": "1989-05-05",
+          "foundationDate": 1989,
+          "languageOfCorrespondance": "de",
+          "residenceMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "contact": {
+            "address": {
+              "postalAddress": {
+                "person": {
+                  "firstName": "Laura",
+                  "lastName": "Beispiel",
+                  "mrMrsExtended": "1"
+                },
+                "addressInformation": {
+                  "street": "Hintergasse",
+                  "houseNumber": "10",
+                  "town": "Bern",
+                  "swissZipCode": 3001
+                }
+              }
+            },
+            "email": {
+              "emailAddress": "laura.beispiel@agis.test.blw.admin.ch"
+            },
+            "phone": [
+              {
+                "phoneNumber": "0000000006"
+              },
+              {
+                "phoneNumber": "0000000007"
+              }
+            ]
+          },
+          "validSince": "2025-12-11T08:23:28+01:00"
+        }
+      ]
+    },
+    "relevantFarms": {
+      "farm": [
+        {
+          "ktIdB": "FLXXC0004",
+          "agisIdB": 10377028,
+          "ber": "A99930004",
+          "uid": "CHE103000001",
+          "farmParentRelations": {
+            "farmParentRelation": [
+              {
+                "ktIdB": "FLXXC0005",
+                "agisIdB": 70334997,
+                "ber": "A99930005",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXC0001",
+                "agisIdP": 70334997,
+                "uid": "CHE103000001",
+                "validSince": "2025-12-11T08:23:31+01:00"
+              }
+            ]
+          },
+          "farmType": "01",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Mustermann Max",
+            "street": "Musterweg 1",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2594499,
+          "coordinatesNorth": 1246434,
+          "altitude": 250,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    },
+    "farmRelations": {
+      "farm": [
+        {
+          "ktIdB": "FLXXC0005",
+          "agisIdB": 10377029,
+          "ber": "A99930005",
+          "uid": "CHE103000002",
+          "atd": 1030005,
+          "farmChildRelations": {
+            "farmChildRelation": [
+              {
+                "ktIdB": "FLXXC0004",
+                "agisIdB": 10377028,
+                "ber": "A99930004",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              },
+              {
+                "ktIdB": "FLXXC0006",
+                "agisIdB": 10377030,
+                "ber": "A99930006",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXC0002",
+                "agisIdP": 70334998,
+                "uid": "CHE103000002",
+                "validSince": "2025-12-11T08:23:28+01:00"
+              }
+            ]
+          },
+          "farmType": "14",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "BZG Testfirma",
+            "street": "Musterweg",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2639489,
+          "coordinatesNorth": 1241141,
+          "altitude": 290,
+          "agriculturalZone": "99",
+          "agriculturalArea": "99",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        },
+        {
+          "ktIdB": "FLXXC0006",
+          "agisIdB": 10377030,
+          "ber": "A99930006",
+          "uid": "CHE103000003",
+          "farmParentRelations": {
+            "farmParentRelation": [
+              {
+                "ktIdB": "FLXXC0005",
+                "agisIdB": 10377029,
+                "ber": "A99930005",
+                "validSince": "2025-12-11T08:23:32+01:00"
+              }
+            ]
+          },
+          "farmToPersonRelations": {
+            "farmToPersonRelation": [
+              {
+                "ktIdP": "FLXXC0003",
+                "agisIdP": 70334999,
+                "uid": "CHE103000003",
+                "validSince": "2025-12-11T08:23:28+01:00"
+              }
+            ]
+          },
+          "farmType": "01",
+          "localMunicipality": {
+            "municipalityName": "Bern",
+            "municipalityId": 351,
+            "cantonFlAbbreviation": "BE"
+          },
+          "canton": "FL",
+          "addressInformation": {
+            "addressLine3": "Beispiel Laura",
+            "street": "Hintergasse 10",
+            "town": "Bern",
+            "swissZipCode": 3001
+          },
+          "coordinatesEast": 2746406,
+          "coordinatesNorth": 1237436,
+          "altitude": 500,
+          "agriculturalZone": "31",
+          "agriculturalArea": "01",
+          "validSince": "2025-12-11T11:06:40+01:00"
+        }
+      ]
+    }
+  }
+}

@@ -26,6 +26,17 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         Parameters.with("dataConsumerUid", dataConsumerUid)).list();
   }
 
+  public List<DataRequestEntity> findAllNotDraft() {
+    return find("stateCode <> :state_code",
+        Parameters.with("state_code", DataRequestEntity.DataRequestStateEnum.DRAFT)).list();
+  }
+
+  public Optional<DataRequestEntity> findByIdAndStateCodeNotDraft(UUID id) {
+    return find("id = :id and stateCode <> :state_code",
+        Parameters.with("id", id).and("state_code", DataRequestEntity.DataRequestStateEnum.DRAFT))
+        .firstResultOptional();
+  }
+
   public boolean existsByHumanFriendlyId(String humanFriendlyId) {
     return count("humanFriendlyId", humanFriendlyId) > 0;
   }

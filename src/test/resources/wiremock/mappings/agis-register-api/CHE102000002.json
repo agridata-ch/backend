@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"farmSearchParameters\":{\"uid\":\"CHE102000002\"},\"dataRequestType\":{\"relationDepth\":\"allRelations\"}}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "agis-register-api/CHE102000002.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

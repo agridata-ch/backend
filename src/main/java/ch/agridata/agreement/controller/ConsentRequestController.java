@@ -74,11 +74,11 @@ public class ConsentRequestController {
           name = "dataProducerUid",
           description = "Optional filter to retrieve consent requests for a specific producer UID. "
               + "If not provided, all requests for the currently authenticated producer are returned.",
-          example = "CHE123456789"
+          example = "CHE101000001"
       )
       @Pattern(
-          regexp = "^CHE[A-Za-z0-9*]{1,9}$", // Pattern must also support masked UIDs like 'CHE***123' to allow partially obscured data
-          message = "Invalid UID format. Expected format is 'CHE' followed by 9 digits."
+          regexp = "^(?:CHE|ZZZ)\\d{9}$",
+          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
       )
       @QueryParam("dataProducerUid") String dataProducerUid
   ) {
@@ -128,7 +128,7 @@ public class ConsentRequestController {
   @RolesAllowed({PRODUCER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   public List<ConsentRequestCreatedDto> createConsentRequests(
-      @Valid @NotNull @RequestBody List<CreateConsentRequestDto> createConsentRequestDtos) {
+      @NotNull @RequestBody List<@Valid @NotNull CreateConsentRequestDto> createConsentRequestDtos) {
     return consentRequestMutationService.createConsentRequestForDataRequest(createConsentRequestDtos);
   }
 
