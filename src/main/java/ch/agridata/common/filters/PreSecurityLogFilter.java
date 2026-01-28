@@ -17,7 +17,7 @@ import org.slf4j.event.Level;
  * Logs incoming requests and outgoing responses with configurable filters. It avoids logging sensitive or large binary payloads while
  * ensuring visibility into API interactions.
  *
- * @CommentLastReviewed 2025-10-15
+ * @CommentLastReviewed 2026-01-28
  */
 
 @Slf4j
@@ -151,7 +151,7 @@ public class PreSecurityLogFilter {
     }
     String ct = contentType.toLowerCase(Locale.ROOT);
     return CONTENT_TYPE_LOG_BLACKLIST.stream()
-        .anyMatch(binaryContentType -> binaryContentType.startsWith(ct));
+        .anyMatch(ct::startsWith);
   }
 
   private String getImpersonationInfo(RoutingContext ctx) {
