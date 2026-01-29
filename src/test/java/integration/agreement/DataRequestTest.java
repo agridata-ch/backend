@@ -9,6 +9,8 @@ import static integration.agreement.DataRequestTestFactory.getPartialDataRequest
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,6 +137,14 @@ class DataRequestTest {
         .body("dataConsumerLegalName", notNullValue());
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
+  }
+
+  @Test
+  void givenDraftWithProductsFromDifferentSystems_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(UUID_46F8A883.uuid(), UUID_42BD4613.uuid()))
+        .build();
+    createDataRequest(invalidDto).then().statusCode(400);
   }
 
   @Test

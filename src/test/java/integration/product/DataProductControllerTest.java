@@ -5,7 +5,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import ch.agridata.product.controller.DataProductController;
+import ch.agridata.product.controller.DataProviderController;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,23 @@ class DataProductControllerTest {
         .body("size()", greaterThan(0)) // ensure at least one item is returned
         .body("every { it.id?.toString().length() > 0 }", is(true))
         .body("every { it.name?.toString().length() > 0 }", is(true))
+        .body("every { it.dataSourceSystem?.code?.toString().length() > 0 }", is(true))
         .body("every { it.description?.toString().length() > 0 }", is(true));
+  }
+
+  @Test
+  void givenValidRequest_whenGetProductsFromBlwProvider_thenValidProducts() {
+    RequestSpecification consumer = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE);
+
+    consumer.when()
+        .get(DataProviderController.PATH + "/" + TestDataIdentifiers.DataProvider.UUID_E37B148B + "/products")
+        .then()
+        .statusCode(200)
+        .body("size()", greaterThan(0)) // ensure at least one item is returned
+        .body("every { it.id?.toString().length() > 0 }", is(true))
+        .body("every { it.name?.toString().length() > 0 }", is(true))
+        .body("every { it.description?.toString().length() > 0 }", is(true))
+        .body("every { it.dataSourceSystem?.code?.toString().length() > 0 }", is(true));
   }
 
 }

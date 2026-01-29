@@ -29,6 +29,14 @@ public record DataRequestDto(
     UUID id,
 
     @Schema(
+        description = "Unique identifier of the data provider responsible for this data request. "
+            + "This value is derived from the data source systems of the associated data products.",
+        examples = {"e37b148b-9a0f-4c2e-80c5-fe9c9416b640"}
+    )
+    @NotNull
+    UUID dataProviderId,
+
+    @Schema(
         description = "Human friendly id of the data request",
         examples = {"GL56"}
     )
