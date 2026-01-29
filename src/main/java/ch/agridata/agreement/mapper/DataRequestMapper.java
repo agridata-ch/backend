@@ -65,12 +65,12 @@ public interface DataRequestMapper {
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
   DataRequestDto toDto(DataRequestEntity entity);
 
-
   @Mapping(target = "humanFriendlyId", ignore = true)
   @Mapping(target = "submissionDate", ignore = true)
   @Mapping(target = "dataConsumerUid", ignore = true)
   @Mapping(target = "dataConsumerLegalName", ignore = true)
   @Mapping(target = "validRedirectUriRegex", ignore = true)
+  @Mapping(target = "dataProviderId", ignore = true)
   // This will be handled in the AfterMapping method
   @Mapping(target = "dataProducts", ignore = true)
   @Mapping(target = "id", ignore = true)

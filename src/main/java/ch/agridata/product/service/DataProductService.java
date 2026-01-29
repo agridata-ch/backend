@@ -43,4 +43,9 @@ public class DataProductService implements DataProductApi {
         .orElseThrow(
             () -> new NotFoundException(productId.toString()));
   }
+
+  @Override
+  public UUID getProviderId(UUID productId) {
+    return dataProductRepository.findProviderIdByProductId(productId);
+  }
 }

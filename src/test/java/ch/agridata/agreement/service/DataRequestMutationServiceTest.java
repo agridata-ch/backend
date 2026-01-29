@@ -1,7 +1,9 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.buildEntity;
+import static ch.agridata.agreement.utils.DataRequestTestUtils.dataProductDtoBuilder;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.updateDtoBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -62,6 +64,9 @@ class DataRequestMutationServiceTest {
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+    when(dataProductApi.getProductById(PRODUCT_ID))
+        .thenReturn(dataProductDtoBuilder(PRODUCT_ID).build());
+
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
     DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
@@ -74,14 +79,47 @@ class DataRequestMutationServiceTest {
     var id = UUID.randomUUID();
     var entity = buildEntity();
 
+    var updateProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+    var updateDto = updateDtoBuilder()
+        .products(List.of(updateProductId))
+        .build();
+
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataProductApi.getProductById(updateProductId))
+        .thenReturn(dataProductDtoBuilder(updateProductId).build());
 
-    var result = dataRequestMutationService.updateDataRequestDetails(id, updateDtoBuilder().build());
+    var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
 
     DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     assertThat(result).isEqualTo(expectedDto);
+  }
+
+  @Test
+  void givenDataProductsFromDifferentSystems_whenCreateDataRequestDraft_thenThrowValidationException() {
+    var agisProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+    var tvdProductId = UUID.fromString("00000000-0000-0000-0000-000000000003");
+    DataRequestUpdateDto updateDto = updateDtoBuilder()
+        .products(List.of(agisProductId, tvdProductId))
+        .build();
+    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
+        .uid("CHE101708094")
+        .legalName("Test Organisation")
+        .build();
+
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+    when(dataProductApi.getProductById(agisProductId))
+        .thenReturn(dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("AGIS").build());
+    when(dataProductApi.getProductById(tvdProductId))
+        .thenReturn(dataProductDtoBuilder(agisProductId).dataSourceSystemCode("TVD").build());
+
+    assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("Cannot process request: all products must share the same data source system");
   }
 
   @Test
@@ -124,6 +162,27 @@ class DataRequestMutationServiceTest {
     assertThatThrownBy(() -> dataRequestMutationService.updateDataRequestDetails(id, dataRequestUpdateDto))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining(inexistentProductId.toString());
+  }
+
+  @Test
+  void givenNoDataProduct_whenCreateDataRequestDraft_thenReturnMappedDto() {
+    DataRequestUpdateDto dto = updateDtoBuilder()
+        .products(List.of())
+        .build();
+    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
+        .uid("CHE101708094")
+        .legalName("Test Organisation")
+        .build();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+
+    var result = dataRequestMutationService.createDataRequestDraft(dto);
+
+    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    assertThat(dataRequestEntityCaptor.getValue().getHumanFriendlyId()).isEqualTo("AB57");
+    assertThat(result).isEqualTo(expectedDto);
   }
 
 }

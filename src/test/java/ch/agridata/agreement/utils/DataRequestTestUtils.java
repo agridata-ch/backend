@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class DataRequestTestUtils {
 
-  public static final UUID PRODUCT_ID = UUID.randomUUID();
+  public static final UUID PRODUCT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
   public static final String USER_UID = "CHE101708094";
 
   public static DataRequestEntity buildEntity() {
@@ -33,15 +33,14 @@ public class DataRequestTestUtils {
         .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
         .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
         .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
-        .products(List.of(UUID.randomUUID()));
+        .products(List.of(PRODUCT_ID));
   }
 
-  public static DataProductDto buildDataProductDto(UUID id) {
+  public static DataProductDto.DataProductDtoBuilder dataProductDtoBuilder(UUID id) {
     return DataProductDto.builder()
         .id(id)
         .name(buildTranslationDto("Product DE", "Product FR", "Product IT"))
-        .description(buildTranslationDto("Description DE", "Description FR", "Description IT"))
-        .build();
+        .description(buildTranslationDto("Description DE", "Description FR", "Description IT"));
   }
 
   public static TranslationDto buildTranslationDto(String de, String fr, String it) {
