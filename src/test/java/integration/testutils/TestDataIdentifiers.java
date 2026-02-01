@@ -37,6 +37,7 @@ public class TestDataIdentifiers {
 
   public static class ConsentRequest {
     public static final Identifier<ConsentRequestEntity> BIO_SUISSE_01_CHE101000001 = id("07813a3a-7b8d-4b68-847b-f34ce7037397");
+    public static final Identifier<ConsentRequestEntity> BIO_SUISSE_01_CHE101000001_99910003 = id("1d2025b5-424b-489d-a3c1-30464661f723");
     public static final Identifier<ConsentRequestEntity> BIO_SUISSE_01_CHE102000001 = id("94e4f8e3-70b1-43ae-bdfa-78b27f86958e");
     public static final Identifier<ConsentRequestEntity> BIO_SUISSE_01_CHE102000002 = id("f789e5ca-3b26-4ced-bcce-77df72ac06ac");
 
@@ -87,16 +88,26 @@ public class TestDataIdentifiers {
   }
 
   public enum Bur {
-    A99910002,
-    A99910003,
-    A99910004,
-    A99910005,
-    A99920004,
-    A99920005,
-    A99920006,
-    A99930004,
-    A99930005,
-    A99940003,
-    A99940004
+    _99910002("99910002"),
+    _99910003("99910003"),
+    _99910004("99910004"),
+    _99910005("99910005"),
+    _99920004("99920004"),
+    _99920005("99920005"),
+    _99920006("99920006"),
+    _99930004("99930004"),
+    _99930005("99930005"),
+    _99940003("99940003"),
+    _99940004("99940004");
+
+    private final String code;
+
+    Bur(String code) {
+      this.code = code;
+    }
+
+    public String getCode() {
+      return code;
+    }
   }
 }
