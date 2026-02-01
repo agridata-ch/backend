@@ -52,32 +52,33 @@ WHERE id IN ('0d626d4b-b0ea-4841-971c-10a34310a605');
 -- ===============================================
 -- consent_request
 -- ===============================================
-INSERT INTO consent_request (id, archived, created_at, modified_at, data_producer_uid, state_code, data_request_id, request_date, last_state_change_date) VALUES
+INSERT INTO consent_request (id, archived, created_at, modified_at, data_producer_uid, data_producer_bur, state_code, data_request_id, request_date, last_state_change_date) VALUES
 -- CHE101000001
-('07813a3a-7b8d-4b68-847b-f34ce7037397'::uuid, false, NOW(), NOW(), 'CHE101000001', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp),
-('5542ff84-ab93-417a-925a-9c7711a20fff'::uuid, false, NOW(), NOW(), 'CHE101000001', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-18 14:30:00'::timestamp, '2025-04-21 10:00:00'::timestamp),
-('ef35df35-2051-416a-98ad-47ab35c8a77c'::uuid, false, NOW(), NOW(), 'CHE101000001', 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp),
+('07813a3a-7b8d-4b68-847b-f34ce7037397'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp),
+('5542ff84-ab93-417a-925a-9c7711a20fff'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-18 14:30:00'::timestamp, '2025-04-21 10:00:00'::timestamp),
+('ef35df35-2051-416a-98ad-47ab35c8a77c'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp),
+('1d2025b5-424b-489d-a3c1-30464661f723'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910003', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp),
 
 -- CHE102000001
-('94e4f8e3-70b1-43ae-bdfa-78b27f86958e'::uuid, false, NOW(), NOW(), 'CHE102000001', 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp),
-('2643cbd7-8077-4378-8c47-27d2b31dd554'::uuid, false, NOW(), NOW(), 'CHE102000001', 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-01-25 13:20:15'::timestamp, '2025-01-30 09:35:00'::timestamp),
-('68c0e430-00b8-44ca-a2f7-be6197ff64a9'::uuid, false, NOW(), NOW(), 'CHE102000001', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-02-23 16:00:00'::timestamp, '2025-02-25 10:00:00'::timestamp),
+('94e4f8e3-70b1-43ae-bdfa-78b27f86958e'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp),
+('2643cbd7-8077-4378-8c47-27d2b31dd554'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-01-25 13:20:15'::timestamp, '2025-01-30 09:35:00'::timestamp),
+('68c0e430-00b8-44ca-a2f7-be6197ff64a9'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-02-23 16:00:00'::timestamp, '2025-02-25 10:00:00'::timestamp),
 
 -- CHE102000002
-('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, NULL::timestamp),
-('1272346f-7983-4845-b038-329116d67e08'::uuid, false, NOW(), NOW(), 'CHE102000002', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-02-18 11:44:59'::timestamp, NULL::timestamp),
-('fea87d49-857a-45e4-8274-fec6885697c4'::uuid, false, NOW(), NOW(), 'CHE102000002', 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-14 12:30:00'::timestamp, '2025-06-20 14:30:00'::timestamp),
-('2f8ec662-9fce-417e-9b82-3ed042adb482'::uuid, false, NOW(), NOW(), 'CHE102000002', 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp),
+('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, NULL::timestamp),
+('1272346f-7983-4845-b038-329116d67e08'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-02-18 11:44:59'::timestamp, NULL::timestamp),
+('fea87d49-857a-45e4-8274-fec6885697c4'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'DECLINED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-14 12:30:00'::timestamp, '2025-06-20 14:30:00'::timestamp),
+('2f8ec662-9fce-417e-9b82-3ed042adb482'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp),
 
 -- CHE103000001
-('5e439777-8564-4954-9d01-7ebeabf4fc39'::uuid, false, NOW(), NOW(), 'CHE103000001', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp),
-('235aed61-7da2-41ac-94c4-bcca91328ad6'::uuid, false, NOW(), NOW(), 'CHE103000001', 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-03-22 08:20:00'::timestamp, '2025-03-25 10:15:00'::timestamp),
-('0dd93ea9-5a14-40a4-a36e-eafb2585ece3'::uuid, false, NOW(), NOW(), 'CHE103000001', 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-28 14:00:00'::timestamp, NULL::timestamp),
+('5e439777-8564-4954-9d01-7ebeabf4fc39'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp),
+('235aed61-7da2-41ac-94c4-bcca91328ad6'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'GRANTED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-03-22 08:20:00'::timestamp, '2025-03-25 10:15:00'::timestamp),
+('0dd93ea9-5a14-40a4-a36e-eafb2585ece3'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'OPENED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-06-28 14:00:00'::timestamp, NULL::timestamp),
 
 -- CHE103000002
-('adbc6d5a-331d-4dd9-b80c-ee1945716293'::uuid, false, NOW(), NOW(), 'CHE103000002', 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp),
-('629322ea-19ea-42a2-8bb9-1d1d2e47dda0'::uuid, false, NOW(), NOW(), 'CHE103000002', 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-05-15 10:30:00'::timestamp, '2025-05-18 14:20:00'::timestamp),
-('584c3587-517b-49ef-aaec-cb6e0179f78c'::uuid, false, NOW(), NOW(), 'CHE103000002', 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-20 09:15:00'::timestamp, NULL::timestamp);
+('adbc6d5a-331d-4dd9-b80c-ee1945716293'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp),
+('629322ea-19ea-42a2-8bb9-1d1d2e47dda0'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-05-15 10:30:00'::timestamp, '2025-05-18 14:20:00'::timestamp),
+('584c3587-517b-49ef-aaec-cb6e0179f78c'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-20 09:15:00'::timestamp, NULL::timestamp);
 
 -- ===============================================
 -- set migrated_from_maf for BioSuisse consent-requests

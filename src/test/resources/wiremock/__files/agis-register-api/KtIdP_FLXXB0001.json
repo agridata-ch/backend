@@ -28,7 +28,7 @@
               {
                 "ktIdB": "FLXXB0004",
                 "agisIdB": 10377025,
-                "ber": "A99920004",
+                "ber": "99920004",
                 "validSince": "2025-12-11T08:23:31+01:00"
               }
             ]
@@ -98,7 +98,7 @@
               {
                 "ktIdB": "FLXXB0005",
                 "agisIdB": 10377026,
-                "ber": "A99920005",
+                "ber": "99920005",
                 "validSince": "2025-12-11T11:06:40+01:00"
               }
             ]
@@ -196,7 +196,7 @@
         {
           "ktIdB": "FLXXB0004",
           "agisIdB": 10377025,
-          "ber": "A99920004",
+          "ber": "99920004",
           "uid": "CHE102000001",
           "atd": 1020004,
           "farmChildRelations": {
@@ -204,7 +204,7 @@
               {
                 "ktIdB": "FLXXB0006",
                 "agisIdB": 70334994,
-                "ber": "A99920006",
+                "ber": "99920006",
                 "validSince": "2025-12-11T08:23:32+01:00"
               }
             ]
@@ -246,7 +246,7 @@
         {
           "ktIdB": "FLXXB0005",
           "agisIdB": 10377026,
-          "ber": "A99920005",
+          "ber": "99920005",
           "uid": "CHE102000002",
           "atd": 1020005,
           "farmToPersonRelations": {
@@ -283,14 +283,14 @@
         {
           "ktIdB": "FLXXB0006",
           "agisIdB": 10377027,
-          "ber": "A99920006",
+          "ber": "99920006",
           "uid": "CHE102000001",
           "farmParentRelations": {
             "farmParentRelation": [
               {
                 "ktIdB": "FLXXB0004",
                 "agisIdB": 10377025,
-                "ber": "A99920004",
+                "ber": "99920004",
                 "validSince": "2025-12-11T08:23:32+01:00"
               }
             ]

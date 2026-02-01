@@ -27,6 +27,15 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
     return find("dataProducerUid IN ?1", dataProducerUids).list();
   }
 
+  public List<ConsentRequestEntity> findByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
+    return entityManager.createQuery(
+            "SELECT cr FROM ConsentRequestEntity cr "
+                + "JOIN FETCH cr.dataRequest dr "
+                + "WHERE cr.dataProducerUid IN :uids", ConsentRequestEntity.class)
+        .setParameter("uids", dataProducerUids)
+        .getResultList();
+  }
+
   public Optional<ConsentRequestEntity> findByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
     return find("id = :id and dataProducerUid IN :dataProducerUids",
         Parameters.with("id", id).and("dataProducerUids", dataProducerUids))

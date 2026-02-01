@@ -31,32 +31,32 @@ class BurAuthorizationTest {
     return Stream.of(
         Arguments.of(
             Uid.CHE101000001.name(), List.of(
-                new BurDto(Bur.A99910002.name(), GANZJAHRESBETRIEB),
-                new BurDto(Bur.A99910003.name(), PRODUKTIONSSTAETTE),
-                new BurDto(Bur.A99910004.name(), PRODUKTIONSSTAETTE),
-                new BurDto(Bur.A99910005.name(), PRODUKTIONSSTAETTE)
+                new BurDto(Bur._99910002.getCode(), GANZJAHRESBETRIEB),
+                new BurDto(Bur._99910003.getCode(), PRODUKTIONSSTAETTE),
+                new BurDto(Bur._99910004.getCode(), PRODUKTIONSSTAETTE),
+                new BurDto(Bur._99910005.getCode(), PRODUKTIONSSTAETTE)
             )),
         Arguments.of(
             Uid.CHE102000001.name(), List.of(
-                new BurDto(Bur.A99920004.name(), GANZJAHRESBETRIEB),
-                new BurDto(Bur.A99920006.name(), TIERHALTUNG)
+                new BurDto(Bur._99920004.getCode(), GANZJAHRESBETRIEB),
+                new BurDto(Bur._99920006.getCode(), TIERHALTUNG)
             )),
         Arguments.of(
             Uid.CHE102000002.name(), List.of(
-                new BurDto(Bur.A99920005.name(), GANZJAHRESBETRIEB)
+                new BurDto(Bur._99920005.getCode(), GANZJAHRESBETRIEB)
             )),
         Arguments.of(
             Uid.CHE103000001.name(), List.of(
-                new BurDto(Bur.A99930004.name(), GANZJAHRESBETRIEB)
+                new BurDto(Bur._99930004.getCode(), GANZJAHRESBETRIEB)
             )),
         Arguments.of(
             Uid.CHE103000002.name(), List.of(
-                new BurDto(Bur.A99930005.name(), BETRIEBSZWEIGGEMEINSCHAFT)
+                new BurDto(Bur._99930005.getCode(), BETRIEBSZWEIGGEMEINSCHAFT)
             )),
         Arguments.of(
             Uid.CHE104000002.name(), List.of(
-                new BurDto(Bur.A99940003.name(), SCHLACHTBETRIEB),
-                new BurDto(Bur.A99940004.name(), SCHLACHTBETRIEB)
+                new BurDto(Bur._99940003.getCode(), SCHLACHTBETRIEB),
+                new BurDto(Bur._99940004.getCode(), SCHLACHTBETRIEB)
             )));
   }
 
