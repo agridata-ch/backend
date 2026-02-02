@@ -1,3 +1,9 @@
+## [1.6.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.1...v1.6.0-rc.2) (2026-02-02)
+
+### Bug Fixes
+
+* **security:** Make sure, PreSecurityLogFilter does no longer log the body of image uploads. ([4ce7b2e](https://github.com/agridata-ch/backend/commit/4ce7b2e715dbdb69c9318ab3d4c5cc5fff0220a4)), closes [DIGIB2-1198](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1198)
+
 ## [1.6.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.5.1-rc.1...v1.6.0-rc.1) (2026-02-02)
 
 ### Features
