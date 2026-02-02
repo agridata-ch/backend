@@ -1,3 +1,13 @@
+## [1.5.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.5.0...v1.5.1-rc.1) (2026-02-02)
+
+### Features
+
+* **audit:** Introduce audit-logging of submission, rejection, approval, activation and withdrawal of data requests. ([3dda6bb](https://github.com/agridata-ch/backend/commit/3dda6bbb5cc4085986396e4cb41182bc03c72a44)), closes [DIGIB2-337](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-337)
+
+### Bug Fixes
+
+* **deps:** update image to fix vulnerability ([7346ffa](https://github.com/agridata-ch/backend/commit/7346ffa884ed0bb82778dd67bce366f5eef94e21))
+
 ## [1.5.0](https://github.com/agridata-ch/backend/compare/v1.4.2...v1.5.0) (2026-01-23)
 
 ### Features
