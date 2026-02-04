@@ -19,7 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * @CommentLastReviewed 2025-10-15
  */
 
-@RegisterRestClient(configKey = "agis-register-api")
+@RegisterRestClient(configKey = "agis-api")
 @RegisterProvider(RestClientLoggingFilter.class)
 @RegisterProvider(AgisClientExceptionMapper.class)
 @OidcClientFilter("agis-api")
@@ -29,7 +29,7 @@ public interface AgisRegisterApiRestClient {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @Path("register")
+  @Path("register-data/1/register")
   AgisPersonFarmResponseType register(AgisRegisterDataRequest request);
 
 }

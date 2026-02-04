@@ -2,6 +2,7 @@ package ch.agridata.agreement.api;
 
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,4 +28,6 @@ public interface ConsentRequestApi {
   List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(@Valid @NotNull UUID productId,
                                                                             @Valid @NotNull LocalDateTime since);
 
+  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducers(@Valid @NotNull UUID dataRequestId,
+                                                                                              @Valid @NotNull List<String> producerUid);
 }

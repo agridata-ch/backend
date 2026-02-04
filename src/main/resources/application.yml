@@ -88,11 +88,7 @@ quarkus:
         type: CLIENT
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
-    agis-register-api:
-      key-store-type: PKCS12
-    agis-structure-api:
-      key-store-type: PKCS12
-    agis-eco-etho-api:
+    agis-api:
       key-store-type: PKCS12
   smallrye-openapi:
     info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users 

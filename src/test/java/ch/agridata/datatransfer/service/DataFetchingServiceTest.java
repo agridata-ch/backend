@@ -1,13 +1,13 @@
 package ch.agridata.datatransfer.service;
 
-import static ch.agridata.datatransfer.client.DataProviderRestClientFactory.RestClientIdentifier.AGIS_STRUCTURE_V1;
+import static ch.agridata.datatransfer.client.DataProviderRestClientFactory.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.datatransfer.client.AgisStructureApiRestClient;
+import ch.agridata.datatransfer.client.AgisApiRestClient;
 import ch.agridata.datatransfer.client.DataProviderRestClientFactory;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
@@ -34,7 +34,7 @@ class DataFetchingServiceTest {
   @Mock
   DataProviderRestClientFactory dataProviderRestClientFactory;
   @Mock
-  AgisStructureApiRestClient agisStructureApiRestClient;
+  AgisApiRestClient agisApiRestClient;
   @Mock
   DataProductApi dataProductApi;
   @Captor
@@ -49,7 +49,7 @@ class DataFetchingServiceTest {
         "bur", "A1234");
     var productConfigurationDto = DataProductProviderConfigurationDto.builder()
         .id(PRODUCT_ID)
-        .restClientIdentifierCode("AGIS_STRUCTURE_V1")
+        .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode("POST")
         .restClientPath("random-path")
         .restClientRequestTemplate("""
@@ -63,8 +63,8 @@ class DataFetchingServiceTest {
         .build();
 
     when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfigurationDto);
-    when(dataProviderRestClientFactory.get(AGIS_STRUCTURE_V1)).thenReturn(agisStructureApiRestClient);
-    when(agisStructureApiRestClient.post(any(), requestCaptor.capture())).thenReturn(DATA);
+    when(dataProviderRestClientFactory.get(AGIS_API)).thenReturn(agisApiRestClient);
+    when(agisApiRestClient.post(any(), requestCaptor.capture())).thenReturn(DATA);
 
     var response = dataFetchingService.fetchData(PRODUCT_ID, params);
 
@@ -86,7 +86,7 @@ class DataFetchingServiceTest {
         "bur", "A1234");
     var productConfigurationDto = DataProductProviderConfigurationDto.builder()
         .id(PRODUCT_ID)
-        .restClientIdentifierCode("AGIS_STRUCTURE_V1")
+        .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode("POST")
         .restClientPath("random-path")
         .restClientRequestTemplate("""
@@ -105,6 +105,6 @@ class DataFetchingServiceTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Parameter 'year' not found");
     verifyNoInteractions(dataProviderRestClientFactory);
-    verifyNoInteractions(agisStructureApiRestClient);
+    verifyNoInteractions(agisApiRestClient);
   }
 }

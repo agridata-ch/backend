@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
+import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -118,6 +119,29 @@ class ExceptionHandlerTest {
 
     if (debug) {
       assertThat(dto.debugMessage()).isEqualTo("access denied");
+    } else {
+      assertThat(dto.debugMessage()).isNull();
+    }
+  }
+
+  @ParameterizedTest(name = "handleConsentNotGrantedException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleConsentNotGrantedException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    ConsentNotGrantedException exception =
+        new ConsentNotGrantedException("Consent not granted for producer");
+
+    Response response = exceptionHandler.handleConsentNotGrantedException(exception);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus())
+        .isEqualTo(Response.Status.FORBIDDEN.getStatusCode());
+    assertThat(dto.message()).isEqualTo("Consent not granted");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.CONSENT_NOT_GRANTED);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+
+    if (debug) {
+      assertThat(dto.debugMessage()).isEqualTo("Consent not granted for producer");
     } else {
       assertThat(dto.debugMessage()).isNull();
     }
