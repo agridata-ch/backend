@@ -27,12 +27,8 @@ quarkus:
     agis-api:
       token-path: http://localhost:8051/agate/token
   rest-client:
-    agis-register-api:
-      url: http://localhost:8051/agis/register-data/1
-    agis-structure-api:
-      url: http://localhost:8051/agis/structure-data/1
-    agis-eco-etho-api:
-      url: http://localhost:8051/agis/eco-etho-data/1
+    agis-api:
+      url: http://localhost:8051/agis
     tvd-animal-tracing-api:
       url: http://localhost:8051/tvd/animal-tracing/v1.0
   wiremock:

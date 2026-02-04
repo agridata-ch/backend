@@ -3,6 +3,7 @@ package ch.agridata.agreement.mapper;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestDto;
@@ -44,4 +45,7 @@ public interface ConsentRequestMapper {
   ConsentRequestEntity.StateEnum toEntityStateEnum(ConsentRequestStateEnum stateEnum);
 
   ConsentRequestCreatedDto toConsentRequestCreatedDto(ConsentRequestEntity entity, boolean isCreated);
+
+  @Mapping(target = "dataRequestId", source = "entity.dataRequest.id")
+  ConsentRequestFundamentalViewDto toConsentRequestFundamentalViewDto(ConsentRequestEntity entity);
 }

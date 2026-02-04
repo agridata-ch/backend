@@ -69,6 +69,9 @@ public class DataProductEntity extends AuditableEntity {
   @Column(name = "rest_client_request_template", length = 1000)
   private String restClientRequestTemplate;
 
+  @Column(name = "flow_code", length = 100)
+  private String flowCode;
+
   /**
    * Enumerates supported external systems that serve as sources for data products.
    *

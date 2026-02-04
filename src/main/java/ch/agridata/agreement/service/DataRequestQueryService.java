@@ -3,8 +3,10 @@ package ch.agridata.agreement.service;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
+import ch.agridata.agreement.api.DataRequestApi;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
+import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
@@ -22,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class DataRequestQueryService {
+public class DataRequestQueryService implements DataRequestApi {
 
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
@@ -57,4 +59,11 @@ public class DataRequestQueryService {
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
+  @Override
+  public List<DataRequestDto> getActiveDataRequestsOfConsumer(String consumerUid) {
+    return dataRequestRepository.findByDataConsumerUid(consumerUid).stream()
+        .filter(dr -> DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dr.getStateCode()))
+        .map(dataRequestMapper::toDto)
+        .toList();
+  }
 }
