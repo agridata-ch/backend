@@ -1,3 +1,9 @@
+## [1.6.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.2...v1.6.0-rc.3) (2026-02-06)
+
+### Features
+
+* **env:** adds new agridata-testing environment ([20b2986](https://github.com/agridata-ch/backend/commit/20b2986b882b3dea272d492003df504b29d3b94f)), closes [DIGIB2-1213](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1213)
+
 ## [1.6.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.1...v1.6.0-rc.2) (2026-02-02)
 
 ### Bug Fixes
