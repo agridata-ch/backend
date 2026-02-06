@@ -29,7 +29,7 @@ public class TestDataController {
 
   public static final String PATH = "/api/test-data";
   private static final String TEST_DATA_SCRIPT = "classpath:db/testdata/";
-  private static final List<String> ENABLED_PROFILES = List.of("local", "develop", "integration");
+  private static final List<String> ENABLED_PROFILES = List.of("local", "develop", "testing");
   private final DataSource dataSource;
 
   @ConfigProperty(name = "quarkus.profile")
