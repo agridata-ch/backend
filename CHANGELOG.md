@@ -1,3 +1,9 @@
+## [1.6.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.4...v1.6.0-rc.5) (2026-02-09)
+
+### Features
+
+* **product:** Adjust DB-Model to include Data Provider and Data Source System. ([4949523](https://github.com/agridata-ch/backend/commit/4949523445ba13bc8ebcfa06091b3af11efc5e68)), closes [DIGIB2-979](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-979)
+
 ## [1.6.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.3...v1.6.0-rc.4) (2026-02-09)
 
 ### Features
