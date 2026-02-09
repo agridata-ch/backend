@@ -1,3 +1,10 @@
+## [1.6.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.3...v1.6.0-rc.4) (2026-02-09)
+
+### Features
+
+* **agreement:** Add data_producer_bur column to consent_request and add consent-request-aggregation endpoint. ([e96408e](https://github.com/agridata-ch/backend/commit/e96408ec9f75903ec2dd067b85d2fce70fe15dfd)), closes [DIGIB2-1206](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1206)
+* **data-transfer:** implementation of first data transfer workflow ([d92b3ec](https://github.com/agridata-ch/backend/commit/d92b3ec14c66132c0cf83aeafb92780feb3a5f70))
+
 ## [1.6.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.2...v1.6.0-rc.3) (2026-02-06)
 
 ### Features
