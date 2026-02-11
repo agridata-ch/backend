@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
@@ -30,8 +31,10 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "data_provider",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uk_data_provider_code", columnNames = "code")
-    })
+        @UniqueConstraint(name = "uk_data_provider_code", columnNames = "code"),
+    },
+    indexes = {@Index(name = "idx_data_provider_uid", columnList = "uid")}
+)
 @SQLDelete(sql = "UPDATE data_provider SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
@@ -44,6 +47,9 @@ public class DataProviderEntity extends AuditableEntity {
   @GeneratedValue
   @Column(name = "id", nullable = false, updatable = false)
   private UUID id;
+
+  @Column(name = "uid", length = 20)
+  private String uid;
 
   /**
    * Stable technical identifier used in configs and references.

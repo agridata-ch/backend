@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.api.DataRequestApi;
 import ch.agridata.agreement.dto.DataRequestDto;
@@ -38,6 +39,14 @@ public class DataRequestQueryService implements DataRequestApi {
         .toList();
   }
 
+  @RolesAllowed(PROVIDER_ROLE)
+  public List<DataRequestDto> getActiveDataRequestsForCurrentProvider() {
+    var dataRequestEntities = dataRequestRepository.findActiveByProviderUid(agridataSecurityIdentity.getUidOrElseThrow());
+    return dataRequestEntities.stream()
+        .map(dataRequestMapper::toDto)
+        .toList();
+  }
+
   @RolesAllowed(ADMIN_ROLE)
   public List<DataRequestDto> getAllNonDraftDataRequests() {
     return dataRequestRepository.findAllNotDraft().stream()
@@ -48,6 +57,13 @@ public class DataRequestQueryService implements DataRequestApi {
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto getDataRequestOfCurrentConsumer(UUID requestId) {
     return dataRequestRepository.findByIdAndDataConsumerUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
+        .map(dataRequestMapper::toDto)
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public DataRequestDto getActiveDataRequestForCurrentProvider(UUID requestId) {
+    return dataRequestRepository.findActiveByIdAndDataProviderUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
         .map(dataRequestMapper::toDto)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
