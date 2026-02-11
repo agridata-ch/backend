@@ -2,6 +2,7 @@ package ch.agridata.agreement.controller;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
@@ -51,7 +52,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
     description = "Provides access to data requests for consumers and admins. "
         + "Consumers can create, update, submit, and retrieve their own data requests, "
         + "while admins have full access to all data requests and their associated consent requests.")
-@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
 @RunOnVirtualThread
 public class DataRequestController {
 
@@ -76,6 +77,8 @@ public class DataRequestController {
   public List<DataRequestDto> getDataRequests() {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getAllNonDraftDataRequests();
+    } else if (identity.isProvider()) {
+      return dataRequestQueryService.getActiveDataRequestsForCurrentProvider();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
@@ -91,6 +94,8 @@ public class DataRequestController {
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getNonDraftDataRequest(requestId);
+    } else if (identity.isProvider()) {
+      return dataRequestQueryService.getActiveDataRequestForCurrentProvider(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
@@ -136,6 +141,7 @@ public class DataRequestController {
           + "Accessible to the consumer who owns the data request and for admin users."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndKtIdPv2(
       @Parameter(
           description = "The UUID of the data request",

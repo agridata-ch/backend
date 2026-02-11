@@ -50,6 +50,17 @@ class DataRequestQueryServiceTest {
   }
 
   @Test
+  void givenActiveRequestsExist_whenGetAllActiveRequests_OfProvider_thenReturnDtos() {
+    var dataRequest = buildEntity();
+    when(repository.findActiveByProviderUid(USER_UID)).thenReturn(List.of(dataRequest));
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+
+    var result = service.getActiveDataRequestsForCurrentProvider();
+
+    assertEquals(1, result.size());
+  }
+
+  @Test
   void givenRequestsExist_whenGetAllNonDraftRequests_OfAdmin_thenReturnDtos() {
     var entity = buildEntity();
     when(repository.findAllNotDraft()).thenReturn(List.of(entity));
@@ -102,5 +113,28 @@ class DataRequestQueryServiceTest {
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.empty());
 
     assertThrows(NotFoundException.class, () -> service.getDataRequestOfCurrentConsumer(id));
+  }
+
+  @Test
+  void givenValidId_whenGetActiveDataRequestForCurrentProvider_thenReturnDto() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+
+    when(repository.findActiveByIdAndDataProviderUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+
+    var result = service.getActiveDataRequestForCurrentProvider(id);
+
+    assertThat(result).isNotNull();
+  }
+
+  @Test
+  void givenInvalidId_whenGetActiveDataRequestForCurrentProvider_thenThrowNotFound() {
+    UUID id = UUID.randomUUID();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findActiveByIdAndDataProviderUid(id, USER_UID)).thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, () -> service.getActiveDataRequestForCurrentProvider(id));
   }
 }

@@ -1,6 +1,7 @@
 package ch.agridata.common.security;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.exceptions.UidMissingException;
@@ -132,6 +133,10 @@ public class AgridataSecurityIdentity {
 
   public boolean isAdmin() {
     return securityIdentity.hasRole(ADMIN_ROLE);
+  }
+
+  public boolean isProvider() {
+    return securityIdentity.hasRole(PROVIDER_ROLE);
   }
 
   public Set<String> getRoles() {

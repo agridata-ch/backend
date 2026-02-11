@@ -13,6 +13,7 @@ import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD461
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -63,8 +64,15 @@ class DataRequestTest {
   }
 
   @Test
-  void givenAdmin_whenGetDataRequests_thenAllNonDraftDataRequestsReturned() {
+  void givenAdmin_whenGetDataRequests_thenOnlyNonDraftDataRequestsReturned() {
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
+        .statusCode(200)
+        .body("size()", equalTo(8));
+  }
+
+  @Test
+  void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
+    AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(8));
   }
@@ -86,8 +94,24 @@ class DataRequestTest {
   }
 
   @Test
+  void givenExistingDataRequestAndProvider_whenGetDataRequest_thenReturnFound() {
+    AuthTestUtils.requestAs(PROVIDER).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
   void givenExistingDraftDataRequestAndAdmin_whenGetDataRequest_thenReturnNotFound() {
     AuthTestUtils.requestAs(ADMIN).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestAndProvider_whenGetDataRequest_thenReturnNotFound() {
+    AuthTestUtils.requestAs(PROVIDER).when()
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
         .then()
         .statusCode(404);

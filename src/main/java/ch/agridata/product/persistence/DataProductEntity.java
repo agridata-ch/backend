@@ -31,7 +31,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "data_product",
     indexes = {
-        @Index(name = "idx_data_product_data_source_id", columnList = "data_source_id")
+        @Index(name = "idx_data_product_data_source_system_id", columnList = "data_source_system_id")
     })
 @SQLDelete(sql = "UPDATE data_product SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")

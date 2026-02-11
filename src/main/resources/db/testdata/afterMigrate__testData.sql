@@ -211,10 +211,10 @@ INSERT INTO public.users (
 -- ===============================================
 -- data_provider
 -- ===============================================
-INSERT INTO public.data_provider (id, archived, created_by, created_at, modified_by, modified_at, code, name)
+INSERT INTO public.data_provider (id, archived, created_by, created_at, modified_by, modified_at, code, name, uid)
 VALUES
-('e37b148b-9a0f-4c2e-80c5-fe9c9416b640', false, null, '2026-01-18 09:07:31.337715', null, '2026-01-29 09:07:31.337715', 'IDENTITAS', '{"de": "Identitas", "fr": "Identitas", "it": "Identitas"}')
-ON CONFLICT (id) DO UPDATE SET archived = EXCLUDED.archived, modified_by = EXCLUDED.modified_by, modified_at = EXCLUDED.modified_at, code = EXCLUDED.code, name = EXCLUDED.name;
+('e37b148b-9a0f-4c2e-80c5-fe9c9416b640', false, null, '2026-01-18 09:07:31.337715', null, '2026-01-29 09:07:31.337715', 'IDENTITAS', '{"de": "Identitas", "fr": "Identitas", "it": "Identitas"}', 'CHE105031830')
+ON CONFLICT (id) DO UPDATE SET archived = EXCLUDED.archived, modified_by = EXCLUDED.modified_by, modified_at = EXCLUDED.modified_at, code = EXCLUDED.code, name = EXCLUDED.name, uid = EXCLUDED.uid;
 -- ===============================================
 -- data_source_system
 -- ===============================================
