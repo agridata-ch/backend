@@ -4,7 +4,4 @@
     <!--    <suppress until="2025-07-31Z">-->
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
-    <suppress until="2026-02-28Z">
-        <cve>CVE-2025-66560</cve>
-    </suppress>
 </suppressions>
