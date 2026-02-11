@@ -29,6 +29,8 @@ quarkus:
         - http://localhost:4200
   keycloak:
     devservices:
+      # TODO: Remove when Quarkus defaults to Keycloak >= 26.5.3 (Quarkus 3.31.2 defaults to 26.5.0 which has auth issues)
+      image-name: quay.io/keycloak/keycloak:26.5.3
       port: 6999
       realm-path: agate_realm.json
   log:
