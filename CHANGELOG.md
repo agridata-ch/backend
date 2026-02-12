@@ -1,3 +1,9 @@
+## [1.6.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.5...v1.6.0-rc.6) (2026-02-12)
+
+### Features
+
+* **deps:** update java to v25 and multiple dependencies ([0de3b77](https://github.com/agridata-ch/backend/commit/0de3b7772cbd096154f5217be50c6580db074d0f)), closes [DIGIB2-1233](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1233)
+
 ## [1.6.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.4...v1.6.0-rc.5) (2026-02-09)
 
 ### Features
