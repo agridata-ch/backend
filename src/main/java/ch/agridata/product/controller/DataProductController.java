@@ -1,5 +1,7 @@
 package ch.agridata.product.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
@@ -7,6 +9,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static ch.agridata.product.controller.DataProductController.PATH;
 
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.service.DataProductService;
 import io.quarkus.security.Authenticated;
@@ -41,6 +44,7 @@ public class DataProductController {
   private final DataProductService dataProductService;
 
   @GET
+  @ApiSubset({WEB_APP, MOBILE_APP})
   @Operation(
       operationId = "getDataProducts",
       description = "Retrieves the list of all available data products. Accessible to users with the "

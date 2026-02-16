@@ -1,7 +1,9 @@
 package ch.agridata.datatransfer.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.datatransfer.dto.DataTransferResponse;
 import ch.agridata.datatransfer.service.DataTransferService;
 import ch.agridata.datatransfer.service.DeltaService;
@@ -54,6 +56,7 @@ public class DataTransferController {
   private final DeltaService deltaService;
 
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path("/product/{productId}/data")
   @Operation(
       operationId = "dataTransfer",
@@ -102,6 +105,7 @@ public class DataTransferController {
   }
 
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path("/product/{productId}/delta")
   @Operation(
       operationId = "getDeltaIds",

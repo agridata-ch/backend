@@ -1,5 +1,8 @@
 package ch.agridata.agreement.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_PROVIDER;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
@@ -14,6 +17,7 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,6 +71,7 @@ public class DataRequestController {
   private final AgridataSecurityIdentity identity;
 
   @GET
+  @ApiSubset({WEB_APP, DATA_CONSUMER, DATA_PROVIDER})
   @Path(PATH_V1)
   @Operation(
       operationId = "getDataRequests",
@@ -84,6 +89,7 @@ public class DataRequestController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "getDataRequest",
@@ -107,6 +113,7 @@ public class DataRequestController {
    */
   @Deprecated(since = "1.5.0")
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequestAndKtIdP",
@@ -134,6 +141,7 @@ public class DataRequestController {
   }
 
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path(PATH_V2 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequestAndKtIdPv2",
@@ -160,6 +168,7 @@ public class DataRequestController {
   }
 
   @POST
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
@@ -174,6 +183,7 @@ public class DataRequestController {
   }
 
   @PUT()
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "updateDataRequestDetails",
@@ -188,6 +198,7 @@ public class DataRequestController {
   }
 
   @PUT
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}/status")
   @Operation(
       operationId = "setDataRequestStatus",
@@ -207,6 +218,7 @@ public class DataRequestController {
   }
 
   @PUT
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}/logo")
   @Operation(
       operationId = "updateDataRequestLogo",
