@@ -2,6 +2,7 @@ package ch.agridata.product.api;
 
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
+import ch.agridata.product.dto.DataSourceSystemDto;
 import java.util.UUID;
 
 /**
@@ -15,5 +16,7 @@ public interface DataProductApi {
 
   DataProductProviderConfigurationDto getProviderConfigurationById(UUID productId);
 
-  UUID getProviderId(UUID productId);
+  UUID getDataSourceSystemId(UUID productId);
+
+  DataSourceSystemDto getDataSourceSystem(UUID dataSourceSystemId);
 }

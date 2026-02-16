@@ -3,8 +3,11 @@ package ch.agridata.product.service;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
+import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.mapper.DataProductEntityMapper;
+import ch.agridata.product.mapper.DataSourceSystemEntityMapper;
 import ch.agridata.product.persistence.DataProductRepository;
+import ch.agridata.product.persistence.DataSourceSystemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
@@ -23,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class DataProductService implements DataProductApi {
   private final DataProductRepository dataProductRepository;
   private final DataProductEntityMapper dataProductEntityMapper;
+  private final DataSourceSystemRepository dataSourceSystemRepository;
+  private final DataSourceSystemEntityMapper dataSourceSystemMapper;
 
   public List<DataProductDto> getDataProducts() {
     return dataProductRepository.findAll().stream().map(dataProductEntityMapper::toDto).toList();
@@ -45,7 +50,16 @@ public class DataProductService implements DataProductApi {
   }
 
   @Override
-  public UUID getProviderId(UUID productId) {
-    return dataProductRepository.findProviderIdByProductId(productId);
+  public UUID getDataSourceSystemId(UUID productId) {
+    return dataProductRepository.findDataSourceSystemIdByProductId(productId);
+  }
+
+  @Override
+  public DataSourceSystemDto getDataSourceSystem(UUID dataSourceSystemId) {
+    return dataSourceSystemRepository.findByIdOptional(dataSourceSystemId)
+        .map(dataSourceSystemMapper::toDto)
+        .orElseThrow(() ->
+            new NotFoundException("DataSourceSystem not found: " + dataSourceSystemId)
+        );
   }
 }

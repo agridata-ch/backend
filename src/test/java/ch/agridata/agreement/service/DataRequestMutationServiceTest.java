@@ -51,6 +51,8 @@ class DataRequestMutationServiceTest {
   private DataProductApi dataProductApi;
   @Captor
   private ArgumentCaptor<DataRequestEntity> dataRequestEntityCaptor;
+  @Mock
+  private DataRequestEnrichmentService dataRequestEnrichmentService;
 
 
   @Test
@@ -69,7 +71,7 @@ class DataRequestMutationServiceTest {
 
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getHumanFriendlyId()).isEqualTo("AB57");
     assertThat(result).isEqualTo(expectedDto);
   }
@@ -91,7 +93,7 @@ class DataRequestMutationServiceTest {
 
     var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     assertThat(result).isEqualTo(expectedDto);
   }
@@ -180,7 +182,7 @@ class DataRequestMutationServiceTest {
 
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getHumanFriendlyId()).isEqualTo("AB57");
     assertThat(result).isEqualTo(expectedDto);
   }

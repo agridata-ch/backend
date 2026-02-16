@@ -43,6 +43,8 @@ class DataRequestStateServiceTest {
   private Validator validator;
   @Captor
   private ArgumentCaptor<DataRequestEntity> dataRequestEntityCaptor;
+  @Mock
+  private DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @Test
   void givenSubmittedRequest_whenSetStateToInReview_thenThrowIllegalStateAsAdminException() {
@@ -69,7 +71,7 @@ class DataRequestStateServiceTest {
 
     var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.IN_REVIEW);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     verify(auditingService).logDataRequestSubmitted(id);
     assertThat(result).isEqualTo(expectedDto);
@@ -85,7 +87,7 @@ class DataRequestStateServiceTest {
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.DRAFT);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(auditingService).logDataRequestRejected(id);
     assertThat(result).isEqualTo(expectedDto);
@@ -103,7 +105,7 @@ class DataRequestStateServiceTest {
 
     var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.DRAFT);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(auditingService).logDataRequestWithdrawn(id);
     assertThat(result).isEqualTo(expectedDto);
@@ -119,7 +121,7 @@ class DataRequestStateServiceTest {
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED);
     verify(auditingService).logDataRequestApproved(id);
     assertThat(result).isEqualTo(expectedDto);
@@ -135,7 +137,7 @@ class DataRequestStateServiceTest {
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.ACTIVE);
 
-    DataRequestDto expectedDto = verify(mapper).toDto(dataRequestEntityCaptor.capture());
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
     verify(auditingService).logDataRequestActivated(id);
     assertThat(result).isEqualTo(expectedDto);

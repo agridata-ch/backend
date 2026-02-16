@@ -51,6 +51,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
   public List<ConsentRequestProducerViewDto> getConsentRequestsAsCurrentDataProducer(@Nullable String dataProducerUid) {
@@ -161,7 +162,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
 
   private ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity) {
     return consentRequestMapper.toConsentRequestProducerViewDto(entity,
-        dataRequestMapper.toDto(entity.getDataRequest()));
+        dataRequestEnrichmentService.toEnrichedDto(entity.getDataRequest()));
   }
 
   private List<ConsentRequestConsumerViewV2Dto> merge(

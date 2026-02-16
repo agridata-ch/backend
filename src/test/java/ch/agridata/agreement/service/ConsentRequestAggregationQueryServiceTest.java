@@ -16,7 +16,6 @@ import ch.agridata.agreement.dto.ConsentRequestAggregationStateEnum;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.mapper.ConsentRequestMapperImpl;
-import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -50,10 +48,10 @@ class ConsentRequestAggregationQueryServiceTest {
   private ConsentRequestRepository consentRequestRepository;
   @Spy
   private final ConsentRequestMapper consentRequestMapper = new ConsentRequestMapperImpl();
-  @Spy
-  private final DataRequestMapper dataRequestMapper = Mappers.getMapper(DataRequestMapper.class);
   @InjectMocks
   private ConsentRequestAggregationQueryService service;
+  @Mock
+  private DataRequestEnrichmentService dataRequestEnrichmentService;
 
   private static final String AUTH_UID = "CHE000000001";
   private static final UUID DR1 = UUID.fromString("00000000-0000-0000-0000-000000000001");
