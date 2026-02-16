@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.models.responses.APIResponses;
  * @CommentLastReviewed 2025-08-25
  */
 
-@OpenApiFilter(OpenApiFilter.RunStage.BUILD)
+@OpenApiFilter(stages = {OpenApiFilter.RunStage.BUILD})
 public class OpenApiNotFoundResponse implements OASFilter {
 
   @Override
