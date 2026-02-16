@@ -1,6 +1,7 @@
 package ch.agridata.product.controller;
 
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
@@ -8,6 +9,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static ch.agridata.product.controller.DataProviderController.PATH;
 
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProviderDto;
 import ch.agridata.product.service.DataProviderService;
@@ -45,6 +47,7 @@ public class DataProviderController {
   private final DataProviderService dataProviderService;
 
   @GET
+  @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getDataProviders",
       description = "Retrieves the list of all available data providers. Accessible to users with the "
@@ -55,6 +58,7 @@ public class DataProviderController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/{providerId}")
   @Operation(
       operationId = "getDataProviderById",
@@ -65,6 +69,7 @@ public class DataProviderController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/{providerId}/products")
   @Operation(
       operationId = "getDataProductsByProviderId",

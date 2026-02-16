@@ -1,5 +1,7 @@
 package ch.agridata.user.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
@@ -9,6 +11,7 @@ import static ch.agridata.user.controller.UserController.PATH;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
@@ -64,6 +67,7 @@ public class UserController {
   private final UserService userService;
 
   @GET
+  @ApiSubset({WEB_APP, MOBILE_APP})
   @Path("/authorized-uids")
   @Operation(
       operationId = "getAuthorizedUids",
@@ -91,6 +95,7 @@ public class UserController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/uid/{uid}/authorized-burs")
   @Operation(
       operationId = "getAuthorizedBursByUid",
@@ -103,6 +108,7 @@ public class UserController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/user-info")
   @Operation(
       operationId = "getUserInfo",
@@ -117,6 +123,7 @@ public class UserController {
   }
 
   @PUT
+  @ApiSubset({WEB_APP})
   @Path("/preferences")
   @Operation(
       operationId = "updateUserPreferences",
@@ -131,6 +138,7 @@ public class UserController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/producers")
   @Operation(
       operationId = "getProducers",

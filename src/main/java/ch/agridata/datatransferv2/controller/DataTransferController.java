@@ -1,7 +1,9 @@
 package ch.agridata.datatransferv2.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.datatransferv2.service.FlowProvider;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
@@ -41,6 +43,7 @@ public class DataTransferController {
   private final FlowProvider flowProvider;
 
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path("/product/{productId}/data")
   @Operation(
       operationId = "dataTransferV2",

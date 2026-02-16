@@ -91,8 +91,10 @@ quarkus:
     agis-api:
       key-store-type: PKCS12
   smallrye-openapi:
-    info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users 
-    to discover, request, approve, and manage data sharing agreements."
+    info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users
+    to discover, request, approve, and manage data sharing agreements.\n\n
+    - **For Data Consumers**: Select this API subset to view only the endpoints relevant to you: [Data Consumer](/q/swagger-ui/?urls.primaryName=Data+Consumer)\n
+    - **For Data Providers**: Select this API subset to view only the endpoints relevant to you: [Data Providers](/q/swagger-ui/?urls.primaryName=Data+Provider)"
     info-title: agridata.ch API
     store-schema-directory: target/openapi
     store-schema-file-name: agridata-api
@@ -102,9 +104,18 @@ quarkus:
     oauth-scopes: openid offline_access
     oauth-use-pkce-with-authorization-code-grant: true
     enabled: true
+    urls:
+      All: /q/openapi
+      agridata.ch Web App: /q/openapi/subsets/agridata.ch%20Web%20App
+      agridata.ch Mobile App: /q/openapi/subsets/Mobile%20App
+      Data Consumer: /q/openapi/subsets/Data%20Consumer
+      Data Provider: /q/openapi/subsets/Data%20Provider
+    urls-primary-name: All
 mp:
   openapi:
     scan:
       exclude:
         packages:
           - org.openapitools.api # excludes the automatically generated apis (e.g. AGIS) from the openapi documents
+        classes:
+          - ch.agridata.common.openapi.OpenApiSubsetController

@@ -1,11 +1,14 @@
 package ch.agridata.agreement.controller;
 
 import static ch.agridata.agreement.controller.ConsentRequestAggregationController.PATH;
+import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestAggregationProducerView;
 import ch.agridata.agreement.service.ConsentRequestAggregationQueryService;
+import ch.agridata.common.openapi.ApiSubset;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -43,6 +46,7 @@ public class ConsentRequestAggregationController {
   private final ConsentRequestAggregationQueryService consentRequestAggregationQueryService;
 
   @GET()
+  @ApiSubset({MOBILE_APP, WEB_APP})
   @Operation(
       operationId = "getConsentRequestAggregations",
       description = "Retrieves aggregated consent requests for the current data producer, grouped by data request."

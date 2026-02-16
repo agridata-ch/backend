@@ -1,8 +1,10 @@
 package ch.agridata.uidregister.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import ch.agridata.uidregister.service.UidRegisterService;
 import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
@@ -39,6 +41,7 @@ public class UidRegisterController {
   private final UidRegisterService uidRegisterService;
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/search/{uid}")
   @Operation(
       operationId = "getByUid",
@@ -56,6 +59,7 @@ public class UidRegisterController {
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path("/search")
   @Operation(
       operationId = "getByUidOfCurrentUser",
