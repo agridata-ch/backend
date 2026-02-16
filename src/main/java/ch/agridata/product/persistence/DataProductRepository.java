@@ -25,12 +25,10 @@ public class DataProductRepository implements PanacheRepositoryBase<DataProductE
         """, providerId).list();
   }
 
-  public UUID findProviderIdByProductId(UUID productId) {
+  public UUID findDataSourceSystemIdByProductId(UUID productId) {
     return find("""
-        select p.id
+        select dp.dataSourceSystem.id
         from DataProductEntity dp
-        join dp.dataSourceSystem ds
-        join ds.dataProvider p
         where dp.id = ?1
         """, productId)
         .project(UUID.class)

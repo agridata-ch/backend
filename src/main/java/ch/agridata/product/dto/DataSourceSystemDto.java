@@ -22,7 +22,11 @@ public record DataSourceSystemDto(
     String code,
 
     @Schema(description = "Display name of the data source")
-    TranslationDto name
+    TranslationDto name,
+
+    @Schema(description = "Reference to the data provider")
+    @NotNull
+    DataProviderDto dataProvider
 ) {
 
 }

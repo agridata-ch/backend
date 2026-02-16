@@ -25,9 +25,10 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
 
   public Optional<DataRequestEntity> findActiveByIdAndDataProviderUid(UUID id, String dataProviderUid) {
     return find("""
-            id = :id and dataProviderId in (
-              select dp.id from DataProviderEntity dp
-              where dp.uid = :dataProviderUid and dp.archived = false
+            id = :id and dataSourceSystemId in (
+              select dss.id
+              from DataSourceSystemEntity dss
+              where dss.dataProvider.uid = :dataProviderUid
             )
             and stateCode = :state_code
             """,
@@ -44,9 +45,10 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
 
   public List<DataRequestEntity> findActiveByProviderUid(String dataProviderUid) {
     return find("""
-            dataProviderId in (
-              select dp.id from DataProviderEntity dp
-              where dp.uid = :dataProviderUid and dp.archived = false
+            dataSourceSystemId in (
+              select dss.id
+              from DataSourceSystemEntity dss
+              where dss.dataProvider.uid = :dataProviderUid
             )
             and stateCode = :state_code
             """,

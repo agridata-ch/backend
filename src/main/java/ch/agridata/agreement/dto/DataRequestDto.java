@@ -1,5 +1,6 @@
 package ch.agridata.agreement.dto;
 
+import ch.agridata.product.dto.DataSourceSystemDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,8 +34,12 @@ public record DataRequestDto(
             + "This value is derived from the data source systems of the associated data products.",
         examples = {"e37b148b-9a0f-4c2e-80c5-fe9c9416b640"}
     )
-    @NotNull
+
     UUID dataProviderId,
+
+    UUID dataSourceSystemId,
+
+    DataSourceSystemDto dataSourceSystem,
 
     @Schema(
         description = "Human friendly id of the data request",

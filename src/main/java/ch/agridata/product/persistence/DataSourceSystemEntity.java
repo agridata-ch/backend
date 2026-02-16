@@ -1,15 +1,16 @@
 package ch.agridata.product.persistence;
 
+import ch.agridata.common.persistence.AuditableEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +31,8 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "data_source_system",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_data_source_system_code", columnNames = {"code"})
+    indexes = {
+        @Index(name = "idx_data_source_system_data_provider_id", columnList = "data_provider_id")
     }
 )
 @SQLDelete(sql = "UPDATE data_source_system SET archived = true WHERE id = ?")
@@ -41,7 +42,7 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataSourceSystemEntity {
+public class DataSourceSystemEntity extends AuditableEntity {
 
   @Id
   @GeneratedValue
@@ -51,7 +52,7 @@ public class DataSourceSystemEntity {
   @JoinColumn(name = "data_provider_id", nullable = false)
   private DataProviderEntity dataProvider;
 
-  @Column(name = "code", length = 50, nullable = false, unique = true)
+  @Column(name = "code", length = 50, nullable = false)
   private String code;
 
   @JdbcTypeCode(SqlTypes.JSON)

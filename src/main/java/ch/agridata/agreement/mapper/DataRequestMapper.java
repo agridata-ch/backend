@@ -8,6 +8,7 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.product.dto.DataSourceSystemDto;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -60,17 +61,19 @@ public interface DataRequestMapper {
     updatedEntities.forEach(productEntity -> entity.getDataProducts().add(productEntity));
   }
 
-  @Mapping(target = "products", source = "dataProducts")
+  @Mapping(target = "products", source = "entity.dataProducts")
   @Mapping(target = "id", source = "entity.id")
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
-  DataRequestDto toDto(DataRequestEntity entity);
+  @Mapping(target = "dataProviderId", source = "dataSourceSystemDto.dataProvider.id")
+  @Mapping(target = "dataSourceSystem", source = "dataSourceSystemDto")
+  DataRequestDto toDto(DataRequestEntity entity, DataSourceSystemDto dataSourceSystemDto);
 
   @Mapping(target = "humanFriendlyId", ignore = true)
   @Mapping(target = "submissionDate", ignore = true)
   @Mapping(target = "dataConsumerUid", ignore = true)
   @Mapping(target = "dataConsumerLegalName", ignore = true)
   @Mapping(target = "validRedirectUriRegex", ignore = true)
-  @Mapping(target = "dataProviderId", ignore = true)
+  @Mapping(target = "dataSourceSystemId", ignore = true)
   // This will be handled in the AfterMapping method
   @Mapping(target = "dataProducts", ignore = true)
   @Mapping(target = "id", ignore = true)

@@ -8,7 +8,6 @@ import ch.agridata.agreement.dto.ConsentRequestAggregationStateEnum;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
-import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
@@ -43,7 +42,7 @@ public class ConsentRequestAggregationQueryService {
   private final AgridataSecurityIdentity identity;
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestMapper consentRequestMapper;
-  private final DataRequestMapper dataRequestMapper;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
   public List<ConsentRequestAggregationProducerView> getConsentRequestAggregationsAsCurrentDataProducer(@NotNull String dataProducerUid) {
@@ -87,7 +86,7 @@ public class ConsentRequestAggregationQueryService {
             .orElse(null);
 
     DataRequestEntity dataRequest = first.getDataRequest();
-    DataRequestDto dataRequestDto = dataRequestMapper.toDto(dataRequest);
+    DataRequestDto dataRequestDto = dataRequestEnrichmentService.toEnrichedDto(dataRequest);
 
     List<ConsentRequestProducerViewDto> consentRequests = group.stream()
         .sorted(Comparator.comparing(ConsentRequestEntity::getId))

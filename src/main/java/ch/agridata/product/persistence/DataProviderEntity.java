@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,9 +29,6 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "data_provider",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_data_provider_code", columnNames = "code"),
-    },
     indexes = {@Index(name = "idx_data_provider_uid", columnList = "uid")}
 )
 @SQLDelete(sql = "UPDATE data_provider SET archived = true WHERE id = ?")
@@ -55,7 +51,7 @@ public class DataProviderEntity extends AuditableEntity {
    * Stable technical identifier used in configs and references.
    * Example: "BLW", "IDENTITAS", ...
    */
-  @Column(name = "code", length = 50, nullable = false, unique = true)
+  @Column(name = "code", length = 50, nullable = false)
   private String code;
 
   @JdbcTypeCode(SqlTypes.JSON)

@@ -54,6 +54,7 @@ public class DataRequestStateService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Validator validator;
   private final AuditingService auditingService;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
 
   public static void verifyStatusTransition(DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to) {
@@ -114,7 +115,7 @@ public class DataRequestStateService {
     }
 
     dataRequestRepository.persist(entity);
-    return dataRequestMapper.toDto(entity);
+    return dataRequestEnrichmentService.toEnrichedDto(entity);
   }
 
   private <T> void validate(T object, Class<?>... groups) {

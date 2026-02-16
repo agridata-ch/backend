@@ -37,6 +37,7 @@ public class DataRequestMutationService {
   private final UidRegisterServiceApi uidRegisterServiceApi;
   private final HumanFriendlyIdService humanFriendlyIdService;
   private final DataProductApi dataProductApi;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
@@ -69,7 +70,7 @@ public class DataRequestMutationService {
     dataRequestMapper.updateEntity(dataRequestDto, entity);
     setDataSourceSystemId(dataRequestDto, entity);
     dataRequestRepository.persist(entity);
-    return dataRequestMapper.toDto(entity);
+    return dataRequestEnrichmentService.toEnrichedDto(entity);
   }
 
   /**
@@ -80,7 +81,7 @@ public class DataRequestMutationService {
   private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity) {
     var products = dto.products();
     if (products == null || products.isEmpty()) {
-      entity.setDataProviderId(null);
+      entity.setDataSourceSystemId(null);
       return;
     }
 
@@ -93,10 +94,10 @@ public class DataRequestMutationService {
       }
     }
 
-    var dataProviderId = dataProductApi.getProviderId(getProductOrThrowValidation(products.getFirst()).id());
+    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(getProductOrThrowValidation(products.getFirst()).id());
 
 
-    entity.setDataProviderId(dataProviderId);
+    entity.setDataSourceSystemId(dataSourceSystemId);
   }
 
   private DataProductDto getProductOrThrowValidation(UUID id) {
