@@ -1,0 +1,12 @@
+{
+  "data": [
+    {
+      "$type": "LegalUnitPersonResponse",
+      "lastName": "Beispiel",
+      "firstName": "Lara",
+      "uid": "ZZZ199984051",
+      "correspondenceLanguage": "de"
+    }
+  ],
+  "totalCount": null
+}

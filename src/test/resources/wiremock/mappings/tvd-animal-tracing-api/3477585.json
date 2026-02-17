@@ -2,11 +2,11 @@
   "priority": 1,
   "request": {
     "method": "GET",
-    "url": "/tvd/animal-tracing/v1.0/customer/legalunits/equidowner/3477581"
+    "url": "/tvd/animal-tracing/v1.0/customer/legalunits/equidowner/3477585"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "tvd-animal-tracing-api/3477581.json",
+    "bodyFileName": "tvd-animal-tracing-api/3477585.json",
     "headers": {
       "Content-Type": "application/json"
     }

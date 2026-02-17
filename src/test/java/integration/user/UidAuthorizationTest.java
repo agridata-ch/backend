@@ -31,7 +31,8 @@ class UidAuthorizationTest {
         Arguments.of(TestUserEnum.PRODUCER_B),
         Arguments.of(TestUserEnum.PRODUCER_B_3),
         Arguments.of(TestUserEnum.PRODUCER_C),
-        Arguments.of(TestUserEnum.PRODUCER_D));
+        Arguments.of(TestUserEnum.PRODUCER_D),
+        Arguments.of(TestUserEnum.PRODUCER_E));
   }
 
   @ParameterizedTest
