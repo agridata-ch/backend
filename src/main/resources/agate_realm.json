@@ -3174,6 +3174,55 @@
       "requiredActions": [
       ],
       "totp": false
+    },
+    {
+      "username": "producer-e",
+      "attributes": {
+        "loginid": [
+          "3477585"
+        ],
+        "street": [
+          "Kirchgasse 5"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-e@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Nico",
+      "groups": [
+      ],
+      "lastName": "Demomann",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
     }
   ]
 }

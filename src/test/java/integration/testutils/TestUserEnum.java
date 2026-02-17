@@ -6,8 +6,8 @@ import static integration.testutils.TestDataIdentifiers.Uid.CHE102000002;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE103000001;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE103000002;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE104000002;
-import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199978837;
-import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199981609;
+import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199984051;
+import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199984068;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public enum TestUserEnum {
       "3477580",
       "FLXXA0001"),
   PRODUCER_B("producer-b",
-      List.of(CHE102000001, CHE102000002, ZZZ199978837, ZZZ199981609),
+      List.of(CHE102000001, CHE102000002),
       "3477581",
       "FLXXB0001"),
   PRODUCER_B_3("producer-b-3",
@@ -33,9 +33,13 @@ public enum TestUserEnum {
       "3477583",
       "FLXXC0001"),
   PRODUCER_D("producer-d",
-      List.of(CHE104000002),
+      List.of(CHE104000002, ZZZ199984051),
       "3477584",
       "FLXXD0001"),
+  PRODUCER_E("producer-e",
+      List.of(ZZZ199984068),
+      "3477585",
+      null),
   CONSUMER_BIO_SUISSE("consumer",
       List.of(),
       "20154600",

@@ -86,8 +86,8 @@ public class TestDataIdentifiers {
     CHE103000001("Max Mustermann", NATUERLICHE_PERSON),
     CHE103000002("Testfirma GmbH", EINFACHE_GESELLSCHAFT),
     CHE104000002("Testbetrieb AG", AKTIENGESELLSCHAFT),
-    ZZZ199978837("Equideneigentümer TestUser2000306", EQUIDENEIGENTUEMER),
-    ZZZ199981609("Reitgemeinschaft 1 Tom & Jerry Reitgemeinschaft", EQUIDENEIGENTUEMER);
+    ZZZ199984051("Lara Beispiel", EQUIDENEIGENTUEMER),
+    ZZZ199984068("Nico Demomann", EQUIDENEIGENTUEMER);
 
     private final String uidName;
     private final LegalFormEnum legalForm;
