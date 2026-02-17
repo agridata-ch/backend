@@ -1,3 +1,9 @@
+## [1.6.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.7...v1.6.0-rc.8) (2026-02-17)
+
+### Features
+
+* **openapi:** add openapi subsets for different stakeholders ([a9982e5](https://github.com/agridata-ch/backend/commit/a9982e541781b6fb41657fd68379e257132b528b))
+
 ## [1.6.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.6...v1.6.0-rc.7) (2026-02-17)
 
 ### Features
