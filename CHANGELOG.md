@@ -1,3 +1,9 @@
+## [1.6.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.6...v1.6.0-rc.7) (2026-02-17)
+
+### Features
+
+* **agreement:** Allow providers to access data requests addressed to them ([1cbd6b4](https://github.com/agridata-ch/backend/commit/1cbd6b4e579206e1edac78a649bf39426e008179)), closes [DIGIB2-466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-466)
+
 ## [1.6.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.5...v1.6.0-rc.6) (2026-02-12)
 
 ### Features
