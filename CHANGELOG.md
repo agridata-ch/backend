@@ -1,3 +1,9 @@
+## [1.6.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.8...v1.6.0-rc.9) (2026-02-18)
+
+### Features
+
+* **agreement:** Add datasource-field to data-request endpoint. ([4e72e2c](https://github.com/agridata-ch/backend/commit/4e72e2c0bd59fa53bc41aef1f2af98bd1b9c5a3a)), closes [DIGIB2-466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-466)
+
 ## [1.6.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.7...v1.6.0-rc.8) (2026-02-17)
 
 ### Features
