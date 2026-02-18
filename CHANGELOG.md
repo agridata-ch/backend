@@ -1,3 +1,9 @@
+## [1.6.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.9...v1.6.0-rc.10) (2026-02-18)
+
+### Bug Fixes
+
+* **test-users:** sync local test users with dev users ([bf318be](https://github.com/agridata-ch/backend/commit/bf318be52fbdaa73342ebd69b417cfffaf22864e))
+
 ## [1.6.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.8...v1.6.0-rc.9) (2026-02-18)
 
 ### Features
