@@ -22,7 +22,7 @@ public final class AgridataContext {
   private UUID productId;
   private FlowEnum flowEnum;
   private Map<String, String> requestParameters;
-  private List<String> consumerUids;
+  private String consumerUid;
   private String consumerAgateLoginId;
   private List<String> producerUidsInPayload;
   private List<UUID> validDataRequestIds;
@@ -36,7 +36,7 @@ public final class AgridataContext {
         + ", productId=" + productId
         + ", flowEnum=" + flowEnum
         + ", requestParameters=" + requestParameters
-        + ", consumerUids=" + consumerUids
+        + ", consumerUid=" + consumerUid
         + ", consumerAgateLoginId='" + consumerAgateLoginId
         + ", producerUidsInPayload=" + producerUidsInPayload
         + ", validDataRequestIds=" + validDataRequestIds

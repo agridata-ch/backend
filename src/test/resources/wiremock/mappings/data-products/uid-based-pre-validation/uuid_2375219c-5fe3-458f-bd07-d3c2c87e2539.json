@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "url": "/agis/structure-data/1/structure",
+    "urlPath": "/agis/structure-data/1/structure",
     "bodyPatterns": [
       {
         "matches": "\\{\"surveyYear\":\"[^\"]+\",\"ids\":\\{\"uid\":\"[^\"]+\"},\"dataTypes\":\\{\"structureType\":\\[\"grapeSurfaceData\"]},\"dataRequestType\":\\{\"finalData\":false}}"
@@ -10,7 +10,7 @@
   },
   "response": {
     "status": 200,
-    "bodyFileName": "data-products/uuid_2375219c-5fe3-458f-bd07-d3c2c87e2539.json",
+    "bodyFileName": "data-products/uid-based-pre-validation/uuid_2375219c-5fe3-458f-bd07-d3c2c87e2539.json",
     "headers": {
       "Content-Type": "application/json"
     }

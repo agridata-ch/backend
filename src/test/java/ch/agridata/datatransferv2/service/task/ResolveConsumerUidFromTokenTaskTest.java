@@ -35,7 +35,7 @@ class ResolveConsumerUidFromTokenTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getConsumerUids()).containsExactly(CONSUMER_UID);
+    assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
     assertThat(result.getConsumerAgateLoginId()).isEqualTo(AGATE_LOGIN_ID);
   }
 
@@ -53,7 +53,7 @@ class ResolveConsumerUidFromTokenTaskTest {
   private AgridataContext createContext() {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .build();
   }
 }

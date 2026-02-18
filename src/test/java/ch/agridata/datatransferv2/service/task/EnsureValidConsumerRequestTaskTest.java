@@ -50,7 +50,7 @@ class EnsureValidConsumerRequestTaskTest {
   void givenNullRequestParameters_whenApply_thenIllegalArgumentExceptionIsThrown() {
     var context = AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .requestParameters(null)
         .build();
 
@@ -75,7 +75,7 @@ class EnsureValidConsumerRequestTaskTest {
   private AgridataContext createContextWithParams(Map<String, String> params) {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .requestParameters(params)
         .build();
   }

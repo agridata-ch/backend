@@ -114,7 +114,7 @@ class AgridataFlowTest {
     return AgridataContext.builder()
         .dataTransferRequestId(REQUEST_ID)
         .productId(PRODUCT_ID)
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .build();
   }
 
