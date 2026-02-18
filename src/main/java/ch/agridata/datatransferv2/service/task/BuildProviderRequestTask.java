@@ -52,7 +52,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     var client = dataProviderRestClientProvider.get(restClientIdentifierCode);
     var headers = DataProviderRestClient.Headers.builder()
         .agridataConsumerAgateLoginId(context.getConsumerAgateLoginId())
-        .agridataConsumerUid(String.join(", ", context.getConsumerUids()))
+        .agridataConsumerUid(context.getConsumerUid())
         .build();
 
     log.debug("Provider request configured: method={}, path={}, clientId={}",

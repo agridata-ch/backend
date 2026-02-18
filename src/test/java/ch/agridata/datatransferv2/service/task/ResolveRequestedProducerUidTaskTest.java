@@ -42,7 +42,7 @@ class ResolveRequestedProducerUidTaskTest {
   private AgridataContext createContextWithUid(String uid) {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .requestParameters(Map.of("uid", uid))
         .build();
   }

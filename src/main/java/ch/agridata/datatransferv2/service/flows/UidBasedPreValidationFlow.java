@@ -21,13 +21,18 @@ import lombok.RequiredArgsConstructor;
 import org.jboss.logging.MDC;
 
 /**
- * Flow implementation for direct UID-based data transfers. Validates consumer request, consent, and builds provider request.
+ * Flow for UID-based data transfers where the consumer is fully identified before calling the data provider.
  *
- * @CommentLastReviewed 2026-02-04
+ * <p>All validation is performed upfront (pre-request). The consumer UID is extracted from the Agate token and must be
+ * present, otherwise the request is rejected. The producer UID is resolved from the query parameters. Before the request
+ * is forwarded to the data provider, the flow verifies that an active data request exists for the given product and that
+ * the producer has granted consent to the consumer.</p>
+ *
+ * @CommentLastReviewed 2026-02-17
  */
 @ApplicationScoped
 @RequiredArgsConstructor
-public class DirectUidFlow implements Flowable {
+public class UidBasedPreValidationFlow implements Flowable {
 
   private final AgridataFlow agridataFlow;
   private final ResolveConsumerUidFromTokenTask resolveConsumerUidFromTokenTask;
@@ -43,7 +48,7 @@ public class DirectUidFlow implements Flowable {
     return agridataFlow.run(
         AgridataContext.builder()
             .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
-            .flowEnum(FlowEnum.UID_DIRECT)
+            .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
             .productId(productId)
             .requestParameters(requestParameters)
             .build(),

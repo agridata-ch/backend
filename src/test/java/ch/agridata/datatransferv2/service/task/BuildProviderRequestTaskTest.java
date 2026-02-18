@@ -17,7 +17,6 @@ import ch.agridata.datatransferv2.service.FlowEnum;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -136,8 +135,8 @@ class BuildProviderRequestTaskTest {
   private AgridataContext createContext() {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
-        .flowEnum(FlowEnum.UID_DIRECT)
-        .consumerUids(List.of(CONSUMER_UID))
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
+        .consumerUid(CONSUMER_UID)
         .consumerAgateLoginId(CONSUMER_AGATE_LOGIN_ID)
         .requestParameters(Map.of("uid", "CHE987654321"))
         .build();

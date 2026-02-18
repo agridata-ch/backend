@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "url": "/agis/structure-data/1/structure",
+    "urlPath": "/agis/structure-data/1/structure",
     "bodyPatterns": [
       {
         "matches": "\\{\"surveyYear\":\"[^\"]+\",\"ids\":\\{\"uid\":\"[^\"]+\"},\"dataTypes\":\\{\"structureType\":\\[\"biodiversitySurfaceData\"]},\"dataRequestType\":\\{\"finalData\":false}}"
@@ -10,7 +10,7 @@
   },
   "response": {
     "status": 200,
-    "bodyFileName": "data-products/uuid_64e39df0-2e56-4204-9c44-a43e1e26a2e8.json",
+    "bodyFileName": "data-products/uid-based-pre-validation/uuid_64e39df0-2e56-4204-9c44-a43e1e26a2e8.json",
     "headers": {
       "Content-Type": "application/json"
     }

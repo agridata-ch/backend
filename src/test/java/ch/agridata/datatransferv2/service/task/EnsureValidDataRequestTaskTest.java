@@ -102,8 +102,8 @@ class EnsureValidDataRequestTaskTest {
   private AgridataContext createContext() {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
-        .flowEnum(FlowEnum.UID_DIRECT)
-        .consumerUids(List.of(CONSUMER_UID))
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
+        .consumerUid(CONSUMER_UID)
         .build();
   }
 

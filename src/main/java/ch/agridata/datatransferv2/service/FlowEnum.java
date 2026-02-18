@@ -6,5 +6,6 @@ package ch.agridata.datatransferv2.service;
  * @CommentLastReviewed 2026-02-04
  */
 public enum FlowEnum {
-  UID_DIRECT
+  UID_BASED_PRE_VALIDATION,
+  UID_BASED_POST_VALIDATION
 }

@@ -101,7 +101,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
   private AgridataContext createContextWithProducers(List<String> producerUids) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .producerUidsInPayload(producerUids)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
         .build();

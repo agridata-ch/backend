@@ -60,21 +60,21 @@ class DataRequestTest {
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(4));
+        .body("size()", equalTo(2));
   }
 
   @Test
   void givenAdmin_whenGetDataRequests_thenOnlyNonDraftDataRequestsReturned() {
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(8));
+        .body("size()", equalTo(4));
   }
 
   @Test
   void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
     AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(8));
+        .body("size()", equalTo(4));
   }
 
   @Test
