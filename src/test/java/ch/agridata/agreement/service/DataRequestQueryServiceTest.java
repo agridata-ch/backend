@@ -5,6 +5,7 @@ import static ch.agridata.agreement.utils.DataRequestTestUtils.buildEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.mapper.DataRequestMapper;
@@ -37,14 +38,31 @@ class DataRequestQueryServiceTest {
   private DataProductApi dataProductApi;
   @Mock
   private AgridataSecurityIdentity agridataSecurityIdentity;
+  @Mock
+  private DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @Test
   void givenRequestsExist_whenGetAllRequests_OfConsumer_thenReturnDtos() {
     var dataConsumer = buildEntity();
     when(repository.findByDataConsumerUid(USER_UID)).thenReturn(List.of(dataConsumer));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
 
     var result = service.getAllDataRequestsOfCurrentConsumer();
+
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  void givenActiveRequestsExist_whenGetAllActiveRequests_OfProvider_thenReturnDtos() {
+    var dataRequest = buildEntity();
+    when(repository.findActiveByProviderUid(USER_UID)).thenReturn(List.of(dataRequest));
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+
+    var result = service.getActiveDataRequestsForCurrentProvider();
 
     assertEquals(1, result.size());
   }
@@ -53,6 +71,8 @@ class DataRequestQueryServiceTest {
   void givenRequestsExist_whenGetAllNonDraftRequests_OfAdmin_thenReturnDtos() {
     var entity = buildEntity();
     when(repository.findAllNotDraft()).thenReturn(List.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
 
     var result = service.getAllNonDraftDataRequests();
 
@@ -64,6 +84,8 @@ class DataRequestQueryServiceTest {
     var id = UUID.randomUUID();
     var entity = buildEntity();
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
 
     when(repository.findByIdAndStateCodeNotDraft(id)).thenReturn(Optional.of(entity));
 
@@ -88,6 +110,8 @@ class DataRequestQueryServiceTest {
 
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
 
     var result = service.getDataRequestOfCurrentConsumer(id);
 
@@ -102,5 +126,30 @@ class DataRequestQueryServiceTest {
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.empty());
 
     assertThrows(NotFoundException.class, () -> service.getDataRequestOfCurrentConsumer(id));
+  }
+
+  @Test
+  void givenValidId_whenGetActiveDataRequestForCurrentProvider_thenReturnDto() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+
+    when(repository.findActiveByIdAndDataProviderUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+
+    var result = service.getActiveDataRequestForCurrentProvider(id);
+
+    assertThat(result).isNotNull();
+  }
+
+  @Test
+  void givenInvalidId_whenGetActiveDataRequestForCurrentProvider_thenThrowNotFound() {
+    UUID id = UUID.randomUUID();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findActiveByIdAndDataProviderUid(id, USER_UID)).thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, () -> service.getActiveDataRequestForCurrentProvider(id));
   }
 }

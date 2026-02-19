@@ -5,6 +5,7 @@ import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIE
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
+import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.UidMissingException;
@@ -83,6 +84,14 @@ public class ExceptionHandler {
     log.error("UidMissingException: {}", ex.getMessage(), ex);
     return Response.status(Status.FORBIDDEN)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_MISSING))
+        .build();
+  }
+
+  @ServerExceptionMapper(ConsentNotGrantedException.class)
+  public Response handleConsentNotGrantedException(ConsentNotGrantedException ex) {
+    log.warn("ConsentNotGrantedException: {}", ex.getMessage());
+    return Response.status(Status.FORBIDDEN)
+        .entity(createResponse("Consent not granted", ex.getMessage(), ExceptionEnum.CONSENT_NOT_GRANTED))
         .build();
   }
 

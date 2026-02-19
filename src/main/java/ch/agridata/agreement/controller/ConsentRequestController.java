@@ -1,6 +1,8 @@
 package ch.agridata.agreement.controller;
 
 import static ch.agridata.agreement.controller.ConsentRequestController.PATH;
+import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
@@ -12,6 +14,7 @@ import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.service.ConsentRequestMutationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
+import ch.agridata.common.openapi.ApiSubset;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -61,6 +64,7 @@ public class ConsentRequestController {
   private final ConsentRequestMutationService consentRequestMutationService;
 
   @GET
+  @ApiSubset({MOBILE_APP, WEB_APP})
   @Operation(
       operationId = "getConsentRequests",
       description = "Retrieves all consent requests assigned to the currently authenticated data producer. "
@@ -86,6 +90,7 @@ public class ConsentRequestController {
   }
 
   @Path("/{id}")
+  @ApiSubset({WEB_APP})
   @GET()
   @Operation(
       operationId = "getConsentRequest",
@@ -103,6 +108,7 @@ public class ConsentRequestController {
 
   @PUT
   @Path("/{id}/status")
+  @ApiSubset({MOBILE_APP, WEB_APP})
   @Operation(
       operationId = "updateConsentRequestStatus",
       description = "Updates the status of a specific consent request. Only accessible to the "
@@ -120,6 +126,7 @@ public class ConsentRequestController {
   }
 
   @POST
+  @ApiSubset({WEB_APP})
   @Operation(
       operationId = "createConsentRequests",
       description = "Creates consent requests for given uids, provided the user actually has access to those uids."

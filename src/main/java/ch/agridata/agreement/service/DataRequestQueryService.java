@@ -2,9 +2,12 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
+import ch.agridata.agreement.api.DataRequestApi;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
+import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
@@ -22,39 +25,62 @@ import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class DataRequestQueryService {
+public class DataRequestQueryService implements DataRequestApi {
 
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed(CONSUMER_ROLE)
   public List<DataRequestDto> getAllDataRequestsOfCurrentConsumer() {
     var dataRequestEntities = dataRequestRepository.findByDataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow());
     return dataRequestEntities.stream()
-        .map(dataRequestMapper::toDto)
+        .map(dataRequestEnrichmentService::toEnrichedDto)
+        .toList();
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public List<DataRequestDto> getActiveDataRequestsForCurrentProvider() {
+    var dataRequestEntities = dataRequestRepository.findActiveByProviderUid(agridataSecurityIdentity.getUidOrElseThrow());
+    return dataRequestEntities.stream()
+        .map(dataRequestEnrichmentService::toEnrichedDto)
         .toList();
   }
 
   @RolesAllowed(ADMIN_ROLE)
   public List<DataRequestDto> getAllNonDraftDataRequests() {
     return dataRequestRepository.findAllNotDraft().stream()
-        .map(dataRequestMapper::toDto)
+        .map(dataRequestEnrichmentService::toEnrichedDto)
         .toList();
   }
 
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto getDataRequestOfCurrentConsumer(UUID requestId) {
     return dataRequestRepository.findByIdAndDataConsumerUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
-        .map(dataRequestMapper::toDto)
+        .map(dataRequestEnrichmentService::toEnrichedDto)
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public DataRequestDto getActiveDataRequestForCurrentProvider(UUID requestId) {
+    return dataRequestRepository.findActiveByIdAndDataProviderUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
+        .map(dataRequestEnrichmentService::toEnrichedDto)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
   @RolesAllowed({ADMIN_ROLE})
   public DataRequestDto getNonDraftDataRequest(UUID requestId) {
     return dataRequestRepository.findByIdAndStateCodeNotDraft(requestId)
-        .map(dataRequestMapper::toDto)
+        .map(dataRequestEnrichmentService::toEnrichedDto)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
+  @Override
+  public List<DataRequestDto> getActiveDataRequestsOfConsumer(String consumerUid) {
+    return dataRequestRepository.findByDataConsumerUid(consumerUid).stream()
+        .filter(dr -> DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dr.getStateCode()))
+        .map(dataRequestEnrichmentService::toEnrichedDto)
+        .toList();
+  }
 }

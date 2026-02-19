@@ -9,11 +9,13 @@ import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
+import ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
@@ -49,6 +51,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
+  private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
   public List<ConsentRequestProducerViewDto> getConsentRequestsAsCurrentDataProducer(@Nullable String dataProducerUid) {
@@ -148,9 +151,18 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     return consentRequestRepository.findGrantedConsentRequestUidsForProductOfConsumerSince(productId, dataConsumerUid, since);
   }
 
+  @Override
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducers(UUID dataRequestId,
+                                                                                                     List<String> producerUids) {
+    return consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, producerUids).stream()
+        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+        .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
+        .toList();
+  }
+
   private ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity) {
     return consentRequestMapper.toConsentRequestProducerViewDto(entity,
-        dataRequestMapper.toDto(entity.getDataRequest()));
+        dataRequestEnrichmentService.toEnrichedDto(entity.getDataRequest()));
   }
 
   private List<ConsentRequestConsumerViewV2Dto> merge(

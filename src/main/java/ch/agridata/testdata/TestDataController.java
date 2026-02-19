@@ -1,5 +1,8 @@
 package ch.agridata.testdata;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
+
+import ch.agridata.common.openapi.ApiSubset;
 import io.quarkus.security.Authenticated;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -29,7 +32,7 @@ public class TestDataController {
 
   public static final String PATH = "/api/test-data";
   private static final String TEST_DATA_SCRIPT = "classpath:db/testdata/";
-  private static final List<String> ENABLED_PROFILES = List.of("local", "develop", "integration");
+  private static final List<String> ENABLED_PROFILES = List.of("local", "develop", "testing");
   private final DataSource dataSource;
 
   @ConfigProperty(name = "quarkus.profile")
@@ -38,6 +41,7 @@ public class TestDataController {
   List<String> defaultFlywayLocations;
 
   @POST
+  @ApiSubset({WEB_APP})
   @Path("/reset")
   @Operation(operationId = "resetTestData")
   @Authenticated

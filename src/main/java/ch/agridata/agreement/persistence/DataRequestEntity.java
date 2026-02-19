@@ -52,6 +52,9 @@ public class DataRequestEntity extends AuditableEntity {
   @GeneratedValue
   private UUID id;
 
+  @Column(name = "data_source_system_id")
+  private UUID dataSourceSystemId;
+
   @NotNull
   @Column(name = "human_friendly_id", length = 4, unique = true)
   private String humanFriendlyId;

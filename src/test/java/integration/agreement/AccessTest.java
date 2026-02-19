@@ -3,6 +3,7 @@ package integration.agreement;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static integration.testutils.AccessTestUtils.HttpMethod.GET;
 import static integration.testutils.AccessTestUtils.HttpMethod.POST;
@@ -33,13 +34,13 @@ class AccessTest {
   @Test
   void testAccess_DataRequestController() {
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1,
-        CONSUMER_ROLE, ADMIN_ROLE);
+        CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(POST, DataRequestController.PATH_V1,
         CONSUMER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1",
-        CONSUMER_ROLE, ADMIN_ROLE);
+        CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1",
         CONSUMER_ROLE);

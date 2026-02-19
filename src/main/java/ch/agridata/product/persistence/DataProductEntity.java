@@ -4,11 +4,12 @@ import ch.agridata.common.persistence.AuditableEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "data_product",
     indexes = {
-        @Index(name = "idx_data_product_data_source_system_code", columnList = "data_source_system_code")
+        @Index(name = "idx_data_product_data_source_system_id", columnList = "data_source_system_id")
     })
 @SQLDelete(sql = "UPDATE data_product SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
@@ -45,9 +46,9 @@ public class DataProductEntity extends AuditableEntity {
   @GeneratedValue
   private UUID id;
 
-  @Column(name = "data_source_system_code")
-  @Enumerated(EnumType.STRING)
-  private DataSourceSystemEnum dataSourceSystemCode;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "data_source_system_id", nullable = false)
+  private DataSourceSystemEntity dataSourceSystem;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
@@ -69,14 +70,8 @@ public class DataProductEntity extends AuditableEntity {
   @Column(name = "rest_client_request_template", length = 1000)
   private String restClientRequestTemplate;
 
-  /**
-   * Enumerates supported external systems that serve as sources for data products.
-   *
-   * @CommentLastReviewed 2025-08-25
-   */
-  public enum DataSourceSystemEnum {
-    AGIS
-  }
+  @Column(name = "flow_code", length = 100)
+  private String flowCode;
 }
 
 

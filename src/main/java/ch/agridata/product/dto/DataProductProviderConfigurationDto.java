@@ -52,8 +52,9 @@ public record DataProductProviderConfigurationDto(
               }
             }"""}
     )
-    String restClientRequestTemplate
-)
+    String restClientRequestTemplate,
+
+    String flowCode)
 
     implements Serializable {
 }

@@ -18,7 +18,7 @@
               {
                 "ktIdB": "FLXXA0002",
                 "agisIdB": 10377021,
-                "ber": "A99910002",
+                "ber": "99910002",
                 "validSince": "2025-12-11T08:23:31+01:00"
               }
             ]
@@ -72,26 +72,26 @@
         {
           "ktIdB": "FLXXA0002",
           "agisIdB": 10377021,
-          "ber": "A99910002",
+          "ber": "99910002",
           "uid": "CHE101000001",
           "farmChildRelations": {
             "farmChildRelation": [
               {
                 "ktIdB": "FLXXA0003",
                 "agisIdB": 70334993,
-                "ber": "A99910003",
+                "ber": "99910003",
                 "validSince": "2025-12-11T08:23:32+01:00"
               },
               {
                 "ktIdB": "FLXXA0004",
                 "agisIdB": 70334993,
-                "ber": "A99910004",
+                "ber": "99910004",
                 "validSince": "2025-12-11T08:23:32+01:00"
               },
               {
                 "ktIdB": "FLXXA0005",
                 "agisIdB": 70334993,
-                "ber": "A99910005",
+                "ber": "99910005",
                 "validSince": "2025-12-11T08:23:32+01:00"
               }
             ]
@@ -130,7 +130,7 @@
         {
           "ktIdB": "FLXXA0003",
           "agisIdB": 10377022,
-          "ber": "A99910003",
+          "ber": "99910003",
           "uid": "CHE101000001",
           "atd": 1010003,
           "farmParentRelations": {
@@ -138,7 +138,7 @@
               {
                 "ktIdB": "FLXXA0002",
                 "agisIdB": 0,
-                "ber": "A99910002",
+                "ber": "99910002",
                 "validSince": "2025-12-11T08:23:32+01:00"
               }
             ]
@@ -166,7 +166,7 @@
         {
           "ktIdB": "FLXXA0004",
           "agisIdB": 10377023,
-          "ber": "A99910004",
+          "ber": "99910004",
           "uid": "CHE101000001",
           "atd": 1010004,
           "farmType": "02",
@@ -192,7 +192,7 @@
         {
           "ktIdB": "FLXXA0005",
           "agisIdB": 10377024,
-          "ber": "A99910005",
+          "ber": "99910005",
           "uid": "CHE101000001",
           "atd": 1010005,
           "farmType": "02",

@@ -55,7 +55,21 @@ jobs:
       version: ${{ needs.semantic-release.outputs.version }}
     secrets: inherit
 
-  deploy:
+  deploy-testing:
+    if: github.ref == 'refs/heads/main'
+    name: "."
+    uses: ./.github/workflows/reusable__deploy.yml
+    needs: build-push-image
+    with:
+      account-id: 472294263228 # testing
+      image: ${{needs.build-push-image.outputs.image}}
+      cluster: agridata-ecs-cluster
+      service: agridata-backend
+      task-definition-family: agridata-backend
+      container-name: agridata-backend-service
+    secrets: inherit
+
+  deploy-integration:
     if: github.ref == 'refs/heads/main'
     name: "."
     uses: ./.github/workflows/reusable__deploy.yml

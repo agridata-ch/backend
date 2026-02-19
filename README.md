@@ -66,10 +66,11 @@ These are predefined users in the local agate realm:
 | producer-b-3 | secret   | agridata.ch.Agridata_Einwilliger    | FLXXB0003 | 3477582  |
 | producer-c   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXC0001 | 3477583  |
 | producer-d   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXD0001 | 3477584  |
-| consumer     | secret   | agridata.ch.Agridata_Datenbezueger  |           | 20154600 |
-| provider     | secret   | agridata.ch.Agridata_Datenanbieters |           | 3477553  |
-| admin        | secret   | agridata.ch.Agridata_Admin          |           | 3477554  |
-| support      | secret   | agridata.ch.Agridata_Support        |           | 3477555  |
+| producer-e   | secret   | agridata.ch.Agridata_Einwilliger    | -         | 3477585  |
+| consumer     | secret   | agridata.ch.Agridata_Datenbezueger  | -         | 20154600 |
+| provider     | secret   | agridata.ch.Agridata_Datenanbieters | -         | 3477553  |
+| admin        | secret   | agridata.ch.Agridata_Admin          | -         | 3477554  |
+| support      | secret   | agridata.ch.Agridata_Support        | -         | 3477555  |
 | guest        | secret   | -                                   | -         | -        |
 
 ## Managing Keycloak Configuration

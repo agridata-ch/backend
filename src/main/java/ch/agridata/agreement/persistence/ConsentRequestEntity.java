@@ -57,6 +57,9 @@ public class ConsentRequestEntity extends AuditableEntity {
   @Column(name = "data_producer_uid", nullable = false, length = 50)
   private String dataProducerUid;
 
+  @Column(name = "data_producer_bur", length = 50)
+  private String dataProducerBur;
+
   @Column(name = "migrated_from_maf_date")
   private LocalDateTime migratedFromMafDate;
 

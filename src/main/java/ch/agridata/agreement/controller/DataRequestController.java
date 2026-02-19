@@ -1,7 +1,11 @@
 package ch.agridata.agreement.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_PROVIDER;
+import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
@@ -13,6 +17,7 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
+import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,7 +56,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
     description = "Provides access to data requests for consumers and admins. "
         + "Consumers can create, update, submit, and retrieve their own data requests, "
         + "while admins have full access to all data requests and their associated consent requests.")
-@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
 @RunOnVirtualThread
 public class DataRequestController {
 
@@ -66,6 +71,7 @@ public class DataRequestController {
   private final AgridataSecurityIdentity identity;
 
   @GET
+  @ApiSubset({WEB_APP, DATA_CONSUMER, DATA_PROVIDER})
   @Path(PATH_V1)
   @Operation(
       operationId = "getDataRequests",
@@ -76,11 +82,14 @@ public class DataRequestController {
   public List<DataRequestDto> getDataRequests() {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getAllNonDraftDataRequests();
+    } else if (identity.isProvider()) {
+      return dataRequestQueryService.getActiveDataRequestsForCurrentProvider();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
 
   @GET
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "getDataRequest",
@@ -91,6 +100,8 @@ public class DataRequestController {
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getNonDraftDataRequest(requestId);
+    } else if (identity.isProvider()) {
+      return dataRequestQueryService.getActiveDataRequestForCurrentProvider(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
@@ -102,6 +113,7 @@ public class DataRequestController {
    */
   @Deprecated(since = "1.5.0")
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequestAndKtIdP",
@@ -129,6 +141,7 @@ public class DataRequestController {
   }
 
   @GET
+  @ApiSubset({DATA_CONSUMER})
   @Path(PATH_V2 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequestAndKtIdPv2",
@@ -136,6 +149,7 @@ public class DataRequestController {
           + "Accessible to the consumer who owns the data request and for admin users."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndKtIdPv2(
       @Parameter(
           description = "The UUID of the data request",
@@ -154,6 +168,7 @@ public class DataRequestController {
   }
 
   @POST
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
@@ -168,6 +183,7 @@ public class DataRequestController {
   }
 
   @PUT()
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}")
   @Operation(
       operationId = "updateDataRequestDetails",
@@ -182,6 +198,7 @@ public class DataRequestController {
   }
 
   @PUT
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}/status")
   @Operation(
       operationId = "setDataRequestStatus",
@@ -201,6 +218,7 @@ public class DataRequestController {
   }
 
   @PUT
+  @ApiSubset({WEB_APP})
   @Path(PATH_V1 + "/{id}/logo")
   @Operation(
       operationId = "updateDataRequestLogo",

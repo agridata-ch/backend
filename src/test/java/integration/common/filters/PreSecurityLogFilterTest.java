@@ -11,6 +11,7 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import jakarta.ws.rs.core.MediaType;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.logging.LogRecord;
 import org.jboss.logmanager.Level;
@@ -74,6 +75,36 @@ class PreSecurityLogFilterTest {
             assertThat(evt.getMessage())
                 .contains("rest.response method=POST uri=/api/test status=200"));
 
+  }
+
+  @Test
+  void givenLogDebug_whenMultipartWithPng_thenRequestIsLoggedWithoutBody() {
+    LOGGER.setLevel(Level.DEBUG);
+
+    UUID randomId = UUID.randomUUID();
+    byte[] pngPayload = new byte[] {1, 2, 3};
+    String uri = "/agreement/v1/data-requests/" + randomId + "/logo";
+
+    AuthTestUtils.requestAs(ADMIN)
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .multiPart("logo", "blob", pngPayload, "image/png")
+        .when()
+        .put(uri)
+        .then()
+        .statusCode(404);
+
+    assertThat(LOG_HANDLER.getRecords())
+        .anySatisfy(evt -> assertThat(evt.getMessage())
+            .contains("operation=rest.request")
+            .contains("method=PUT")
+            .contains(uri)
+            .contains("contentType=multipart/form-data"))
+        .noneSatisfy(evt -> assertThat(evt.getMessage())
+            .contains("operation=rest.request")
+            .contains("method=PUT")
+            .contains(uri)
+            .contains("contentType=multipart/form-data")
+            .contains("body="));
   }
 
   @Test

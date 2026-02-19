@@ -1,4 +1,4 @@
-FROM amazoncorretto:25.0.1-alpine3.22
+FROM amazoncorretto:25.0.2-alpine3.23
 
 ENV LANGUAGE='en_US:en'
 

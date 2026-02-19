@@ -15,9 +15,26 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class DataRequestRepository implements PanacheRepositoryBase<DataRequestEntity, UUID> {
+  private static final String PARAM_STATE_CODE = "state_code";
+
   public Optional<DataRequestEntity> findByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
     return find("id = :id and dataConsumerUid = :dataConsumerUid",
         Parameters.with("id", id).and("dataConsumerUid", dataConsumerUid))
+        .firstResultOptional();
+  }
+
+  public Optional<DataRequestEntity> findActiveByIdAndDataProviderUid(UUID id, String dataProviderUid) {
+    return find("""
+            id = :id and dataSourceSystemId in (
+              select dss.id
+              from DataSourceSystemEntity dss
+              where dss.dataProvider.uid = :dataProviderUid
+            )
+            and stateCode = :state_code
+            """,
+        Parameters.with("id", id)
+            .and("dataProviderUid", dataProviderUid)
+            .and(PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE))
         .firstResultOptional();
   }
 
@@ -26,14 +43,28 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         Parameters.with("dataConsumerUid", dataConsumerUid)).list();
   }
 
+  public List<DataRequestEntity> findActiveByProviderUid(String dataProviderUid) {
+    return find("""
+            dataSourceSystemId in (
+              select dss.id
+              from DataSourceSystemEntity dss
+              where dss.dataProvider.uid = :dataProviderUid
+            )
+            and stateCode = :state_code
+            """,
+        Parameters.with("dataProviderUid", dataProviderUid)
+            .and(PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE)
+    ).list();
+  }
+
   public List<DataRequestEntity> findAllNotDraft() {
     return find("stateCode <> :state_code",
-        Parameters.with("state_code", DataRequestEntity.DataRequestStateEnum.DRAFT)).list();
+        Parameters.with(PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT)).list();
   }
 
   public Optional<DataRequestEntity> findByIdAndStateCodeNotDraft(UUID id) {
     return find("id = :id and stateCode <> :state_code",
-        Parameters.with("id", id).and("state_code", DataRequestEntity.DataRequestStateEnum.DRAFT))
+        Parameters.with("id", id).and(PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT))
         .firstResultOptional();
   }
 

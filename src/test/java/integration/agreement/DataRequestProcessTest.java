@@ -136,7 +136,7 @@ class DataRequestProcessTest {
         .then().statusCode(201)
         .extract().as(new TypeRef<>() {
         });
-    assertThat(createdConsentRequests).hasSize(4).extracting(ConsentRequestCreatedDto::dataProducerUid)
+    assertThat(createdConsentRequests).hasSize(2).extracting(ConsentRequestCreatedDto::dataProducerUid)
         .containsExactlyInAnyOrderElementsOf(PRODUCER_B.getCompanyUids().stream().map(Uid::name).toList());
   }
 

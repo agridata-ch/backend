@@ -1,3 +1,74 @@
+## [1.6.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.9...v1.6.0-rc.10) (2026-02-18)
+
+### Bug Fixes
+
+* **test-users:** sync local test users with dev users ([bf318be](https://github.com/agridata-ch/backend/commit/bf318be52fbdaa73342ebd69b417cfffaf22864e))
+
+## [1.6.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.8...v1.6.0-rc.9) (2026-02-18)
+
+### Features
+
+* **agreement:** Add datasource-field to data-request endpoint. ([4e72e2c](https://github.com/agridata-ch/backend/commit/4e72e2c0bd59fa53bc41aef1f2af98bd1b9c5a3a)), closes [DIGIB2-466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-466)
+
+## [1.6.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.7...v1.6.0-rc.8) (2026-02-17)
+
+### Features
+
+* **openapi:** add openapi subsets for different stakeholders ([a9982e5](https://github.com/agridata-ch/backend/commit/a9982e541781b6fb41657fd68379e257132b528b))
+
+## [1.6.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.6...v1.6.0-rc.7) (2026-02-17)
+
+### Features
+
+* **agreement:** Allow providers to access data requests addressed to them ([1cbd6b4](https://github.com/agridata-ch/backend/commit/1cbd6b4e579206e1edac78a649bf39426e008179)), closes [DIGIB2-466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-466)
+
+## [1.6.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.5...v1.6.0-rc.6) (2026-02-12)
+
+### Features
+
+* **deps:** update java to v25 and multiple dependencies ([0de3b77](https://github.com/agridata-ch/backend/commit/0de3b7772cbd096154f5217be50c6580db074d0f)), closes [DIGIB2-1233](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1233)
+
+## [1.6.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.4...v1.6.0-rc.5) (2026-02-09)
+
+### Features
+
+* **product:** Adjust DB-Model to include Data Provider and Data Source System. ([4949523](https://github.com/agridata-ch/backend/commit/4949523445ba13bc8ebcfa06091b3af11efc5e68)), closes [DIGIB2-979](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-979)
+
+## [1.6.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.3...v1.6.0-rc.4) (2026-02-09)
+
+### Features
+
+* **agreement:** Add data_producer_bur column to consent_request and add consent-request-aggregation endpoint. ([e96408e](https://github.com/agridata-ch/backend/commit/e96408ec9f75903ec2dd067b85d2fce70fe15dfd)), closes [DIGIB2-1206](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1206)
+* **data-transfer:** implementation of first data transfer workflow ([d92b3ec](https://github.com/agridata-ch/backend/commit/d92b3ec14c66132c0cf83aeafb92780feb3a5f70))
+
+## [1.6.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.2...v1.6.0-rc.3) (2026-02-06)
+
+### Features
+
+* **env:** adds new agridata-testing environment ([20b2986](https://github.com/agridata-ch/backend/commit/20b2986b882b3dea272d492003df504b29d3b94f)), closes [DIGIB2-1213](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1213)
+
+## [1.6.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.6.0-rc.1...v1.6.0-rc.2) (2026-02-02)
+
+### Bug Fixes
+
+* **security:** Make sure, PreSecurityLogFilter does no longer log the body of image uploads. ([4ce7b2e](https://github.com/agridata-ch/backend/commit/4ce7b2e715dbdb69c9318ab3d4c5cc5fff0220a4)), closes [DIGIB2-1198](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1198)
+
+## [1.6.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.5.1-rc.1...v1.6.0-rc.1) (2026-02-02)
+
+### Features
+
+* **docs:** add publiccode.yml ([69b98c7](https://github.com/agridata-ch/backend/commit/69b98c7a24f603ba54941db157fa724ab40f4794))
+
+## [1.5.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.5.0...v1.5.1-rc.1) (2026-02-02)
+
+### Features
+
+* **audit:** Introduce audit-logging of submission, rejection, approval, activation and withdrawal of data requests. ([3dda6bb](https://github.com/agridata-ch/backend/commit/3dda6bbb5cc4085986396e4cb41182bc03c72a44)), closes [DIGIB2-337](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-337)
+
+### Bug Fixes
+
+* **deps:** update image to fix vulnerability ([7346ffa](https://github.com/agridata-ch/backend/commit/7346ffa884ed0bb82778dd67bce366f5eef94e21))
+
 ## [1.5.0](https://github.com/agridata-ch/backend/compare/v1.4.2...v1.5.0) (2026-01-23)
 
 ### Features

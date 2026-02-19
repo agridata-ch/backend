@@ -12,24 +12,16 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 public class DataProviderRestClientFactory {
 
-  private final AgisRegisterApiRestClient agisRegisterApiRestClient;
-  private final AgisStructureApiRestClient agisStructureApiRestClient;
-  private final AgisEcoEthoApiRestClient agisEcoEthoApiRestClient;
+  private final AgisApiRestClient agisApiRestClient;
 
   @Inject
-  public DataProviderRestClientFactory(@RestClient AgisRegisterApiRestClient agisRegisterApiRestClient,
-                                       @RestClient AgisStructureApiRestClient agisStructureApiRestClient,
-                                       @RestClient AgisEcoEthoApiRestClient agisEcoEthoApiRestClient) {
-    this.agisRegisterApiRestClient = agisRegisterApiRestClient;
-    this.agisStructureApiRestClient = agisStructureApiRestClient;
-    this.agisEcoEthoApiRestClient = agisEcoEthoApiRestClient;
+  public DataProviderRestClientFactory(@RestClient AgisApiRestClient agisApiRestClient) {
+    this.agisApiRestClient = agisApiRestClient;
   }
 
   public DataProviderRestClient get(RestClientIdentifier restClientIdentifier) {
     return switch (restClientIdentifier) {
-      case AGIS_REGISTER_V1 -> agisRegisterApiRestClient;
-      case AGIS_STRUCTURE_V1 -> agisStructureApiRestClient;
-      case AGIS_ECO_ETHO_V1 -> agisEcoEthoApiRestClient;
+      case AGIS_API -> agisApiRestClient;
     };
   }
 
@@ -39,9 +31,7 @@ public class DataProviderRestClientFactory {
    * @CommentLastReviewed 2025-08-28
    */
   public enum RestClientIdentifier {
-    AGIS_REGISTER_V1,
-    AGIS_STRUCTURE_V1,
-    AGIS_ECO_ETHO_V1
+    AGIS_API
   }
 
 }

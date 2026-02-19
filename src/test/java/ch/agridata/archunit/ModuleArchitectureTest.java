@@ -30,11 +30,11 @@ class ModuleArchitectureTest {
 
   static final String MAIN_PACKAGE = "ch.agridata";
   static final List<String> MODULES =
-      List.of("agreement", "user", "auditing", "agis", "common", "product", "uidregister", "datatransfer");
+      List.of("agreement", "user", "auditing", "agis", "common", "product", "uidregister", "datatransfer", "datatransferv2");
   static final List<String> ALLOWED_COMMON_DEPENDENCIES =
       List.of("ch.agridata.common.persistence", "ch.agridata.common.api", "ch.agridata.common.dto",
           "ch.agridata.common.utils", "ch.agridata.common.security", "ch.agridata.common.exceptions",
-          "ch.agridata.common.persistence", "ch.agridata.common.filters");
+          "ch.agridata.common.persistence", "ch.agridata.common.filters", "ch.agridata.common.openapi");
   static final JavaClasses CLASSES = new ClassFileImporter()
       .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
       .importPackages(MAIN_PACKAGE);

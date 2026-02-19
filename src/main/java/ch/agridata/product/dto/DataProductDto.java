@@ -23,10 +23,15 @@ public record DataProductDto(
     UUID id,
 
     @Schema(
-        description = "From which data source system this product originates",
+        description = "Code of data source system from which this product originates",
         examples = {"AGIS"}
     )
-    DataSourceSystemEnum dataSourceSystemCode,
+    String dataSourceSystemCode,
+
+    @Schema(
+        description = "Data source system from which this product originates"
+    )
+    DataSourceSystemDto dataSourceSystem,
 
     @Schema(
         description = "How this product is categorized",
