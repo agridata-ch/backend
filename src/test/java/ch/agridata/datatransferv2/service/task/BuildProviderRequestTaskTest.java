@@ -129,7 +129,36 @@ class BuildProviderRequestTaskTest {
     var result = task.apply(context);
     result.getProviderRequest().get();
 
-    verify(dataProviderRestClient).post(eq("/api/data"), any(), eq(null));
+    verify(dataProviderRestClient).post(eq("/api/data?uid=CHE987654321"), any(), eq(null));
+  }
+
+  @Test
+  void givenUnusedRequestParameters_whenApply_thenUnusedParamsAreAppendedAsQueryParams() {
+    var context = AgridataContext.builder()
+        .productId(PRODUCT_ID)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
+        .consumerUid(CONSUMER_UID)
+        .consumerAgateLoginId(CONSUMER_AGATE_LOGIN_ID)
+        .requestParameters(Map.of("uid", "CHE987654321", "year", "2024", "format", "json"))
+        .build();
+    var productConfig = createProductConfig("GET", "/api/data/{{uid}}", null);
+
+    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
+    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClient.get(any(), any())).thenReturn(mock(Response.class));
+
+    var result = task.apply(context);
+    result.getProviderRequest().get();
+
+    ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+    verify(dataProviderRestClient).get(pathCaptor.capture(), any());
+
+    var actualPath = pathCaptor.getValue();
+    assertThat(actualPath)
+        .startsWith("/api/data/CHE987654321?")
+        .contains("year=2024")
+        .contains("format=json")
+        .doesNotContain("uid=CHE987654321");
   }
 
   private AgridataContext createContext() {

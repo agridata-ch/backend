@@ -1,0 +1,57 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <GetByUIDResponse xmlns="http://www.uid.admin.ch/xmlns/uid-wse">
+            <GetByUIDResult>
+                <organisationType>
+                    <organisation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <organisationIdentification xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
+                            <uid xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <uidOrganisationIdCategorie>CHE</uidOrganisationIdCategorie>
+                                <uidOrganisationId>403244345</uidOrganisationId>
+                            </uid>
+                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
+                                <organisationIdCategory>CH.AK</organisationIdCategory>
+                                <organisationId>720.003</organisationId>
+                            </OtherOrganisationId>
+                            <organisationName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">Bundesamt für
+                                Lebensmittelsicherheit und Veterinärwesen BLV
+                            </organisationName>
+                            <legalForm xmlns="http://www.ech.ch/xmlns/eCH-0097/5">0220</legalForm>
+                        </organisationIdentification>
+                        <address xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
+                            <addressCategory>LEGAL</addressCategory>
+                            <street>Schwarzenburgstrasse</street>
+                            <houseNumber>155</houseNumber>
+                            <town>Liebefeld</town>
+                            <swissZipCode>3097</swissZipCode>
+                            <swissZipCodeAddOn>00</swissZipCodeAddOn>
+                            <municipalityId>355</municipalityId>
+                            <cantonAbbreviation>BE</cantonAbbreviation>
+                            <EGID>1273940</EGID>
+                            <countryIdISO2>CH</countryIdISO2>
+                            <deliverableYesNo>true</deliverableYesNo>
+                            <dateOfLastCheck>2025-12-02</dateOfLastCheck>
+                        </address>
+                        <address xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
+                            <addressCategory>POBOX</addressCategory>
+                            <town>Bern</town>
+                            <swissZipCode>3003</swissZipCode>
+                            <swissZipCodeAddOn>00</swissZipCodeAddOn>
+                            <cantonAbbreviation>BE</cantonAbbreviation>
+                            <countryIdISO2>CH</countryIdISO2>
+                        </address>
+                    </organisation>
+                    <uidregInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
+                        <uidregStatusEnterpriseDetail>3</uidregStatusEnterpriseDetail>
+                        <uidregPublicStatus>1</uidregPublicStatus>
+                        <uidregUidService>false</uidregUidService>
+                        <uidregTranslation>(Office fédéral de la sécurité alimentaire et des affaires vétérinaires OSAV)
+                            (Ufficio federale della sicurezza alimentare e di veterinaria USAV) (Federal Food Safety and
+                            Veterinary Office FSVO)
+                        </uidregTranslation>
+                    </uidregInformation>
+                </organisationType>
+            </GetByUIDResult>
+        </GetByUIDResponse>
+    </s:Body>
+</s:Envelope>

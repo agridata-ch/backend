@@ -11,27 +11,23 @@
                             </uid>
                             <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
                                 <organisationIdCategory>CH.HR</organisationIdCategory>
-                                <organisationId>CH28069163185</organisationId>
-                            </OtherOrganisationId>
-                            <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
-                                <organisationIdCategory>CH.AK</organisationIdCategory>
-                                <organisationId>171.96</organisationId>
+                                <organisationId>CH27030127228</organisationId>
                             </OtherOrganisationId>
                             <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
                                 <organisationIdCategory>CH.ESTVID</organisationIdCategory>
-                                <organisationId>052.0097.7841</organisationId>
+                                <organisationId>052.0054.7499</organisationId>
                             </OtherOrganisationId>
                             <OtherOrganisationId xmlns="http://www.ech.ch/xmlns/eCH-0097/5">
                                 <organisationIdCategory>CH.EHRAID</organisationIdCategory>
-                                <organisationId>427343</organisationId>
+                                <organisationId>599250</organisationId>
                             </OtherOrganisationId>
-                            <organisationName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">Bio Suisse, Vereinigung
-                                Schweizer Biolandbau-Organisationen
+                            <organisationName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">INTERNATIONAL CERTIFICATION BIO
+                                SUISSE AG
                             </organisationName>
-                            <organisationLegalName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">Bio Suisse, Vereinigung
-                                Schweizer Biolandbau-Organisationen
+                            <organisationLegalName xmlns="http://www.ech.ch/xmlns/eCH-0097/5">INTERNATIONAL
+                                CERTIFICATION BIO SUISSE AG
                             </organisationLegalName>
-                            <legalForm xmlns="http://www.ech.ch/xmlns/eCH-0097/5">0109</legalForm>
+                            <legalForm xmlns="http://www.ech.ch/xmlns/eCH-0097/5">0106</legalForm>
                         </organisationIdentification>
                         <address xmlns="http://www.ech.ch/xmlns/eCH-0098/5">
                             <addressCategory>LEGAL</addressCategory>
@@ -44,8 +40,8 @@
                             <cantonAbbreviation>BS</cantonAbbreviation>
                             <EGID>2081525</EGID>
                             <countryIdISO2>CH</countryIdISO2>
-                            <deliverableYesNo>true</deliverableYesNo>
-                            <dateOfLastCheck>2025-04-04</dateOfLastCheck>
+                            <deliverableYesNo>false</deliverableYesNo>
+                            <dateOfLastCheck>2025-12-05</dateOfLastCheck>
                         </address>
                     </organisation>
                     <uidregInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
@@ -56,16 +52,12 @@
                     <commercialRegisterInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
                         <commercialRegisterStatus>2</commercialRegisterStatus>
                         <commercialRegisterEntryStatus>1</commercialRegisterEntryStatus>
-                        <commercialRegisterNameTranslation>(Uniun svizra da las organisaziuns d'agricultura biologica)
-                            (Associazione svizzera delle organizzazioni per l'agricoltura biologica) (Association suisse
-                            des organisations d'agriculture biologique)
-                        </commercialRegisterNameTranslation>
                         <commercialRegisterEnterpriseType>2</commercialRegisterEnterpriseType>
                     </commercialRegisterInformation>
                     <vatRegisterInformation xmlns="http://www.ech.ch/xmlns/eCH-0108/5">
                         <vatStatus>2</vatStatus>
                         <vatEntryStatus>1</vatEntryStatus>
-                        <vatEntryDate>1995-01-01</vatEntryDate>
+                        <vatEntryDate>2001-07-01</vatEntryDate>
                         <uidVat>
                             <uidOrganisationIdCategorie xmlns="http://www.ech.ch/xmlns/eCH-0097/5">CHE
                             </uidOrganisationIdCategorie>

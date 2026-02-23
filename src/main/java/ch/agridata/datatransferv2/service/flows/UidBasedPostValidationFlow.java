@@ -11,6 +11,7 @@ import ch.agridata.datatransferv2.service.task.BuildProviderRequestTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidConsentForProducerUidsTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidConsumerRequestTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidDataRequestTask;
+import ch.agridata.datatransferv2.service.task.ResolveConsumerUidFromResponseHeaderTask;
 import ch.agridata.datatransferv2.service.task.ResolveConsumerUidFromTokenTask;
 import ch.agridata.datatransferv2.service.task.ResolveRequestedProducerUidTask;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,18 +23,19 @@ import lombok.RequiredArgsConstructor;
 import org.jboss.logging.MDC;
 
 /**
- * Flow for UID-based data transfers where the consumer is fully identified before calling the data provider.
+ * Flow for UID-based data transfers where the consumer UID is not necessarily known before calling the data provider.
  *
- * <p>All validation is performed upfront (pre-request). The consumer UID is extracted from the Agate token and must be
- * present, otherwise the request is rejected. The producer UID is resolved from the query parameters. Before the request
- * is forwarded to the data provider, the flow verifies that an active data request exists for the given product and that
- * the producer has granted consent to the consumer.</p>
+ * <p>The consumer UID is attempted to be resolved from the Agate token but is not required. The producer UID is resolved
+ * from the query parameters. If the consumer UID was already present in the token, data request and consent validation
+ * are performed immediately before forwarding the request to the data provider. Otherwise, the request is forwarded
+ * first, and the consumer UID is resolved from the provider's {@code AGRIDATA-CONSUMER-UID} response header, after
+ * which data request and consent validation are performed.</p>
  *
- * @CommentLastReviewed 2026-02-17
+ * @CommentLastReviewed 2026-02-23
  */
 @ApplicationScoped
 @RequiredArgsConstructor
-public class UidBasedPreValidationFlow implements Flowable {
+public class UidBasedPostValidationFlow implements Flowable {
 
   private final AgridataFlow agridataFlow;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
@@ -41,28 +43,43 @@ public class UidBasedPreValidationFlow implements Flowable {
   private final EnsureValidConsumerRequestTask ensureValidConsumerRequestTask;
   private final ResolveRequestedProducerUidTask resolveRequestedProducerUidTask;
   private final EnsureValidDataRequestTask ensureValidDataRequestTask;
+  private final ResolveConsumerUidFromResponseHeaderTask resolveConsumerUidFromResponseHeaderTask;
   private final EnsureValidConsentForProducerUidsTask ensureValidConsentForProducerUidsTask;
   private final BuildProviderRequestTask buildProviderRequestTask;
 
   @Override
   public Response run(UUID productId,
                       Map<String, String> requestParameters) {
-    return agridataFlow.run(
-        AgridataContext.builder()
-            .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
-            .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
-            .productId(productId)
-            .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
-            .requestParameters(requestParameters)
-            .build(),
+
+    var initContext = AgridataContext.builder()
+        .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
+        .flowEnum(FlowEnum.UID_BASED_POST_VALIDATION)
+        .productId(productId)
+        .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
+        .requestParameters(requestParameters)
+        .build();
+
+    if (agridataSecurityIdentity.getUid().isPresent()) {
+      return agridataFlow.run(initContext,
+          List.of(
+              resolveConsumerUidFromTokenTask,
+              ensureValidConsumerRequestTask,
+              resolveRequestedProducerUidTask,
+              ensureValidDataRequestTask,
+              ensureValidConsentForProducerUidsTask,
+              buildProviderRequestTask),
+          List.of());
+    }
+
+    return agridataFlow.run(initContext,
         List.of(
-            resolveConsumerUidFromTokenTask,
             ensureValidConsumerRequestTask,
             resolveRequestedProducerUidTask,
-            ensureValidDataRequestTask,
-            ensureValidConsentForProducerUidsTask,
             buildProviderRequestTask),
-        List.of());
+        List.of(
+            resolveConsumerUidFromResponseHeaderTask,
+            ensureValidDataRequestTask,
+            ensureValidConsentForProducerUidsTask
+        ));
   }
-
 }

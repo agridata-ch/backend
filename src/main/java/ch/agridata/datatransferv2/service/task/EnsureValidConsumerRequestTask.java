@@ -1,5 +1,6 @@
 package ch.agridata.datatransferv2.service.task;
 
+import static ch.agridata.datatransferv2.service.FlowEnum.UID_BASED_POST_VALIDATION;
 import static ch.agridata.datatransferv2.service.FlowEnum.UID_BASED_PRE_VALIDATION;
 
 import ch.agridata.datatransferv2.service.AgridataContext;
@@ -24,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class EnsureValidConsumerRequestTask implements UnaryOperator<AgridataContext> {
 
   private static final Map<FlowEnum, Set<String>> REQUIRED_REQUEST_PARAMETERS =
-      Map.of(UID_BASED_PRE_VALIDATION, Set.of("uid"));
+      Map.of(
+          UID_BASED_PRE_VALIDATION, Set.of("uid"),
+          UID_BASED_POST_VALIDATION, Set.of("uid"));
 
   @Override
   public AgridataContext apply(final AgridataContext context) {

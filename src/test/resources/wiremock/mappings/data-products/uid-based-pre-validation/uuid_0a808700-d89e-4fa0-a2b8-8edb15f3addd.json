@@ -10,7 +10,9 @@
   },
   "response": {
     "status": 200,
-    "bodyFileName": "data-products/uid-based-pre-validation/uuid_0a808700-d89e-4fa0-a2b8-8edb15f3addd.json",
+    "jsonBody": {
+      "dataOfProduct": "0a808700-d89e-4fa0-a2b8-8edb15f3addd"
+    },
     "headers": {
       "Content-Type": "application/json"
     }

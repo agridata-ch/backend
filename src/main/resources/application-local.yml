@@ -63,7 +63,7 @@ quarkus:
     agis-api:
       url: http://localhost:8050/agis
     tvd-animal-tracing-api:
-      url: http://localhost:8050/tvd/animal-tracing/v1.0
+      url: http://localhost:8050/tvd/animal-tracing
     logging:
       body-limit: 10240
       scope: request-response

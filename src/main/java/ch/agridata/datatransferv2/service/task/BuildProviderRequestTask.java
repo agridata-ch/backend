@@ -8,7 +8,10 @@ import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.product.api.DataProductApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
@@ -45,8 +48,11 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     var dataProduct = dataProductApi.getProviderConfigurationById(productId);
     var requestParameters = context.getRequestParameters();
     var requestMethod = dataProduct.restClientMethodCode();
-    var requestPath = replacePlaceholders(dataProduct.restClientPath(), requestParameters);
-    var requestBody = replacePlaceholders(dataProduct.restClientRequestTemplate(), requestParameters);
+
+    Set<String> usedKeys = new HashSet<>();
+    var requestPath = replacePlaceholders(dataProduct.restClientPath(), requestParameters, usedKeys);
+    var requestBody = replacePlaceholders(dataProduct.restClientRequestTemplate(), requestParameters, usedKeys);
+    var finalPath = appendUnusedAsQueryParams(requestPath, requestParameters, usedKeys);
 
     var restClientIdentifierCode = RestClientIdentifier.valueOf(dataProduct.restClientIdentifierCode());
     var client = dataProviderRestClientProvider.get(restClientIdentifierCode);
@@ -56,11 +62,11 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
         .build();
 
     log.debug("Provider request configured: method={}, path={}, clientId={}",
-        requestMethod, requestPath, restClientIdentifierCode);
+        requestMethod, finalPath, restClientIdentifierCode);
 
     return switch (requestMethod) {
-      case "POST" -> () -> client.post(requestPath, headers, requestBody);
-      case "GET" -> () -> client.get(requestPath, headers);
+      case "POST" -> () -> client.post(finalPath, headers, requestBody);
+      case "GET" -> () -> client.get(finalPath, headers);
       default -> {
         log.warn("Unsupported REST client method: {}", requestMethod);
         throw new IllegalArgumentException("Unsupported rest client method: " + requestMethod);
@@ -68,7 +74,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     };
   }
 
-  private String replacePlaceholders(String template, Map<String, String> params) {
+  private String replacePlaceholders(String template, Map<String, String> params, Set<String> usedKeys) {
     if (template == null) {
       return null;
     }
@@ -83,9 +89,20 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
         log.warn("Template placeholder '{}' not found in request parameters", key);
         throw new IllegalArgumentException("Parameter '" + key + "' not found in request");
       }
+      usedKeys.add(key);
       m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
     }
     m.appendTail(sb);
     return sb.toString();
+  }
+
+  private String appendUnusedAsQueryParams(String path, Map<String, String> params, Set<String> usedKeys) {
+    UriBuilder uriBuilder = UriBuilder.fromUri(path);
+    params.forEach((key, value) -> {
+      if (!usedKeys.contains(key)) {
+        uriBuilder.queryParam(key, value);
+      }
+    });
+    return uriBuilder.build().toString();
   }
 }

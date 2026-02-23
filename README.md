@@ -59,6 +59,8 @@ git config --local core.hooksPath hooks && chmod +x hooks/*
 
 These are predefined users in the local agate realm:
 
+### Data Producers
+
 | Username     | Password | Roles                               | KT_ID_P   | loginid  |
 |--------------|----------|-------------------------------------|-----------|----------|
 | producer-a   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXA0001 | 3477580  |
@@ -67,11 +69,30 @@ These are predefined users in the local agate realm:
 | producer-c   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXC0001 | 3477583  |
 | producer-d   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXD0001 | 3477584  |
 | producer-e   | secret   | agridata.ch.Agridata_Einwilliger    | -         | 3477585  |
-| consumer     | secret   | agridata.ch.Agridata_Datenbezueger  | -         | 20154600 |
-| provider     | secret   | agridata.ch.Agridata_Datenanbieters | -         | 3477553  |
-| admin        | secret   | agridata.ch.Agridata_Admin          | -         | 3477554  |
-| support      | secret   | agridata.ch.Agridata_Support        | -         | 3477555  |
-| guest        | secret   | -                                   | -         | -        |
+
+### Data Providers
+
+| Username | Password | Roles                               | UID                | loginid |
+|----------|----------|-------------------------------------|--------------------|---------|
+| provider | secret   | agridata.ch.Agridata_Datenanbieters | CHE146680598 (BLW) | 3477553 |
+
+### Data Consumers
+
+| Username                 | Password | Roles                              | UID                       | loginid  |
+|--------------------------|----------|------------------------------------|---------------------------|----------|
+| consumer                 | secret   | agridata.ch.Agridata_Datenbezueger | CHE101708094 (Bio Suisse) | 20154600 |
+| consumer-ip-suisse       | secret   | agridata.ch.Agridata_Datenbezueger | CHE110013660 (IP Suisse)  | 900000   |
+| consumer-blv-1           | secret   | agridata.ch.Agridata_Datenbezueger | CHE403244345 (BLV)        | 3477588  |
+| consumer-blv-2           | secret   | agridata.ch.Agridata_Datenbezueger | CHE403244345 (BLV)        | 3477589  |
+| consumer-blv-without-uid | secret   | agridata.ch.Agridata_Datenbezueger | -                         | 3477590  |
+
+### Others
+
+| Username | Password | Roles                        | loginid |
+|----------|----------|------------------------------|---------|
+| admin    | secret   | agridata.ch.Agridata_Admin   | 3477554 |
+| support  | secret   | agridata.ch.Agridata_Support | 3477555 |
+| guest    | secret   | -                            | -       |
 
 ## Managing Keycloak Configuration
 
