@@ -1,3 +1,9 @@
+## [1.6.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.6.0...v1.6.1-rc.1) (2026-02-23)
+
+### Bug Fixes
+
+* **test-data:** remove no more needed test data and minor refactoring in data-transfer v2 ([13909fc](https://github.com/agridata-ch/backend/commit/13909fc2e739b0e8efd591e85bbf4e743486b9a1)), closes [DIGIB2-1246](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1246)
+
 ## [1.6.0](https://github.com/agridata-ch/backend/compare/v1.5.0...v1.6.0) (2026-02-19)
 
 ### Features
