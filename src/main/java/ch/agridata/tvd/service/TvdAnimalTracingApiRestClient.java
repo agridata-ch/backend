@@ -26,7 +26,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface TvdAnimalTracingApiRestClient {
 
   @GET
-  @Path("customer/legalunits/equidowner/{agateLoginId}")
+  @Path("v1.0/customer/legalunits/equidowner/{agateLoginId}")
   @Produces(MediaType.APPLICATION_JSON)
   TvdEquidOwnerUidDto fetchEquidOwnerLegalUnits(@PathParam("agateLoginId") String agateLoginId);
 

@@ -15,7 +15,9 @@ import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
 import ch.ech.xmlns.ech_0097._5.UidStructureType;
 import ch.ech.xmlns.ech_0098._5.OrganisationType;
 import io.quarkiverse.cxf.annotation.CXFClient;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.xml.bind.JAXBElement;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.cxf.frontend.ClientProxy;
 
 /**
  * Implements the UidRegisterServiceApi. It retrieves organizations by UID, extracts structured address details, and integrates with user
@@ -41,11 +45,21 @@ public class UidRegisterService implements UidRegisterServiceApi {
 
   private static final QName SWISS_ZIP_CODE_QNAME = new QName("http://www.ech.ch/xmlns/eCH-0098/5", "swissZipCode");
 
+  private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private IPublicServices port;
+
   @Inject
-  public AgridataSecurityIdentity agridataSecurityIdentity;
-  @Inject
-  @CXFClient("uid")
-  IPublicServices port;
+  public UidRegisterService(
+      AgridataSecurityIdentity agridataSecurityIdentity,
+      @CXFClient("uid") IPublicServices port) {
+    this.agridataSecurityIdentity = agridataSecurityIdentity;
+    this.port = port;
+  }
+
+  void onStart(@Observes StartupEvent ev) {
+    // Eagerly initialize the CXF client proxy at startup to avoid cold start latency on the first request
+    ClientProxy.getClient(port).getRequestContext();
+  }
 
   /**
    * Extracts the value of the 'swissZipCode' from the given list.
@@ -87,17 +101,21 @@ public class UidRegisterService implements UidRegisterServiceApi {
 
   private UidRegisterOrganisationDto toUidOrganisationDto(ArrayOfOrganisationType result) {
     var organisation = getOrganisationFromResponse(result);
-    if (
-        organisation == null
-            || organisation.getOrganisationIdentification() == null
-            || organisation.getOrganisationIdentification().getOrganisationLegalName() == null
-    ) {
+    if (organisation == null || organisation.getOrganisationIdentification() == null) {
       throw new NotFoundException("Uid Search returned no valid organisationIdentification.");
     }
+
     var organisationIdentification = organisation.getOrganisationIdentification();
+    var organisationName = organisationIdentification.getOrganisationName();
+    var organisationLegalName = organisationIdentification.getOrganisationLegalName();
+
+    if (organisationName == null && organisationLegalName == null) {
+      throw new NotFoundException("Uid Search returned no valid organisationName.");
+    }
+
     var organisationBuilder = UidRegisterOrganisationDto.builder()
-        .name(organisationIdentification.getOrganisationName())
-        .legalName(organisationIdentification.getOrganisationLegalName())
+        .name(ObjectUtils.firstNonNull(organisationName, organisationLegalName))
+        .legalName(ObjectUtils.firstNonNull(organisationLegalName, organisationName))
         .uid(organisationIdentification.getUid().getUidOrganisationIdCategorie()
             + organisationIdentification.getUid().getUidOrganisationId().toString());
 

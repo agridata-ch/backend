@@ -24,7 +24,6 @@ public class ResolveConsumerUidFromTokenTask implements UnaryOperator<AgridataCo
   public AgridataContext apply(final AgridataContext context) {
     String consumerUid = agridataSecurityIdentity.getUidOrElseThrow();
     context.setConsumerUid(consumerUid);
-    context.setConsumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId());
 
     log.debug("Resolved consumer UID={}, agateLoginId={}", consumerUid,
         context.getConsumerAgateLoginId());

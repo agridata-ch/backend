@@ -32,7 +32,7 @@ quarkus:
     agis-api:
       url: http://localhost:8051/agis
     tvd-animal-tracing-api:
-      url: http://localhost:8051/tvd/animal-tracing/v1.0
+      url: http://localhost:8051/tvd/animal-tracing
   wiremock:
     devservices:
       enabled: true

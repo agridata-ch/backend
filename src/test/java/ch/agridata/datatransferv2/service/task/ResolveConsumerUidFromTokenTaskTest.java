@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ResolveConsumerUidFromTokenTaskTest {
 
   private static final String CONSUMER_UID = "CHE123456789";
-  private static final String AGATE_LOGIN_ID = "12345678";
 
   @Mock
   AgridataSecurityIdentity agridataSecurityIdentity;
@@ -31,12 +30,10 @@ class ResolveConsumerUidFromTokenTaskTest {
   void givenValidToken_whenApply_thenConsumerUidIsResolved() {
     var context = createContext();
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
-    when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(AGATE_LOGIN_ID);
 
     var result = task.apply(context);
 
     assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
-    assertThat(result.getConsumerAgateLoginId()).isEqualTo(AGATE_LOGIN_ID);
   }
 
   @Test

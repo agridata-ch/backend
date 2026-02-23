@@ -90,7 +90,7 @@ class ProductFetchingTest {
         .then().statusCode(200)
         .body("dataTransferRequestId", notNullValue())
         .body("consentRequestId", equalTo(expectedConsentRequestId))
-        .body("data.encryptedDataOfProduct", equalTo(requestedProductId));
+        .body("data.dataOfProduct", equalTo(requestedProductId));
   }
 
 }

@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @QuarkusTest
 @RequiredArgsConstructor
-class ProductFetchingV2Test {
+class ProductFetchingTest {
 
   static Stream<Arguments> productFetchingTestSource() {
     return Stream.of(
@@ -59,7 +59,15 @@ class ProductFetchingV2Test {
         Arguments.of(
             TestUserEnum.CONSUMER_IP_SUISSE,
             DataProduct.UUID_64E39DF0.uuid().toString(),
-            Uid.CHE102000002.name())
+            Uid.CHE102000002.name()),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_298B653C.uuid().toString(),
+            Uid.ZZZ199984051.name()),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_WITHOUT_UID,
+            DataProduct.UUID_298B653C.uuid().toString(),
+            Uid.ZZZ199984051.name())
     );
   }
 

@@ -55,6 +55,13 @@ public class DataTransferController {
   private final DataTransferService dataTransferService;
   private final DeltaService deltaService;
 
+  /**
+   * This method only supports JSON payloads, as it wraps the provider response
+   * with an agridata.ch envelope.
+   *
+   * @deprecated Replaced by {@link ch.agridata.datatransferv2.controller.DataTransferController#dataTransfer(UUID, UriInfo)}
+   */
+  @Deprecated(since = "1.7.0")
   @GET
   @ApiSubset({DATA_CONSUMER})
   @Path("/product/{productId}/data")

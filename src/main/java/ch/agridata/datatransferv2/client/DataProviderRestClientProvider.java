@@ -13,15 +13,19 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class DataProviderRestClientProvider {
 
   private final AgisApiRestClient agisApiRestClient;
+  private final TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient;
 
   @Inject
-  public DataProviderRestClientProvider(@RestClient AgisApiRestClient agisApiRestClient) {
+  public DataProviderRestClientProvider(@RestClient AgisApiRestClient agisApiRestClient,
+                                        @RestClient TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient) {
     this.agisApiRestClient = agisApiRestClient;
+    this.tvdAnimalTracingApiRestClient = tvdAnimalTracingApiRestClient;
   }
 
   public DataProviderRestClient get(RestClientIdentifier restClientIdentifier) {
     return switch (restClientIdentifier) {
       case AGIS_API -> agisApiRestClient;
+      case TVD_ANIMAL_TRACING_API -> tvdAnimalTracingApiRestClient;
     };
   }
 
@@ -32,6 +36,7 @@ public class DataProviderRestClientProvider {
    */
   public enum RestClientIdentifier {
     AGIS_API,
+    TVD_ANIMAL_TRACING_API
   }
 
 }

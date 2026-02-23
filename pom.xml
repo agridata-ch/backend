@@ -93,6 +93,12 @@
                 <version>${archunit-junit5.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.quarkiverse.wiremock</groupId>
+                <artifactId>quarkus-wiremock-test</artifactId>
+                <version>${wiremock.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -254,6 +260,11 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-test-keycloak-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.wiremock</groupId>
+            <artifactId>quarkus-wiremock-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
