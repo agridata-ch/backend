@@ -1,3 +1,9 @@
+## [1.7.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.6.1-rc.1...v1.7.0-rc.1) (2026-02-24)
+
+### Features
+
+* **testdata:** Support SQL file upload and restrict execution to non-prod profiles ([fb456a0](https://github.com/agridata-ch/backend/commit/fb456a03c9028e565179d7860c5db3a73a7dd36e)), closes [DIGIB2-1234](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1234)
+
 ## [1.6.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.6.0...v1.6.1-rc.1) (2026-02-23)
 
 ### Bug Fixes
