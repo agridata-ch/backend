@@ -1,3 +1,9 @@
+## [1.7.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.1...v1.7.0-rc.2) (2026-02-25)
+
+### Features
+
+* **data-transfer:** implementation of UidBasedPostValidationFlow for first tvd data product ([6d3024d](https://github.com/agridata-ch/backend/commit/6d3024da9b2c07ec8c2e6500cbdea360ae5943e3))
+
 ## [1.7.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.6.1-rc.1...v1.7.0-rc.1) (2026-02-24)
 
 ### Features
