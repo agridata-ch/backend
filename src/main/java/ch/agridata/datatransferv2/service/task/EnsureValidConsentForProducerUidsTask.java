@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * Verifies that consent has been granted by all producer UIDs in the request payload.
  * Checks against the valid data requests found by EnsureValidDataRequestTask.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-02-26
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class EnsureValidConsentForProducerUidsTask implements UnaryOperator<Agri
         producerUidsRequested, validDataRequestIds);
 
     Set<String> producerUidsWithGrantedConsent = validDataRequestIds.stream()
-        .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+        .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersUids(
             dataRequestId,
             producerUidsRequested.stream().toList()))
         .flatMap(List::stream)

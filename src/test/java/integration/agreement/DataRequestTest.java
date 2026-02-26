@@ -67,7 +67,7 @@ class DataRequestTest {
   void givenAdmin_whenGetDataRequests_thenOnlyNonDraftDataRequestsReturned() {
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(5));
+        .body("size()", equalTo(6));
   }
 
   @Test

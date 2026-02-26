@@ -14,7 +14,6 @@ import ch.agridata.datatransferv2.client.DataProviderRestClient;
 import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
-import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
@@ -38,9 +37,6 @@ class BuildProviderRequestTaskTest {
   DataProviderRestClientProvider dataProviderRestClientProvider;
 
   @Mock
-  DataProductApi dataProductApi;
-
-  @Mock
   DataProviderRestClient dataProviderRestClient;
 
   @Captor
@@ -51,10 +47,9 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenPostMethod_whenApply_thenProviderRequestIsBuiltForPost() {
-    var context = createContext();
     var productConfig = createProductConfig("POST", "/api/data", "{\"uid\": \"{{uid}}\"}");
+    var context = createContext(productConfig);
 
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
     when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.post(any(), any(), any())).thenReturn(mock(Response.class));
 
@@ -72,10 +67,9 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenGetMethod_whenApply_thenProviderRequestIsBuiltForGet() {
-    var context = createContext();
     var productConfig = createProductConfig("GET", "/api/data/{{uid}}", null);
+    var context = createContext(productConfig);
 
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
     when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.get(any(), any())).thenReturn(mock(Response.class));
 
@@ -91,10 +85,9 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenUnsupportedMethod_whenApply_thenIllegalArgumentExceptionIsThrown() {
-    var context = createContext();
     var productConfig = createProductConfig("DELETE", "/api/data", null);
+    var context = createContext(productConfig);
 
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
     when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
 
     // The exception is thrown when building the supplier (during apply), not when executing it
@@ -105,10 +98,8 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenMissingPlaceholder_whenApply_thenIllegalArgumentExceptionIsThrown() {
-    var context = createContext();
     var productConfig = createProductConfig("POST", "/api/data", "{\"missing\": \"{{notFound}}\"}");
-
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
+    var context = createContext(productConfig);
 
     assertThatThrownBy(() -> task.apply(context))
         .isInstanceOf(IllegalArgumentException.class)
@@ -119,10 +110,9 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenNullTemplate_whenApply_thenNullBodyIsUsed() {
-    var context = createContext();
     var productConfig = createProductConfig("POST", "/api/data", null);
+    var context = createContext(productConfig);
 
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
     when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.post(any(), any(), any())).thenReturn(mock(Response.class));
 
@@ -134,16 +124,16 @@ class BuildProviderRequestTaskTest {
 
   @Test
   void givenUnusedRequestParameters_whenApply_thenUnusedParamsAreAppendedAsQueryParams() {
+    var productConfig = createProductConfig("GET", "/api/data/{{uid}}", null);
     var context = AgridataContext.builder()
         .productId(PRODUCT_ID)
+        .productProviderConfiguration(productConfig)
         .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .consumerUid(CONSUMER_UID)
         .consumerAgateLoginId(CONSUMER_AGATE_LOGIN_ID)
         .requestParameters(Map.of("uid", "CHE987654321", "year", "2024", "format", "json"))
         .build();
-    var productConfig = createProductConfig("GET", "/api/data/{{uid}}", null);
 
-    when(dataProductApi.getProviderConfigurationById(PRODUCT_ID)).thenReturn(productConfig);
     when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.get(any(), any())).thenReturn(mock(Response.class));
 
@@ -161,9 +151,10 @@ class BuildProviderRequestTaskTest {
         .doesNotContain("uid=CHE987654321");
   }
 
-  private AgridataContext createContext() {
+  private AgridataContext createContext(DataProductProviderConfigurationDto productProviderConfiguration) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
+        .productProviderConfiguration(productProviderConfiguration)
         .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .consumerUid(CONSUMER_UID)
         .consumerAgateLoginId(CONSUMER_AGATE_LOGIN_ID)

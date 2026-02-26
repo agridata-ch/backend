@@ -40,7 +40,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent));
 
@@ -53,7 +53,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
   void givenNoConsentGranted_whenApply_thenConsentNotGrantedExceptionIsThrown() {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of());
 
@@ -71,7 +71,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1, PRODUCER_UID_2));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent));
 
@@ -89,7 +89,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var consent1 = createConsent(PRODUCER_UID_1);
     var consent2 = createConsent(PRODUCER_UID_2);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent1, consent2));
 

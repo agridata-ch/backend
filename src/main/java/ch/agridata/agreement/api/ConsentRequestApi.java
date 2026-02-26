@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * Defines the API interface for managing consent requests. It specifies the operations available to external clients.
  *
- * @CommentLastReviewed 2025-10-02
+ * @CommentLastReviewed 2026-02-26
  */
 public interface ConsentRequestApi {
   @RolesAllowed(CONSUMER_ROLE)
@@ -28,6 +28,11 @@ public interface ConsentRequestApi {
   List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(@Valid @NotNull UUID productId,
                                                                             @Valid @NotNull LocalDateTime since);
 
-  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducers(@Valid @NotNull UUID dataRequestId,
-                                                                                              @Valid @NotNull List<String> producerUid);
+  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducersUids(@Valid @NotNull UUID dataRequestId,
+                                                                                                  @Valid @NotNull
+                                                                                                  List<String> producerUids);
+
+  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(@Valid @NotNull UUID dataRequestId,
+                                                                                                  @Valid @NotNull
+                                                                                                  List<String> producerBurs);
 }

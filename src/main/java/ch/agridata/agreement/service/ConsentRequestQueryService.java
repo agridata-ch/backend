@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Provides read access to consent request information for different roles
  *
- * @CommentLastReviewed 2025-09-10
+ * @CommentLastReviewed 2026-02-26
  */
 
 @ApplicationScoped
@@ -152,9 +152,18 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   }
 
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducers(UUID dataRequestId,
-                                                                                                     List<String> producerUids) {
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducersUids(UUID dataRequestId,
+                                                                                                         List<String> producerUids) {
     return consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, producerUids).stream()
+        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+        .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
+        .toList();
+  }
+
+  @Override
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(UUID dataRequestId,
+                                                                                                         List<String> producerBurs) {
+    return consentRequestRepository.findByDataRequestIdAndDataProducerBurs(dataRequestId, producerBurs).stream()
         .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();

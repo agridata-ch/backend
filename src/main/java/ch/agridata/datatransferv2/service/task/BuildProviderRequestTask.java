@@ -5,7 +5,6 @@ import static ch.agridata.datatransferv2.client.DataProviderRestClientProvider.R
 import ch.agridata.datatransferv2.client.DataProviderRestClient;
 import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.service.AgridataContext;
-import ch.agridata.product.api.DataProductApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -31,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> {
 
   private final DataProviderRestClientProvider dataProviderRestClientProvider;
-  private final DataProductApi dataProductApi;
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
@@ -44,17 +42,16 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
   }
 
   private Supplier<Response> buildProviderRequest(AgridataContext context) {
-    var productId = context.getProductId();
-    var dataProduct = dataProductApi.getProviderConfigurationById(productId);
+    var productProviderConfiguration = context.getProductProviderConfiguration();
     var requestParameters = context.getRequestParameters();
-    var requestMethod = dataProduct.restClientMethodCode();
+    var requestMethod = productProviderConfiguration.restClientMethodCode();
 
     Set<String> usedKeys = new HashSet<>();
-    var requestPath = replacePlaceholders(dataProduct.restClientPath(), requestParameters, usedKeys);
-    var requestBody = replacePlaceholders(dataProduct.restClientRequestTemplate(), requestParameters, usedKeys);
+    var requestPath = replacePlaceholders(productProviderConfiguration.restClientPath(), requestParameters, usedKeys);
+    var requestBody = replacePlaceholders(productProviderConfiguration.restClientRequestTemplate(), requestParameters, usedKeys);
     var finalPath = appendUnusedAsQueryParams(requestPath, requestParameters, usedKeys);
 
-    var restClientIdentifierCode = RestClientIdentifier.valueOf(dataProduct.restClientIdentifierCode());
+    var restClientIdentifierCode = RestClientIdentifier.valueOf(productProviderConfiguration.restClientIdentifierCode());
     var client = dataProviderRestClientProvider.get(restClientIdentifierCode);
     var headers = DataProviderRestClient.Headers.builder()
         .agridataConsumerAgateLoginId(context.getConsumerAgateLoginId())

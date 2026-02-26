@@ -13,11 +13,11 @@ import ch.agridata.datatransferv2.service.task.EnsureValidConsumerRequestTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidDataRequestTask;
 import ch.agridata.datatransferv2.service.task.ResolveConsumerUidFromTokenTask;
 import ch.agridata.datatransferv2.service.task.ResolveRequestedProducerUidTask;
+import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jboss.logging.MDC;
 
@@ -45,13 +45,14 @@ public class UidBasedPreValidationFlow implements Flowable {
   private final BuildProviderRequestTask buildProviderRequestTask;
 
   @Override
-  public Response run(UUID productId,
+  public Response run(DataProductProviderConfigurationDto productProviderConfiguration,
                       Map<String, String> requestParameters) {
     return agridataFlow.run(
         AgridataContext.builder()
             .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
             .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
-            .productId(productId)
+            .productId(productProviderConfiguration.id())
+            .productProviderConfiguration(productProviderConfiguration)
             .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
             .requestParameters(requestParameters)
             .build(),
