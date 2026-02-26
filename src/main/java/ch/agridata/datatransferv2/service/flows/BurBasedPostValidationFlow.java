@@ -8,12 +8,13 @@ import ch.agridata.datatransferv2.service.AgridataFlow;
 import ch.agridata.datatransferv2.service.FlowEnum;
 import ch.agridata.datatransferv2.service.Flowable;
 import ch.agridata.datatransferv2.service.task.BuildProviderRequestTask;
-import ch.agridata.datatransferv2.service.task.EnsureValidConsentForProducerUidsTask;
+import ch.agridata.datatransferv2.service.task.EnsureValidConsentForProducerBursTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidConsumerRequestTask;
 import ch.agridata.datatransferv2.service.task.EnsureValidDataRequestTask;
 import ch.agridata.datatransferv2.service.task.ResolveConsumerUidFromResponseHeaderTask;
 import ch.agridata.datatransferv2.service.task.ResolveConsumerUidFromTokenTask;
-import ch.agridata.datatransferv2.service.task.ResolveRequestedProducerUidTask;
+import ch.agridata.datatransferv2.service.task.ResolveRequestedDateTask;
+import ch.agridata.datatransferv2.service.task.ResolveRequestedProducerBurTask;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
@@ -23,28 +24,29 @@ import lombok.RequiredArgsConstructor;
 import org.jboss.logging.MDC;
 
 /**
- * Flow for UID-based data transfers where the consumer UID is not necessarily known before calling the data provider.
+ * Flow for BUR-based data transfers where the consumer UID is not necessarily known before calling the data provider.
  *
- * <p>The consumer UID is attempted to be resolved from the Agate token but is not required. The producer UID is resolved
+ * <p>The consumer UID is attempted to be resolved from the Agate token but is not required. The producer BUR is resolved
  * from the query parameters. If the consumer UID was already present in the token, data request and consent validation
  * are performed immediately before forwarding the request to the data provider. Otherwise, the request is forwarded
  * first, and the consumer UID is resolved from the provider's {@code AGRIDATA-CONSUMER-UID} response header, after
  * which data request and consent validation are performed.</p>
  *
- * @CommentLastReviewed 2026-02-23
+ * @CommentLastReviewed 2026-02-26
  */
 @ApplicationScoped
 @RequiredArgsConstructor
-public class UidBasedPostValidationFlow implements Flowable {
+public class BurBasedPostValidationFlow implements Flowable {
 
   private final AgridataFlow agridataFlow;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ResolveConsumerUidFromTokenTask resolveConsumerUidFromTokenTask;
   private final EnsureValidConsumerRequestTask ensureValidConsumerRequestTask;
-  private final ResolveRequestedProducerUidTask resolveRequestedProducerUidTask;
+  private final ResolveRequestedProducerBurTask resolveRequestedProducerBurTask;
+  private final ResolveRequestedDateTask resolveRequestedDateTask;
   private final EnsureValidDataRequestTask ensureValidDataRequestTask;
   private final ResolveConsumerUidFromResponseHeaderTask resolveConsumerUidFromResponseHeaderTask;
-  private final EnsureValidConsentForProducerUidsTask ensureValidConsentForProducerUidsTask;
+  private final EnsureValidConsentForProducerBursTask ensureValidConsentForProducerBursTask;
   private final BuildProviderRequestTask buildProviderRequestTask;
 
   @Override
@@ -53,7 +55,7 @@ public class UidBasedPostValidationFlow implements Flowable {
 
     var initContext = AgridataContext.builder()
         .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
-        .flowEnum(FlowEnum.UID_BASED_POST_VALIDATION)
+        .flowEnum(FlowEnum.BUR_BASED_POST_VALIDATION)
         .productId(productProviderConfiguration.id())
         .productProviderConfiguration(productProviderConfiguration)
         .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
@@ -65,9 +67,10 @@ public class UidBasedPostValidationFlow implements Flowable {
           List.of(
               resolveConsumerUidFromTokenTask,
               ensureValidConsumerRequestTask,
-              resolveRequestedProducerUidTask,
+              resolveRequestedProducerBurTask,
+              resolveRequestedDateTask,
               ensureValidDataRequestTask,
-              ensureValidConsentForProducerUidsTask,
+              ensureValidConsentForProducerBursTask,
               buildProviderRequestTask),
           List.of());
     }
@@ -75,12 +78,13 @@ public class UidBasedPostValidationFlow implements Flowable {
     return agridataFlow.run(initContext,
         List.of(
             ensureValidConsumerRequestTask,
-            resolveRequestedProducerUidTask,
+            resolveRequestedProducerBurTask,
+            resolveRequestedDateTask,
             buildProviderRequestTask),
         List.of(
             resolveConsumerUidFromResponseHeaderTask,
             ensureValidDataRequestTask,
-            ensureValidConsentForProducerUidsTask
+            ensureValidConsentForProducerBursTask
         ));
   }
 }

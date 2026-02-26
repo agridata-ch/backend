@@ -24,7 +24,7 @@ import org.hibernate.annotations.SQLRestriction;
 /**
  * Defines the persistence representation of a consent request. It captures identifiers, states, and related attributes.
  *
- * @CommentLastReviewed 2025-10-02
+ * @CommentLastReviewed 2026-02-26
  */
 @Entity
 @Table(name = "consent_request",
@@ -62,6 +62,12 @@ public class ConsentRequestEntity extends AuditableEntity {
 
   @Column(name = "migrated_from_maf_date")
   private LocalDateTime migratedFromMafDate;
+
+  @Column(name = "uid_bur_relation_since")
+  private LocalDateTime uidBurRelationSince;
+
+  @Column(name = "uid_bur_relation_until")
+  private LocalDateTime uidBurRelationUntil;
 
   @ManyToOne
   @JoinColumn(name = "data_request_id", nullable = false)

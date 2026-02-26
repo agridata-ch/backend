@@ -41,6 +41,7 @@ class UidBasedPostValidationFlowTest {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
         .queryParam("uid", Uid.ZZZ199984051.name())
+        .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(200)
         .header("AGRIDATA-REQUEST-ID", notNullValue());
@@ -48,7 +49,7 @@ class UidBasedPostValidationFlowTest {
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
             "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.ZZZ199984051.name()
-                + "/ownership?dataPackage=TVD_EquidOwnershipListV1")));
+                + "/ownership?dataPackage=TVD_EquidOwnershipListV1&recipientUid=CHE123456789")));
   }
 
   @Test
@@ -56,6 +57,7 @@ class UidBasedPostValidationFlowTest {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
         .queryParam("uid", Uid.CHE101000001.name())
+        .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(403);
@@ -68,6 +70,7 @@ class UidBasedPostValidationFlowTest {
   void givenNoUidParameter_whenProductRequested_thenBadRequest() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
+        .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(400);
@@ -81,6 +84,7 @@ class UidBasedPostValidationFlowTest {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
         .queryParam("uid", "")
+        .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(400);
@@ -94,6 +98,7 @@ class UidBasedPostValidationFlowTest {
     AuthTestUtils.requestAs(CONSUMER_BLV_WITHOUT_UID)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
         .queryParam("uid", Uid.ZZZ199984051.name())
+        .queryParam("recipientUid", "CHE123456789")
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
@@ -102,6 +107,6 @@ class UidBasedPostValidationFlowTest {
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
             "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.ZZZ199984051.name()
-                + "/ownership?dataPackage=TVD_EquidOwnershipListV1&year=2024")));
+                + "/ownership?dataPackage=TVD_EquidOwnershipListV1&recipientUid=CHE123456789&year=2024")));
   }
 }

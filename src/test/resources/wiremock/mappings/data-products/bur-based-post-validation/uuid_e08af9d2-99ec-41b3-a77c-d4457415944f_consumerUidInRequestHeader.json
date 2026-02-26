@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_FarmDataV1"
+      }
+    },
+    "headers": {
+      "AGRIDATA-CONSUMER-AGATE-LOGIN-ID": {
+        "matches": ".+"
+      },
+      "AGRIDATA-CONSUMER-UID": {
+        "matches": ".+"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "e08af9d2-99ec-41b3-a77c-d4457415944f"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

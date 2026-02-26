@@ -59,7 +59,7 @@ public class DataTransferController {
    * This method only supports JSON payloads, as it wraps the provider response
    * with an agridata.ch envelope.
    *
-   * @deprecated Replaced by {@link ch.agridata.datatransferv2.controller.DataTransferController#dataTransfer(UUID, UriInfo)}
+   * @deprecated Replaced by {@link ch.agridata.datatransferv2.controller.DataTransferController#dataTransfer(UUID, List, UriInfo)}
    */
   @Deprecated(since = "1.7.0")
   @GET
