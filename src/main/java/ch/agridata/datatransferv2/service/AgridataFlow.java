@@ -62,7 +62,12 @@ public class AgridataFlow {
 
     context.setResponseHeaders(headers);
 
-    context = runTasks(context, tasksAfter);
+    try {
+      context = runTasks(context, tasksAfter);
+    } catch (RuntimeException ex) {
+      upstream.close();
+      throw ex;
+    }
 
     return forwardResponse(upstream, context);
   }

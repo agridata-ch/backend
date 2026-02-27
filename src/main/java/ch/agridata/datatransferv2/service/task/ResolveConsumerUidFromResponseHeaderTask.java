@@ -1,8 +1,8 @@
 package ch.agridata.datatransferv2.service.task;
 
+import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.NotFoundException;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class ResolveConsumerUidFromResponseHeaderTask implements UnaryOperator<A
   public AgridataContext apply(final AgridataContext context) {
 
     String consumerUid = Optional.ofNullable(context.getResponseHeaders().get(AGRIDATA_CONSUMER_UID_HEADER))
-        .orElseThrow(() -> new NotFoundException("Consumer UID header of the data provider is null"));
+        .orElseThrow(() -> new ExternalWebServiceException(AGRIDATA_CONSUMER_UID_HEADER + " header is absent in provider response"));
     context.setConsumerUid(consumerUid);
     log.debug("Resolved ConsumerUid={}", consumerUid);
 

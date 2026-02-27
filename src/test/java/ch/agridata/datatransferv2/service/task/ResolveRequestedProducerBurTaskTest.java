@@ -26,7 +26,7 @@ class ResolveRequestedProducerBurTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerBursInPayload()).containsExactly(PRODUCER_BUR);
+    assertThat(result.getProducerBurs()).containsExactly(PRODUCER_BUR);
   }
 
   @Test
@@ -36,7 +36,7 @@ class ResolveRequestedProducerBurTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerBursInPayload()).containsExactly(differentBur);
+    assertThat(result.getProducerBurs()).containsExactly(differentBur);
   }
 
   private AgridataContext createContextWithBur(String bur) {

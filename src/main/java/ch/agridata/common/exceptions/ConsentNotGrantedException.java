@@ -13,15 +13,15 @@ import lombok.Getter;
 @Getter
 public class ConsentNotGrantedException extends RuntimeException {
 
-  private final Set<String> missingConsentUids;
+  private final Set<String> producerIdentifiers;
 
-  public ConsentNotGrantedException(String message, Set<String> missingConsentUids) {
-    super(message);
-    this.missingConsentUids = missingConsentUids;
+  public ConsentNotGrantedException(Set<String> producerIdentifiers) {
+    super("Consent not granted for the requested data producer(s): " + String.join(", ", producerIdentifiers));
+    this.producerIdentifiers = producerIdentifiers;
   }
 
   public ConsentNotGrantedException(String message) {
     super(message);
-    this.missingConsentUids = Set.of();
+    this.producerIdentifiers = Set.of();
   }
 }

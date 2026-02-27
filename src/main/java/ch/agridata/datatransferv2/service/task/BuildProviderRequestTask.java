@@ -8,6 +8,8 @@ import ch.agridata.datatransferv2.service.AgridataContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> {
+
+  private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
 
   private final DataProviderRestClientProvider dataProviderRestClientProvider;
 
@@ -76,8 +80,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
       return null;
     }
 
-    Pattern p = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
-    Matcher m = p.matcher(template);
+    Matcher m = PLACEHOLDER_PATTERN.matcher(template);
     StringBuilder sb = new StringBuilder();
     while (m.find()) {
       String key = m.group(1);
@@ -87,7 +90,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
         throw new IllegalArgumentException("Parameter '" + key + "' not found in request");
       }
       usedKeys.add(key);
-      m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+      m.appendReplacement(sb, Matcher.quoteReplacement(URLEncoder.encode(replacement, StandardCharsets.UTF_8)));
     }
     m.appendTail(sb);
     return sb.toString();

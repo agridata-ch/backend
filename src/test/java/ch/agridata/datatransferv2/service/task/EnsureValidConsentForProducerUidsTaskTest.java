@@ -62,7 +62,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
         .hasMessageContaining("Consent not granted")
         .satisfies(ex -> {
           var cex = (ConsentNotGrantedException) ex;
-          assertThat(cex.getMissingConsentUids()).contains(PRODUCER_UID_1);
+          assertThat(cex.getProducerIdentifiers()).contains(PRODUCER_UID_1);
         });
   }
 
@@ -79,7 +79,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
         .isInstanceOf(ConsentNotGrantedException.class)
         .satisfies(ex -> {
           var cex = (ConsentNotGrantedException) ex;
-          assertThat(cex.getMissingConsentUids()).containsExactly(PRODUCER_UID_2);
+          assertThat(cex.getProducerIdentifiers()).containsExactly(PRODUCER_UID_2);
         });
   }
 
@@ -102,7 +102,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
         .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
-        .producerUidsInPayload(producerUids)
+        .producerUids(producerUids)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
         .build();
   }

@@ -26,7 +26,7 @@ class ResolveRequestedProducerUidTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerUidsInPayload()).containsExactly(PRODUCER_UID);
+    assertThat(result.getProducerUids()).containsExactly(PRODUCER_UID);
   }
 
   @Test
@@ -36,7 +36,7 @@ class ResolveRequestedProducerUidTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerUidsInPayload()).containsExactly(differentUid);
+    assertThat(result.getProducerUids()).containsExactly(differentUid);
   }
 
   private AgridataContext createContextWithUid(String uid) {

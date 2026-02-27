@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -31,33 +32,31 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
-    var producerBursRequested = new HashSet<>(context.getProducerBursInPayload());
+    var producerBurs = new HashSet<>(context.getProducerBurs());
     var validDataRequestIds = context.getValidDataRequestIds();
     var requestedDate = context.getRequestedDate();
 
     log.debug("Checking consent for producerBurs={}, dataRequestIds={}, requestedDate={}",
-        producerBursRequested, validDataRequestIds, requestedDate);
+        producerBurs, validDataRequestIds, requestedDate);
 
     Set<String> producerBursWithGrantedConsent = validDataRequestIds.stream()
         .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
             dataRequestId,
-            producerBursRequested.stream().toList()))
+            producerBurs.stream().toList()))
         .flatMap(List::stream)
         .filter(consent -> isConsentValidAt(consent, requestedDate))
         .map(ConsentRequestFundamentalViewDto::dataProducerBur)
         .collect(Collectors.toSet());
 
-    Set<String> missingConsentBurs = new HashSet<>(producerBursRequested);
+    Set<String> missingConsentBurs = new TreeSet<>(producerBurs);
     missingConsentBurs.removeAll(producerBursWithGrantedConsent);
 
     if (!missingConsentBurs.isEmpty()) {
       log.warn("Consent not granted for producerBurs={}", missingConsentBurs);
-      throw new ConsentNotGrantedException(
-          "Consent not granted for the requested data producer(s)",
-          missingConsentBurs);
+      throw new ConsentNotGrantedException(missingConsentBurs);
     }
 
-    log.debug("Consent verified for all {} producer BUR(s)", producerBursRequested.size());
+    log.debug("Consent verified for all {} producer BUR(s)", producerBurs.size());
     return context;
   }
 

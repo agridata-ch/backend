@@ -40,8 +40,7 @@ public class EnsureValidDataRequestTask implements UnaryOperator<AgridataContext
     if (validDataRequestIds.isEmpty()) {
       log.warn("No valid data request found for consumerUid={}, productId={}",
           consumerUid, productId);
-      throw new ConsentNotGrantedException(
-          "No active data request found for the requested product");
+      throw new ConsentNotGrantedException("No active data request found for the requested product");
     }
 
     context.setValidDataRequestIds(validDataRequestIds);

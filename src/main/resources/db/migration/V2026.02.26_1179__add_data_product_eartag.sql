@@ -1,0 +1,4 @@
+INSERT INTO data_product (id, archived, created_at, modified_at, data_source_system_id, name, description, rest_client_identifier_code, rest_client_method_code, rest_client_path, flow_code)
+VALUES
+('6319423c-e4fc-4a47-be6e-43888f58f94f'::uuid, false, NOW(), NOW(), '4ccbfa06-a547-4a76-9dfc-61c22a4ea8ce', jsonb_build_object('de', 'TVD_CattleDetailV1', 'fr', 'TVD_CattleDetailV1', 'it', 'TVD_CattleDetailV1'), jsonb_build_object('de', 'tbd', 'fr', 'tbd', 'it', 'tbd'), 'TVD_ANIMAL_TRACING_API', 'GET', 'v1.0/animal/shared-data/cattle/{{eartagNumber}}?dataPackage=TVD_CattleDetailV1&recipientUid={{recipientUid}}', 'UNBOUND_POST_VALIDATION')
+ON CONFLICT (id) DO UPDATE SET archived = EXCLUDED.archived, modified_at = EXCLUDED.modified_at, data_source_system_id = EXCLUDED.data_source_system_id, name = EXCLUDED.name, description = EXCLUDED.description;
