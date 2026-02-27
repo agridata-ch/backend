@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum FlowEnum {
   UID_BASED_PRE_VALIDATION(Set.of("uid")),
   UID_BASED_POST_VALIDATION(Set.of("uid")),
-  BUR_BASED_POST_VALIDATION(Set.of("bur"));
+  BUR_BASED_POST_VALIDATION(Set.of("bur")),
+  UNBOUND_POST_VALIDATION(Set.of());
 
   private final Set<String> requiredRequestParameters;
 

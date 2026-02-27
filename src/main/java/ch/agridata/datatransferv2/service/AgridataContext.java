@@ -27,8 +27,8 @@ public final class AgridataContext {
   private Map<String, String> requestParameters;
   private String consumerUid;
   private String consumerAgateLoginId;
-  private List<String> producerUidsInPayload;
-  private List<String> producerBursInPayload;
+  private List<String> producerUids;
+  private List<String> producerBurs;
   private LocalDate requestedDate;
   private List<UUID> validDataRequestIds;
   private Map<String, String> responseHeaders;
@@ -44,8 +44,8 @@ public final class AgridataContext {
         + ", requestParameters=" + requestParameters
         + ", consumerUid='" + consumerUid + '\''
         + ", consumerAgateLoginId='" + consumerAgateLoginId + '\''
-        + ", producerUidsInPayload=" + producerUidsInPayload
-        + ", producerBursInPayload=" + producerBursInPayload
+        + ", producerUids=" + producerUids
+        + ", producerBurs=" + producerBurs
         + ", requestedDate=" + requestedDate
         + ", validDataRequestIds=" + validDataRequestIds
         + ", responseHeaders=" + responseHeaders

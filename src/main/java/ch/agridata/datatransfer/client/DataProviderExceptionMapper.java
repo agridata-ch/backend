@@ -22,6 +22,7 @@ public class DataProviderExceptionMapper implements ResponseExceptionMapper<Runt
       log.warn("Failed to read error response body", e);
     }
 
-    return new DataTransferFailedException(response.getStatus(), body);
+    return new DataTransferFailedException(response.getStatus(),
+        "Unexpected response from data provider (status=" + response.getStatus() + "): " + body);
   }
 }

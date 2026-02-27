@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/animal/shared-data/cattle/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_CattleDetailV1"
+      }
+    },
+    "headers": {
+      "AGRIDATA-CONSUMER-AGATE-LOGIN-ID": {
+        "matches": ".+"
+      },
+      "AGRIDATA-CONSUMER-UID": {
+        "matches": ".+"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "6319423c-e4fc-4a47-be6e-43888f58f94f"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-UIDS": "[\"CHE101000001\"]",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "[\"99910002\"]"
+    }
+  }
+}

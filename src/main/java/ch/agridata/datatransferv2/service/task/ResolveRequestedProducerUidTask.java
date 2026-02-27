@@ -20,7 +20,7 @@ public class ResolveRequestedProducerUidTask implements UnaryOperator<AgridataCo
   @Override
   public AgridataContext apply(final AgridataContext context) {
     var uid = context.getRequestParameters().get("uid");
-    context.setProducerUidsInPayload(List.of(uid));
+    context.setProducerUids(List.of(uid));
 
     log.debug("Resolved producer UID from request: {}", uid);
     return context;

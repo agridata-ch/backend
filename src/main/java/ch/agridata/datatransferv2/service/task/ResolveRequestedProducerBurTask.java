@@ -20,7 +20,7 @@ public class ResolveRequestedProducerBurTask implements UnaryOperator<AgridataCo
   @Override
   public AgridataContext apply(final AgridataContext context) {
     var bur = context.getRequestParameters().get("bur");
-    context.setProducerBursInPayload(List.of(bur));
+    context.setProducerBurs(List.of(bur));
 
     log.debug("Resolved producer BUR from request: {}", bur);
     return context;

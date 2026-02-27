@@ -1,5 +1,6 @@
 package integration.datatransferv2;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import ch.agridata.datatransferv2.controller.DataTransferController;
@@ -77,7 +78,15 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_WITHOUT_UID,
             DataProduct.UUID_E08AF9D2.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789"))
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_6319423C.uuid().toString(),
+            Map.of("eartagNumber", "123456", "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_WITHOUT_UID,
+            DataProduct.UUID_6319423C.uuid().toString(),
+            Map.of("eartagNumber", "123456", "recipientUid", "CHE123456789"))
     );
   }
 
@@ -93,6 +102,6 @@ class ProductFetchingTest {
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(200)
         .header("AGRIDATA-REQUEST-ID", notNullValue())
-        .body(notNullValue());
+        .body("dataOfProduct", equalTo(requestedProductId));
   }
 }

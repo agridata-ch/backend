@@ -33,7 +33,7 @@ class UidBasedPreValidationFlowTest {
   void setUp() {
     // will make sure testdata prior to executing each test
     flyway.migrate();
-    wireMock.resetRequests();
+    wireMock.resetToDefaultMappings();
   }
 
   @Test
