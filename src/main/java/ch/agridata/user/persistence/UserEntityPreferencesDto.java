@@ -7,5 +7,10 @@ import java.util.List;
  *
  * @CommentLastReviewed 2025-11-19
  */
-public record UserEntityPreferencesDto(Boolean mainMenuOpened, String activeUid, List<String> dismissedMigratedIds) {
+public record UserEntityPreferencesDto(
+    Boolean mainMenuOpened,
+    String activeUid,
+    List<String> dismissedMigratedIds,
+    Boolean hasSeenConsentRequestTourIntro
+) {
 }

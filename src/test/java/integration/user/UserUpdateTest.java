@@ -122,7 +122,8 @@ class UserUpdateTest {
   void givenValidPreferences_whenUpdateUserPreferences_thenReturnCreated()
       throws com.fasterxml.jackson.core.JsonProcessingException {
     var preferences =
-        UserPreferencesDto.builder().activeUid("123").mainMenuOpened(true).dismissedMigratedIds(List.of("mig-1", "mig-2")).build();
+        UserPreferencesDto.builder().activeUid("123").mainMenuOpened(true)
+            .dismissedMigratedIds(List.of("mig-1", "mig-2")).hasSeenConsentRequestTourIntro(true).build();
 
 
     AuthTestUtils.requestAs(PRODUCER_B)
