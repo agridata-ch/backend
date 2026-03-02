@@ -1,3 +1,9 @@
+## [1.7.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.4...v1.7.0-rc.5) (2026-03-02)
+
+### Features
+
+* **agreement:** Invalidate consent-confirmations when farm changes ownership. ([0b64658](https://github.com/agridata-ch/backend/commit/0b646588121a02b02af17bef85f486f9d09b8ec4)), closes [DIGIB2-1205](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1205)
+
 ## [1.7.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.3...v1.7.0-rc.4) (2026-02-27)
 
 ### Features
