@@ -106,4 +106,13 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         )
     );
   }
+
+  public long archiveDraftByIdAndConsumerUid(UUID id, String consumerUid) {
+    return update("archived = true where id = ?1 and dataConsumerUid = ?2 and stateCode = ?3 and archived = false",
+        id, consumerUid, DataRequestEntity.DataRequestStateEnum.DRAFT);
+  }
+
+  public boolean existsByIdAndConsumerUid(UUID id, String consumerUid) {
+    return count("id = ?1 and dataConsumerUid = ?2", id, consumerUid) > 0;
+  }
 }

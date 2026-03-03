@@ -13,6 +13,7 @@ import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD461
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -99,6 +100,43 @@ class DataRequestTest {
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestAndConsumer_whenDeleteDataRequest_thenReturnValidResponse() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + id)
+        .then()
+        .statusCode(204);
+  }
+
+  @Test
+  void givenExistingActiveDataRequestAndConsumer_whenDeleteDataRequest_thenReturnBadRequest() {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestButDifferentConsumer_whenDeleteDataRequest_thenReturnNotFound() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    AuthTestUtils.requestAs(CONSUMER_IP_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + id)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenNonexistentDraftDataRequestAndConsumer_whenDeleteDataRequest_thenReturnNotFound() {
+    String nonexistentId = "00000000-0000-0000-0000-000000000001";
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + nonexistentId)
+        .then()
+        .statusCode(404);
   }
 
   @Test

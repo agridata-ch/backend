@@ -1,5 +1,6 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.service.ConsentRequestMutationServiceTest.UID1;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -201,5 +202,46 @@ class DataRequestMutationServiceTest {
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(dto))
         .isInstanceOf(ValidationException.class)
         .hasMessage("Cannot create new data request: maximum number of 10 draft requests reached");
+  }
+
+  @Test
+  void givenDraftDataRequestAndUid_whenDeleteDataRequest_thenReturnValidResponse() {
+    UUID dataRequestId = UUID.randomUUID();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(UID1);
+    when(dataRequestRepository.archiveDraftByIdAndConsumerUid(dataRequestId, UID1)).thenReturn(1L);
+
+    dataRequestMutationService.deleteDataRequest(dataRequestId);
+    verify(dataRequestRepository).archiveDraftByIdAndConsumerUid(dataRequestId, UID1);
+  }
+
+  @Test
+  void givenInexistentOrNotOwnedDataRequestAndUid_whenDeleteDataRequest_thenThrowNotFoundException() {
+    UUID dataRequestId = UUID.randomUUID();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(UID1);
+    when(dataRequestRepository.archiveDraftByIdAndConsumerUid(dataRequestId, UID1)).thenReturn(0L);
+    when(dataRequestRepository.existsByIdAndConsumerUid(dataRequestId, UID1)).thenReturn(false);
+
+    assertThatThrownBy(() -> dataRequestMutationService.deleteDataRequest(dataRequestId))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessageContaining(dataRequestId.toString());
+    verify(dataRequestRepository).archiveDraftByIdAndConsumerUid(dataRequestId, UID1);
+    verify(dataRequestRepository).existsByIdAndConsumerUid(dataRequestId, UID1);
+  }
+
+  @Test
+  void givenActiveDataRequestAndUid_whenDeleteDataRequest_thenThrowValidationException() {
+    UUID dataRequestId = UUID.randomUUID();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(UID1);
+    when(dataRequestRepository.archiveDraftByIdAndConsumerUid(dataRequestId, UID1)).thenReturn(0L);
+    when(dataRequestRepository.existsByIdAndConsumerUid(dataRequestId, UID1)).thenReturn(true);
+
+    assertThatThrownBy(() -> dataRequestMutationService.deleteDataRequest(dataRequestId))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("DRAFT");
+    verify(dataRequestRepository).archiveDraftByIdAndConsumerUid(dataRequestId, UID1);
+    verify(dataRequestRepository).existsByIdAndConsumerUid(dataRequestId, UID1);
   }
 }
