@@ -1,3 +1,9 @@
+## [1.7.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.5...v1.7.0-rc.6) (2026-03-03)
+
+### Features
+
+* **user:** add consent request tour intro flag to user preferences. ([d391b31](https://github.com/agridata-ch/backend/commit/d391b3135e490651fd1e9cbe3267036b71c73e2c)), closes [DIGIB2-524](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-524)
+
 ## [1.7.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.4...v1.7.0-rc.5) (2026-03-02)
 
 ### Features
