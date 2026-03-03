@@ -72,6 +72,24 @@ public class DataRequestMutationService {
     return updateEntityWithDto(dataRequestDto, entity);
   }
 
+  @Transactional
+  @RolesAllowed(CONSUMER_ROLE)
+  public void deleteDataRequest(UUID requestId) {
+    String uid = agridataSecurityIdentity.getUidOrElseThrow();
+
+    long deleted = dataRequestRepository.archiveDraftByIdAndConsumerUid(requestId, uid);
+    if (deleted == 1) {
+      return;
+    }
+
+    boolean exists = dataRequestRepository.existsByIdAndConsumerUid(requestId, uid);
+    if (!exists) {
+      throw new NotFoundException(requestId.toString());
+    }
+
+    throw new ValidationException("Data request is not in state DRAFT");
+  }
+
   private DataRequestDto updateEntityWithDto(DataRequestUpdateDto dataRequestDto,
                                              DataRequestEntity entity) {
     dataRequestMapper.updateEntity(dataRequestDto, entity);

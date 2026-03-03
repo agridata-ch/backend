@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -31,6 +32,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -200,6 +202,19 @@ public class DataRequestController {
       @Valid DataRequestUpdateDto dataRequestDto
   ) {
     return dataRequestMutationService.updateDataRequestDetails(requestId, dataRequestDto);
+  }
+
+  @DELETE
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}")
+  @Operation(
+      operationId = "deleteDataRequest",
+      description = "Deletes a data request"
+  )
+  @RolesAllowed(CONSUMER_ROLE)
+  public Response deleteDataRequest(@PathParam("id") UUID requestId) {
+    dataRequestMutationService.deleteDataRequest(requestId);
+    return Response.noContent().build();
   }
 
   @PUT
