@@ -2,9 +2,6 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
-import static ch.agridata.agreement.utils.DataRequestTestUtils.buildEntity;
-import static ch.agridata.agreement.utils.DataRequestTestUtils.dataProductDtoBuilder;
-import static ch.agridata.agreement.utils.DataRequestTestUtils.updateDtoBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -15,6 +12,7 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.uidregister.api.UidRegisterServiceApi;
@@ -40,7 +38,7 @@ class DataRequestMutationServiceTest {
   @Mock
   private DataRequestMapper mapper;
   @Mock
-  private DataRequestRepository repository;
+  private DataRequestRepository dataRequestRepository;
   @Mock
   private UidRegisterServiceApi uidRegisterServiceApi;
   @Mock
@@ -57,17 +55,18 @@ class DataRequestMutationServiceTest {
 
   @Test
   void givenValidInput_whenCreateDataRequestDraft_thenReturnMappedDto() {
-    DataRequestUpdateDto dto = updateDtoBuilder().build();
-    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
-        .uid("CHE101708094")
-        .legalName("Test Organisation")
-        .build();
+    DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder().build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getProductById(PRODUCT_ID))
-        .thenReturn(dataProductDtoBuilder(PRODUCT_ID).build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).build());
 
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
@@ -79,17 +78,17 @@ class DataRequestMutationServiceTest {
   @Test
   void givenValidDraft_whenUpdateDataRequestDetails_thenReturnUpdatedDto() {
     var id = UUID.randomUUID();
-    var entity = buildEntity();
+    var entity = DataRequestTestUtils.buildEntity();
 
     var updateProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
-    var updateDto = updateDtoBuilder()
+    var updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(updateProductId))
         .build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(dataProductApi.getProductById(updateProductId))
-        .thenReturn(dataProductDtoBuilder(updateProductId).build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(updateProductId).build());
 
     var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
 
@@ -102,22 +101,23 @@ class DataRequestMutationServiceTest {
   void givenDataProductsFromDifferentSystems_whenCreateDataRequestDraft_thenThrowValidationException() {
     var agisProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
     var tvdProductId = UUID.fromString("00000000-0000-0000-0000-000000000003");
-    DataRequestUpdateDto updateDto = updateDtoBuilder()
+    DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(agisProductId, tvdProductId))
         .build();
-    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
-        .uid("CHE101708094")
-        .legalName("Test Organisation")
-        .build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getProductById(agisProductId))
-        .thenReturn(dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("AGIS").build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("AGIS").build());
     when(dataProductApi.getProductById(tvdProductId))
-        .thenReturn(dataProductDtoBuilder(agisProductId).dataSourceSystemCode("TVD").build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(agisProductId).dataSourceSystemCode("TVD").build());
 
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
         .isInstanceOf(ValidationException.class)
@@ -127,16 +127,17 @@ class DataRequestMutationServiceTest {
   @Test
   void givenInexistentDataProduct_whenCreateDataRequestDraft_thenThrowValidationException() {
     var inexistentProductId = UUID.randomUUID();
-    DataRequestUpdateDto dataRequestUpdateDto = updateDtoBuilder()
+    DataRequestUpdateDto dataRequestUpdateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(inexistentProductId))
         .build();
 
-    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
-        .uid("CHE101708094")
-        .legalName("Test Organisation")
-        .build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getProductById(inexistentProductId))
@@ -150,14 +151,14 @@ class DataRequestMutationServiceTest {
   @Test
   void givenInexistentDataProduct_whenUpdateDataRequestDetails_thenThrowValidationException() {
     var id = UUID.randomUUID();
-    var entity = buildEntity();
+    var entity = DataRequestTestUtils.buildEntity();
     var inexistentProductId = UUID.randomUUID();
-    DataRequestUpdateDto dataRequestUpdateDto = updateDtoBuilder()
+    DataRequestUpdateDto dataRequestUpdateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(inexistentProductId))
         .build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(dataProductApi.getProductById(inexistentProductId))
         .thenThrow(new NotFoundException(inexistentProductId.toString()));
 
@@ -168,15 +169,16 @@ class DataRequestMutationServiceTest {
 
   @Test
   void givenNoDataProduct_whenCreateDataRequestDraft_thenReturnMappedDto() {
-    DataRequestUpdateDto dto = updateDtoBuilder()
+    DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of())
         .build();
-    UidRegisterOrganisationDto uidSearchResult = UidRegisterOrganisationDto.builder()
-        .uid("CHE101708094")
-        .legalName("Test Organisation")
-        .build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
 
@@ -187,4 +189,17 @@ class DataRequestMutationServiceTest {
     assertThat(result).isEqualTo(expectedDto);
   }
 
+  @Test
+  void given10DraftsExist_whenCreateDataRequestDraft_thenThrowValidationException() {
+    DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder().build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT)).thenReturn(10L);
+
+    assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(dto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("Cannot create new data request: maximum number of 10 draft requests reached");
+  }
 }

@@ -3,7 +3,6 @@ package ch.agridata.agreement.persistence;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -35,20 +34,27 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
-                + "WHERE cr.dataProducerUid IN :uids", ConsentRequestEntity.class)
+                + "WHERE cr.dataProducerUid IN :uids", ConsentRequestEntity.class
+        )
         .setParameter("uids", dataProducerUids)
         .getResultList();
   }
 
   public Optional<ConsentRequestEntity> findByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
-    return find("id = :id and dataProducerUid IN :dataProducerUids",
-        Parameters.with("id", id).and("dataProducerUids", dataProducerUids))
-        .firstResultOptional();
+    return find(
+        "id = :id and dataProducerUid IN :dataProducerUids",
+        Map.of(
+            "id", id,
+            "dataProducerUids", dataProducerUids
+        )
+    ).firstResultOptional();
   }
 
-  public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(String dataConsumerUid,
-                                                                               String dataProducerUid,
-                                                                               UUID dataProductId) {
+  public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(
+      String dataConsumerUid,
+      String dataProducerUid,
+      UUID dataProductId
+  ) {
     return entityManager.createQuery(
             "SELECT cr.id "
                 + "FROM ConsentRequestEntity cr "
@@ -57,7 +63,8 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
                 + "WHERE cr.dataProducerUid = :dataProducerUid "
                 + "AND cr.stateCode = 'GRANTED' "
                 + "AND dr.dataConsumerUid = :dataConsumerUid "
-                + "AND dp.dataProductId = :dataProductId", UUID.class)
+                + "AND dp.dataProductId = :dataProductId", UUID.class
+        )
         .setParameter("dataConsumerUid", dataConsumerUid)
         .setParameter("dataProducerUid", dataProducerUid)
         .setParameter("dataProductId", dataProductId)
@@ -66,26 +73,41 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
   }
 
   public Optional<ConsentRequestEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
-    return find("dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid",
-        Parameters.with("dataRequestId", dataRequestId).and("dataProducerUid", dataProducerUid)).firstResultOptional();
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerUid", dataProducerUid
+        )
+    ).firstResultOptional();
 
   }
 
   public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerUids(UUID dataRequestId, List<String> dataProducerUids) {
-    return find("dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids",
-        Parameters.with("dataRequestId", dataRequestId).and("dataProducerUids", dataProducerUids))
-        .list();
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerUids", dataProducerUids
+        )
+    ).list();
   }
 
   public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
-    return find("dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs",
-        Parameters.with("dataRequestId", dataRequestId).and("dataProducerBurs", dataProducerBurs))
-        .list();
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerBurs", dataProducerBurs
+        )
+    ).list();
   }
 
-  public List<String> findGrantedConsentRequestUidsForProductOfConsumerSince(UUID productId,
-                                                                             String dataConsumerUid,
-                                                                             LocalDateTime since) {
+  public List<String> findGrantedConsentRequestUidsForProductOfConsumerSince(
+      UUID productId,
+      String dataConsumerUid,
+      LocalDateTime since
+  ) {
     return entityManager.createQuery(
             "SELECT DISTINCT cr.dataProducerUid "
                 + "FROM ConsentRequestEntity cr "
@@ -94,7 +116,8 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
                 + "WHERE dr.dataConsumerUid = :dataConsumerUid "
                 + "AND dp.dataProductId = :productId "
                 + "AND cr.stateCode = :stateCode "
-                + "AND cr.lastStateChangeDate > :since", String.class)
+                + "AND cr.lastStateChangeDate > :since", String.class
+        )
         .setParameter("dataConsumerUid", dataConsumerUid)
         .setParameter("productId", productId)
         .setParameter("stateCode", GRANTED)
@@ -118,9 +141,10 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
       ids.addAll(entityManager.createQuery(
               "select cr.id from ConsentRequestEntity cr "
                   + "where cr.archived = false and cr.uidBurRelationUntil is null and cr.dataProducerBur in :burs",
-              UUID.class)
-          .setParameter("burs", batch)
-          .getResultList());
+              UUID.class
+          )
+                     .setParameter("burs", batch)
+                     .getResultList());
     }
 
     return ids;
@@ -153,19 +177,21 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
         ids.addAll(entityManager.createQuery(
                 "select cr.id from ConsentRequestEntity cr "
                     + "where cr.archived = false and cr.uidBurRelationUntil is null and cr.dataProducerBur = :bur",
-                UUID.class)
-            .setParameter("bur", bur)
-            .getResultList());
+                UUID.class
+            )
+                       .setParameter("bur", bur)
+                       .getResultList());
       } else {
         String uid = uids.iterator().next();
         ids.addAll(entityManager.createQuery(
                 "select cr.id from ConsentRequestEntity cr "
                     + "where cr.archived = false and cr.uidBurRelationUntil is null "
                     + "and cr.dataProducerBur = :bur and cr.dataProducerUid <> :uid",
-                UUID.class)
-            .setParameter("bur", bur)
-            .setParameter("uid", uid)
-            .getResultList());
+                UUID.class
+            )
+                       .setParameter("bur", bur)
+                       .setParameter("uid", uid)
+                       .getResultList());
       }
     }
 
