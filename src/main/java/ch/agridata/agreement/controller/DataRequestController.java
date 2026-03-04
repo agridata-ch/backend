@@ -136,7 +136,8 @@ public class DataRequestController {
           description = "The kt-id-p identifier of the producer",
           example = "FLXXA0001"
       )
-      @PathParam("kt-id-p") String ktIdP) {
+      @PathParam("kt-id-p") String ktIdP
+  ) {
     return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(dataRequestId, ktIdP);
   }
 
@@ -160,7 +161,8 @@ public class DataRequestController {
           description = "The kt-id-p identifier of the producer",
           example = "FLXXA0001"
       )
-      @PathParam("kt-id-p") String ktIdP) {
+      @PathParam("kt-id-p") String ktIdP
+  ) {
     if (identity.isAdmin()) {
       return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
     }
@@ -172,7 +174,8 @@ public class DataRequestController {
   @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
-      description = "Creates a new data request in draft status. Only accessible to users with the consumer role."
+      description = "Creates a new data request in draft status. Only accessible to users with the consumer role. "
+          + "Disallows creating more than 10 draft requests per consumer."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -192,8 +195,10 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed(CONSUMER_ROLE)
-  public DataRequestDto updateDataRequestDetails(@PathParam("id") UUID requestId,
-                                                 @Valid DataRequestUpdateDto dataRequestDto) {
+  public DataRequestDto updateDataRequestDetails(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestUpdateDto dataRequestDto
+  ) {
     return dataRequestMutationService.updateDataRequestDetails(requestId, dataRequestDto);
   }
 
@@ -208,8 +213,10 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
-  public DataRequestDto setDataRequestStatus(@PathParam("id") UUID requestId,
-                                             @Valid DataRequestStateEnum stateCode) {
+  public DataRequestDto setDataRequestStatus(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestStateEnum stateCode
+  ) {
     if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
     }
@@ -227,8 +234,10 @@ public class DataRequestController {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed(CONSUMER_ROLE)
-  public void updateDataRequestLogo(@PathParam("id") UUID requestId,
-                                    @RestForm("logo") FileUpload logo) {
+  public void updateDataRequestLogo(
+      @PathParam("id") UUID requestId,
+      @RestForm("logo") FileUpload logo
+  ) {
     dataRequestLogoService.updateDataRequestLogo(requestId, logo);
   }
 

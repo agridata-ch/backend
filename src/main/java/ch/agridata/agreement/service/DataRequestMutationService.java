@@ -42,14 +42,21 @@ public class DataRequestMutationService {
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto createDataRequestDraft(DataRequestUpdateDto dataRequestDto) {
+    var countDrafts = dataRequestRepository.countByDataConsumerUidAndState(
+        agridataSecurityIdentity.getUidOrElseThrow(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
+    if (countDrafts >= 10) {
+      throw new ValidationException("Cannot create new data request: maximum number of 10 draft requests reached");
+    }
+
     var uidRegisterCompany = uidRegisterServiceApi.getByUidOfCurrentUser();
-    var dataRequestEntity =
-        DataRequestEntity.builder()
-            .humanFriendlyId(humanFriendlyIdService.getHumanFriendlyIdForDataRequest())
-            .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
-            .dataConsumerLegalName(uidRegisterCompany.legalName())
-            .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
-            .build();
+    var dataRequestEntity = DataRequestEntity.builder()
+        .humanFriendlyId(humanFriendlyIdService.getHumanFriendlyIdForDataRequest())
+        .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
+        .dataConsumerLegalName(uidRegisterCompany.legalName())
+        .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
+        .build();
     return updateEntityWithDto(dataRequestDto, dataRequestEntity);
   }
 
@@ -95,7 +102,6 @@ public class DataRequestMutationService {
     }
 
     var dataSourceSystemId = dataProductApi.getDataSourceSystemId(getProductOrThrowValidation(products.getFirst()).id());
-
 
     entity.setDataSourceSystemId(dataSourceSystemId);
   }
