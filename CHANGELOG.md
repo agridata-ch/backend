@@ -1,3 +1,9 @@
+## [1.7.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.7...v1.7.0-rc.8) (2026-03-05)
+
+### Features
+
+* **agreement:** Allow the deletion of data requests. ([c9a2a7e](https://github.com/agridata-ch/backend/commit/c9a2a7e07e79c3bb5a1b7bb406f7a2707597c430)), closes [DIGIB2-1188](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1188)
+
 ## [1.7.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.6...v1.7.0-rc.7) (2026-03-05)
 
 ### Features
