@@ -1,3 +1,9 @@
+## [1.7.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.6...v1.7.0-rc.7) (2026-03-05)
+
+### Features
+
+* **agreement:** restrict data request creation based on requests in draft status ([371fc59](https://github.com/agridata-ch/backend/commit/371fc597d2483b2e67de2fba36d044aa436c7291)), closes [DIGIB2-1187](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1187)
+
 ## [1.7.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.5...v1.7.0-rc.6) (2026-03-03)
 
 ### Features
