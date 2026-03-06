@@ -3,6 +3,7 @@ package ch.agridata.product.dto;
 import ch.agridata.common.dto.TranslationDto;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -42,7 +43,13 @@ public record DataProductDto(
     @Schema(
         description = "Description of the product"
     )
-    TranslationDto description
+    TranslationDto description,
+
+    @Schema(
+        description = "Timestamp indicating when the product was marked as deprecated.",
+        examples = {"2026-03-06T00:00:00"}
+    )
+    LocalDateTime deprecatedSince
 )
 
     implements Serializable {

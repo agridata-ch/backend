@@ -9,6 +9,7 @@ import static integration.agreement.DataRequestTestFactory.getPartialDataRequest
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_147E8C40;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
 import static integration.testutils.TestUserEnum.ADMIN;
@@ -66,6 +67,8 @@ class DataRequestTest {
 
   @Test
   void givenAdmin_whenGetDataRequests_thenOnlyNonDraftDataRequestsReturned() {
+    createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(6));
@@ -73,6 +76,8 @@ class DataRequestTest {
 
   @Test
   void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
+    createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(4));
@@ -149,8 +154,10 @@ class DataRequestTest {
 
   @Test
   void givenExistingDraftDataRequestAndProvider_whenGetDataRequest_thenReturnNotFound() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER).when()
-        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .get(DataRequestController.PATH_V1 + "/" + id)
         .then()
         .statusCode(404);
   }
@@ -210,6 +217,14 @@ class DataRequestTest {
   }
 
   @Test
+  void givenDraftWithDeprecatedProduct_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(UUID_147E8C40.uuid()))
+        .build();
+    createDataRequest(dto).then().statusCode(400);
+  }
+
+  @Test
   void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
@@ -222,14 +237,27 @@ class DataRequestTest {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
 
-    DataRequestUpdateDto firstUpdate = getPartialDataRequestUpdateDtoBuilder()
+    DataRequestUpdateDto update = getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
         .build();
 
-    updateDataRequest(id, firstUpdate)
+    updateDataRequest(id, update)
         .then()
         .statusCode(400);
+  }
 
+  @Test
+  void givenDeprecatedProducts_whenUpdateDraft_thenReturnInvalidRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto update = getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(TestDataIdentifiers.DataProduct.UUID_147E8C40.uuid()))
+        .build();
+
+    updateDataRequest(id, update)
+        .then()
+        .statusCode(400);
   }
 
   @Test
