@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,6 +73,9 @@ public class DataProductEntity extends AuditableEntity {
 
   @Column(name = "flow_code", length = 100)
   private String flowCode;
+
+  @Column(name = "deprecated_since")
+  private LocalDateTime deprecatedSince;
 }
 
 

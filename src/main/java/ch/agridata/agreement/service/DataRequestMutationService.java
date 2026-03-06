@@ -16,7 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
-import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -104,24 +104,35 @@ public class DataRequestMutationService {
    * @throws ValidationException if any product is not found
    */
   private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity) {
-    var products = dto.products();
-    if (products == null || products.isEmpty()) {
+    var productIds = dto.products();
+    if (productIds == null || productIds.isEmpty()) {
       entity.setDataSourceSystemId(null);
       return;
     }
 
-    var codes = new HashSet<String>();
+    List<DataProductDto> products = productIds.stream()
+        .map(this::getProductOrThrowValidation)
+        .toList();
 
-    for (UUID id : products) {
-      codes.add(getProductOrThrowValidation(id).dataSourceSystemCode());
-      if (codes.size() > 1) {
-        throw new ValidationException("Cannot process request: all products must share the same data source system");
-      }
+    products.forEach(this::validateNotDeprecated);
+
+    long uniqueDataSourceSystemCodeCount = products.stream()
+        .map(DataProductDto::dataSourceSystemCode)
+        .distinct()
+        .count();
+
+    if (uniqueDataSourceSystemCodeCount > 1) {
+      throw new ValidationException("Cannot process request: all products must share the same data source system");
     }
 
-    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(getProductOrThrowValidation(products.getFirst()).id());
-
+    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(products.getFirst().id());
     entity.setDataSourceSystemId(dataSourceSystemId);
+  }
+
+  private void validateNotDeprecated(DataProductDto product) {
+    if (product.deprecatedSince() != null) {
+      throw new ValidationException("Cannot process request: data product " + product.id() + " is deprecated");
+    }
   }
 
   private DataProductDto getProductOrThrowValidation(UUID id) {

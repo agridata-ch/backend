@@ -33,6 +33,11 @@ class ProductFetchingTest {
             Map.of("uid", Uid.CHE102000002.name())),
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
+            DataProduct.UUID_7911D98D.uuid().toString(),
+            Map.of("uid", Uid.CHE102000002.name())
+        ),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_46F8A883.uuid().toString(),
             Map.of("uid", Uid.CHE102000002.name(), "year", "2024")),
         Arguments.of(

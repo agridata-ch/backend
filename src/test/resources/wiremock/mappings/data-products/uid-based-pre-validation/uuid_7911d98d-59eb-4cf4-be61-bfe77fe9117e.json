@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"farmSearchParameters\":\\{\"uid\":\"[^\"]+\"}}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "7911d98d-59eb-4cf4-be61-bfe77fe9117e"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

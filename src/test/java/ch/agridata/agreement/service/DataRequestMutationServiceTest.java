@@ -20,6 +20,7 @@ import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -99,6 +100,51 @@ class DataRequestMutationServiceTest {
   }
 
   @Test
+  void givenDeprecatedDataProduct_whenUpdateDataRequestDetails_thenThrowValidationException() {
+    var id = UUID.randomUUID();
+    var entity = DataRequestTestUtils.buildEntity();
+
+    var updateProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+    var updateDto = DataRequestTestUtils.updateDtoBuilder()
+        .products(List.of(updateProductId))
+        .build();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataProductApi.getProductById(updateProductId))
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(updateProductId).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
+            .dataSourceSystemCode("AGIS").build());
+
+    assertThatThrownBy(() -> dataRequestMutationService.updateDataRequestDetails(id, updateDto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("deprecated");
+  }
+
+  @Test
+  void givenDeprecatedDataProduct_whenCreateDataRequestDraft_thenThrowValidationException() {
+    var deprecatedProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+    DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
+        .products(List.of(deprecatedProductId))
+        .build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
+    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+    when(dataProductApi.getProductById(deprecatedProductId))
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(deprecatedProductId).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
+            .dataSourceSystemCode("AGIS").build());
+
+    assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("deprecated");
+  }
+
+  @Test
   void givenDataProductsFromDifferentSystems_whenCreateDataRequestDraft_thenThrowValidationException() {
     var agisProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
     var tvdProductId = UUID.fromString("00000000-0000-0000-0000-000000000003");
@@ -116,9 +162,9 @@ class DataRequestMutationServiceTest {
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getProductById(agisProductId))
-        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("AGIS").build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(agisProductId).dataSourceSystemCode("AGIS").build());
     when(dataProductApi.getProductById(tvdProductId))
-        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(agisProductId).dataSourceSystemCode("TVD").build());
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("TVD").build());
 
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
         .isInstanceOf(ValidationException.class)
