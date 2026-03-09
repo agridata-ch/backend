@@ -17,8 +17,6 @@ quarkus:
       - classpath:db/testdata
   keycloak:
     devservices:
-      # TODO: Remove when Quarkus defaults to Keycloak >= 26.5.3 (Quarkus 3.31.2 defaults to 26.5.0 which has auth issues)
-      image-name: quay.io/keycloak/keycloak:26.5.3
       realm-path: agate_realm.json
   log:
     level: WARN

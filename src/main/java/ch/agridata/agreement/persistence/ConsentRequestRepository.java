@@ -2,7 +2,9 @@ package ch.agridata.agreement.persistence;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.persistence.BaseSearchRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRequestEntity, UUID> {
+public class ConsentRequestRepository extends BaseSearchRepository<ConsentRequestEntity, UUID> {
   private final EntityManager entityManager;
 
   public List<ConsentRequestEntity> findByDataProducerUids(List<String> dataProducerUids) {
@@ -125,6 +127,18 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
         .getResultList();
   }
 
+  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(ResourceQueryDto resourceQueryDto,
+                                                                                      UUID dataRequestId,
+                                                                                      LocalDateTime lastModifiedFrom) {
+    return findPage(
+        resourceQueryDto,
+        "dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom",
+        Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom),
+        List.of(),
+        List.of()
+    );
+  }
+
   public List<UUID> findIdsToTerminateByDataProducerBurs(List<String> burs, int batchSize) {
     if (burs == null || burs.isEmpty()) {
       return List.of();
@@ -143,8 +157,8 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
                   + "where cr.archived = false and cr.uidBurRelationUntil is null and cr.dataProducerBur in :burs",
               UUID.class
           )
-                     .setParameter("burs", batch)
-                     .getResultList());
+          .setParameter("burs", batch)
+          .getResultList());
     }
 
     return ids;
@@ -179,8 +193,8 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
                     + "where cr.archived = false and cr.uidBurRelationUntil is null and cr.dataProducerBur = :bur",
                 UUID.class
             )
-                       .setParameter("bur", bur)
-                       .getResultList());
+            .setParameter("bur", bur)
+            .getResultList());
       } else {
         String uid = uids.iterator().next();
         ids.addAll(entityManager.createQuery(
@@ -189,9 +203,9 @@ public class ConsentRequestRepository implements PanacheRepositoryBase<ConsentRe
                     + "and cr.dataProducerBur = :bur and cr.dataProducerUid <> :uid",
                 UUID.class
             )
-                       .setParameter("bur", bur)
-                       .setParameter("uid", uid)
-                       .getResultList());
+            .setParameter("bur", bur)
+            .setParameter("uid", uid)
+            .getResultList());
       }
     }
 

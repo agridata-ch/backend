@@ -1,7 +1,7 @@
 package ch.agridata.agreement.dto;
 
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -44,20 +44,20 @@ public record ConsentRequestFundamentalViewDto(
     String dataProducerBur,
 
     @Schema(
-        description = "Date and time when the relation of bur and uid started",
-        examples = {"2024-06-16T11:04:51.823889"},
+        description = "Start of the data period that is granted by this consent",
+        examples = {"2024-06-16"},
         type = SchemaType.STRING,
-        format = "date-time"
+        format = "date"
     )
-    LocalDateTime uidBurRelationSince,
+    LocalDate grantedDataPeriodFrom,
 
     @Schema(
-        description = "Date and time when the relation of bur and uid ended",
-        examples = {"2025-06-16T11:04:51.823889"},
+        description = "End of the data period that is granted by this consent",
+        examples = {"2025-06-16"},
         type = SchemaType.STRING,
-        format = "date-time"
+        format = "date"
     )
-    LocalDateTime uidBurRelationUntil,
+    LocalDate grantedDataPeriodTo,
 
     @Schema(
         description = "State of the consent request",

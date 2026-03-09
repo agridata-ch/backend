@@ -8,6 +8,7 @@ import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
+import ch.agridata.common.dto.PageResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.mapstruct.Mapper;
@@ -48,4 +49,7 @@ public interface ConsentRequestMapper {
 
   @Mapping(target = "dataRequestId", source = "entity.dataRequest.id")
   ConsentRequestFundamentalViewDto toConsentRequestFundamentalViewDto(ConsentRequestEntity entity);
+
+  PageResponseDto<ConsentRequestFundamentalViewDto> toPagedConsentRequestFundamentalViewDto(
+      PageResponseDto<ConsentRequestEntity> pagedEntities);
 }

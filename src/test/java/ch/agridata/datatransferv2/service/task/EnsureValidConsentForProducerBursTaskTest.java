@@ -12,10 +12,13 @@ import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
+import com.google.common.collect.Range;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +36,10 @@ class EnsureValidConsentForProducerBursTaskTest {
   private static final UUID CONSENT_REQUEST_ID = UUID.randomUUID();
   private static final String PRODUCER_BUR_1 = "A123456";
   private static final String PRODUCER_BUR_2 = "B789012";
-  private static final LocalDate REQUESTED_DATE = LocalDate.of(2026, 1, 15);
+  private static final LocalDate REQUESTED_RANGE_FROM = LocalDate.of(2025, 12, 1);
+  private static final LocalDate REQUESTED_RANGE_UNTIL = LocalDate.of(2026, 1, 15);
+  private static final LocalDate RANGE_UNTIL_MAX = LocalDate.of(9999, 12, 31);
+  private static final Range<@NotNull LocalDate> REQUESTED_DATE_RANGE = Range.closed(REQUESTED_RANGE_FROM, REQUESTED_RANGE_UNTIL);
 
   @Mock
   ConsentRequestApi consentRequestApi;
@@ -42,24 +48,10 @@ class EnsureValidConsentForProducerBursTaskTest {
   EnsureValidConsentForProducerBursTask task;
 
   @Test
-  void givenConsentGrantedForProducer_whenApply_thenContextIsReturned() {
-    var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1));
-    var consent = createConsent(PRODUCER_BUR_1, REQUESTED_DATE.minusDays(30), null);
-
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
-        eq(DATA_REQUEST_ID), any()))
-        .thenReturn(List.of(consent));
-
-    var result = task.apply(context);
-
-    assertThat(result).isSameAs(context);
-  }
-
-  @Test
   void givenNoConsentGranted_whenApply_thenConsentNotGrantedExceptionIsThrown() {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1));
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of());
 
@@ -75,9 +67,9 @@ class EnsureValidConsentForProducerBursTaskTest {
   @Test
   void givenPartialConsent_whenApply_thenExceptionContainsMissingBurs() {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1, PRODUCER_BUR_2));
-    var consent = createConsent(PRODUCER_BUR_1, REQUESTED_DATE.minusDays(30), null);
+    var consent = createConsent(PRODUCER_BUR_1, REQUESTED_RANGE_FROM.minusDays(30), RANGE_UNTIL_MAX);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent));
 
@@ -92,48 +84,81 @@ class EnsureValidConsentForProducerBursTaskTest {
   @Test
   void givenMultipleProducersWithConsent_whenApply_thenSuccess() {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1, PRODUCER_BUR_2));
-    var consent1 = createConsent(PRODUCER_BUR_1, REQUESTED_DATE.minusDays(30), null);
-    var consent2 = createConsent(PRODUCER_BUR_2, REQUESTED_DATE.minusDays(60), null);
+    var consent1 = createConsent(PRODUCER_BUR_1, REQUESTED_RANGE_FROM.minusDays(30), RANGE_UNTIL_MAX);
+    var consent2 = createConsent(PRODUCER_BUR_2, REQUESTED_RANGE_FROM.minusDays(60), RANGE_UNTIL_MAX);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent1, consent2));
 
-    var result = task.apply(context);
-
-    assertThat(result).isSameAs(context);
+    assertThat(task.apply(context)).isSameAs(context);
   }
 
-  @ParameterizedTest(name = "relation [{0}] should be valid={1}")
-  @MethodSource("consentDateValidityCases")
-  void givenConsentWithUidBurRelationDateRange_whenApply_thenValidityIsChecked(String description,
-                                                                               boolean expectValid,
-                                                                               LocalDate relationSince,
-                                                                               LocalDate relationUntil) {
+  @ParameterizedTest(name = "[{0}] should be valid={1}")
+  @MethodSource("consentRangeCoverageCases")
+  void givenConsentRanges_whenApply_thenCoverageIsChecked(@SuppressWarnings("unused") String description,
+                                                          boolean expectValid,
+                                                          List<LocalDate[]> consentRanges) {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1));
-    var consent = createConsent(PRODUCER_BUR_1, relationSince, relationUntil);
+    var consents = consentRanges.stream()
+        .map(range -> createConsent(PRODUCER_BUR_1, range[0], range[1]))
+        .toList();
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducersBurs(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
         eq(DATA_REQUEST_ID), any()))
-        .thenReturn(List.of(consent));
+        .thenReturn(consents);
 
     if (expectValid) {
-      var result = task.apply(context);
-      assertThat(result).isSameAs(context);
+      assertThat(task.apply(context)).isSameAs(context);
     } else {
       assertThatThrownBy(() -> task.apply(context))
           .isInstanceOf(ConsentNotGrantedException.class);
     }
   }
 
-  static Stream<Arguments> consentDateValidityCases() {
+  static Stream<Arguments> consentRangeCoverageCases() {
     return Stream.of(
-        Arguments.of("since before, no until", true, REQUESTED_DATE.minusDays(30), null),
-        Arguments.of("since on requested date", true, REQUESTED_DATE, REQUESTED_DATE.plusDays(30)),
-        Arguments.of("until on requested date", true, REQUESTED_DATE.minusDays(30), REQUESTED_DATE),
-        Arguments.of("since after requested date", false, REQUESTED_DATE.plusDays(1), null),
-        Arguments.of("until before requested date", false, REQUESTED_DATE.minusDays(60), REQUESTED_DATE.minusDays(1)),
-        Arguments.of("no since, no until", false, null, null));
+        Arguments.of("single: from before range, max until", true,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(1), RANGE_UNTIL_MAX))),
+        Arguments.of("single: from on range start, until after range end", true,
+            ranges(r(REQUESTED_RANGE_FROM, REQUESTED_RANGE_UNTIL.plusDays(1)))),
+        Arguments.of("single: from before range, until on range end", true,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(1), REQUESTED_RANGE_UNTIL))),
+        Arguments.of("single: from after range start", false,
+            ranges(r(REQUESTED_RANGE_FROM.plusDays(1), RANGE_UNTIL_MAX))),
+        Arguments.of("single: until before range end", false,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(1), REQUESTED_RANGE_UNTIL.minusDays(1)))),
+        Arguments.of("single: no from (null)", false,
+            ranges(r(null, null))),
+        Arguments.of("two consents: adjacent, no gap", true,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(10), REQUESTED_RANGE_FROM.plusDays(20)),
+                r(REQUESTED_RANGE_FROM.plusDays(21), RANGE_UNTIL_MAX))),
+        Arguments.of("two consents: one-day gap in middle", false,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(10), REQUESTED_RANGE_FROM.plusDays(20)),
+                r(REQUESTED_RANGE_FROM.plusDays(22), RANGE_UNTIL_MAX))),
+        Arguments.of("two consents: overlapping, together cover range", true,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(5), REQUESTED_RANGE_FROM.plusDays(25)),
+                r(REQUESTED_RANGE_FROM.plusDays(20), RANGE_UNTIL_MAX))),
+        Arguments.of("single: gap at start (from one day too late)", false,
+            ranges(r(REQUESTED_RANGE_FROM.plusDays(1), RANGE_UNTIL_MAX))),
+        Arguments.of("single: gap at end (until one day too early)", false,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(1), REQUESTED_RANGE_UNTIL.minusDays(1)))),
+        Arguments.of("single: exact match of requested range", true,
+            ranges(r(REQUESTED_RANGE_FROM, REQUESTED_RANGE_UNTIL))),
+        Arguments.of("three consents: chained, no gap, partially overlapping", true,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(5), REQUESTED_RANGE_FROM.plusDays(10)),
+                r(REQUESTED_RANGE_FROM.plusDays(9), REQUESTED_RANGE_FROM.plusDays(25)),
+                r(REQUESTED_RANGE_FROM.plusDays(26), RANGE_UNTIL_MAX))),
+        Arguments.of("consent ends before range starts", false,
+            ranges(r(REQUESTED_RANGE_FROM.minusDays(30), REQUESTED_RANGE_FROM.minusDays(1)))));
+  }
+
+  private static LocalDate[] r(LocalDate from, LocalDate until) {
+    return new LocalDate[] {from, until};
+  }
+
+  private static List<LocalDate[]> ranges(LocalDate[]... ranges) {
+    return Arrays.asList(ranges);
   }
 
   private AgridataContext createContextWithProducerBurs(List<String> producerBurs) {
@@ -142,18 +167,17 @@ class EnsureValidConsentForProducerBursTaskTest {
         .flowEnum(FlowEnum.BUR_BASED_POST_VALIDATION)
         .producerBurs(producerBurs)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
-        .requestedDate(REQUESTED_DATE)
+        .requestedDateRange(REQUESTED_DATE_RANGE)
         .build();
   }
 
-  private ConsentRequestFundamentalViewDto createConsent(String producerBur, LocalDate relationSince,
-                                                         LocalDate relationUntil) {
+  private ConsentRequestFundamentalViewDto createConsent(String producerBur, LocalDate from, LocalDate until) {
     return ConsentRequestFundamentalViewDto.builder()
         .id(CONSENT_REQUEST_ID)
         .dataRequestId(DATA_REQUEST_ID)
         .dataProducerBur(producerBur)
-        .uidBurRelationSince(relationSince != null ? relationSince.atStartOfDay() : null)
-        .uidBurRelationUntil(relationUntil != null ? relationUntil.atStartOfDay() : null)
+        .grantedDataPeriodFrom(from)
+        .grantedDataPeriodTo(until)
         .stateCode(ConsentRequestStateEnum.GRANTED)
         .build();
   }
