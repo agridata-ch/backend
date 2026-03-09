@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -68,6 +70,23 @@ public class ConsentRequestEntity extends AuditableEntity {
 
   @Column(name = "uid_bur_relation_until")
   private LocalDateTime uidBurRelationUntil;
+
+  @Formula("""
+      CASE
+        WHEN state_code = 'GRANTED' AND data_producer_bur IS NULL THEN DATE '1970-01-01'
+        WHEN state_code = 'GRANTED' AND data_producer_bur IS NOT NULL THEN uid_bur_relation_since::date
+      END
+      """)
+  private LocalDate grantedDataPeriodFrom;
+
+  @Formula("""
+      CASE
+        WHEN state_code = 'GRANTED' AND data_producer_bur IS NULL THEN DATE '9999-12-31'
+        WHEN state_code = 'GRANTED' AND data_producer_bur IS NOT NULL
+          THEN COALESCE(uid_bur_relation_until::date, DATE '9999-12-31')
+      END
+      """)
+  private LocalDate grantedDataPeriodTo;
 
   @ManyToOne
   @JoinColumn(name = "data_request_id", nullable = false)

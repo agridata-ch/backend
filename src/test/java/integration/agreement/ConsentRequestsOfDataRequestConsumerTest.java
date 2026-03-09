@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
-class ConsentRequestsOfDataRequestTest {
+class ConsentRequestsOfDataRequestConsumerTest {
 
   private final Flyway flyway;
   private final ConsentRequestRepository consentRequestRepository;
@@ -36,7 +36,6 @@ class ConsentRequestsOfDataRequestTest {
 
   @BeforeEach
   void setUp() {
-    // will make sure testdata prior to executing each test
     flyway.migrate();
   }
 

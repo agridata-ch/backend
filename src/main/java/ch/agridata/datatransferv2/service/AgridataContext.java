@@ -1,6 +1,7 @@
 package ch.agridata.datatransferv2.service;
 
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
+import com.google.common.collect.Range;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Context object that holds the state passed through all tasks in a data transfer flow.
@@ -29,7 +31,7 @@ public final class AgridataContext {
   private String consumerAgateLoginId;
   private List<String> producerUids;
   private List<String> producerBurs;
-  private LocalDate requestedDate;
+  private Range<@NotNull LocalDate> requestedDateRange;
   private List<UUID> validDataRequestIds;
   private Map<String, String> responseHeaders;
   private Supplier<Response> providerRequest;
@@ -46,7 +48,7 @@ public final class AgridataContext {
         + ", consumerAgateLoginId='" + consumerAgateLoginId + '\''
         + ", producerUids=" + producerUids
         + ", producerBurs=" + producerBurs
-        + ", requestedDate=" + requestedDate
+        + ", requestedDateRange=" + requestedDateRange
         + ", validDataRequestIds=" + validDataRequestIds
         + ", responseHeaders=" + responseHeaders
         + ", providerRequest=" + providerRequest

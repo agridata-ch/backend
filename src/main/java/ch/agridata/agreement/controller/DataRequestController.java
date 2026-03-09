@@ -9,6 +9,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -17,22 +18,29 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
+import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +114,33 @@ public class DataRequestController {
       return dataRequestQueryService.getActiveDataRequestForCurrentProvider(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
+  }
+
+  @GET
+  @ApiSubset({DATA_PROVIDER})
+  @Path(PATH_V1 + "/{id}/consent-requests")
+  @Operation(
+      operationId = "getConsentRequestsOfDataRequest",
+      description = "Retrieves the consent requests of a specific data request. Accessible to the provider who owns the data request."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PROVIDER_ROLE})
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequests(
+      @PathParam("id") UUID dataRequestId,
+      @Parameter(
+          name = "lastModifiedFrom",
+          description = "Only consent requests that were modified after this timestamp are returned.",
+          example = "2025-01-01T09:00:00"
+      )
+      @QueryParam("lastModifiedFrom") @DefaultValue("1970-01-01T00:00:00") @Valid LocalDateTime lastModifiedFrom,
+      @QueryParam("page") @DefaultValue("0") @Min(0) int page,
+      @QueryParam("size") @DefaultValue("100") @Min(1) @Max(1000) int size) {
+
+    var resourceQueryDto = ResourceQueryDto.builder().page(page).size(size).build();
+    return consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
+        resourceQueryDto,
+        dataRequestId,
+        lastModifiedFrom);
   }
 
   /**

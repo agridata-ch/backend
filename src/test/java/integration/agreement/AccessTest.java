@@ -61,6 +61,9 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V2 + "/1/kt-id-p/1/consent-requests",
         CONSUMER_ROLE, ADMIN_ROLE);
 
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1/consent-requests",
+        PROVIDER_ROLE);
+
     AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH,
         PRODUCER_ROLE);
 
