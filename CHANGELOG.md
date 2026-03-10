@@ -1,3 +1,9 @@
+## [1.7.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.8...v1.7.0-rc.9) (2026-03-10)
+
+### Features
+
+* **product:** Add deprecated_since field to data_product table. ([c3f73c9](https://github.com/agridata-ch/backend/commit/c3f73c9bc9e982f71c071f51c7708ee94dd0ffa4)), closes [DIGIB2-1200](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1200)
+
 ## [1.7.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.7...v1.7.0-rc.8) (2026-03-05)
 
 ### Features
