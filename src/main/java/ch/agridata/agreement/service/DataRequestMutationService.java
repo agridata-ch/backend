@@ -5,6 +5,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
+import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
@@ -17,7 +18,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,8 +95,11 @@ public class DataRequestMutationService {
 
   private DataRequestDto updateEntityWithDto(DataRequestUpdateDto dataRequestDto,
                                              DataRequestEntity entity) {
+    Set<UUID> existingProductIds = entity.getDataProducts().stream()
+        .map(DataRequestDataProductEntity::getDataProductId)
+        .collect(Collectors.toSet());
     dataRequestMapper.updateEntity(dataRequestDto, entity);
-    setDataSourceSystemId(dataRequestDto, entity);
+    setDataSourceSystemId(dataRequestDto, entity, existingProductIds);
     dataRequestRepository.persist(entity);
     return dataRequestEnrichmentService.toEnrichedDto(entity);
   }
@@ -103,7 +109,7 @@ public class DataRequestMutationService {
    *
    * @throws ValidationException if any product is not found
    */
-  private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity) {
+  private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity, Set<UUID> existingProductIds) {
     var productIds = dto.products();
     if (productIds == null || productIds.isEmpty()) {
       entity.setDataSourceSystemId(null);
@@ -114,7 +120,7 @@ public class DataRequestMutationService {
         .map(this::getProductOrThrowValidation)
         .toList();
 
-    products.forEach(this::validateNotDeprecated);
+    products.forEach(product -> validateNotDeprecated(product, existingProductIds));
 
     long uniqueDataSourceSystemCodeCount = products.stream()
         .map(DataProductDto::dataSourceSystemCode)
@@ -129,8 +135,9 @@ public class DataRequestMutationService {
     entity.setDataSourceSystemId(dataSourceSystemId);
   }
 
-  private void validateNotDeprecated(DataProductDto product) {
-    if (product.deprecatedSince() != null) {
+  private void validateNotDeprecated(DataProductDto product, Set<UUID> existingProductIds) {
+    boolean isNewProduct = !existingProductIds.contains(product.id());
+    if (product.deprecatedSince() != null && isNewProduct) {
       throw new ValidationException("Cannot process request: data product " + product.id() + " is deprecated");
     }
   }
