@@ -1,11 +1,13 @@
 package ch.agridata.auditing.service;
 
+import static ch.agridata.auditing.persistence.AuditLogEntity.ActorTypeEnum.SYSTEM;
 import static ch.agridata.auditing.persistence.AuditLogEntity.ActorTypeEnum.USER;
 import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIELD;
 
 import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.auditing.api.EntityTypeEnum;
+import ch.agridata.auditing.api.SystemActorEnum;
 import ch.agridata.auditing.persistence.AuditLogEntity;
 import ch.agridata.auditing.persistence.AuditLogRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
@@ -49,8 +51,31 @@ public class AuditingApiImpl implements AuditingApi {
         .actionCode(actionCode.name())
         .entityTypeCode(entityTypeCode.name())
         .entityId(entityId)
-        .requestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
+        .requestId(getRequestId())
         .build();
     repository.persist(auditLog);
+  }
+
+  @Override
+  @Transactional
+  public void logSystemAction(ActionEnum actionCode,
+                              EntityTypeEnum entityTypeCode,
+                              UUID entityId,
+                              SystemActorEnum systemActor) {
+    var auditLog = AuditLogEntity.builder()
+        .timestamp(LocalDateTime.now(clock))
+        .actorTypeCode(SYSTEM)
+        .actorId(systemActor.getActorId())
+        .actionCode(actionCode.name())
+        .entityTypeCode(entityTypeCode.name())
+        .entityId(entityId)
+        .requestId(getRequestId())
+        .build();
+    repository.persist(auditLog);
+  }
+
+  private String getRequestId() {
+    Object requestId = MDC.get(REQUEST_ID_MDC_FIELD);
+    return requestId != null ? requestId.toString() : null;
   }
 }

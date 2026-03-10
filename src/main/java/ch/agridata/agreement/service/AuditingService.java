@@ -11,7 +11,10 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 
+import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
+import ch.agridata.auditing.api.EntityTypeEnum;
+import ch.agridata.auditing.api.SystemActorEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +61,15 @@ public class AuditingService {
 
   public void logDataRequestWithdrawn(UUID entityId) {
     api.logUserAction(DATA_REQUEST_WITHDRAWN, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestTerminated(UUID entityId) {
+    api.logSystemAction(
+        ActionEnum.CONSENT_REQUEST_TERMINATED,
+        EntityTypeEnum.CONSENT_REQUEST,
+        entityId,
+        SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB
+    );
   }
 
 }
