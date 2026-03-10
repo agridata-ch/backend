@@ -100,7 +100,27 @@ class DataRequestMutationServiceTest {
   }
 
   @Test
-  void givenDeprecatedDataProduct_whenUpdateDataRequestDetails_thenThrowValidationException() {
+  void givenExistingDeprecatedDataProduct_whenUpdateDataRequestDetails_thenReturnUpdatedDto() {
+    var id = UUID.randomUUID();
+    var entity = DataRequestTestUtils.buildEntity();
+
+    var updateDto = DataRequestTestUtils.updateDtoBuilder()
+        .products(List.of(PRODUCT_ID))
+        .build();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataProductApi.getProductById(PRODUCT_ID))
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
+            .dataSourceSystemCode("AGIS").build());
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(DataRequestDto.builder().build());
+
+    var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
+    assertThat(result).isNotNull();
+  }
+
+  @Test
+  void givenNewDeprecatedDataProduct_whenUpdateDataRequestDetails_thenThrowValidationException() {
     var id = UUID.randomUUID();
     var entity = DataRequestTestUtils.buildEntity();
 
