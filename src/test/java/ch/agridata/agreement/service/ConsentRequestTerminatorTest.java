@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -26,6 +27,8 @@ class ConsentRequestTerminatorTest {
   private ConsentRequestRepository consentRequestRepository;
   @Mock
   private Clock clock;
+  @Mock
+  private AuditingService auditingService;
   @InjectMocks
   private ConsentRequestTerminator terminator;
 
@@ -62,6 +65,9 @@ class ConsentRequestTerminatorTest {
 
     assertThat(terminated).isEqualTo(3L);
     verify(consentRequestRepository).terminateByIdsReturningPairs(List.of(id1, id2, id3), BATCH_SIZE, terminatedAt);
+    verify(auditingService).logDataRequestTerminated(id1);
+    verify(auditingService).logDataRequestTerminated(id2);
+    verify(auditingService).logDataRequestTerminated(id3);
   }
 
   @Test
@@ -80,5 +86,6 @@ class ConsentRequestTerminatorTest {
 
     verify(consentRequestRepository).findIdsToTerminateByChangedFarmOwnerships(ownershipPairs);
     verify(consentRequestRepository).findIdsToTerminateByDataProducerBurs(deletedBurs, BATCH_SIZE);
+    verifyNoInteractions(auditingService);
   }
 }

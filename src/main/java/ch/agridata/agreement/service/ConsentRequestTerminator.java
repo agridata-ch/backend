@@ -48,6 +48,7 @@ public class ConsentRequestTerminator {
 
   private final ConsentRequestRepository consentRequestRepository;
   private final Clock clock;
+  private final AuditingService auditingService;
 
   @Transactional
   public long terminateFor(
@@ -75,10 +76,10 @@ public class ConsentRequestTerminator {
     var terminated = consentRequestRepository.terminateByIdsReturningPairs(allIds, batchSize, terminatedAt);
 
     if (!terminated.isEmpty()) {
-      // Keep it readable; avoid giant single log lines if this can be large
-      terminated.forEach(t ->
-          log.info("terminated consent request id={} bur={} uid={}", t.id(), t.bur(), t.uid())
-      );
+      terminated.forEach(t -> {
+        log.info("terminated consent request id={} bur={} uid={}", t.id(), t.bur(), t.uid());
+        auditingService.logDataRequestTerminated(t.id());
+      });
     }
 
     return terminated.size();

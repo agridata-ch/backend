@@ -14,4 +14,8 @@ public interface AuditingApi {
                      EntityTypeEnum entityTypeCode,
                      UUID entityId);
 
+  void logSystemAction(ActionEnum actionCode,
+                       EntityTypeEnum entityTypeCode,
+                       UUID entityId,
+                       SystemActorEnum systemActor);
 }
