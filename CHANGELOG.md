@@ -1,3 +1,9 @@
+## [1.7.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.11...v1.7.0-rc.12) (2026-03-11)
+
+### Features
+
+* **auditing:** Audit consent request terminations. ([a9ab505](https://github.com/agridata-ch/backend/commit/a9ab505c8a6e67c9979157c58ac9718f8f909d12)), closes [DIGIB2-1265](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1265)
+
 ## [1.7.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.10...v1.7.0-rc.11) (2026-03-11)
 
 ### Features
