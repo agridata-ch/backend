@@ -1,3 +1,9 @@
+## [1.7.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.10...v1.7.0-rc.11) (2026-03-11)
+
+### Features
+
+* **consent-requests:** add endpoint for data provider and adjust consent logic in data transfer ([137484c](https://github.com/agridata-ch/backend/commit/137484cb63b1d395f35240b3f6d5135559dcc50b)), closes [DIGIB2-1137](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1137)
+
 ## [1.7.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.9...v1.7.0-rc.10) (2026-03-11)
 
 ### Features
