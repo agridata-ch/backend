@@ -1,3 +1,9 @@
+## [1.7.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.9...v1.7.0-rc.10) (2026-03-11)
+
+### Features
+
+* **agreement:** Allow updating data requests with preexisting deprecated data products. ([db3fbdb](https://github.com/agridata-ch/backend/commit/db3fbdb591dcdc5f7a695f7f006c1d8b8f4cc832)), closes [DIGIB2-1200](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1200)
+
 ## [1.7.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.8...v1.7.0-rc.9) (2026-03-10)
 
 ### Features
