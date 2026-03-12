@@ -127,6 +127,9 @@ public class DataRequestEntity extends AuditableEntity {
   @Builder.Default
   private List<DataRequestDataProductEntity> dataProducts = new ArrayList<>();
 
+  @Column(name = "current_contract_revision_id")
+  private UUID currentContractRevisionId;
+
   /**
    * Lists the possible states of a data request.
    *

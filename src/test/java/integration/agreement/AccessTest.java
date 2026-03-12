@@ -13,6 +13,7 @@ import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE
 import static io.restassured.http.ContentType.MULTIPART;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
+import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
 import integration.testutils.AccessTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -30,6 +31,12 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, ConsentRequestController.PATH + "/1/status",
         PRODUCER_ROLE);
+  }
+
+  @Test
+  void testAccess_ContractRevisionController() {
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1",
+        CONSUMER_ROLE);
   }
 
   @Test

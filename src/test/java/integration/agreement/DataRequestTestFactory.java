@@ -1,10 +1,12 @@
 package integration.agreement;
 
+import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static io.restassured.http.ContentType.JSON;
 
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
@@ -17,6 +19,7 @@ import io.restassured.response.Response;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 import lombok.SneakyThrows;
 
 public class DataRequestTestFactory {
@@ -87,5 +90,18 @@ public class DataRequestTestFactory {
         .multiPart("logo", logo, Files.probeContentType(logo.toPath()))
         .when()
         .put(DataRequestController.PATH_V1 + "/" + requestId + "/logo/");
+  }
+
+  public static DataRequestDto createReadyForSigningDataRequest() {
+    Response createResponse = createDataRequest(getDataRequestDto().build());
+    DataRequestDto created = createResponse.as(DataRequestDto.class);
+    String requestId = created.id().toString();
+    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE);
+    Response toBeSignedResponse = setStatusAs(requestId, DataRequestStateEnum.TO_BE_SIGNED, ADMIN);
+    return toBeSignedResponse.as(DataRequestDto.class);
+  }
+
+  public static UUID createContractRevisionAndReturnId() {
+    return createReadyForSigningDataRequest().currentContractRevisionId();
   }
 }

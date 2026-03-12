@@ -55,6 +55,7 @@ public class DataRequestStateService {
   private final Validator validator;
   private final AuditingService auditingService;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
+  private final ContractRevisionInitializationService contractRevisionInitializationService;
 
 
   public static void verifyStatusTransition(DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to) {
@@ -96,6 +97,11 @@ public class DataRequestStateService {
 
     verifyAdminMayChangeFrom(oldStateCode);
     verifyStatusTransition(oldStateCode, newStateCode);
+
+    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED) {
+      contractRevisionInitializationService.createAndAssignInitialRevision(entity);
+    }
 
     var dto = setStateTo(entity, newStateCode);
 

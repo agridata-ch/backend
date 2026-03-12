@@ -45,6 +45,8 @@ class DataRequestStateServiceTest {
   private ArgumentCaptor<DataRequestEntity> dataRequestEntityCaptor;
   @Mock
   private DataRequestEnrichmentService dataRequestEnrichmentService;
+  @Mock
+  private ContractRevisionInitializationService contractRevisionInitializationService;
 
   @Test
   void givenSubmittedRequest_whenSetStateToInReview_thenThrowIllegalStateAsAdminException() {
@@ -124,6 +126,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED);
     verify(auditingService).logDataRequestApproved(id);
+    verify(contractRevisionInitializationService).createAndAssignInitialRevision(entity);
     assertThat(result).isEqualTo(expectedDto);
   }
 
