@@ -2862,8 +2862,7 @@
       "lastName": "BLV",
       "notBefore": 0,
       "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Datenbezueger"
+        "default-roles-agate"
       ],
       "requiredActions": [
       ],
@@ -2992,6 +2991,9 @@
     {
       "username": "guest",
       "attributes": {
+        "loginid": [
+          "000000"
+        ]
       },
       "createdTimestamp": 1704813979950,
       "credentials": [
@@ -3321,8 +3323,7 @@
       "lastName": "Demomann",
       "notBefore": 0,
       "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Einwilliger"
+        "default-roles-agate"
       ],
       "requiredActions": [
       ],

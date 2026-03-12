@@ -13,7 +13,6 @@ import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProviderDto;
 import ch.agridata.product.service.DataProviderService;
-import io.quarkus.security.Authenticated;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
@@ -38,7 +37,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(
     name = "Data Providers",
     description = "Enables retrieval of data providers and their available data products.")
-@Authenticated
 @RunOnVirtualThread
 public class DataProviderController {
 

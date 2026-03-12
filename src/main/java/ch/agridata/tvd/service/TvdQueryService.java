@@ -16,15 +16,14 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  *
  * @CommentLastReviewed 2025-12-29
  */
-
 @ApplicationScoped
 @Slf4j
-public class TvdApiImpl implements TvdApi {
+public class TvdQueryService implements TvdApi {
 
   private final TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient;
 
   @Inject
-  public TvdApiImpl(@RestClient TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient) {
+  public TvdQueryService(@RestClient TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient) {
     this.tvdAnimalTracingApiRestClient = tvdAnimalTracingApiRestClient;
   }
 

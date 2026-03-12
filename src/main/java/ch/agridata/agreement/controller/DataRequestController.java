@@ -67,7 +67,6 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
     description = "Provides access to data requests for consumers and admins. "
         + "Consumers can create, update, submit, and retrieve their own data requests, "
         + "while admins have full access to all data requests and their associated consent requests.")
-@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
 @RunOnVirtualThread
 public class DataRequestController {
 
@@ -90,6 +89,7 @@ public class DataRequestController {
           + "while consumers receive only the data requests they own."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
   public List<DataRequestDto> getDataRequests() {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getAllNonDraftDataRequests();
@@ -108,6 +108,7 @@ public class DataRequestController {
           + "or the consumer who owns the data request. "
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getNonDraftDataRequest(requestId);

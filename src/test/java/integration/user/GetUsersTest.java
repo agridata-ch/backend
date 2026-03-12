@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -24,12 +23,6 @@ import org.junit.jupiter.api.Test;
 class GetUsersTest {
   private final Flyway flyway;
   private static final int TOTAL_PRODUCERS = 54;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata prior to executing each test
-    flyway.migrate();
-  }
 
   @Test
   void givenProducers_getProducers_returnsFirstProducerPage() {

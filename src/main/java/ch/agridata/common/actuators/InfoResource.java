@@ -2,6 +2,7 @@ package ch.agridata.common.actuators;
 
 import static ch.agridata.common.actuators.InfoResource.PATH;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -32,6 +33,7 @@ public class InfoResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll
   public Map<String, String> info() {
     Map<String, String> info = new HashMap<>();
     info.put("appName", appName);
@@ -42,6 +44,7 @@ public class InfoResource {
   @GET
   @Path("/schema")
   @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll
   public String schema() throws IOException {
     try (InputStream in = getClass().getClassLoader()
         .getResourceAsStream("schemas/agridata-schemas.json")) {

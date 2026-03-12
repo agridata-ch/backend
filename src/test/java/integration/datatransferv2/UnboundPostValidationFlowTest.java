@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,17 +40,9 @@ class UnboundPostValidationFlowTest {
 
   private static final Identifier<DataProductEntity> PRODUCT_UNBOUND_POST_VALIDATION = DataProduct.UUID_6319423C;
 
-  private final Flyway flyway;
   private final ObjectMapper objectMapper;
 
   WireMock wireMock;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata prior to executing each test
-    flyway.migrate();
-    wireMock.resetToDefaultMappings();
-  }
 
   static Stream<Arguments> testCases() {
     // Consents GRANTED for data request dc7dbc72: CHE101000001/99910002, CHE101000001/99910003, CHE103000001/99930004

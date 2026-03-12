@@ -2,6 +2,7 @@ package ch.agridata.tvd.service;
 
 import ch.agridata.common.filters.RestClientLoggingFilter;
 import ch.agridata.tvd.dto.TvdEquidOwnerUidDto;
+import io.quarkus.cache.CacheResult;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -28,6 +29,7 @@ public interface TvdAnimalTracingApiRestClient {
   @GET
   @Path("v1.0/customer/legalunits/equidowner/{agateLoginId}")
   @Produces(MediaType.APPLICATION_JSON)
+  @CacheResult(cacheName = "tvd-api-fetch-equid-owner-legal-units")
   TvdEquidOwnerUidDto fetchEquidOwnerLegalUnits(@PathParam("agateLoginId") String agateLoginId);
 
 }
