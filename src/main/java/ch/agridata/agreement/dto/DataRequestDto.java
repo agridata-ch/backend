@@ -157,7 +157,12 @@ public record DataRequestDto(
         description = "Regex of valid redirect_uri",
         examples = {"^https:\\/\\/www\\.dummy-label-organisation\\/.*$"}
     )
-    String validRedirectUriRegex
+    String validRedirectUriRegex,
+
+    @Schema(
+        description = "Id of current contract revision"
+    )
+    UUID currentContractRevisionId
 
 ) {
 

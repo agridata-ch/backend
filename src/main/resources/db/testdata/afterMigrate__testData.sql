@@ -1,4 +1,4 @@
-    TRUNCATE TABLE users, data_request, consent_request, audit_log, data_request_data_product;
+    TRUNCATE TABLE users, data_request, consent_request, audit_log, data_request_data_product, contract_revision;
 
     -- ===============================================
     -- data_request

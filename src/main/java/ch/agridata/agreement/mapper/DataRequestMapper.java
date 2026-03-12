@@ -86,6 +86,7 @@ public interface DataRequestMapper {
   @Mapping(target = "contactEmailAddress", source = "contactEmailAddress", qualifiedByName = "toLowerCase")
   @Mapping(target = "dataConsumerLogo", ignore = true)
   @Mapping(target = "dataConsumerLogoType", ignore = true)
+  @Mapping(target = "currentContractRevisionId", ignore = true)
   void updateEntity(DataRequestUpdateDto dataRequestUpdateDto,
                     @MappingTarget DataRequestEntity entity);
 
