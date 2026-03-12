@@ -39,7 +39,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     description = "Provides access to aggregated consent requests for data producers. "
         + "Each aggregation groups consent requests by the data request they belong to."
 )
-@RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
 public class ConsentRequestAggregationController {
   public static final String PATH = "/api/agreement/v1/consent-request-aggregations";
 

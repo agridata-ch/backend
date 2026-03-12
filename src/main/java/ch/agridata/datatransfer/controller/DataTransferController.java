@@ -48,7 +48,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
             + "Before any data is transferred, the producer must have accepted an active data request that includes the requested product. "
             + "This endpoint simply forwards the payload from the source system to the consumer."
     ))
-@RolesAllowed({CONSUMER_ROLE})
 @RunOnVirtualThread
 public class DataTransferController {
   public static final String PATH = "/api/data-transfer/v1";
@@ -72,6 +71,7 @@ public class DataTransferController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE})
   public DataTransferResponse dataTransfer(
       @Parameter(
           name = "productId",
@@ -122,6 +122,7 @@ public class DataTransferController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE})
   public List<String> getDeltaIds(
       @Parameter(
           name = "productId",

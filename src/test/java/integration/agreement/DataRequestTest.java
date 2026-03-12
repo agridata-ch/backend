@@ -41,23 +41,15 @@ import io.restassured.common.mapper.TypeRef;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class DataRequestTest {
   private static final UUID NONEXISTENT_PRODUCT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-  private final Flyway flyway;
+
   private final DataRequestRepository dataRequestRepository;
   private final AuditLogTestUtils auditLogTestUtils;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata is reset between tests
-    flyway.migrate();
-  }
 
   @Test
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {

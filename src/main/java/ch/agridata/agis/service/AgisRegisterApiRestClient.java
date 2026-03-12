@@ -4,6 +4,7 @@ import ch.agridata.agis.dto.AgisPersonFarmResponseType;
 import ch.agridata.agis.dto.AgisRegisterDataRequest;
 import ch.agridata.agis.dto.AgisRegisterMutationDataRequest;
 import ch.agridata.common.filters.RestClientLoggingFilter;
+import io.quarkus.cache.CacheResult;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -31,6 +32,7 @@ public interface AgisRegisterApiRestClient {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("register-data/1/register")
+  @CacheResult(cacheName = "agis-api-register")
   AgisPersonFarmResponseType register(AgisRegisterDataRequest request);
 
   @POST

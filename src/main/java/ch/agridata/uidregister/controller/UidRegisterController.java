@@ -33,7 +33,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(
     name = "UID Register Search",
     description = "Provides access to organisation details retrieved from the official UID register.")
-@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
 @RunOnVirtualThread
 public class UidRegisterController {
 

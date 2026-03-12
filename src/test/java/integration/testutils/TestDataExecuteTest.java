@@ -10,21 +10,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.persistence.EntityManager;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class TestDataExecuteTest {
 
-  private final Flyway flyway;
   private final EntityManager entityManager;
-
-  @BeforeEach
-  void setUp() {
-    flyway.migrate();
-  }
 
   @Test
   void givenNonAdmin_whenExecuteUpload_thenForbidden() {

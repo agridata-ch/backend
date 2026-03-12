@@ -15,24 +15,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class ConsentRequestCleanupServiceTest {
 
-  private final Flyway flyway;
   private final ConsentRequestCleanupService consentRequestCleanupService;
   private final EntityManager em;
   private final AuditLogTestUtils auditLogTestUtils;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata is reset between tests
-    flyway.migrate();
-  }
 
   @Test
   void whenCleanupRuns_thenArchivesMatchingRowsAndWritesAuditLogs() {

@@ -42,7 +42,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     name = "Contract Revisions",
     description = "Provides access to contract revisions for consumers"
 )
-@RolesAllowed({CONSUMER_ROLE})
 @RunOnVirtualThread
 public class ContractRevisionController {
   public static final String PATH = "/api/agreement/v1/contract-revisions";
@@ -60,6 +59,7 @@ public class ContractRevisionController {
           + "that owns the associated datarequest."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE})
   public ContractRevisionDto getContractRevision(@PathParam("id") UUID id) {
     return contractRevisionQueryService.getContractRevisionOfCurrentConsumer(id);
   }
@@ -72,6 +72,7 @@ public class ContractRevisionController {
       operationId = "initiateConsumerSignatureChallenge",
       description = "Initiates a challenge for a specific signature slot of a specific contract revision."
   )
+  @RolesAllowed({CONSUMER_ROLE})
   public OtpChallengeDto initiateConsumerSignatureChallenge(
       @Parameter(
           description = "ID of the contract revision",
@@ -101,6 +102,7 @@ public class ContractRevisionController {
       operationId = "verifyConsumerSignature",
       description = "Verifies the otp and adds a signature to a specific signature slot."
   )
+  @RolesAllowed({CONSUMER_ROLE})
   public ContractRevisionDto verifyConsumerSignature(
       @Parameter(
           description = "ID of the contract revision",

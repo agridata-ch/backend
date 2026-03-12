@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Path("/q/openapi/subsets")
 @Slf4j
 @RequiredArgsConstructor
-@PermitAll
 public class OpenApiSubsetController {
 
   private final OpenApiSubsetService openApiSubsetService;
 
   @GET
   @Path("/{subset}")
+  @PermitAll
   public Response getSubset(
       @PathParam("subset") String subset,
       @QueryParam("format") String format
