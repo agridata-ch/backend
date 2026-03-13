@@ -1,3 +1,9 @@
+## [1.7.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.12...v1.7.0-rc.13) (2026-03-13)
+
+### Features
+
+* **openapi:** remove unneeded openapi example ([03c15f2](https://github.com/agridata-ch/backend/commit/03c15f2480d83239bfb12def206efe9470960b42)), closes [DIGIB2-1137](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1137)
+
 ## [1.7.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.11...v1.7.0-rc.12) (2026-03-11)
 
 ### Features
