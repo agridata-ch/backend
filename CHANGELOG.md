@@ -1,3 +1,25 @@
+## [1.7.0](https://github.com/agridata-ch/backend/compare/v1.6.0...v1.7.0) (2026-03-13)
+
+### Features
+
+* **agreement:** Allow the deletion of data requests. ([c9a2a7e](https://github.com/agridata-ch/backend/commit/c9a2a7e07e79c3bb5a1b7bb406f7a2707597c430)), closes [DIGIB2-1188](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1188)
+* **agreement:** Allow updating data requests with preexisting deprecated data products. ([db3fbdb](https://github.com/agridata-ch/backend/commit/db3fbdb591dcdc5f7a695f7f006c1d8b8f4cc832)), closes [DIGIB2-1200](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1200)
+* **agreement:** Invalidate consent-confirmations when farm changes ownership. ([0b64658](https://github.com/agridata-ch/backend/commit/0b646588121a02b02af17bef85f486f9d09b8ec4)), closes [DIGIB2-1205](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1205)
+* **agreement:** restrict data request creation based on requests in draft status ([371fc59](https://github.com/agridata-ch/backend/commit/371fc597d2483b2e67de2fba36d044aa436c7291)), closes [DIGIB2-1187](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1187)
+* **auditing:** Audit consent request terminations. ([a9ab505](https://github.com/agridata-ch/backend/commit/a9ab505c8a6e67c9979157c58ac9718f8f909d12)), closes [DIGIB2-1265](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1265)
+* **consent-requests:** add endpoint for data provider and adjust consent logic in data transfer ([137484c](https://github.com/agridata-ch/backend/commit/137484cb63b1d395f35240b3f6d5135559dcc50b)), closes [DIGIB2-1137](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1137)
+* **data-transfer:** implementation of BurBasedPostValidationFlow for tvd data product ([0d97dca](https://github.com/agridata-ch/backend/commit/0d97dca64d6f71dad4c61a61e7e530c05b4f0aef)), closes [DIGIB2-1178](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1178)
+* **data-transfer:** implementation of UidBasedPostValidationFlow for first tvd data product ([6d3024d](https://github.com/agridata-ch/backend/commit/6d3024da9b2c07ec8c2e6500cbdea360ae5943e3))
+* **data-transfer:** implementation of UnboundPostValidationFlow for tvd eartag data product ([8ac6c03](https://github.com/agridata-ch/backend/commit/8ac6c03e5c4244efb0f1df8dedb49eebd54de720)), closes [DIGIB2-1179](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1179)
+* **openapi:** remove unneeded openapi example ([03c15f2](https://github.com/agridata-ch/backend/commit/03c15f2480d83239bfb12def206efe9470960b42)), closes [DIGIB2-1137](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1137)
+* **product:** Add deprecated_since field to data_product table. ([c3f73c9](https://github.com/agridata-ch/backend/commit/c3f73c9bc9e982f71c071f51c7708ee94dd0ffa4)), closes [DIGIB2-1200](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1200)
+* **testdata:** Support SQL file upload and restrict execution to non-prod profiles ([fb456a0](https://github.com/agridata-ch/backend/commit/fb456a03c9028e565179d7860c5db3a73a7dd36e)), closes [DIGIB2-1234](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1234)
+* **user:** add consent request tour intro flag to user preferences. ([d391b31](https://github.com/agridata-ch/backend/commit/d391b3135e490651fd1e9cbe3267036b71c73e2c)), closes [DIGIB2-524](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-524)
+
+### Bug Fixes
+
+* **test-data:** remove no more needed test data and minor refactoring in data-transfer v2 ([13909fc](https://github.com/agridata-ch/backend/commit/13909fc2e739b0e8efd591e85bbf4e743486b9a1)), closes [DIGIB2-1246](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1246)
+
 ## [1.7.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.7.0-rc.12...v1.7.0-rc.13) (2026-03-13)
 
 ### Features
