@@ -125,7 +125,7 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PROVIDER_ROLE})
-  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequests(
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequest(
       @PathParam("id") UUID dataRequestId,
       @Parameter(
           name = "lastModifiedFrom",
@@ -136,7 +136,7 @@ public class DataRequestController {
       @QueryParam("page") @DefaultValue("0") @Min(0) int page,
       @QueryParam("size") @DefaultValue("100") @Min(1) @Max(1000) int size) {
 
-    var resourceQueryDto = ResourceQueryDto.builder().page(page).size(size).build();
+    var resourceQueryDto = ResourceQueryDto.builder().sortParams(List.of("-modifiedAt")).page(page).size(size).build();
     return consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
