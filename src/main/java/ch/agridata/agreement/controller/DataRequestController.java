@@ -9,6 +9,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -17,20 +18,29 @@ import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestStateService;
+import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +116,33 @@ public class DataRequestController {
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
 
+  @GET
+  @ApiSubset({DATA_PROVIDER})
+  @Path(PATH_V1 + "/{id}/consent-requests")
+  @Operation(
+      operationId = "getConsentRequestsOfDataRequest",
+      description = "Retrieves the consent requests of a specific data request. Accessible to the provider who owns the data request."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PROVIDER_ROLE})
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequest(
+      @PathParam("id") UUID dataRequestId,
+      @Parameter(
+          name = "lastModifiedFrom",
+          description = "Only consent requests that were modified after this timestamp are returned.",
+          example = "2025-01-01T09:00:00"
+      )
+      @QueryParam("lastModifiedFrom") @DefaultValue("1970-01-01T00:00:00") @Valid LocalDateTime lastModifiedFrom,
+      @QueryParam("page") @DefaultValue("0") @Min(0) int page,
+      @QueryParam("size") @DefaultValue("100") @Min(1) @Max(1000) int size) {
+
+    var resourceQueryDto = ResourceQueryDto.builder().sortParams(List.of("-modifiedAt")).page(page).size(size).build();
+    return consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
+        resourceQueryDto,
+        dataRequestId,
+        lastModifiedFrom);
+  }
+
   /**
    * This method is deprecated, because it does not return the name of the UIDs
    *
@@ -136,7 +173,8 @@ public class DataRequestController {
           description = "The kt-id-p identifier of the producer",
           example = "FLXXA0001"
       )
-      @PathParam("kt-id-p") String ktIdP) {
+      @PathParam("kt-id-p") String ktIdP
+  ) {
     return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(dataRequestId, ktIdP);
   }
 
@@ -160,7 +198,8 @@ public class DataRequestController {
           description = "The kt-id-p identifier of the producer",
           example = "FLXXA0001"
       )
-      @PathParam("kt-id-p") String ktIdP) {
+      @PathParam("kt-id-p") String ktIdP
+  ) {
     if (identity.isAdmin()) {
       return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
     }
@@ -172,7 +211,8 @@ public class DataRequestController {
   @Path(PATH_V1)
   @Operation(
       operationId = "createDataRequestDraft",
-      description = "Creates a new data request in draft status. Only accessible to users with the consumer role."
+      description = "Creates a new data request in draft status. Only accessible to users with the consumer role. "
+          + "Disallows creating more than 10 draft requests per consumer."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -192,9 +232,24 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed(CONSUMER_ROLE)
-  public DataRequestDto updateDataRequestDetails(@PathParam("id") UUID requestId,
-                                                 @Valid DataRequestUpdateDto dataRequestDto) {
+  public DataRequestDto updateDataRequestDetails(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestUpdateDto dataRequestDto
+  ) {
     return dataRequestMutationService.updateDataRequestDetails(requestId, dataRequestDto);
+  }
+
+  @DELETE
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}")
+  @Operation(
+      operationId = "deleteDataRequest",
+      description = "Deletes a data request"
+  )
+  @RolesAllowed(CONSUMER_ROLE)
+  public Response deleteDataRequest(@PathParam("id") UUID requestId) {
+    dataRequestMutationService.deleteDataRequest(requestId);
+    return Response.noContent().build();
   }
 
   @PUT
@@ -208,8 +263,10 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
-  public DataRequestDto setDataRequestStatus(@PathParam("id") UUID requestId,
-                                             @Valid DataRequestStateEnum stateCode) {
+  public DataRequestDto setDataRequestStatus(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestStateEnum stateCode
+  ) {
     if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
     }
@@ -227,8 +284,10 @@ public class DataRequestController {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed(CONSUMER_ROLE)
-  public void updateDataRequestLogo(@PathParam("id") UUID requestId,
-                                    @RestForm("logo") FileUpload logo) {
+  public void updateDataRequestLogo(
+      @PathParam("id") UUID requestId,
+      @RestForm("logo") FileUpload logo
+  ) {
     dataRequestLogoService.updateDataRequestLogo(requestId, logo);
   }
 

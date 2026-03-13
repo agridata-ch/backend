@@ -15,6 +15,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class ExceptionHandler {
   public Response handleAll(Throwable ex) {
     log.error("Exception: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage()))
         .build();
   }
@@ -50,6 +52,7 @@ public class ExceptionHandler {
   public Response handleValidationException(ValidationException ex) {
     log.warn("ValidationException: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage()))
         .build();
   }
@@ -58,6 +61,7 @@ public class ExceptionHandler {
   public Response handleValidationException(MismatchedInputException ex) {
     log.warn("MismatchedInputException: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage()))
         .build();
   }
@@ -67,6 +71,7 @@ public class ExceptionHandler {
   public Response handleIllegalArgumentException(IllegalArgumentException ex) {
     log.warn("IllegalArgumentException: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage()))
         .build();
   }
@@ -75,6 +80,7 @@ public class ExceptionHandler {
   public Response handleIllegalStateException(IllegalStateException ex) {
     log.warn("IllegalStateException: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage()))
         .build();
   }
@@ -83,6 +89,7 @@ public class ExceptionHandler {
   public Response handleUidMissingException(UidMissingException ex) {
     log.error("UidMissingException: {}", ex.getMessage(), ex);
     return Response.status(Status.FORBIDDEN)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_MISSING))
         .build();
   }
@@ -91,6 +98,7 @@ public class ExceptionHandler {
   public Response handleConsentNotGrantedException(ConsentNotGrantedException ex) {
     log.warn("ConsentNotGrantedException: {}", ex.getMessage());
     return Response.status(Status.FORBIDDEN)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("Consent not granted", ex.getMessage(), ExceptionEnum.CONSENT_NOT_GRANTED))
         .build();
   }
@@ -104,14 +112,17 @@ public class ExceptionHandler {
 
     log.warn("ConstraintViolationException, violations: {}, exception: {}", violations,
         ex.getMessage());
-    return Response.status(Response.Status.BAD_REQUEST).entity(
-        createResponse("Validation failed", violations)).build();
+    return Response.status(Response.Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("Validation failed", violations))
+        .build();
   }
 
   @ServerExceptionMapper(NotFoundException.class)
   public Response handleNotFound(NotFoundException ex) {
     log.warn("NotFoundException: {}", ex.getMessage(), ex);
     return Response.status(Response.Status.NOT_FOUND)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("NOT_FOUND", ex.getMessage()))
         .build();
   }
@@ -120,6 +131,7 @@ public class ExceptionHandler {
   public Response handleWebAppException(WebApplicationException ex) {
     log.error("WebApplicationException: {}", ex.getMessage(), ex);
     return Response.status(ex.getResponse().getStatus())
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("Web exception", ex.getMessage()))
         .build();
   }
@@ -128,6 +140,7 @@ public class ExceptionHandler {
   public Response handleDataTransferFailedException(DataTransferFailedException ex) {
     log.error("DataTransferFailedException: {}", ex.getMessage(), ex);
     return Response.status(Status.BAD_GATEWAY)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createExternalServiceFailedResponse(ex.getMessage(), ex.getStatus(), ex.getMessage()))
         .build();
   }
@@ -136,6 +149,7 @@ public class ExceptionHandler {
   public Response handleExternalWebServiceException(ExternalWebServiceException ex) {
     log.error("ExternalWebServiceException: {}", ex.getMessage(), ex);
     return Response.status(Status.BAD_GATEWAY)
+        .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createExternalServiceFailedResponse("External service failed", 0, ex.getMessage()))
         .build();
   }

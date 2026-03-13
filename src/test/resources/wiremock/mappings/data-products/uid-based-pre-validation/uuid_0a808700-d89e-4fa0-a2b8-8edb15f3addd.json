@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/agis/structure-data/1/structure",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"surveyYear\":\"[^\"]+\",\"ids\":\\{\"uid\":\"[^\"]+\"},\"dataTypes\":\\{\"structureType\":\\[\"generalSurfaceData\"]},\"dataRequestType\":\\{\"finalData\":false}}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "0a808700-d89e-4fa0-a2b8-8edb15f3addd"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

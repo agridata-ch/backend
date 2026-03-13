@@ -32,7 +32,7 @@ import org.hibernate.type.SqlTypes;
         @Index(name = "idx_users_agate_login_id", columnList = "agate_login_id"),
         @Index(name = "idx_users_uid", columnList = "uid"),
     })
-@SQLDelete(sql = "UPDATE user SET archived = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE users SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
 @Getter

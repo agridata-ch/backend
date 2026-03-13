@@ -107,8 +107,11 @@ public class AgridataSecurityIdentity {
   }
 
   public String getUidOrElseThrow() {
-    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID))
-        .orElseThrow(() -> new UidMissingException("User with agateLoginId " + getAgateLoginId() + " has no UID assigned"));
+    return getUid().orElseThrow(() -> new UidMissingException("User with agateLoginId " + getAgateLoginId() + " has no UID assigned"));
+  }
+
+  public Optional<String> getUid() {
+    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID));
   }
 
   public UserInfo getUserInfoOrElseThrow() {

@@ -20,7 +20,6 @@ public record ResourceQueryDto(
     @QueryParam("page")
     @DefaultValue("0")
     @Min(0)
-    @Max(100)
     int page,
 
     @Schema(description = "page size")

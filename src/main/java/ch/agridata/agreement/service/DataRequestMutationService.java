@@ -5,6 +5,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
+import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
@@ -16,8 +17,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,14 +45,21 @@ public class DataRequestMutationService {
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto createDataRequestDraft(DataRequestUpdateDto dataRequestDto) {
+    var countDrafts = dataRequestRepository.countByDataConsumerUidAndState(
+        agridataSecurityIdentity.getUidOrElseThrow(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
+    if (countDrafts >= 10) {
+      throw new ValidationException("Cannot create new data request: maximum number of 10 draft requests reached");
+    }
+
     var uidRegisterCompany = uidRegisterServiceApi.getByUidOfCurrentUser();
-    var dataRequestEntity =
-        DataRequestEntity.builder()
-            .humanFriendlyId(humanFriendlyIdService.getHumanFriendlyIdForDataRequest())
-            .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
-            .dataConsumerLegalName(uidRegisterCompany.legalName())
-            .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
-            .build();
+    var dataRequestEntity = DataRequestEntity.builder()
+        .humanFriendlyId(humanFriendlyIdService.getHumanFriendlyIdForDataRequest())
+        .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
+        .dataConsumerLegalName(uidRegisterCompany.legalName())
+        .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
+        .build();
     return updateEntityWithDto(dataRequestDto, dataRequestEntity);
   }
 
@@ -65,10 +75,31 @@ public class DataRequestMutationService {
     return updateEntityWithDto(dataRequestDto, entity);
   }
 
+  @Transactional
+  @RolesAllowed(CONSUMER_ROLE)
+  public void deleteDataRequest(UUID requestId) {
+    String uid = agridataSecurityIdentity.getUidOrElseThrow();
+
+    long deleted = dataRequestRepository.archiveDraftByIdAndConsumerUid(requestId, uid);
+    if (deleted == 1) {
+      return;
+    }
+
+    boolean exists = dataRequestRepository.existsByIdAndConsumerUid(requestId, uid);
+    if (!exists) {
+      throw new NotFoundException(requestId.toString());
+    }
+
+    throw new ValidationException("Data request is not in state DRAFT");
+  }
+
   private DataRequestDto updateEntityWithDto(DataRequestUpdateDto dataRequestDto,
                                              DataRequestEntity entity) {
+    Set<UUID> existingProductIds = entity.getDataProducts().stream()
+        .map(DataRequestDataProductEntity::getDataProductId)
+        .collect(Collectors.toSet());
     dataRequestMapper.updateEntity(dataRequestDto, entity);
-    setDataSourceSystemId(dataRequestDto, entity);
+    setDataSourceSystemId(dataRequestDto, entity, existingProductIds);
     dataRequestRepository.persist(entity);
     return dataRequestEnrichmentService.toEnrichedDto(entity);
   }
@@ -78,26 +109,37 @@ public class DataRequestMutationService {
    *
    * @throws ValidationException if any product is not found
    */
-  private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity) {
-    var products = dto.products();
-    if (products == null || products.isEmpty()) {
+  private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity, Set<UUID> existingProductIds) {
+    var productIds = dto.products();
+    if (productIds == null || productIds.isEmpty()) {
       entity.setDataSourceSystemId(null);
       return;
     }
 
-    var codes = new HashSet<String>();
+    List<DataProductDto> products = productIds.stream()
+        .map(this::getProductOrThrowValidation)
+        .toList();
 
-    for (UUID id : products) {
-      codes.add(getProductOrThrowValidation(id).dataSourceSystemCode());
-      if (codes.size() > 1) {
-        throw new ValidationException("Cannot process request: all products must share the same data source system");
-      }
+    products.forEach(product -> validateNotDeprecated(product, existingProductIds));
+
+    long uniqueDataSourceSystemCodeCount = products.stream()
+        .map(DataProductDto::dataSourceSystemCode)
+        .distinct()
+        .count();
+
+    if (uniqueDataSourceSystemCodeCount > 1) {
+      throw new ValidationException("Cannot process request: all products must share the same data source system");
     }
 
-    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(getProductOrThrowValidation(products.getFirst()).id());
-
-
+    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(products.getFirst().id());
     entity.setDataSourceSystemId(dataSourceSystemId);
+  }
+
+  private void validateNotDeprecated(DataProductDto product, Set<UUID> existingProductIds) {
+    boolean isNewProduct = !existingProductIds.contains(product.id());
+    if (product.deprecatedSince() != null && isNewProduct) {
+      throw new ValidationException("Cannot process request: data product " + product.id() + " is deprecated");
+    }
   }
 
   private DataProductDto getProductOrThrowValidation(UUID id) {

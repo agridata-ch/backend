@@ -2766,6 +2766,110 @@
       "totp": false
     },
     {
+      "username": "consumer-blv-1",
+      "attributes": {
+        "loginid": [
+          "3477588"
+        ],
+        "uid": "CHE403244345"
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "maria.blv@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Maria",
+      "groups": [
+      ],
+      "lastName": "BLV",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "consumer-blv-2",
+      "attributes": {
+        "loginid": [
+          "3477589"
+        ],
+        "uid": "CHE403244345"
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "thomas.blv@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Thomas",
+      "groups": [
+      ],
+      "lastName": "BLV",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "consumer-blv-without-uid",
+      "attributes": {
+        "loginid": [
+          "3477590"
+        ]
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "sandra.blv@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Sandra",
+      "groups": [
+      ],
+      "lastName": "BLV",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
       "username": "provider",
       "attributes": {
         "loginid": [

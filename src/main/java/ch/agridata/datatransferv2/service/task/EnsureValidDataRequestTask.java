@@ -27,23 +27,20 @@ public class EnsureValidDataRequestTask implements UnaryOperator<AgridataContext
   @Override
   public AgridataContext apply(final AgridataContext context) {
     var productId = context.getProductId();
-    var consumerUids = context.getConsumerUids();
+    var consumerUid = context.getConsumerUid();
 
-    log.debug("Checking data requests for consumerUids={}, productId={}", consumerUids, productId);
+    log.debug("Checking data requests for consumerUid={}, productId={}", consumerUid, productId);
 
-    List<UUID> validDataRequestIds = consumerUids.stream()
-        .map(dataRequestApi::getActiveDataRequestsOfConsumer)
-        .flatMap(List::stream)
+    List<UUID> validDataRequestIds = dataRequestApi.getActiveDataRequestsOfConsumer(consumerUid).stream()
         .filter(dr -> dr.products() != null)
         .filter(dr -> dr.products().contains(productId))
         .map(DataRequestDto::id)
         .toList();
 
     if (validDataRequestIds.isEmpty()) {
-      log.warn("No valid data request found for consumerUids={}, productId={}",
-          consumerUids, productId);
-      throw new ConsentNotGrantedException(
-          "No active data request found for the requested product");
+      log.warn("No valid data request found for consumerUid={}, productId={}",
+          consumerUid, productId);
+      throw new ConsentNotGrantedException("No active data request found for the requested product");
     }
 
     context.setValidDataRequestIds(validDataRequestIds);

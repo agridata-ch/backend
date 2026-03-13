@@ -5,10 +5,14 @@ import static ch.agridata.datatransferv2.client.DataProviderRestClientProvider.R
 import ch.agridata.datatransferv2.client.DataProviderRestClient;
 import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.service.AgridataContext;
-import ch.agridata.product.api.DataProductApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
@@ -27,8 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> {
 
+  private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
+
   private final DataProviderRestClientProvider dataProviderRestClientProvider;
-  private final DataProductApi dataProductApi;
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
@@ -41,26 +46,28 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
   }
 
   private Supplier<Response> buildProviderRequest(AgridataContext context) {
-    var productId = context.getProductId();
-    var dataProduct = dataProductApi.getProviderConfigurationById(productId);
+    var productProviderConfiguration = context.getProductProviderConfiguration();
     var requestParameters = context.getRequestParameters();
-    var requestMethod = dataProduct.restClientMethodCode();
-    var requestPath = replacePlaceholders(dataProduct.restClientPath(), requestParameters);
-    var requestBody = replacePlaceholders(dataProduct.restClientRequestTemplate(), requestParameters);
+    var requestMethod = productProviderConfiguration.restClientMethodCode();
 
-    var restClientIdentifierCode = RestClientIdentifier.valueOf(dataProduct.restClientIdentifierCode());
+    Set<String> usedKeys = new HashSet<>();
+    var requestPath = replacePlaceholders(productProviderConfiguration.restClientPath(), requestParameters, usedKeys);
+    var requestBody = replacePlaceholders(productProviderConfiguration.restClientRequestTemplate(), requestParameters, usedKeys);
+    var finalPath = appendUnusedAsQueryParams(requestPath, requestParameters, usedKeys);
+
+    var restClientIdentifierCode = RestClientIdentifier.valueOf(productProviderConfiguration.restClientIdentifierCode());
     var client = dataProviderRestClientProvider.get(restClientIdentifierCode);
     var headers = DataProviderRestClient.Headers.builder()
         .agridataConsumerAgateLoginId(context.getConsumerAgateLoginId())
-        .agridataConsumerUid(String.join(", ", context.getConsumerUids()))
+        .agridataConsumerUid(context.getConsumerUid())
         .build();
 
     log.debug("Provider request configured: method={}, path={}, clientId={}",
-        requestMethod, requestPath, restClientIdentifierCode);
+        requestMethod, finalPath, restClientIdentifierCode);
 
     return switch (requestMethod) {
-      case "POST" -> () -> client.post(requestPath, headers, requestBody);
-      case "GET" -> () -> client.get(requestPath, headers);
+      case "POST" -> () -> client.post(finalPath, headers, requestBody);
+      case "GET" -> () -> client.get(finalPath, headers);
       default -> {
         log.warn("Unsupported REST client method: {}", requestMethod);
         throw new IllegalArgumentException("Unsupported rest client method: " + requestMethod);
@@ -68,13 +75,12 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     };
   }
 
-  private String replacePlaceholders(String template, Map<String, String> params) {
+  private String replacePlaceholders(String template, Map<String, String> params, Set<String> usedKeys) {
     if (template == null) {
       return null;
     }
 
-    Pattern p = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
-    Matcher m = p.matcher(template);
+    Matcher m = PLACEHOLDER_PATTERN.matcher(template);
     StringBuilder sb = new StringBuilder();
     while (m.find()) {
       String key = m.group(1);
@@ -83,9 +89,20 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
         log.warn("Template placeholder '{}' not found in request parameters", key);
         throw new IllegalArgumentException("Parameter '" + key + "' not found in request");
       }
-      m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+      usedKeys.add(key);
+      m.appendReplacement(sb, Matcher.quoteReplacement(URLEncoder.encode(replacement, StandardCharsets.UTF_8)));
     }
     m.appendTail(sb);
     return sb.toString();
+  }
+
+  private String appendUnusedAsQueryParams(String path, Map<String, String> params, Set<String> usedKeys) {
+    UriBuilder uriBuilder = UriBuilder.fromUri(path);
+    params.forEach((key, value) -> {
+      if (!usedKeys.contains(key)) {
+        uriBuilder.queryParam(key, value);
+      }
+    });
+    return uriBuilder.build().toString();
   }
 }

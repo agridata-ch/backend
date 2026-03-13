@@ -26,7 +26,7 @@ class ResolveRequestedProducerUidTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerUidsInPayload()).containsExactly(PRODUCER_UID);
+    assertThat(result.getProducerUids()).containsExactly(PRODUCER_UID);
   }
 
   @Test
@@ -36,13 +36,13 @@ class ResolveRequestedProducerUidTaskTest {
 
     var result = task.apply(context);
 
-    assertThat(result.getProducerUidsInPayload()).containsExactly(differentUid);
+    assertThat(result.getProducerUids()).containsExactly(differentUid);
   }
 
   private AgridataContext createContextWithUid(String uid) {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .requestParameters(Map.of("uid", uid))
         .build();
   }

@@ -17,8 +17,6 @@ quarkus:
       - classpath:db/testdata
   keycloak:
     devservices:
-      # TODO: Remove when Quarkus defaults to Keycloak >= 26.5.3 (Quarkus 3.31.2 defaults to 26.5.0 which has auth issues)
-      image-name: quay.io/keycloak/keycloak:26.5.3
       realm-path: agate_realm.json
   log:
     level: WARN
@@ -32,7 +30,7 @@ quarkus:
     agis-api:
       url: http://localhost:8051/agis
     tvd-animal-tracing-api:
-      url: http://localhost:8051/tvd/animal-tracing/v1.0
+      url: http://localhost:8051/tvd/animal-tracing
   wiremock:
     devservices:
       enabled: true

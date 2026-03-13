@@ -34,6 +34,7 @@ public class TestDataIdentifiers {
     public static final Identifier<DataRequestEntity> BIO_SUISSE_DRAFT = id("dbc991ef-b717-48d7-94da-e475e607e8bc");
     public static final Identifier<DataRequestEntity> IP_SUISSE_01 = id("98a35e61-0162-4986-9e9e-ee5c65f86316");
     public static final Identifier<DataRequestEntity> IP_SUISSE_02 = id("341f558a-781c-4eb5-bab7-c2f39216b9f2");
+    public static final Identifier<DataRequestEntity> BLV_1 = id("218bca06-e792-4855-bcd9-e3559cea3d18");
   }
 
   public static class ConsentRequest {
@@ -71,6 +72,10 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_1DAD9F91 = id("1dad9f91-30d8-45c9-8c82-ad72f4cb22e7");
     public static final Identifier<DataProductEntity> UUID_46F8A883 = id("46f8a883-da7c-49b3-b986-10a24b1e09ef");
     public static final Identifier<DataProductEntity> UUID_42BD4613 = id("42bd4613-a0e3-4bc9-8922-d458d60e7999");
+    public static final Identifier<DataProductEntity> UUID_298B653C = id("298b653c-b326-40d3-a3d1-97e2e9d9ca22");
+    public static final Identifier<DataProductEntity> UUID_E08AF9D2 = id("e08af9d2-99ec-41b3-a77c-d4457415944f");
+    public static final Identifier<DataProductEntity> UUID_6319423C = id("6319423c-e4fc-4a47-be6e-43888f58f94f");
+    public static final Identifier<DataProductEntity> UUID_7911D98D = id("7911d98d-59eb-4cf4-be61-bfe77fe9117e");
   }
 
   public static class DataProvider {

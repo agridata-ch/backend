@@ -9,10 +9,12 @@ import static integration.agreement.DataRequestTestFactory.getPartialDataRequest
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_147E8C40;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -60,21 +62,25 @@ class DataRequestTest {
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(4));
+        .body("size()", equalTo(2));
   }
 
   @Test
   void givenAdmin_whenGetDataRequests_thenOnlyNonDraftDataRequestsReturned() {
+    createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(8));
+        .body("size()", equalTo(6));
   }
 
   @Test
   void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
+    createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(8));
+        .body("size()", equalTo(4));
   }
 
   @Test
@@ -102,6 +108,43 @@ class DataRequestTest {
   }
 
   @Test
+  void givenExistingDraftDataRequestAndConsumer_whenDeleteDataRequest_thenReturnValidResponse() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + id)
+        .then()
+        .statusCode(204);
+  }
+
+  @Test
+  void givenExistingActiveDataRequestAndConsumer_whenDeleteDataRequest_thenReturnBadRequest() {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenExistingDraftDataRequestButDifferentConsumer_whenDeleteDataRequest_thenReturnNotFound() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+    AuthTestUtils.requestAs(CONSUMER_IP_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + id)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenNonexistentDraftDataRequestAndConsumer_whenDeleteDataRequest_thenReturnNotFound() {
+    String nonexistentId = "00000000-0000-0000-0000-000000000001";
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .delete(DataRequestController.PATH_V1 + "/" + nonexistentId)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
   void givenExistingDraftDataRequestAndAdmin_whenGetDataRequest_thenReturnNotFound() {
     AuthTestUtils.requestAs(ADMIN).when()
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
@@ -111,8 +154,10 @@ class DataRequestTest {
 
   @Test
   void givenExistingDraftDataRequestAndProvider_whenGetDataRequest_thenReturnNotFound() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER).when()
-        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_DRAFT)
+        .get(DataRequestController.PATH_V1 + "/" + id)
         .then()
         .statusCode(404);
   }
@@ -172,6 +217,14 @@ class DataRequestTest {
   }
 
   @Test
+  void givenDraftWithDeprecatedProduct_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(UUID_147E8C40.uuid()))
+        .build();
+    createDataRequest(dto).then().statusCode(400);
+  }
+
+  @Test
   void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
@@ -184,14 +237,27 @@ class DataRequestTest {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
 
-    DataRequestUpdateDto firstUpdate = getPartialDataRequestUpdateDtoBuilder()
+    DataRequestUpdateDto update = getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
         .build();
 
-    updateDataRequest(id, firstUpdate)
+    updateDataRequest(id, update)
         .then()
         .statusCode(400);
+  }
 
+  @Test
+  void givenDeprecatedProducts_whenUpdateDraft_thenReturnInvalidRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto update = getPartialDataRequestUpdateDtoBuilder()
+        .products(List.of(TestDataIdentifiers.DataProduct.UUID_147E8C40.uuid()))
+        .build();
+
+    updateDataRequest(id, update)
+        .then()
+        .statusCode(400);
   }
 
   @Test

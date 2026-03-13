@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/agis/eco-etho-data/1/ecoetho",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"registrationYear\":\"[^\"]+\",\"ids\":\\{\"uid\":\"[^\"]+\"},\"dataRequestType\":\\{\"finalData\":false}}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "46f8a883-da7c-49b3-b986-10a24b1e09ef"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

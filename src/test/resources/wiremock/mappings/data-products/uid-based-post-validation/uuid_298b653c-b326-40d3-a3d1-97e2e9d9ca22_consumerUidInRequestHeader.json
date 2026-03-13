@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/[^/]+/ownership",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_EquidOwnershipListV1"
+      }
+    },
+    "headers": {
+      "AGRIDATA-CONSUMER-AGATE-LOGIN-ID": {
+        "matches": ".+"
+      },
+      "AGRIDATA-CONSUMER-UID": {
+        "matches": ".+"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "298b653c-b326-40d3-a3d1-97e2e9d9ca22"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

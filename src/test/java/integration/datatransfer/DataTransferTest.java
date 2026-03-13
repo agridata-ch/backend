@@ -27,7 +27,7 @@ class DataTransferTest {
         .then().statusCode(200)
         .body("dataTransferRequestId", notNullValue())
         .body("consentRequestId", equalTo(ConsentRequest.BIO_SUISSE_02_CHE103000001.toString()))
-        .body("data.encryptedDataOfProduct", equalTo(TestDataIdentifiers.DataProduct.UUID_085E4B72.toString()));
+        .body("data.dataOfProduct", equalTo(TestDataIdentifiers.DataProduct.UUID_085E4B72.toString()));
   }
 
   @Test

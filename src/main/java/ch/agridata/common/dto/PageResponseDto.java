@@ -16,8 +16,7 @@ public record PageResponseDto<T>(
 
     @NotNull
     @Schema(
-        description = "List of items on the current page.",
-        examples = "[{\"id\":1,\"name\":\"Item A\"},{\"id\":2,\"name\":\"Item B\"}]"
+        description = "List of items on the current page."
     )
     List<T> items,
 

@@ -1,6 +1,9 @@
 package ch.agridata.datatransferv2.service;
 
+import ch.agridata.product.dto.DataProductProviderConfigurationDto;
+import com.google.common.collect.Range;
 import jakarta.ws.rs.core.Response;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,11 +11,12 @@ import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Context object that holds the state passed through all tasks in a data transfer flow.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-02-26
  */
 @Getter
 @Setter
@@ -21,10 +25,13 @@ public final class AgridataContext {
   private String dataTransferRequestId;
   private UUID productId;
   private FlowEnum flowEnum;
+  private DataProductProviderConfigurationDto productProviderConfiguration;
   private Map<String, String> requestParameters;
-  private List<String> consumerUids;
+  private String consumerUid;
   private String consumerAgateLoginId;
-  private List<String> producerUidsInPayload;
+  private List<String> producerUids;
+  private List<String> producerBurs;
+  private Range<@NotNull LocalDate> requestedDateRange;
   private List<UUID> validDataRequestIds;
   private Map<String, String> responseHeaders;
   private Supplier<Response> providerRequest;
@@ -32,13 +39,16 @@ public final class AgridataContext {
   @Override
   public String toString() {
     return "AgridataContext{"
-        + "dataTransferRequestId='" + dataTransferRequestId
+        + "dataTransferRequestId='" + dataTransferRequestId + '\''
         + ", productId=" + productId
         + ", flowEnum=" + flowEnum
+        + ", productProviderConfiguration=" + productProviderConfiguration
         + ", requestParameters=" + requestParameters
-        + ", consumerUids=" + consumerUids
-        + ", consumerAgateLoginId='" + consumerAgateLoginId
-        + ", producerUidsInPayload=" + producerUidsInPayload
+        + ", consumerUid='" + consumerUid + '\''
+        + ", consumerAgateLoginId='" + consumerAgateLoginId + '\''
+        + ", producerUids=" + producerUids
+        + ", producerBurs=" + producerBurs
+        + ", requestedDateRange=" + requestedDateRange
         + ", validDataRequestIds=" + validDataRequestIds
         + ", responseHeaders=" + responseHeaders
         + ", providerRequest=" + providerRequest

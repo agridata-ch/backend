@@ -23,8 +23,13 @@ public record UserPreferencesDto(
     String activeUid,
     @Schema(
         description = "consent request ids for which we dont want to show migration notices anymore",
-        examples = {"a5b1d2e3-4f6a-2b7c-6d0e-9f1a3b5c7d9e"}
+        examples = {"[\"a5b1d2e3-4f6a-2b7c-6d0e-9f1a3b5c7d9e\"]"}
     )
-    List<String> dismissedMigratedIds
+    List<String> dismissedMigratedIds,
+    @Schema(
+        description = "Indicates whether the user has already seen the consent request feature tour introduction.",
+        examples = {"true"}
+    )
+    Boolean hasSeenConsentRequestTourIntro
 ) {
 }

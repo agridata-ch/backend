@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"personSearchParameters\":\\{\"uid\":\"[^\"]+\"}}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "c661ea48-106d-4d7a-a5d1-a9a6db48dd8c"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

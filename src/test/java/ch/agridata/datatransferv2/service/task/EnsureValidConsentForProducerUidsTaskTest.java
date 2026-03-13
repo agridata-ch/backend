@@ -40,7 +40,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent));
 
@@ -53,7 +53,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
   void givenNoConsentGranted_whenApply_thenConsentNotGrantedExceptionIsThrown() {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of());
 
@@ -62,7 +62,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
         .hasMessageContaining("Consent not granted")
         .satisfies(ex -> {
           var cex = (ConsentNotGrantedException) ex;
-          assertThat(cex.getMissingConsentUids()).contains(PRODUCER_UID_1);
+          assertThat(cex.getProducerIdentifiers()).contains(PRODUCER_UID_1);
         });
   }
 
@@ -71,7 +71,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1, PRODUCER_UID_2));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent));
 
@@ -79,7 +79,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
         .isInstanceOf(ConsentNotGrantedException.class)
         .satisfies(ex -> {
           var cex = (ConsentNotGrantedException) ex;
-          assertThat(cex.getMissingConsentUids()).containsExactly(PRODUCER_UID_2);
+          assertThat(cex.getProducerIdentifiers()).containsExactly(PRODUCER_UID_2);
         });
   }
 
@@ -89,7 +89,7 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var consent1 = createConsent(PRODUCER_UID_1);
     var consent2 = createConsent(PRODUCER_UID_2);
 
-    when(consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
         eq(DATA_REQUEST_ID), any()))
         .thenReturn(List.of(consent1, consent2));
 
@@ -101,8 +101,8 @@ class EnsureValidConsentForProducerUidsTaskTest {
   private AgridataContext createContextWithProducers(List<String> producerUids) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
-        .flowEnum(FlowEnum.UID_DIRECT)
-        .producerUidsInPayload(producerUids)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
+        .producerUids(producerUids)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
         .build();
   }

@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * Verifies that consent has been granted by all producer UIDs in the request payload.
  * Checks against the valid data requests found by EnsureValidDataRequestTask.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-02-26
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -28,31 +29,29 @@ public class EnsureValidConsentForProducerUidsTask implements UnaryOperator<Agri
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
-    var producerUidsRequested = new HashSet<>(context.getProducerUidsInPayload());
+    var producerUids = new HashSet<>(context.getProducerUids());
     var validDataRequestIds = context.getValidDataRequestIds();
 
     log.debug("Checking consent for producerUids={}, dataRequestIds={}",
-        producerUidsRequested, validDataRequestIds);
+        producerUids, validDataRequestIds);
 
     Set<String> producerUidsWithGrantedConsent = validDataRequestIds.stream()
-        .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestIdsOfDataRequestAndProducers(
+        .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
             dataRequestId,
-            producerUidsRequested.stream().toList()))
+            producerUids.stream().toList()))
         .flatMap(List::stream)
         .map(ConsentRequestFundamentalViewDto::dataProducerUid)
         .collect(Collectors.toSet());
 
-    Set<String> missingConsentUids = new HashSet<>(producerUidsRequested);
+    Set<String> missingConsentUids = new TreeSet<>(producerUids);
     missingConsentUids.removeAll(producerUidsWithGrantedConsent);
 
     if (!missingConsentUids.isEmpty()) {
       log.warn("Consent not granted for producerUids={}", missingConsentUids);
-      throw new ConsentNotGrantedException(
-          "Consent not granted for the requested data producer(s)",
-          missingConsentUids);
+      throw new ConsentNotGrantedException(missingConsentUids);
     }
 
-    log.debug("Consent verified for all {} producer UID(s)", producerUidsRequested.size());
+    log.debug("Consent verified for all {} producer UID(s)", producerUids.size());
     return context;
   }
 }

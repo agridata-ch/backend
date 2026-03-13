@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ResolveConsumerUidFromTokenTaskTest {
 
   private static final String CONSUMER_UID = "CHE123456789";
-  private static final String AGATE_LOGIN_ID = "12345678";
 
   @Mock
   AgridataSecurityIdentity agridataSecurityIdentity;
@@ -31,12 +30,10 @@ class ResolveConsumerUidFromTokenTaskTest {
   void givenValidToken_whenApply_thenConsumerUidIsResolved() {
     var context = createContext();
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
-    when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(AGATE_LOGIN_ID);
 
     var result = task.apply(context);
 
-    assertThat(result.getConsumerUids()).containsExactly(CONSUMER_UID);
-    assertThat(result.getConsumerAgateLoginId()).isEqualTo(AGATE_LOGIN_ID);
+    assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
   }
 
   @Test
@@ -53,7 +50,7 @@ class ResolveConsumerUidFromTokenTaskTest {
   private AgridataContext createContext() {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UID_DIRECT)
+        .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .build();
   }
 }

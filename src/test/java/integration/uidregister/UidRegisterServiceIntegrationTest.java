@@ -20,8 +20,8 @@ class UidRegisterServiceIntegrationTest {
     var result = uidRegisterService.getByUid(UidOrganisationIdCategorieType.CHE, UID_BIO_SUISSE_WITHOUT_PREFIX);
 
     assertThat(result).isNotNull().satisfies(organisation -> {
-      assertThat(organisation.name()).isEqualTo("Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen");
-      assertThat(organisation.legalName()).isEqualTo("Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen");
+      assertThat(organisation.name()).isEqualTo("INTERNATIONAL CERTIFICATION BIO SUISSE AG");
+      assertThat(organisation.legalName()).isEqualTo("INTERNATIONAL CERTIFICATION BIO SUISSE AG");
       assertThat(organisation.uid()).isEqualTo("CHE101708094");
       assertThat(organisation.address()).satisfies(address -> {
         assertThat(address.street()).isEqualTo("Peter Merian-Str. 34");

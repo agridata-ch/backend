@@ -3,6 +3,7 @@ package ch.agridata.agreement.service;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agis.api.AgisApi;
@@ -18,6 +19,8 @@ import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.UidDto;
@@ -37,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Provides read access to consent request information for different roles
  *
- * @CommentLastReviewed 2025-09-10
+ * @CommentLastReviewed 2026-02-26
  */
 
 @ApplicationScoped
@@ -151,10 +154,35 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     return consentRequestRepository.findGrantedConsentRequestUidsForProductOfConsumerSince(productId, dataConsumerUid, since);
   }
 
+  @RolesAllowed(PROVIDER_ROLE)
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
+      ResourceQueryDto resourceQueryDto,
+      UUID dataRequestId,
+      LocalDateTime lastModifiedFrom) {
+    if (dataRequestRepository.findActiveByIdAndDataProviderUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    var pagedEntities = consentRequestRepository.findByDataRequestIdAndLastModifiedFrom(
+        resourceQueryDto,
+        dataRequestId,
+        lastModifiedFrom);
+
+    return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
+  }
+
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestIdsOfDataRequestAndProducers(UUID dataRequestId,
-                                                                                                     List<String> producerUids) {
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersUids(UUID dataRequestId,
+                                                                                                       List<String> producerUids) {
     return consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, producerUids).stream()
+        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+        .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
+        .toList();
+  }
+
+  @Override
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersBurs(UUID dataRequestId,
+                                                                                                       List<String> producerBurs) {
+    return consentRequestRepository.findByDataRequestIdAndDataProducerBurs(dataRequestId, producerBurs).stream()
         .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
