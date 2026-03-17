@@ -1,3 +1,9 @@
+## [1.8.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.1...v1.8.0-rc.2) (2026-03-17)
+
+### Bug Fixes
+
+* **security:** update zlib to fix vulnerability ([d4f2b57](https://github.com/agridata-ch/backend/commit/d4f2b572d23c0752d4a0056825512deda41e9cd8)), closes [DIGIB2-1277](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1277)
+
 ## [1.8.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.7.0...v1.8.0-rc.1) (2026-03-17)
 
 ### Features
