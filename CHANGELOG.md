@@ -1,3 +1,9 @@
+## [1.8.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.2...v1.8.0-rc.3) (2026-03-17)
+
+### Features
+
+* **agreement:** Add consumer-city and data consumer logo to contract-revision-response. ([a47ed1c](https://github.com/agridata-ch/backend/commit/a47ed1c6e0313046bc3a94b8eb018838619b064d)), closes [DIGIB2-1275](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1275)
+
 ## [1.8.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.1...v1.8.0-rc.2) (2026-03-17)
 
 ### Bug Fixes
