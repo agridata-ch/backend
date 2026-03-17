@@ -2,6 +2,11 @@ FROM amazoncorretto:25.0.2-alpine3.23
 
 ENV LANGUAGE='en_US:en'
 
+# CVE-2026-22184: ensure patched zlib version (>=1.3.2).
+# amazoncorretto:25.0.2-alpine3.23 ships a vulnerable version.
+# TODO This line can be removed once a newer amazoncorretto base image includes zlib >=1.3.2.
+RUN apk add --no-cache "zlib>=1.3.2"
+
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY target/quarkus-app/lib/ /deployments/lib/
 COPY target/quarkus-app/*.jar /deployments/
