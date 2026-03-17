@@ -1,3 +1,9 @@
+## [1.8.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.7.0...v1.8.0-rc.1) (2026-03-17)
+
+### Features
+
+* **agreement:** Add contract revisions. ([777f473](https://github.com/agridata-ch/backend/commit/777f473df8cf5216e8f23aac7b620cf147a7757b)), closes [DIGIB2-1275](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1275)
+
 ## [1.7.0](https://github.com/agridata-ch/backend/compare/v1.6.0...v1.7.0) (2026-03-13)
 
 ### Features
