@@ -45,6 +45,9 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "data_consumer_name", nullable = false)
   private String dataConsumerName;
 
+  @Column(name = "data_consumer_city", nullable = false)
+  private String dataConsumerCity;
+
   @Column(name = "data_provider_name", nullable = false)
   private String dataProviderName;
 

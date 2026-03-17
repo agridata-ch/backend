@@ -1,6 +1,7 @@
 package ch.agridata.agreement.mapper;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
+import ch.agridata.agreement.dto.DataRequestContextDto;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import org.mapstruct.Mapper;
@@ -12,9 +13,10 @@ import org.mapstruct.Mapping;
  * @CommentLastReviewed: 2026-03-16
  */
 
-@Mapper(componentModel = "jakarta")
+@Mapper(componentModel = "jakarta", uses = DataRequestMapper.class)
 public interface ContractRevisionMapper {
   @Mapping(target = "dataRequestId", source = "dataRequest.id")
+  @Mapping(target = "dataRequestContext", source = "dataRequest")
   ContractRevisionDto toDto(ContractRevisionEntity entity);
 
   @Mapping(target = "id", ignore = true)
@@ -22,5 +24,8 @@ public interface ContractRevisionMapper {
   @Mapping(target = "dataConsumerName", source = "dataRequest.dataConsumerLegalName")
   @Mapping(target = "dataProviderName", source = "dataProviderName")
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, String dataProviderName);
+
+  @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
+  DataRequestContextDto toDataRequestContextDto(DataRequestEntity entity);
 
 }
