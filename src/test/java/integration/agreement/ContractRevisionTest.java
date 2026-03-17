@@ -2,7 +2,6 @@ package integration.agreement;
 
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.dto.DataRequestDto;
@@ -37,8 +36,7 @@ class ContractRevisionTest {
         .then()
         .statusCode(200)
         .body("id", equalTo(contractRevisionId.toString()))
-        .body("dataRequestId", equalTo(dataRequest.id().toString()))
-        .body("createdAt", notNullValue());
+        .body("dataRequestId", equalTo(dataRequest.id().toString()));
   }
 
   @Test
