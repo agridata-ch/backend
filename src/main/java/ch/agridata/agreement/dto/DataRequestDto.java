@@ -154,9 +154,10 @@ public record DataRequestDto(
     String targetGroup,
 
     @Schema(
-        description = "Regex of valid redirect_uri",
+        description = "Regex of valid redirect_uri. Must compile as regex successfully.",
         examples = {"^https:\\/\\/www\\.dummy-label-organisation\\/.*$"}
     )
+    @Size(max = 255)
     String validRedirectUriRegex,
 
     @Schema(

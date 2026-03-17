@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
@@ -262,8 +263,10 @@ class DataRequestMutationServiceTest {
     UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(dataRequestRepository.countByDataConsumerUidAndState(uidSearchResult.uid(),
-        DataRequestEntity.DataRequestStateEnum.DRAFT)).thenReturn(10L);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(10L);
 
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(dto))
         .isInstanceOf(ValidationException.class)
@@ -309,5 +312,68 @@ class DataRequestMutationServiceTest {
         .hasMessageContaining("DRAFT");
     verify(dataRequestRepository).archiveDraftByIdAndConsumerUid(dataRequestId, UID1);
     verify(dataRequestRepository).existsByIdAndConsumerUid(dataRequestId, UID1);
+  }
+
+  @Test
+  void givenValidRegex_whenUpdateValidRedirectUriRegex_thenPersistAndReturnDto() {
+    UUID dataRequestId = UUID.randomUUID();
+    DataRequestEntity entity = DataRequestTestUtils.buildEntity();
+    DataRequestValidRedirectUriRegexUpdateDto dto = new DataRequestValidRedirectUriRegexUpdateDto("^https:\\/\\/example\\.ch(\\/.*)?$");
+
+    when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(DataRequestDto.builder().build());
+
+    DataRequestDto result = dataRequestMutationService.updateValidRedirectUriRegex(dataRequestId, dto);
+
+    verify(dataRequestEnrichmentService).toEnrichedDto(entity);
+    assertThat(entity.getValidRedirectUriRegex()).isEqualTo(dto.validRedirectUriRegex());
+    assertThat(result).isNotNull();
+  }
+
+  @Test
+  void givenInvalidRegex_whenUpdateValidRedirectUriRegex_thenThrowValidationException() {
+    UUID dataRequestId = UUID.randomUUID();
+    DataRequestEntity entity = DataRequestTestUtils.buildEntity();
+    DataRequestValidRedirectUriRegexUpdateDto dto = new DataRequestValidRedirectUriRegexUpdateDto("(");
+
+    when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestMutationService.updateValidRedirectUriRegex(dataRequestId, dto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("Invalid redirect URI regex");
+  }
+
+  @Test
+  void givenNullRegex_whenUpdateValidRedirectUriRegex_thenClearAndReturnDto() {
+    UUID dataRequestId = UUID.randomUUID();
+    DataRequestEntity entity = DataRequestTestUtils.buildEntity();
+    entity.setValidRedirectUriRegex("^https://old.example.ch$");
+    DataRequestValidRedirectUriRegexUpdateDto dto = new DataRequestValidRedirectUriRegexUpdateDto(null);
+
+    when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(DataRequestDto.builder().build());
+
+    DataRequestDto result = dataRequestMutationService.updateValidRedirectUriRegex(dataRequestId, dto);
+
+    verify(dataRequestEnrichmentService).toEnrichedDto(entity);
+    assertThat(entity.getValidRedirectUriRegex()).isNull();
+    assertThat(result).isNotNull();
+  }
+
+  @Test
+  void givenBlankRegex_whenUpdateValidRedirectUriRegex_thenClearAndReturnDto() {
+    UUID dataRequestId = UUID.randomUUID();
+    DataRequestEntity entity = DataRequestTestUtils.buildEntity();
+    entity.setValidRedirectUriRegex("^https://old.example.ch$");
+    DataRequestValidRedirectUriRegexUpdateDto dto = new DataRequestValidRedirectUriRegexUpdateDto("");
+
+    when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(DataRequestDto.builder().build());
+
+    DataRequestDto result = dataRequestMutationService.updateValidRedirectUriRegex(dataRequestId, dto);
+
+    verify(dataRequestEnrichmentService).toEnrichedDto(entity);
+    assertThat(entity.getValidRedirectUriRegex()).isNull();
+    assertThat(result).isNotNull();
   }
 }

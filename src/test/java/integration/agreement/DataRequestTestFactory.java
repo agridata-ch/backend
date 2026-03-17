@@ -84,6 +84,15 @@ public class DataRequestTestFactory {
   }
 
   @SneakyThrows
+  public static Response updateValidRedirectUriRegex(String requestId, String regex, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .contentType(JSON)
+        .body(MAPPER.writeValueAsString(java.util.Map.of("validRedirectUriRegex", regex)))
+        .when()
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/valid-redirect-uri-regex");
+  }
+
+  @SneakyThrows
   public static Response updateLogo(String requestId, String logoFileName) {
     File logo = new File("src/test/resources/data-request-logos/" + logoFileName);
     return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
