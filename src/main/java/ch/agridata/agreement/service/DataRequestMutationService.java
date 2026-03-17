@@ -1,9 +1,11 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
@@ -20,6 +22,8 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -93,8 +97,33 @@ public class DataRequestMutationService {
     throw new ValidationException("Data request is not in state DRAFT");
   }
 
-  private DataRequestDto updateEntityWithDto(DataRequestUpdateDto dataRequestDto,
-                                             DataRequestEntity entity) {
+  @Transactional
+  @RolesAllowed(ADMIN_ROLE)
+  public DataRequestDto updateValidRedirectUriRegex(UUID requestId, DataRequestValidRedirectUriRegexUpdateDto dto) {
+    var entity = dataRequestRepository.findByIdOptional(requestId)
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+
+    if (dto.validRedirectUriRegex() == null || dto.validRedirectUriRegex().isEmpty()) {
+      entity.setValidRedirectUriRegex(null);
+    } else {
+      throwIfInvalid(dto.validRedirectUriRegex());
+      entity.setValidRedirectUriRegex(dto.validRedirectUriRegex());
+    }
+    return dataRequestEnrichmentService.toEnrichedDto(entity);
+  }
+
+  private void throwIfInvalid(String redirectUriRegex) {
+    try {
+      Pattern.compile(redirectUriRegex);
+    } catch (PatternSyntaxException _) {
+      throw new ValidationException("Invalid redirect URI regex");
+    }
+  }
+
+  private DataRequestDto updateEntityWithDto(
+      DataRequestUpdateDto dataRequestDto,
+      DataRequestEntity entity
+  ) {
     Set<UUID> existingProductIds = entity.getDataProducts().stream()
         .map(DataRequestDataProductEntity::getDataProductId)
         .collect(Collectors.toSet());

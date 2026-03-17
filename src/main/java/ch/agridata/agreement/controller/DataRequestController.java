@@ -13,6 +13,7 @@ import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
@@ -272,6 +273,23 @@ public class DataRequestController {
     }
     return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
 
+  }
+
+  @PUT
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/valid-redirect-uri-regex")
+  @Operation(
+      operationId = "updateDataRequestValidRedirectUriRegex",
+      description = "Updates the valid redirect URI regex of a specific data request. Only accessible to admins."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed(ADMIN_ROLE)
+  public DataRequestDto updateDataRequestValidRedirectUriRegex(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestValidRedirectUriRegexUpdateDto dto
+  ) {
+    return dataRequestMutationService.updateValidRedirectUriRegex(requestId, dto);
   }
 
   @PUT

@@ -8,6 +8,7 @@ import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
+import static integration.agreement.DataRequestTestFactory.updateValidRedirectUriRegex;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_147E8C40;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
@@ -337,6 +338,29 @@ class DataRequestTest {
         .statusCode(400);
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
+  }
+
+  @Test
+  void givenAdminUpdatesValidRedirectUriRegexWithInvalidPattern_thenBadRequest() {
+    updateValidRedirectUriRegex(DataRequest.BIO_SUISSE_01.toString(), "(", ADMIN)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenAdminUpdatesValidRedirectUriRegex_whenConsumerReadsOwnDataRequest_thenRegexIsVisible() {
+    String regex = "^https:\\/\\/consumer\\.example\\.ch(\\/.*)?$";
+
+    updateValidRedirectUriRegex(DataRequest.BIO_SUISSE_01.toString(), regex, ADMIN)
+        .then()
+        .statusCode(200)
+        .body("validRedirectUriRegex", equalTo(regex));
+
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
+        .then()
+        .statusCode(200)
+        .body("validRedirectUriRegex", equalTo(regex));
   }
 
   @Test

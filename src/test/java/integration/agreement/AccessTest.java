@@ -62,6 +62,10 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/status",
         CONSUMER_ROLE, ADMIN_ROLE);
 
+    AccessTestUtils.assertForbiddenForAllExcept(PUT,
+        DataRequestController.PATH_V1 + "/1/valid-redirect-uri-regex",
+        ADMIN_ROLE);
+
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1/kt-id-p/1/consent-requests",
         CONSUMER_ROLE, ADMIN_ROLE);
 
