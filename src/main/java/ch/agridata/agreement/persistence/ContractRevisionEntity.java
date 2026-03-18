@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,4 +52,23 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "data_provider_name", nullable = false)
   private String dataProviderName;
 
+  // Signature information
+
+  @Column(name = "consumer_signature_user_id1")
+  private UUID consumerSignatureUserId1;
+
+  @Column(name = "consumer_signature_name1")
+  private String consumerSignatureName1;
+
+  @Column(name = "consumer_signature_timestamp1")
+  private LocalDateTime consumerSignatureTimestamp1;
+
+  @Column(name = "consumer_signature_user_id2")
+  private UUID consumerSignatureUserId2;
+
+  @Column(name = "consumer_signature_name2")
+  private String consumerSignatureName2;
+
+  @Column(name = "consumer_signature_timestamp2")
+  private LocalDateTime consumerSignatureTimestamp2;
 }
