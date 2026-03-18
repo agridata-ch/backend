@@ -1,6 +1,7 @@
 package ch.agridata.agreement.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -53,7 +54,11 @@ public record ContractRevisionDto(
         description = "Contextual information from the parent data request (e.g. logo, reduced metadata)"
     )
     @NotNull
-    DataRequestContextDto dataRequestContext
+    DataRequestContextDto dataRequestContext,
 
+    @Schema(
+        description = "List of signatures of the data consumer"
+    )
+    List<ContractRevisionSignatureDto> consumerSignatures
 ) {
 }

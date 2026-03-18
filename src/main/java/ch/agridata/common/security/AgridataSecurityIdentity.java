@@ -34,6 +34,7 @@ public class AgridataSecurityIdentity {
       UUID.nameUUIDFromBytes("agridata-agate-login-id".getBytes(StandardCharsets.UTF_8));
   private static final String ACCESS_TOKEN_CLAIM_UID = "uid";
   private static final String ACCESS_TOKEN_CLAIM_KT_ID_P = "KT_ID_P";
+  private static final String ACCESS_TOKEN_CLAIM_PHONE_NUMBER = "phone_number";
 
   private final SecurityIdentity securityIdentity;
 
@@ -112,6 +113,15 @@ public class AgridataSecurityIdentity {
 
   public Optional<String> getUid() {
     return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID));
+  }
+
+  public String getPhoneNumberOrElseThrow() {
+    return getPhoneNumber().orElseThrow(
+        () -> new IllegalStateException("User with agateLoginId " + getAgateLoginId() + " has no phone number assigned"));
+  }
+
+  public Optional<String> getPhoneNumber() {
+    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_PHONE_NUMBER));
   }
 
   public UserInfo getUserInfoOrElseThrow() {

@@ -11,6 +11,7 @@ import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.UidMissingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
@@ -151,6 +152,19 @@ public class ExceptionHandler {
     return Response.status(Status.BAD_GATEWAY)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createExternalServiceFailedResponse("External service failed", 0, ex.getMessage()))
+        .build();
+  }
+
+  @ServerExceptionMapper(OptimisticLockException.class)
+  public Response handleOptimisticLockException(OptimisticLockException ex) {
+    log.warn("OptimisticLockException: {}", ex.getMessage());
+
+    return Response.status(Response.Status.CONFLICT)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse(
+            "The object has been updated by another user. Please refresh the page.",
+            ex.getMessage()
+        ))
         .build();
   }
 
