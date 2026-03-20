@@ -65,8 +65,8 @@ public class DataProductEntity extends AuditableEntity {
   @Column(name = "rest_client_method_code", length = 50)
   private String restClientMethodCode;
 
-  @Column(name = "rest_client_path", length = 1000)
-  private String restClientPath;
+  @Column(name = "rest_client_path_template", length = 1000)
+  private String restClientPathTemplate;
 
   @Column(name = "rest_client_request_template", length = 1000)
   private String restClientRequestTemplate;
@@ -76,6 +76,9 @@ public class DataProductEntity extends AuditableEntity {
 
   @Column(name = "deprecated_since")
   private LocalDateTime deprecatedSince;
+
+  @Column(name = "rest_client_change_detection_path_template", length = 1000)
+  private String restClientChangeDetectionPathTemplate;
 }
 
 

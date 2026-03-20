@@ -167,7 +167,7 @@ class BuildProviderRequestTaskTest {
         .id(PRODUCT_ID)
         .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode(method)
-        .restClientPath(path)
+        .restClientPathTemplate(path)
         .restClientRequestTemplate(template)
         .build();
   }

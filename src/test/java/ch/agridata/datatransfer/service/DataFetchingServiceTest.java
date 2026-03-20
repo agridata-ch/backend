@@ -51,7 +51,7 @@ class DataFetchingServiceTest {
         .id(PRODUCT_ID)
         .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode("POST")
-        .restClientPath("random-path")
+        .restClientPathTemplate("random-path")
         .restClientRequestTemplate("""
             {
               "surveyYear": "{{year}}",
@@ -88,7 +88,7 @@ class DataFetchingServiceTest {
         .id(PRODUCT_ID)
         .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode("POST")
-        .restClientPath("random-path")
+        .restClientPathTemplate("random-path")
         .restClientRequestTemplate("""
             {
               "surveyYear": "{{year}}",
