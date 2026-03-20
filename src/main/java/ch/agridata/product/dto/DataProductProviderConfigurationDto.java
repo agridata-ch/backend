@@ -34,10 +34,10 @@ public record DataProductProviderConfigurationDto(
     String restClientMethodCode,
 
     @Schema(
-        description = "Path for the request",
-        examples = {"structure"}
+        description = "Path template for the request",
+        examples = {"/farm-data/uid/{{uid}}"}
     )
-    String restClientPath,
+    String restClientPathTemplate,
 
     @Schema(
         description = "Body template for the request",
@@ -54,7 +54,17 @@ public record DataProductProviderConfigurationDto(
     )
     String restClientRequestTemplate,
 
-    String flowCode)
+    @Schema(
+        description = "Flow code for the data transfer",
+        examples = {"UID_BASED_PRE_VALIDATION"}
+    )
+    String flowCode,
+
+    @Schema(
+        description = "Path template for detecting changes",
+        examples = {"/farm-data/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}"}
+    )
+    String restClientChangeDetectionPathTemplate)
 
     implements Serializable {
 }

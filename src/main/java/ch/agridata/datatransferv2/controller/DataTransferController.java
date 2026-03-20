@@ -1,15 +1,20 @@
 package ch.agridata.datatransferv2.controller;
 
 import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.datatransferv2.dto.ProducerIdentifier;
+import ch.agridata.datatransferv2.service.ChangeDetectionService;
 import ch.agridata.datatransferv2.service.FlowEnum;
 import ch.agridata.datatransferv2.service.FlowProvider;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.ForbiddenException;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -19,6 +24,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,6 +54,7 @@ public class DataTransferController {
 
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final FlowProvider flowProvider;
+  private final ChangeDetectionService changeDetectionService;
 
   @GET
   @ApiSubset({DATA_CONSUMER})
@@ -108,5 +115,33 @@ public class DataTransferController {
     if (!agridataSecurityIdentity.isConsumer()) {
       throw new ForbiddenException();
     }
+  }
+
+  @GET
+  @ApiSubset({DATA_CONSUMER})
+  @Path("/product/{productId}/modified-producers")
+  @Operation(
+      operationId = "getModifiedProducers",
+      description = "Returns producer IDs for which either a new consent was granted or data has changed at the upstream provider since "
+          + "the given timestamp. Only producer IDs with a currently valid consent are included. "
+          + "This endpoint requires the product to have change detection configured."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ProducerIdentifier> getModifiedProducers(
+      @Parameter(
+          name = "productId",
+          description = "productId for which the change detection is requested",
+          example = "085e4b72-964d-4bd5-a3c9-224d8c5585af"
+      )
+      @PathParam("productId") @Valid UUID productId,
+      @Parameter(
+          name = "since",
+          description = "Only changes and new consents after this date are returned.",
+          example = "2025-01-01"
+      )
+      @QueryParam("since") @NotNull @Valid LocalDate since
+  ) {
+    return changeDetectionService.getModifiedProducers(productId, since);
   }
 }

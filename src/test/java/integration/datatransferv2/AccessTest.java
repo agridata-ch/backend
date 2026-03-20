@@ -18,5 +18,9 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET,
         DataTransferController.PATH + "/product/085e4b72-964d-4bd5-a3c9-224d8c5585af/data",
         CONSUMER_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(GET,
+        DataTransferController.PATH + "/product/085e4b72-964d-4bd5-a3c9-224d8c5585af/modified-producers",
+        CONSUMER_ROLE);
   }
 }

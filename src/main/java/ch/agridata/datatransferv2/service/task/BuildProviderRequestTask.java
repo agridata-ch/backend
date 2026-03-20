@@ -51,7 +51,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     var requestMethod = productProviderConfiguration.restClientMethodCode();
 
     Set<String> usedKeys = new HashSet<>();
-    var requestPath = replacePlaceholders(productProviderConfiguration.restClientPath(), requestParameters, usedKeys);
+    var requestPath = replacePlaceholders(productProviderConfiguration.restClientPathTemplate(), requestParameters, usedKeys);
     var requestBody = replacePlaceholders(productProviderConfiguration.restClientRequestTemplate(), requestParameters, usedKeys);
     var finalPath = appendUnusedAsQueryParams(requestPath, requestParameters, usedKeys);
 
