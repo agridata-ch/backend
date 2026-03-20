@@ -1,3 +1,9 @@
+## [1.8.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.5...v1.8.0-rc.6) (2026-03-20)
+
+### Features
+
+* **authentication:** add producer_role for equid owners and security arch unit tests ([179807d](https://github.com/agridata-ch/backend/commit/179807da3b1913a7872e07972aeda115f1386521)), closes [DIGIB2-1267](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1267)
+
 ## [1.8.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.4...v1.8.0-rc.5) (2026-03-20)
 
 ### Features
