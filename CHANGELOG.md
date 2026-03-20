@@ -1,3 +1,9 @@
+## [1.8.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.4...v1.8.0-rc.5) (2026-03-20)
+
+### Features
+
+* **agreement:** Allow consumer to sign contract. ([055a462](https://github.com/agridata-ch/backend/commit/055a462e10cf8f8919ec207fbfa4862fec0e91d7)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
 ## [1.8.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.3...v1.8.0-rc.4) (2026-03-18)
 
 ### Features
