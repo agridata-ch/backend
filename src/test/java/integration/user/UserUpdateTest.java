@@ -45,7 +45,7 @@ class UserUpdateTest {
     assertThat(actualResult)
         .usingRecursiveComparison()
         .ignoringCollectionOrder()
-        .ignoringFields("lastLoginDate")
+        .ignoringFields("userId", "lastLoginDate")
         .isEqualTo(UserInfoDto.builder()
             .agateLoginId(ADMIN.getAgateLoginId())
             .ktIdP(null)
@@ -60,6 +60,8 @@ class UserUpdateTest {
             .addressCountry(null)
             .rolesAtLastLogin(Stream.concat(Stream.of(ADMIN_ROLE), DEFAULT_AGATE_ROLES.stream()).toList())
             .build());
+
+    assertThat(actualResult.userId()).isNotNull();
 
     assertThat(actualResult.lastLoginDate())
         .isAfter(LocalDateTime.now().minusMinutes(2))
@@ -77,7 +79,7 @@ class UserUpdateTest {
     assertThat(actualResult)
         .usingRecursiveComparison()
         .ignoringCollectionOrder()
-        .ignoringFields("lastLoginDate")
+        .ignoringFields("userId", "lastLoginDate")
         .isEqualTo(UserInfoDto.builder()
             .agateLoginId(CONSUMER_BIO_SUISSE.getAgateLoginId())
             .ktIdP(null)
@@ -92,6 +94,8 @@ class UserUpdateTest {
             .addressCountry("CH")
             .rolesAtLastLogin(Stream.concat(Stream.of(CONSUMER_ROLE), DEFAULT_AGATE_ROLES.stream()).toList())
             .build());
+
+    assertThat(actualResult.userId()).isNotNull();
 
     assertThat(actualResult.lastLoginDate())
         .isAfter(LocalDateTime.now().minusMinutes(2))

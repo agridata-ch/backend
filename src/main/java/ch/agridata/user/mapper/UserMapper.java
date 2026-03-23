@@ -6,6 +6,7 @@ import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.persistence.UserEntity;
 import ch.agridata.user.persistence.UserEntityPreferencesDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 /**
@@ -17,6 +18,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserMapper {
 
+  @Mapping(target = "userId", source = "id")
   UserInfoDto toUserInfoDto(UserEntity userEntity);
 
   PageResponseDto<UserInfoDto> toPagedUserInfoDto(PageResponseDto<UserEntity> pagedProducerEntities);
