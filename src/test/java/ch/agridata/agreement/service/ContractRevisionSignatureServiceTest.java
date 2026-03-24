@@ -65,7 +65,7 @@ class ContractRevisionSignatureServiceTest {
     ContractRevisionEntity nextRevision = new ContractRevisionEntity();
     nextRevision.setId(UUID.randomUUID());
 
-    setupSecurityContext("John Doe");
+    setupSecurityContext("John", "Doe");
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
@@ -98,7 +98,7 @@ class ContractRevisionSignatureServiceTest {
   @Test
   void givenUserAlreadySigned_whenSignContractRevision_thenThrowValidationException() {
     existingRevision.setConsumerSignatureUserId1(USER_ID);
-    setupSecurityContext("John Doe");
+    setupSecurityContext("John", "Doe");
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
         .thenReturn(Optional.of(existingRevision));
 
@@ -111,7 +111,7 @@ class ContractRevisionSignatureServiceTest {
   @Test
   void givenSlotAlreadyOccupied_whenSignContractRevision_thenThrowValidationException() {
     existingRevision.setConsumerSignatureTimestamp1(LocalDateTime.now());
-    setupSecurityContext("John Doe");
+    setupSecurityContext("John", "Doe");
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
         .thenReturn(Optional.of(existingRevision));
 
@@ -123,7 +123,7 @@ class ContractRevisionSignatureServiceTest {
 
   @Test
   void givenInvalidSlotId_whenSignContractRevision_thenThrowValidationException() {
-    setupSecurityContext("John Doe");
+    setupSecurityContext("John", "Doe");
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
         .thenReturn(Optional.of(existingRevision));
 
@@ -133,9 +133,10 @@ class ContractRevisionSignatureServiceTest {
         .hasMessage("Invalid signature slot id");
   }
 
-  private void setupSecurityContext(String name) {
+  private void setupSecurityContext(String firstName, String familyName) {
     UserInfo userInfo = org.mockito.Mockito.mock(UserInfo.class);
-    lenient().when(userInfo.getName()).thenReturn(name);
+    lenient().when(userInfo.getFirstName()).thenReturn(firstName);
+    lenient().when(userInfo.getFamilyName()).thenReturn(familyName);
 
     lenient().when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
     lenient().when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
