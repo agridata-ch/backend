@@ -1,3 +1,9 @@
+## [1.8.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.6...v1.8.0-rc.7) (2026-03-24)
+
+### Features
+
+* **agreement:** Add userId-field to user-info endpoint. ([733d010](https://github.com/agridata-ch/backend/commit/733d01009c1575ab3ebc637788c17d051e1dea7b)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
 ## [1.8.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.5...v1.8.0-rc.6) (2026-03-20)
 
 ### Features
