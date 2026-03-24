@@ -51,12 +51,12 @@ public class DataRequestTestFactory {
 
   @SneakyThrows
   public static Response createDataRequest() {
-    return createDataRequest(getPartialDataRequestUpdateDtoBuilder().build());
+    return createDataRequestAs(getPartialDataRequestUpdateDtoBuilder().build(), CONSUMER_BIO_SUISSE);
   }
 
   @SneakyThrows
-  public static Response createDataRequest(DataRequestUpdateDto dto) {
-    return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
+  public static Response createDataRequestAs(DataRequestUpdateDto dto, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(dto))
         .when()
@@ -101,16 +101,16 @@ public class DataRequestTestFactory {
         .put(DataRequestController.PATH_V1 + "/" + requestId + "/logo/");
   }
 
-  public static DataRequestDto createReadyForSigningDataRequest() {
-    Response createResponse = createDataRequest(getDataRequestDto().build());
+  public static DataRequestDto createReadyForSigningDataRequestFor(TestUserEnum user) {
+    Response createResponse = createDataRequestAs(getDataRequestDto().build(), user);
     DataRequestDto created = createResponse.as(DataRequestDto.class);
     String requestId = created.id().toString();
-    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE);
+    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, user);
     Response toBeSignedResponse = setStatusAs(requestId, DataRequestStateEnum.TO_BE_SIGNED, ADMIN);
     return toBeSignedResponse.as(DataRequestDto.class);
   }
 
   public static UUID createContractRevisionAndReturnId() {
-    return createReadyForSigningDataRequest().currentContractRevisionId();
+    return createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE).currentContractRevisionId();
   }
 }

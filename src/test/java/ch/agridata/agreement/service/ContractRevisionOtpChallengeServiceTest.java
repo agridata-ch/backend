@@ -71,7 +71,7 @@ class ContractRevisionOtpChallengeServiceTest {
     assertThat(result.challengeId()).isEqualTo(challengeEntity.getId());
     assertThat(result.expiresAt()).isEqualTo(expiry);
     assertThat(result.retryAfterSeconds()).isEqualTo(30);
-    assertThat(result.maskedPhoneNumber()).isEqualTo("**********67");
+    assertThat(result.maskedPhoneNumber()).isEqualTo("+41 *******67");
   }
 
   @Test

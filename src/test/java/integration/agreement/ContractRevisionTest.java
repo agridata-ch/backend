@@ -1,6 +1,8 @@
 package integration.agreement;
 
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -31,7 +33,7 @@ class ContractRevisionTest {
 
   @Test
   void givenExistingContractRevisionOfCurrentConsumer_whenGetById_thenReturnContractRevision() {
-    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequest();
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE);
     UUID contractRevisionId = dataRequest.currentContractRevisionId();
 
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
@@ -67,7 +69,7 @@ class ContractRevisionTest {
 
   @Test
   void givenValidRevision_whenInitiateChallenge_thenReturnOtpChallengeDto() {
-    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequest();
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE);
     UUID revisionId = dataRequest.currentContractRevisionId();
 
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
@@ -83,35 +85,64 @@ class ContractRevisionTest {
   }
 
   @Test
-  void givenActiveChallenge_whenVerifySignature_thenReturnUpdatedContractRevision() {
-    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequest();
-    UUID revisionId = dataRequest.currentContractRevisionId();
+  void givenActiveChallenge_whenVerifyTwoSignatures_thenReturnUpdatedContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BLV_1);
+    UUID revisionId1 = dataRequest.currentContractRevisionId();
 
-    OtpChallengeDto challenge = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
-        .pathParam("id", revisionId)
+    OtpChallengeDto challenge1 = AuthTestUtils.requestAs(CONSUMER_BLV_1).given()
+        .pathParam("id", revisionId1)
         .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_01.name())
         .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
         .as(OtpChallengeDto.class);
 
-    VerifyOtpRequestDto verifyRequest = new VerifyOtpRequestDto("123456");
+    VerifyOtpRequestDto verifyRequest1 = new VerifyOtpRequestDto("123456");
 
-    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
+    var response = AuthTestUtils.requestAs(CONSUMER_BLV_1).given()
         .contentType("application/json")
-        .pathParam("id", revisionId)
+        .pathParam("id", revisionId1)
         .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_01.name())
-        .pathParam("challengeId", challenge.challengeId())
-        .body(verifyRequest)
+        .pathParam("challengeId", challenge1.challengeId())
+        .body(verifyRequest1)
         .when()
         .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges/{challengeId}/verification")
         .then()
         .statusCode(200)
         .body("id", notNullValue())
-        .body("id", org.hamcrest.Matchers.not(revisionId.toString()));
+        .body("id", org.hamcrest.Matchers.not(revisionId1.toString()))
+        .body("consumerSignatures.last().name", equalTo(
+            CONSUMER_BLV_1.getGivenName() + " " + CONSUMER_BLV_1.getFamilyName()
+        ));
+
+    var revisionId2 = response.extract().path("id");
+
+    OtpChallengeDto challenge2 = AuthTestUtils.requestAs(CONSUMER_BLV_2).given()
+        .pathParam("id", revisionId2)
+        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_02.name())
+        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
+        .as(OtpChallengeDto.class);
+
+    VerifyOtpRequestDto verifyRequest2 = new VerifyOtpRequestDto("123456");
+
+    AuthTestUtils.requestAs(CONSUMER_BLV_2).given()
+        .contentType("application/json")
+        .pathParam("id", revisionId2)
+        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_02.name())
+        .pathParam("challengeId", challenge2.challengeId())
+        .body(verifyRequest2)
+        .when()
+        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges/{challengeId}/verification")
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("id", org.hamcrest.Matchers.not(revisionId2.toString()))
+        .body("consumerSignatures.last().name", equalTo(
+            CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
+        ));
   }
 
   @Test
   void givenInvalidSlotId_whenInitiateChallenge_thenReturn400() {
-    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequest();
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE);
     UUID revisionId = dataRequest.currentContractRevisionId();
 
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()

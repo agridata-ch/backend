@@ -25,7 +25,7 @@ public record ContractRevisionSignatureDto(
     @NotNull
     UUID userId,
     @Schema(
-        description = "ID of the user of the signature",
+        description = "Name of the user of the signature",
         examples = {"John Doe"}
     )
     @NotNull
