@@ -60,8 +60,8 @@ public class ContractRevisionSignatureService {
     ContractRevisionEntity newRevision =
         contractRevisionMapper.toNextRevisionEntity(revisionToSign);
 
-    String userFullName = agridataSecurityIdentity.getUserInfoOrElseThrow().getFirstName()
-        + " " + agridataSecurityIdentity.getUserInfoOrElseThrow().getFamilyName();
+    String userFullName = agridataSecurityIdentity.getUserInfoOrElseThrow().getString("given_name")
+        + " " + agridataSecurityIdentity.getUserInfoOrElseThrow().getString("family_name");
 
     applyConsumerSignature(
         newRevision,

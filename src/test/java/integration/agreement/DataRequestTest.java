@@ -4,6 +4,7 @@ import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
+import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
@@ -206,7 +207,7 @@ class DataRequestTest {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(UUID_46F8A883.uuid(), UUID_42BD4613.uuid()))
         .build();
-    createDataRequest(invalidDto).then().statusCode(400);
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -214,7 +215,7 @@ class DataRequestTest {
     DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(UUID_147E8C40.uuid()))
         .build();
-    createDataRequest(dto).then().statusCode(400);
+    createDataRequestAs(dto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -222,7 +223,7 @@ class DataRequestTest {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
         .build();
-    createDataRequest(invalidDto).then().statusCode(400);
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -314,7 +315,7 @@ class DataRequestTest {
         .products(List.of())
         .build();
 
-    createDataRequest(invalidDto).then()
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
         .statusCode(400);
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();

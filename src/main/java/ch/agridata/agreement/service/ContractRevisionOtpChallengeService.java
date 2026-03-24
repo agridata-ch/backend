@@ -57,9 +57,12 @@ public class ContractRevisionOtpChallengeService {
   }
 
   private String maskPhoneNumber(String phoneNumber) {
-    if (phoneNumber == null || phoneNumber.length() < 4) {
+    if (phoneNumber == null || phoneNumber.length() < 10) {
       return "****";
     }
-    return "*".repeat(Math.max(0, phoneNumber.length() - 2)) + phoneNumber.substring(phoneNumber.length() - 2);
+    String phoneNumberWithoutWhitespaces = phoneNumber.replaceAll("\\s+", "");
+    return phoneNumberWithoutWhitespaces.substring(0, 3) + " "
+        + "*".repeat(Math.max(0, phoneNumberWithoutWhitespaces.length() - 5))
+        + phoneNumberWithoutWhitespaces.substring(phoneNumberWithoutWhitespaces.length() - 2);
   }
 }
