@@ -1,3 +1,9 @@
+## [1.8.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.7...v1.8.0-rc.8) (2026-03-24)
+
+### Bug Fixes
+
+* **agreement:** Concatenate first- and familyName for signature name. ([aca90d5](https://github.com/agridata-ch/backend/commit/aca90d53bc16ad17d9ae5cdb74b90df0fd5c332b)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
 ## [1.8.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.6...v1.8.0-rc.7) (2026-03-24)
 
 ### Features
