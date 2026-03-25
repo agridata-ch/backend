@@ -1,3 +1,9 @@
+## [1.8.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.8...v1.8.0-rc.9) (2026-03-25)
+
+### Bug Fixes
+
+* **agreement:** Change phoneNumber anonymization, retrieve signatureName through .getString() and improve tests. ([a8131fe](https://github.com/agridata-ch/backend/commit/a8131fe348b5e997e95f456602f9edfe4513d8d5)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
 ## [1.8.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.7...v1.8.0-rc.8) (2026-03-24)
 
 ### Bug Fixes
