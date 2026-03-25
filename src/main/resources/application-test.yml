@@ -31,6 +31,8 @@ quarkus:
       url: http://localhost:8051/agis
     tvd-animal-tracing-api:
       url: http://localhost:8051/tvd/animal-tracing
+    tvd-zo-api:
+      url: http://localhost:8051/tvd/zo
   test:
     enable-callbacks-for-integration-tests: true
   wiremock:

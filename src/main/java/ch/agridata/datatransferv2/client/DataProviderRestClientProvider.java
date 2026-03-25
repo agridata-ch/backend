@@ -14,18 +14,22 @@ public class DataProviderRestClientProvider {
 
   private final AgisApiRestClient agisApiRestClient;
   private final TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient;
+  private final TvdZoApiRestClient tvdZoApiRestClient;
 
   @Inject
   public DataProviderRestClientProvider(@RestClient AgisApiRestClient agisApiRestClient,
-                                        @RestClient TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient) {
+                                        @RestClient TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient,
+                                        @RestClient TvdZoApiRestClient tvdZoApiRestClient) {
     this.agisApiRestClient = agisApiRestClient;
     this.tvdAnimalTracingApiRestClient = tvdAnimalTracingApiRestClient;
+    this.tvdZoApiRestClient = tvdZoApiRestClient;
   }
 
   public DataProviderRestClient get(RestClientIdentifier restClientIdentifier) {
     return switch (restClientIdentifier) {
       case AGIS_API -> agisApiRestClient;
       case TVD_ANIMAL_TRACING_API -> tvdAnimalTracingApiRestClient;
+      case TVD_ZO_API -> tvdZoApiRestClient;
     };
   }
 
@@ -36,7 +40,8 @@ public class DataProviderRestClientProvider {
    */
   public enum RestClientIdentifier {
     AGIS_API,
-    TVD_ANIMAL_TRACING_API
+    TVD_ANIMAL_TRACING_API,
+    TVD_ZO_API
   }
 
 }

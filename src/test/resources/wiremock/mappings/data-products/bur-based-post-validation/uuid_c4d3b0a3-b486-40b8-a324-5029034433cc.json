@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/animal/shared-data/cattle/livestock",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_CattleLivestockV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "c4d3b0a3-b486-40b8-a324-5029034433cc"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

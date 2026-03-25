@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/[^/]+/legalunit",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_FarmManagerV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "b17ae68a-42a8-47fe-ba7b-ec7105c5c5c7"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

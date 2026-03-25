@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/cattle/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_CattleDetailV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "0b42afb7-3683-4065-9cb3-396995a5be97"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-UIDS": "[\"CHE101000001\"]",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "[\"99910002\"]"
+    }
+  }
+}
