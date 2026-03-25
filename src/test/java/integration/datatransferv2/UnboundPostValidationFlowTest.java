@@ -97,12 +97,12 @@ class UnboundPostValidationFlowTest {
 
         // --- 403: consent outdated ----------------------------------------------------------------
 
-        // uid_bur_relation_since=2021-05-08 for all dc7dbc72 consents; UIDs are not date-filtered,
+        // uid_bur_relation_since=2000-01-01 for all dc7dbc72 consents; UIDs are not date-filtered,
         // BURs are – so only the BURs appear in the debug message when a historic date is given
         new Case("all BUR consents outdated at historic date",
             List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
             List.of(Bur._99910003.getCode(), Bur._99930004.getCode()),
-            Map.of("date", "2000-01-01"), 403,
+            Map.of("date", "1999-01-01"), 403,
             CONSENT_NOT_GRANTED_MSG + String.join(", ", Bur._99910003.getCode(), Bur._99930004.getCode()))
     );
 

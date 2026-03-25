@@ -29,7 +29,7 @@ class UidBasedPostValidationFlowTest {
   void givenAcceptedConsentRequest_whenProductRequested_thenProductReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
-        .queryParam("uid", Uid.ZZZ199984051.name())
+        .queryParam("uid", Uid.CHE101000001.name())
         .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(200)
@@ -37,7 +37,7 @@ class UidBasedPostValidationFlowTest {
 
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
-            "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.ZZZ199984051.name()
+            "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.CHE101000001.name()
                 + "/ownership?dataPackage=TVD_EquidOwnershipListV1&recipientUid=CHE123456789")));
   }
 
@@ -45,7 +45,7 @@ class UidBasedPostValidationFlowTest {
   void givenNoExistingConsentRequest_whenProductRequested_thenForbiddenReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
-        .queryParam("uid", Uid.CHE101000001.name())
+        .queryParam("uid", Uid.CHE102000001.name())
         .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
@@ -86,7 +86,7 @@ class UidBasedPostValidationFlowTest {
   void givenNoConsumerUidInTokenButInResponseHeader_whenProductRequested_thenProductReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_WITHOUT_UID)
         .pathParam("productId", PRODUCT_UID_BASED_POST_VALIDATION.uuid())
-        .queryParam("uid", Uid.ZZZ199984051.name())
+        .queryParam("uid", Uid.CHE101000001.name())
         .queryParam("recipientUid", "CHE123456789")
         .queryParam("year", 2024)
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
@@ -95,7 +95,7 @@ class UidBasedPostValidationFlowTest {
 
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
-            "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.ZZZ199984051.name()
+            "/tvd/animal-tracing/v1.0/equid/shared-data/legalunits/" + Uid.CHE101000001.name()
                 + "/ownership?dataPackage=TVD_EquidOwnershipListV1&recipientUid=CHE123456789&year=2024")));
   }
 }

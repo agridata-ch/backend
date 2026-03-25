@@ -12,8 +12,8 @@ import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.agreement.DataRequestTestFactory.updateValidRedirectUriRegex;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_147E8C40;
-import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_6319423C;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
@@ -205,7 +205,7 @@ class DataRequestTest {
   @Test
   void givenDraftWithProductsFromDifferentSystems_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
-        .products(List.of(UUID_46F8A883.uuid(), UUID_42BD4613.uuid()))
+        .products(List.of(UUID_46F8A883.uuid(), UUID_6319423C.uuid()))
         .build();
     createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
