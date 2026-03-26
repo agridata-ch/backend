@@ -1,3 +1,9 @@
+## [1.8.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.9...v1.8.0-rc.10) (2026-03-26)
+
+### Features
+
+* **data-transfer:** add change detection endpoint returning modified producers since a given date ([6d1de16](https://github.com/agridata-ch/backend/commit/6d1de16f400dbf441f15d54d8e9d92e0a937df51)), closes [DIGIB2-861](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-861)
+
 ## [1.8.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.8...v1.8.0-rc.9) (2026-03-25)
 
 ### Bug Fixes
