@@ -21,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
  * @CommentLastReviewed 2026-02-16
  */
 
-@OpenApiFilter(OpenApiFilter.RunStage.BUILD)
+@OpenApiFilter(stages = {OpenApiFilter.RunStage.BUILD})
 public class ApiSubsetOpenApiFilter implements OASFilter {
 
   private static final String BASE_PACKAGE = "ch.agridata";

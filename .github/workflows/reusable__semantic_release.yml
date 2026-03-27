@@ -42,7 +42,7 @@ jobs:
             @semantic-release/release-notes-generator@14.0.3 \
             conventional-changelog-conventionalcommits@8.0.0
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         env:
           GITHUB_APP_SEMANTIC_RELEASE_APP_ID: 1236243
