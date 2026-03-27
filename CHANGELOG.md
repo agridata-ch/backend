@@ -1,3 +1,9 @@
+## [1.8.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.11...v1.8.0-rc.12) (2026-03-27)
+
+### Features
+
+* **deps:** update dependencies ([b360a04](https://github.com/agridata-ch/backend/commit/b360a0478986572e0d3bc83993ca432307efcbfc)), closes [DIGIB2-1289](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1289)
+
 ## [1.8.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.10...v1.8.0-rc.11) (2026-03-27)
 
 ### Features
