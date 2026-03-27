@@ -1,3 +1,9 @@
+## [1.8.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.10...v1.8.0-rc.11) (2026-03-27)
+
+### Features
+
+* **products:** add identitas data products and test requests ([147b8d6](https://github.com/agridata-ch/backend/commit/147b8d654a1246bd82fbd065c442d004cc152080)), closes [DIGIB2-1295](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1295)
+
 ## [1.8.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.9...v1.8.0-rc.10) (2026-03-26)
 
 ### Features
