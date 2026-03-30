@@ -1,5 +1,7 @@
 package integration.agreement;
 
+import static integration.agreement.DataRequestTestFactory.requestOtpChallengeAs;
+import static integration.agreement.DataRequestTestFactory.signContractRevisionAs;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
@@ -10,7 +12,6 @@ import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
-import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
@@ -72,11 +73,7 @@ class ContractRevisionTest {
     DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE);
     UUID revisionId = dataRequest.currentContractRevisionId();
 
-    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
-        .pathParam("id", revisionId)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_01.name())
-        .when()
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
+    requestOtpChallengeAs(revisionId.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BIO_SUISSE)
         .then()
         .statusCode(200)
         .body("challengeId", notNullValue())
@@ -89,22 +86,16 @@ class ContractRevisionTest {
     DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BLV_1);
     UUID revisionId1 = dataRequest.currentContractRevisionId();
 
-    OtpChallengeDto challenge1 = AuthTestUtils.requestAs(CONSUMER_BLV_1).given()
-        .pathParam("id", revisionId1)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_01.name())
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
+    var challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BLV_1)
         .as(OtpChallengeDto.class);
 
-    VerifyOtpRequestDto verifyRequest1 = new VerifyOtpRequestDto("123456");
-
-    var response = AuthTestUtils.requestAs(CONSUMER_BLV_1).given()
-        .contentType("application/json")
-        .pathParam("id", revisionId1)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_01.name())
-        .pathParam("challengeId", challenge1.challengeId())
-        .body(verifyRequest1)
-        .when()
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges/{challengeId}/verification")
+    var response = signContractRevisionAs(
+        revisionId1.toString(),
+        SignatureSlotCodeEnum.DATA_CONSUMER_01,
+        challenge1.challengeId(),
+        "123456",
+        CONSUMER_BLV_1
+    )
         .then()
         .statusCode(200)
         .body("id", notNullValue())
@@ -115,22 +106,16 @@ class ContractRevisionTest {
 
     var revisionId2 = response.extract().path("id");
 
-    OtpChallengeDto challenge2 = AuthTestUtils.requestAs(CONSUMER_BLV_2).given()
-        .pathParam("id", revisionId2)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_02.name())
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
+    var challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_02, CONSUMER_BLV_2)
         .as(OtpChallengeDto.class);
 
-    VerifyOtpRequestDto verifyRequest2 = new VerifyOtpRequestDto("123456");
-
-    AuthTestUtils.requestAs(CONSUMER_BLV_2).given()
-        .contentType("application/json")
-        .pathParam("id", revisionId2)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_CONSUMER_02.name())
-        .pathParam("challengeId", challenge2.challengeId())
-        .body(verifyRequest2)
-        .when()
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges/{challengeId}/verification")
+    signContractRevisionAs(
+        revisionId2.toString(),
+        SignatureSlotCodeEnum.DATA_CONSUMER_02,
+        challenge2.challengeId(),
+        "123456",
+        CONSUMER_BLV_2
+    )
         .then()
         .statusCode(200)
         .body("id", notNullValue())
@@ -145,11 +130,7 @@ class ContractRevisionTest {
     DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE);
     UUID revisionId = dataRequest.currentContractRevisionId();
 
-    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
-        .pathParam("id", revisionId)
-        .pathParam("slotCode", SignatureSlotCodeEnum.DATA_PROVIDER_01.name())
-        .when()
-        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges")
+    requestOtpChallengeAs(revisionId.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_01, CONSUMER_BIO_SUISSE)
         .then()
         .statusCode(400);
   }

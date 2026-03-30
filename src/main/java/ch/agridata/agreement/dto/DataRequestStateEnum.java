@@ -7,5 +7,10 @@ package ch.agridata.agreement.dto;
  */
 
 public enum DataRequestStateEnum {
-  DRAFT, IN_REVIEW, TO_BE_SIGNED, ACTIVE
+  DRAFT,
+  IN_REVIEW,
+  TO_BE_SIGNED_BY_CONSUMER,
+  TO_BE_RELEASED_BY_CONSUMER,
+  TO_BE_SIGNED_BY_PROVIDER,
+  ACTIVE,
 }
