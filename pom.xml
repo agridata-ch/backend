@@ -19,6 +19,7 @@
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version> <!-- or latest -->
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <plexus-utils.version>4.0.3</plexus-utils.version>
         <lombok.version>1.18.42</lombok.version>
         <assertj.version>3.27.4</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
@@ -62,6 +63,14 @@
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar-maven-plugin.version}</version>
+            </dependency>
+            <!-- TODO: Remove when sonar-maven-plugin ships plexus-utils >= 4.0.3
+                 Check with: mvn dependency:tree -Dincludes=org.codehaus.plexus:plexus-utils
+                 CVE-2025-67030 fixed in plexus-utils 4.0.3, introduced via sonar-maven-plugin 5.5.0.6356 -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>

@@ -2,6 +2,7 @@ package ch.agridata.agreement.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -63,7 +64,14 @@ public record ConsentRequestFundamentalViewDto(
         description = "State of the consent request",
         examples = {"GRANTED"}
     )
-    ConsentRequestStateEnum stateCode
+    ConsentRequestStateEnum stateCode,
 
+    @Schema(
+        description = "Date and time of the most recent modification to the consent request",
+        examples = {"2025-06-16T11:04:51.823889"},
+        type = SchemaType.STRING,
+        format = "datetime"
+    )
+    LocalDateTime lastModifiedDateTime
 ) {
 }
