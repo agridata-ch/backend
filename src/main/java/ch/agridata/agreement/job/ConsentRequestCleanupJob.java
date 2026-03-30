@@ -1,12 +1,15 @@
 package ch.agridata.agreement.job;
 
 import ch.agridata.agreement.service.ConsentRequestCleanupService;
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +42,19 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsentRequestCleanupJob {
   // Generated from the first 16 hex characters of: echo -n "ConsentRequestCleanupJob" | sha256sum
   public static final long LOCK_KEY = 7182194963550522386L;
+  // Dedicated technical user ID for this scheduled job (traceability/auditing).
+  // The corresponding user entry must exist in the users table.
+  public static final UUID USER_ID_SCHEDULED_JOB = UUID.fromString("3899f61d-c517-40da-a4a6-f2b062cc0f20");
 
+  private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataSource dataSource;
   private final ConsentRequestCleanupService cleanupService;
 
   // 02:15 every day (Quartz cron)
   @Scheduled(cron = "0 15 2 * * ?")
-  void run() {
+  @ActivateRequestContext
+  public void run() {
+    agridataSecurityIdentity.setScheduledJobUserId(USER_ID_SCHEDULED_JOB);
     long startedAt = System.nanoTime();
     log.info("consent request cleanup job started.");
 

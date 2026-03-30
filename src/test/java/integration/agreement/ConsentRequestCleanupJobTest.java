@@ -1,12 +1,13 @@
 package integration.agreement;
 
+import static ch.agridata.agreement.job.ConsentRequestCleanupJob.USER_ID_SCHEDULED_JOB;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
 import static ch.agridata.auditing.persistence.AuditLogEntity.ActorTypeEnum.SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ch.agridata.agreement.service.ConsentRequestCleanupService;
+import ch.agridata.agreement.job.ConsentRequestCleanupJob;
 import ch.agridata.auditing.persistence.AuditLogEntity;
 import integration.auditing.utils.AuditLogTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -19,18 +20,20 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
-class ConsentRequestCleanupServiceTest {
+class ConsentRequestCleanupJobTest {
 
-  private final ConsentRequestCleanupService consentRequestCleanupService;
+  private final ConsentRequestCleanupJob consentRequestCleanupJob;
   private final EntityManager em;
   private final AuditLogTestUtils auditLogTestUtils;
 
   @Test
   void whenCleanupRuns_thenArchivesMatchingRowsAndWritesAuditLogs() {
-    long terminated = consentRequestCleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+    var dateTimeBeforeTermination = LocalDateTime.now();
+
+    consentRequestCleanupJob.run();
 
     List<Object[]> rows = em.createNativeQuery("""
-            SELECT id, uid_bur_relation_until
+            SELECT id, uid_bur_relation_until, modified_at, modified_by
             FROM consent_request
             WHERE data_producer_bur IN ('99910002', '99910003')
             ORDER BY id
@@ -41,14 +44,14 @@ class ConsentRequestCleanupServiceTest {
         .hasSize(5)
         .allSatisfy(row -> {
           assertThat(row[0]).isInstanceOf(UUID.class);
-          assertThat(row[1]).isInstanceOf(LocalDateTime.class);
+          assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination));
+          assertThat(((LocalDateTime) row[2]).isEqual((LocalDateTime) row[1]));
+          assertThat(row[3].equals(USER_ID_SCHEDULED_JOB));
         });
 
     List<UUID> affectedIds = rows.stream()
         .map(row -> (UUID) row[0])
         .toList();
-
-    assertThat(terminated).isEqualTo(5);
 
     var latestLogs = List.of(
         auditLogTestUtils.getLatestAuditLogEntry(),

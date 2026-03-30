@@ -1,5 +1,5 @@
-    TRUNCATE TABLE users, data_request, consent_request, audit_log, data_request_data_product, contract_revision,
-    otp_challenge;
+    TRUNCATE TABLE data_request, consent_request, audit_log, data_request_data_product, contract_revision, otp_challenge;
+    DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- ===============================================
     -- data_request
