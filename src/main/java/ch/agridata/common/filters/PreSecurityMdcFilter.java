@@ -21,7 +21,7 @@ public class PreSecurityMdcFilter {
 
   public static final String REQUEST_ID_MDC_FIELD = "requestId";
   public static final String API_MDC_FIELD = "api";
-  private static final String USER_ID_MDC_FIELD = "agateUserId";
+  private static final String USER_ID_MDC_FIELD = "userId";
 
   // Higher numbers = higher priority (runs earlier)
   @RouteFilter(1501)

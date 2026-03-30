@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.service.ConsentRequestCleanupService;
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +39,8 @@ class ConsentRequestCleanupJobTest {
   ResultSet tryLockRs;
   @Mock
   ResultSet unlockRs;
+  @Mock
+  AgridataSecurityIdentity agridataSecurityIdentity;
   @InjectMocks
   ConsentRequestCleanupJob job;
 

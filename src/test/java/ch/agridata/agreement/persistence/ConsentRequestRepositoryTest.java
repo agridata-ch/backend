@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ class ConsentRequestRepositoryTest {
   @Mock
   private EntityManager entityManager;
   @Mock
-  private Query query;
+  private TypedQuery query;
   @InjectMocks
   private ConsentRequestRepository repo;
 
@@ -272,17 +271,16 @@ class ConsentRequestRepositoryTest {
 
     var terminatedAt = LocalDateTime.of(2026, 2, 19, 0, 0);
 
-    when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-    when(query.setParameter(eq("terminatedAt"), eq(terminatedAt))).thenReturn(query);
-    when(query.setParameter(eq("ids"), any(UUID[].class))).thenReturn(query);
+    when(entityManager.createQuery(anyString(), eq(ConsentRequestEntity.class))).thenReturn(query);
+    when(query.setParameter(eq("ids"), any(List.class))).thenReturn(query);
 
     // Batch 1 => 2 rows, Batch 2 => 1 row
-    List<Object[]> batch1Rows = List.of(
-        new Object[] {id1, "BUR1", "UID1"},
-        new Object[] {id2, "BUR2", "UID2"}
+    List<ConsentRequestEntity> batch1Rows = List.of(
+        ConsentRequestEntity.builder().id(id1).dataProducerBur("BUR1").dataProducerUid("UID1").build(),
+        ConsentRequestEntity.builder().id(id2).dataProducerBur("BUR2").dataProducerUid("UID2").build()
     );
-    List<Object[]> batch2Rows = List.<Object[]>of(
-        new Object[] {id3, "BUR3", "UID3"}
+    List<ConsentRequestEntity> batch2Rows = List.of(
+        ConsentRequestEntity.builder().id(id3).dataProducerBur("BUR3").dataProducerUid("UID3").build()
     );
 
     when(query.getResultList()).thenReturn(batch1Rows, batch2Rows);
@@ -291,12 +289,11 @@ class ConsentRequestRepositoryTest {
 
     assertThat(result)
         .hasSize(3)
-        .extracting(ConsentRequestRepository.TerminatedBurUid::id)
+        .extracting(ConsentRequestEntity::getId)
         .containsExactlyInAnyOrder(id1, id2, id3);
 
-    verify(entityManager, times(2)).createNativeQuery(anyString());
-    verify(query, times(2)).setParameter("terminatedAt", terminatedAt);
-    verify(query, times(2)).setParameter(eq("ids"), any(UUID[].class));
+    verify(entityManager, times(2)).createQuery(anyString(), eq(ConsentRequestEntity.class));
+    verify(query, times(2)).setParameter(eq("ids"), any(List.class));
     verify(query, times(2)).getResultList();
 
     // If you removed clear(): change to never()
@@ -310,9 +307,8 @@ class ConsentRequestRepositoryTest {
 
     var terminatedAt = LocalDateTime.of(2026, 2, 19, 0, 0);
 
-    when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-    when(query.setParameter(eq("terminatedAt"), eq(terminatedAt))).thenReturn(query);
-    when(query.setParameter(eq("ids"), any(UUID[].class))).thenReturn(query);
+    when(entityManager.createQuery(anyString(), eq(ConsentRequestEntity.class))).thenReturn(query);
+    when(query.setParameter(eq("ids"), any(List.class))).thenReturn(query);
 
     when(query.getResultList()).thenReturn(List.of());
 
@@ -320,9 +316,8 @@ class ConsentRequestRepositoryTest {
 
     assertThat(result).isEmpty();
 
-    verify(entityManager).createNativeQuery(anyString());
-    verify(query).setParameter("terminatedAt", terminatedAt);
-    verify(query).setParameter(eq("ids"), any(UUID[].class));
+    verify(entityManager).createQuery(anyString(), eq(ConsentRequestEntity.class));
+    verify(query).setParameter(eq("ids"), any(List.class));
     verify(query).getResultList();
 
     verify(entityManager, never()).flush();
@@ -339,19 +334,18 @@ class ConsentRequestRepositoryTest {
 
     var terminatedAt = LocalDateTime.of(2026, 2, 19, 0, 0);
 
-    when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-    when(query.setParameter(eq("terminatedAt"), eq(terminatedAt))).thenReturn(query);
-    when(query.setParameter(eq("ids"), any(UUID[].class))).thenReturn(query);
+    when(entityManager.createQuery(anyString(), eq(ConsentRequestEntity.class))).thenReturn(query);
+    when(query.setParameter(eq("ids"), any(List.class))).thenReturn(query);
 
-    List<Object[]> batch1 = List.of();
+    List<ConsentRequestEntity> batch1 = List.of();
 
-    List<Object[]> batch2 = List.of(
-        new Object[] {ids.get(2), "BUR3", "UID3"},
-        new Object[] {ids.get(3), "BUR4", "UID4"}
+    List<ConsentRequestEntity> batch2 = List.of(
+        ConsentRequestEntity.builder().id(ids.get(2)).dataProducerBur("BUR3").dataProducerUid("UID3").build(),
+        ConsentRequestEntity.builder().id(ids.get(3)).dataProducerBur("BUR4").dataProducerUid("UID4").build()
     );
 
-    List<Object[]> batch3 = Collections.singletonList(
-        new Object[] {ids.get(4), "BUR5", "UID5"}
+    List<ConsentRequestEntity> batch3 = Collections.singletonList(
+        ConsentRequestEntity.builder().id(ids.get(4)).dataProducerBur("BUR5").dataProducerUid("UID5").build()
     );
     // Pretend results per batch: 0 rows, 2 rows, 1 row => total 3 records
     when(query.getResultList()).thenReturn(
@@ -360,18 +354,17 @@ class ConsentRequestRepositoryTest {
         batch3
     );
 
-    ArgumentCaptor<UUID[]> idsCaptor = ArgumentCaptor.forClass(UUID[].class);
+    ArgumentCaptor<List<UUID>> idsCaptor = ArgumentCaptor.forClass(List.class);
 
     var result = repo.terminateByIdsReturningPairs(ids, 2, terminatedAt);
 
     assertThat(result).hasSize(3);
 
-    verify(entityManager, times(3)).createNativeQuery(anyString());
-    verify(query, times(3)).setParameter("terminatedAt", terminatedAt);
+    verify(entityManager, times(3)).createQuery(anyString(), eq(ConsentRequestEntity.class));
     verify(query, times(3)).setParameter(eq("ids"), idsCaptor.capture());
     verify(query, times(3)).getResultList();
 
-    List<UUID[]> captured = idsCaptor.getAllValues();
+    List<List<UUID>> captured = idsCaptor.getAllValues();
     assertThat(captured).hasSize(3);
     assertThat(captured.get(0)).containsExactly(ids.get(0), ids.get(1));
     assertThat(captured.get(1)).containsExactly(ids.get(2), ids.get(3));

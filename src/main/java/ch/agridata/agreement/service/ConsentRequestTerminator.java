@@ -77,8 +77,8 @@ public class ConsentRequestTerminator {
 
     if (!terminated.isEmpty()) {
       terminated.forEach(t -> {
-        log.info("terminated consent request id={} bur={} uid={}", t.id(), t.bur(), t.uid());
-        auditingService.logDataRequestTerminated(t.id());
+        log.info("terminated consent request id={} bur={} uid={}", t.getId(), t.getDataProducerBur(), t.getDataProducerUid());
+        auditingService.logDataRequestTerminated(t.getId());
       });
     }
 
