@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
@@ -38,6 +39,8 @@ class ContractRevisionSignatureServiceTest {
   private OtpChallengeService otpChallengeService;
   @Mock
   private AgridataSecurityIdentity agridataSecurityIdentity;
+  @Mock
+  private DataRequestStateService dataRequestStateService;
 
   private static final String CONSUMER_UID = "CHE123456789";
   private static final UUID USER_ID = UUID.randomUUID();
@@ -80,6 +83,37 @@ class ContractRevisionSignatureServiceTest {
     assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(USER_ID);
     assertThat(nextRevision.getConsumerSignatureName1()).isEqualTo("John Doe");
     assertThat(result).isNotNull();
+
+    verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenRevisionWithSingleSignature_whenSignContractRevision_thenChangeDataRequestState() {
+    UUID existingSignatureUUID = UUID.fromString("12345678-1234-1234-1234-123456789012");
+    existingRevision.setConsumerSignatureUserId1(existingSignatureUUID);
+    SignatureSlotCodeEnum signatureSlotCode = SignatureSlotCodeEnum.DATA_CONSUMER_02;
+    ContractRevisionEntity nextRevision = ContractRevisionEntity.builder()
+        .consumerSignatureUserId1(UUID.fromString(existingSignatureUUID.toString()))
+        .consumerSignatureUserId2(UUID.fromString(USER_ID.toString()))
+        .build();
+    nextRevision.setId(UUID.randomUUID());
+
+    setupSecurityContext();
+
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+        .thenReturn(Optional.of(existingRevision));
+    when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
+    when(contractRevisionMapper.toDto(nextRevision)).thenReturn(ContractRevisionDto.builder().build());
+
+    ContractRevisionDto result = signatureService.signContractRevision(REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
+
+    assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
+    assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(existingSignatureUUID);
+    assertThat(nextRevision.getConsumerSignatureUserId2()).isEqualTo(USER_ID);
+    assertThat(nextRevision.getConsumerSignatureName2()).isEqualTo("John Doe");
+    assertThat(result).isNotNull();
+
+    verify(dataRequestStateService).transitionToPendingReleaseByConsumer(dataRequest);
   }
 
   @Test
@@ -93,6 +127,8 @@ class ContractRevisionSignatureServiceTest {
         () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID, OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("no longer current");
+
+    verifyNoInteractions(dataRequestStateService);
   }
 
   @Test
@@ -106,6 +142,8 @@ class ContractRevisionSignatureServiceTest {
         () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID, OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("already signed");
+
+    verifyNoInteractions(dataRequestStateService);
   }
 
   @Test
@@ -119,6 +157,8 @@ class ContractRevisionSignatureServiceTest {
         () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID, OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Signature already exists for this slot");
+
+    verifyNoInteractions(dataRequestStateService);
   }
 
   @Test
@@ -131,6 +171,8 @@ class ContractRevisionSignatureServiceTest {
         () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID, OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessage("Invalid signature slot id");
+
+    verifyNoInteractions(dataRequestStateService);
   }
 
   private void setupSecurityContext() {

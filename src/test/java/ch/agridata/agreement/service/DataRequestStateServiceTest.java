@@ -3,6 +3,7 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.buildEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -121,21 +122,68 @@ class DataRequestStateServiceTest {
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
-    var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED);
+    var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
-    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED);
+    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(
+        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
     verify(auditingService).logDataRequestApproved(id);
     verify(contractRevisionInitializationService).createAndAssignInitialRevision(entity);
     assertThat(result).isEqualTo(expectedDto);
   }
 
   @Test
-  void givenToBeSignedRequest_whenSetStateAsAdminToActive_thenReturnDtoAndLogActivation() {
+  void givenToBeReleasedByConsumerRequest_whenSetStateAsConsumerToToBeSignedByProvider_thenReturnDto() {
     var id = UUID.randomUUID();
 
     var entity = buildEntity();
-    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED);
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER);
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
+
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(
+        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
+    assertThat(result).isEqualTo(expectedDto);
+  }
+
+  @Test
+  void givenToBeReleasedByConsumerRequest_whenSetStateAsAdminToToBeSignedByProvider_thenThrowError() {
+    var id = UUID.randomUUID();
+
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER);
+
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("TO_BE_SIGNED_BY_PROVIDER");
+
+    verifyNoInteractions(auditingService);
+  }
+
+  @Test
+  void givenToBeSignedByProviderRequest_whenSetStateAsConsumerToActive_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.ACTIVE))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(auditingService);
+  }
+
+  @Test
+  void givenToBeSignedByProviderRequest_whenSetStateAsAdminToActive_thenReturnDtoAndLogActivation() {
+    var id = UUID.randomUUID();
+
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.ACTIVE);
@@ -154,7 +202,8 @@ class DataRequestStateServiceTest {
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.DRAFT);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
-    assertThrows(IllegalStateException.class, () -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED));
+    assertThrows(IllegalStateException.class,
+        () -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER));
     verifyNoInteractions(auditingService);
   }
 

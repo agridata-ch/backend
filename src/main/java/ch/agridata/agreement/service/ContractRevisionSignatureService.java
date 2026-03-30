@@ -1,11 +1,14 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -28,7 +31,9 @@ public class ContractRevisionSignatureService {
   private final ContractRevisionMapper contractRevisionMapper;
   private final OtpChallengeService otpChallengeService;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final DataRequestStateService dataRequestStateService;
 
+  @RolesAllowed(CONSUMER_ROLE)
   @Transactional
   public ContractRevisionDto signContractRevision(
       UUID contractRevisionId,
@@ -72,9 +77,19 @@ public class ContractRevisionSignatureService {
     );
 
     contractRevisionRepository.persist(newRevision);
-    revisionToSign.getDataRequest().setCurrentContractRevisionId(newRevision.getId());
+
+    var dataRequest = revisionToSign.getDataRequest();
+    dataRequest.setCurrentContractRevisionId(newRevision.getId());
+
+    if (hasAllRequiredConsumerSignatures(newRevision)) {
+      dataRequestStateService.transitionToPendingReleaseByConsumer(dataRequest);
+    }
 
     return contractRevisionMapper.toDto(newRevision);
+  }
+
+  private static boolean hasAllRequiredConsumerSignatures(ContractRevisionEntity revision) {
+    return revision.getConsumerSignatureUserId1() != null && revision.getConsumerSignatureUserId2() != null;
   }
 
   private static void verifyContractRevisionIsCurrent(UUID contractRevisionId, ContractRevisionEntity revisionToSign) {

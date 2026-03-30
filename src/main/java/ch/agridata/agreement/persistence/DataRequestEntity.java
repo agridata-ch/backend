@@ -136,7 +136,12 @@ public class DataRequestEntity extends AuditableEntity {
    * @CommentLastReviewed 2025-08-25
    */
   public enum DataRequestStateEnum {
-    DRAFT, IN_REVIEW, TO_BE_SIGNED, ACTIVE
+    DRAFT,
+    IN_REVIEW,
+    TO_BE_SIGNED_BY_CONSUMER,
+    TO_BE_RELEASED_BY_CONSUMER,
+    TO_BE_SIGNED_BY_PROVIDER,
+    ACTIVE,
   }
 
 }

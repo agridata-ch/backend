@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.dto.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.dto.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
@@ -42,9 +43,13 @@ public class DataRequestStateService {
       DataRequestEntity.DataRequestStateEnum.DRAFT,
       Set.of(DataRequestEntity.DataRequestStateEnum.IN_REVIEW),
       DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
-      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT, DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED),
-      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED,
-      Set.of(DataRequestEntity.DataRequestStateEnum.ACTIVE),
+      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT, DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER),
+      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER,
+      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT),
+      DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER,
+      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT, DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER),
+      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT, DataRequestEntity.DataRequestStateEnum.ACTIVE),
       DataRequestEntity.DataRequestStateEnum.ACTIVE,
       Set.of()
   );
@@ -99,7 +104,7 @@ public class DataRequestStateService {
     verifyStatusTransition(oldStateCode, newStateCode);
 
     if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED) {
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER) {
       contractRevisionInitializationService.createAndAssignInitialRevision(entity);
     }
 
@@ -116,6 +121,7 @@ public class DataRequestStateService {
 
     if (newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
       entity.setSubmissionDate(null);
+      entity.setCurrentContractRevisionId(null);
     } else if (newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
       entity.setSubmissionDate(LocalDateTime.now());
     }
@@ -132,8 +138,8 @@ public class DataRequestStateService {
   }
 
   private static void verifyConsumerStateAllowed(DataRequestStateEnum state) {
-    if (!List.of(DRAFT, IN_REVIEW).contains(state)) {
-      throw new IllegalStateException("Only DRAFT and IN_REVIEW state can be set by consumer");
+    if (!List.of(DRAFT, IN_REVIEW, TO_BE_SIGNED_BY_PROVIDER).contains(state)) {
+      throw new IllegalStateException("Only DRAFT, IN_REVIEW and TO_BE_SIGNED_BY_PROVIDER state can be set by consumer");
     }
   }
 
@@ -151,9 +157,9 @@ public class DataRequestStateService {
     if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW && newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
       auditingService.logDataRequestRejected(requestId);
     } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED) {
+        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER) {
       auditingService.logDataRequestApproved(requestId);
-    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED
+    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER
         && newStateCode == DataRequestEntity.DataRequestStateEnum.ACTIVE) {
       auditingService.logDataRequestActivated(requestId);
     }
@@ -163,6 +169,13 @@ public class DataRequestStateService {
     if (DataRequestEntity.DataRequestStateEnum.DRAFT == oldStateCode) {
       throw new IllegalStateException(
           "Cannot change state from DRAFT - data request must be set to IN_REVIEW by the consumer first");
+    }
+    if (DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER == oldStateCode
+        || DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER == oldStateCode) {
+      throw new IllegalStateException(
+          "Cannot change state from " + oldStateCode.name()
+              + " - data request must be set to TO_BE_SIGNED_BY_PROVIDER by the consumer first"
+      );
     }
   }
 
@@ -180,5 +193,15 @@ public class DataRequestStateService {
         && newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
       auditingService.logDataRequestSubmitted(requestId);
     }
+  }
+
+  public void transitionToPendingReleaseByConsumer(DataRequestEntity entity) {
+    if (entity.getStateCode() != DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER) {
+      throw new IllegalStateException(
+          "Data request must be in state TO_BE_SIGNED_BY_CONSUMER to transition to TO_BE_RELEASED_BY_CONSUMER"
+      );
+    }
+
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER);
   }
 }
