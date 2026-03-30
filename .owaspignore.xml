@@ -4,4 +4,10 @@
     <!--    <suppress until="2025-07-31Z">-->
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
+    <suppress until="2026-04-09Z"> <!-- should be fixed in next quarkus patch version 3.34.2-->
+        <cve>CVE-2026-33870</cve>
+    </suppress>
+    <suppress until="2026-04-09Z"> <!-- should be fixed in next quarkus patch version 3.34.2-->
+        <cve>CVE-2026-33871</cve>
+    </suppress>
 </suppressions>
