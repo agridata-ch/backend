@@ -1,3 +1,9 @@
+## [1.8.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.12...v1.8.0-rc.13) (2026-04-01)
+
+### Features
+
+* **agreement:** add lastModifiedDateTime to ConsentRequestFundamentalViewDto ([ea75052](https://github.com/agridata-ch/backend/commit/ea75052267038371e587abaefe2da88aedf9783e))
+
 ## [1.8.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.11...v1.8.0-rc.12) (2026-03-27)
 
 ### Features
