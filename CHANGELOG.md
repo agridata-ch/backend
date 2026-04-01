@@ -1,3 +1,9 @@
+## [1.8.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.14...v1.8.0-rc.15) (2026-04-01)
+
+### Features
+
+* **agreement:** improve maintainability of DataRequestStateService ([e3a6ad5](https://github.com/agridata-ch/backend/commit/e3a6ad56fe25f502ba74ce13042e5e5c90a1bf4d)), closes [DIGIB2-308](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-308)
+
 ## [1.8.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.13...v1.8.0-rc.14) (2026-04-01)
 
 ### Features
