@@ -1,3 +1,9 @@
+## [1.8.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.13...v1.8.0-rc.14) (2026-04-01)
+
+### Features
+
+* **agreement:** Allow consumers to release datarequests after signing. ([093fea0](https://github.com/agridata-ch/backend/commit/093fea0723f97d1fa83c7eba86ab40c77be94aa1)), closes [DIGIB2-308](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-308)
+
 ## [1.8.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.12...v1.8.0-rc.13) (2026-04-01)
 
 ### Features
