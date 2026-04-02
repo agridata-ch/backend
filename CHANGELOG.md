@@ -1,3 +1,9 @@
+## [1.8.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.17...v1.8.0-rc.18) (2026-04-02)
+
+### Bug Fixes
+
+* **archunit:** fix archunit rules ([9903a2a](https://github.com/agridata-ch/backend/commit/9903a2aaeb6342126dc130f9be20b6a66be633cf))
+
 ## [1.8.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.16...v1.8.0-rc.17) (2026-04-02)
 
 ### Bug Fixes
