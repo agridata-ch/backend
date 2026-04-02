@@ -119,6 +119,7 @@ quarkus:
       Data Consumer: /q/openapi/subsets/Data%20Consumer
       Data Provider: /q/openapi/subsets/Data%20Provider
     urls-primary-name: All
+    default-models-expand-depth: -1
 mp:
   openapi:
     scan:

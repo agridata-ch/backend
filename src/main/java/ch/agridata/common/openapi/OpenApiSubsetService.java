@@ -3,22 +3,22 @@ package ch.agridata.common.openapi;
 import static ch.agridata.common.openapi.ApiSubsetConstants.X_API_SUBSET;
 
 import io.quarkus.smallrye.openapi.runtime.OpenApiDocumentService;
+import io.smallrye.openapi.api.SmallRyeOpenAPI;
 import io.smallrye.openapi.runtime.io.Format;
-import io.smallrye.openapi.runtime.io.OpenApiParser;
-import io.smallrye.openapi.runtime.io.OpenApiSerializer;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.OASFactory;
+import org.eclipse.microprofile.openapi.models.Components;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.Operation;
 import org.eclipse.microprofile.openapi.models.PathItem;
 import org.eclipse.microprofile.openapi.models.Paths;
+import org.eclipse.microprofile.openapi.models.media.Schema;
 
 /**
  * Produces filtered OpenAPI documents containing only operations annotated with a matching {@code x-api-subset} extension value.
@@ -39,11 +39,25 @@ public class OpenApiSubsetService {
    * @param format the output format (YAML or JSON)
    * @return the serialized OpenAPI document
    */
-  public String getFilteredDocument(String subset, Format format) throws IOException {
+  public String getFilteredDocument(String subset, Format format) {
     byte[] yamlBytes = openApiDocumentService.getDocument("<default>", Format.YAML);
-    OpenAPI original = OpenApiParser.parse(new ByteArrayInputStream(yamlBytes), Format.YAML, null);
+    OpenAPI original = SmallRyeOpenAPI.builder()
+        .withCustomStaticFile(() -> new ByteArrayInputStream(yamlBytes))
+        .enableModelReader(false)
+        .enableAnnotationScan(false)
+        .enableStandardStaticFiles(false)
+        .enableStandardFilter(false)
+        .build()
+        .model();
     OpenAPI filtered = buildFilteredModel(original, subset);
-    return OpenApiSerializer.serialize(filtered, format);
+    SmallRyeOpenAPI filteredDoc = SmallRyeOpenAPI.builder()
+        .withInitialModel(filtered)
+        .enableModelReader(false)
+        .enableAnnotationScan(false)
+        .enableStandardStaticFiles(false)
+        .enableStandardFilter(false)
+        .build();
+    return format == Format.JSON ? filteredDoc.toJSON() : filteredDoc.toYAML();
   }
 
   private OpenAPI buildFilteredModel(OpenAPI original, String subset) {
@@ -52,8 +66,6 @@ public class OpenApiSubsetService {
     filtered.setInfo(original.getInfo());
     filtered.setServers(original.getServers());
     filtered.setSecurity(original.getSecurity());
-    filtered.setComponents(original.getComponents());
-
     Paths filteredPaths = OASFactory.createPaths();
     Set<String> referencedTags = new HashSet<>();
 
@@ -67,6 +79,10 @@ public class OpenApiSubsetService {
     }
 
     filtered.setPaths(filteredPaths);
+
+    if (original.getComponents() != null) {
+      filtered.setComponents(buildFilteredComponents(filteredPaths, original.getComponents()));
+    }
 
     if (original.getTags() != null) {
       original.getTags().stream()
@@ -125,5 +141,89 @@ public class OpenApiSubsetService {
       case OPTIONS -> item.setOPTIONS(operation);
       case TRACE -> item.setTRACE(operation);
     }
+  }
+
+  private Components buildFilteredComponents(Paths filteredPaths, Components original) {
+    Set<String> usedSchemaNames = new HashSet<>();
+    collectSchemaRefsFromPaths(filteredPaths, original, usedSchemaNames);
+
+    Components filtered = OASFactory.createComponents();
+
+    if (original.getSchemas() != null) {
+      usedSchemaNames.stream()
+          .filter(name -> original.getSchemas().containsKey(name))
+          .forEach(name -> filtered.addSchema(name, original.getSchemas().get(name)));
+    }
+
+    // Security schemes are referenced by name (not $ref), always include them all
+    if (original.getSecuritySchemes() != null) {
+      original.getSecuritySchemes().forEach(filtered::addSecurityScheme);
+    }
+
+    return filtered;
+  }
+
+  private void collectSchemaRefsFromPaths(Paths paths, Components components, Set<String> collected) {
+    if (paths == null || paths.getPathItems() == null) {
+      return;
+    }
+    for (PathItem pathItem : paths.getPathItems().values()) {
+      if (pathItem.getParameters() != null) {
+        pathItem.getParameters().forEach(p -> collectSchemaRefs(p.getSchema(), components, collected));
+      }
+      for (Operation op : pathItem.getOperations().values()) {
+        if (op.getParameters() != null) {
+          op.getParameters().forEach(p -> collectSchemaRefs(p.getSchema(), components, collected));
+        }
+        if (op.getRequestBody() != null && op.getRequestBody().getContent() != null) {
+          op.getRequestBody().getContent().getMediaTypes().values()
+              .forEach(mt -> collectSchemaRefs(mt.getSchema(), components, collected));
+        }
+        if (op.getResponses() != null && op.getResponses().getAPIResponses() != null) {
+          op.getResponses().getAPIResponses().values().forEach(response -> {
+            if (response.getContent() != null) {
+              response.getContent().getMediaTypes().values()
+                  .forEach(mt -> collectSchemaRefs(mt.getSchema(), components, collected));
+            }
+          });
+        }
+      }
+    }
+  }
+
+  private void collectSchemaRefs(Schema schema, Components components, Set<String> collected) {
+    if (schema == null) {
+      return;
+    }
+    String ref = schema.getRef();
+    if (ref != null) {
+      String name = schemaNameFromRef(ref);
+      if (name != null && collected.add(name) && components.getSchemas() != null) {
+        collectSchemaRefs(components.getSchemas().get(name), components, collected);
+      }
+    }
+    if (schema.getProperties() != null) {
+      schema.getProperties().values().forEach(s -> collectSchemaRefs(s, components, collected));
+    }
+    if (schema.getAllOf() != null) {
+      schema.getAllOf().forEach(s -> collectSchemaRefs(s, components, collected));
+    }
+    if (schema.getAnyOf() != null) {
+      schema.getAnyOf().forEach(s -> collectSchemaRefs(s, components, collected));
+    }
+    if (schema.getOneOf() != null) {
+      schema.getOneOf().forEach(s -> collectSchemaRefs(s, components, collected));
+    }
+    if (schema.getItems() != null) {
+      collectSchemaRefs(schema.getItems(), components, collected);
+    }
+    if (schema.getAdditionalPropertiesSchema() != null) {
+      collectSchemaRefs(schema.getAdditionalPropertiesSchema(), components, collected);
+    }
+  }
+
+  private String schemaNameFromRef(String ref) {
+    String prefix = "#/components/schemas/";
+    return ref != null && ref.startsWith(prefix) ? ref.substring(prefix.length()) : null;
   }
 }
