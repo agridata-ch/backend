@@ -1,3 +1,9 @@
+## [1.8.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.15...v1.8.0-rc.16) (2026-04-02)
+
+### Features
+
+* **job:** add scheduled job userId support for auditing in system jobs ([d6be1b8](https://github.com/agridata-ch/backend/commit/d6be1b86caaedac10002830b36c31e307c0fc9ba)), closes [DIGIB2-1261](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1261)
+
 ## [1.8.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.14...v1.8.0-rc.15) (2026-04-01)
 
 ### Features
