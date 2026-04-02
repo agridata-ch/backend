@@ -1,8 +1,8 @@
 package ch.agridata.datatransfer.service;
 
-import static ch.agridata.datatransfer.client.DataProviderRestClientFactory.RestClientIdentifier;
+import static ch.agridata.datatransfer.service.client.DataProviderRestClientFactory.RestClientIdentifier;
 
-import ch.agridata.datatransfer.client.DataProviderRestClientFactory;
+import ch.agridata.datatransfer.service.client.DataProviderRestClientFactory;
 import ch.agridata.product.api.DataProductApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

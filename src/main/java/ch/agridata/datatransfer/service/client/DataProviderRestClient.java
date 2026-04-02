@@ -1,4 +1,4 @@
-package ch.agridata.datatransfer.client;
+package ch.agridata.datatransfer.service.client;
 
 /**
  * Defines the base contract for data provider clients. It standardizes post and get operations across providers.

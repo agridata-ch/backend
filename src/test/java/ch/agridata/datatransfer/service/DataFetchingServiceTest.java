@@ -1,14 +1,14 @@
 package ch.agridata.datatransfer.service;
 
-import static ch.agridata.datatransfer.client.DataProviderRestClientFactory.RestClientIdentifier.AGIS_API;
+import static ch.agridata.datatransfer.service.client.DataProviderRestClientFactory.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.datatransfer.client.AgisApiRestClient;
-import ch.agridata.datatransfer.client.DataProviderRestClientFactory;
+import ch.agridata.datatransfer.service.client.AgisApiRestClient;
+import ch.agridata.datatransfer.service.client.DataProviderRestClientFactory;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import com.fasterxml.jackson.core.JsonProcessingException;

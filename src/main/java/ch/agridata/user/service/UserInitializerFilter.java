@@ -1,9 +1,8 @@
-package ch.agridata.user.filters;
+package ch.agridata.user.service;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.persistence.UserEntity;
 import ch.agridata.user.persistence.UserRepository;
-import ch.agridata.user.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

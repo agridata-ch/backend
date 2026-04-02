@@ -1,12 +1,12 @@
 package ch.agridata.datatransferv2.service;
 
-import static ch.agridata.datatransferv2.client.DataProviderRestClientProvider.RestClientIdentifier;
+import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.datatransferv2.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.enterprise.context.ApplicationScoped;

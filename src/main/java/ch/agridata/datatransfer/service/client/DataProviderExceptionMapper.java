@@ -1,4 +1,4 @@
-package ch.agridata.datatransferv2.client;
+package ch.agridata.datatransfer.service.client;
 
 import ch.agridata.common.exceptions.DataTransferFailedException;
 import jakarta.ws.rs.core.Response;
@@ -8,7 +8,7 @@ import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 /**
  * Maps provider error responses into system exceptions. It captures status codes and response bodies to aid debugging.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2025-08-25
  */
 @Slf4j
 public class DataProviderExceptionMapper implements ResponseExceptionMapper<RuntimeException> {
@@ -22,6 +22,7 @@ public class DataProviderExceptionMapper implements ResponseExceptionMapper<Runt
       log.warn("Failed to read error response body", e);
     }
 
-    return new DataTransferFailedException(response.getStatus(), body);
+    return new DataTransferFailedException(response.getStatus(),
+        "Unexpected response from data provider (status=" + response.getStatus() + "): " + body);
   }
 }

@@ -1,6 +1,6 @@
 package ch.agridata.datatransferv2.service;
 
-import static ch.agridata.datatransferv2.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
+import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.datatransferv2.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.service.DataProductService;
 import jakarta.ws.rs.core.GenericType;

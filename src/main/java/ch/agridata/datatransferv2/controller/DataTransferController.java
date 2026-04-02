@@ -4,13 +4,11 @@ import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.common.openapi.ApiSubset;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
 import ch.agridata.datatransferv2.service.ChangeDetectionService;
-import ch.agridata.datatransferv2.service.FlowEnum;
+import ch.agridata.datatransferv2.service.DataTransferAuthorizationService;
 import ch.agridata.datatransferv2.service.FlowProvider;
 import io.quarkus.security.Authenticated;
-import io.quarkus.security.ForbiddenException;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -52,8 +50,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class DataTransferController {
   public static final String PATH = "/api/data-transfer/v2";
 
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final FlowProvider flowProvider;
+  private final DataTransferAuthorizationService dataTransferAuthorizationService;
   private final ChangeDetectionService changeDetectionService;
 
   @GET
@@ -67,9 +65,7 @@ public class DataTransferController {
           + "Before any data is transferred, the producer must have accepted an active data request that includes the requested product."
   )
   @Produces(MediaType.WILDCARD)
-  // @Authenticated suffices here: role enforcement is deferred to enforceConsumerRoleIfRequired(),
-  // which skips the consumer-role check for post-validation flows that rely on provider-side authorization.
-  @Authenticated
+  @Authenticated // @Authenticated suffices here: role enforcement is delegated to DataTransferAuthorizationService
   public Response dataTransfer(
       @Parameter(
           name = "productId",
@@ -97,24 +93,10 @@ public class DataTransferController {
       @Context UriInfo uriInfo
   ) {
     var flowWithConfiguration = flowProvider.getFlowByProduct(productId);
-    enforceConsumerRoleIfRequired(flowWithConfiguration);
+    dataTransferAuthorizationService.enforceAuthorization(flowWithConfiguration);
     Map<String, String> queryParameters = uriInfo.getQueryParameters(true).entrySet().stream()
         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getFirst()));
     return flowWithConfiguration.flow().run(flowWithConfiguration.productProviderConfiguration(), queryParameters);
-  }
-
-  private void enforceConsumerRoleIfRequired(FlowProvider.FlowWithProductProviderConfiguration flowWithConfiguration) {
-    var flowsWithProviderSideAuthorization = List.of(
-        FlowEnum.UID_BASED_POST_VALIDATION,
-        FlowEnum.BUR_BASED_POST_VALIDATION,
-        FlowEnum.UNBOUND_POST_VALIDATION);
-    var flowCode = FlowEnum.valueOf(flowWithConfiguration.productProviderConfiguration().flowCode());
-    if (flowsWithProviderSideAuthorization.contains(flowCode)) {
-      return;
-    }
-    if (!agridataSecurityIdentity.isConsumer()) {
-      throw new ForbiddenException();
-    }
   }
 
   @GET
