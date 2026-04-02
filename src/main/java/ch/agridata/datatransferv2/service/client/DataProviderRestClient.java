@@ -1,4 +1,4 @@
-package ch.agridata.datatransferv2.client;
+package ch.agridata.datatransferv2.service.client;
 
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.core.Response;

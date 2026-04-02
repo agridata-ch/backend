@@ -1,9 +1,8 @@
-package ch.agridata.user.filters;
+package ch.agridata.user.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.user.service.UserService;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;

@@ -1,7 +1,7 @@
 package integration.user;
 
 import static ch.agridata.user.controller.UserController.PATH;
-import static ch.agridata.user.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
+import static ch.agridata.user.service.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static integration.testutils.TestUserEnum.SUPPORT;

@@ -3,7 +3,7 @@ package integration.user;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.DEFAULT_AGATE_ROLES;
-import static ch.agridata.user.filters.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
+import static ch.agridata.user.service.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_B;

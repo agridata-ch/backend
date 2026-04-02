@@ -1,13 +1,16 @@
 package ch.agridata.agreement.mapper;
 
+import ch.agridata.agreement.dto.DataProviderReferenceDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.DataSourceSystemReferenceDto;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.product.dto.DataProviderDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -104,4 +107,8 @@ public interface DataRequestMapper {
         .map(DataRequestDataProductEntity::getDataProductId)
         .toList();
   }
+
+  DataSourceSystemReferenceDto toReferenceDto(DataSourceSystemDto dto);
+
+  DataProviderReferenceDto toReferenceDto(DataProviderDto dto);
 }

@@ -1,4 +1,4 @@
-package ch.agridata.datatransfer.client;
+package ch.agridata.datatransfer.service.client;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
