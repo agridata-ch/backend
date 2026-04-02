@@ -1,3 +1,9 @@
+## [1.8.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.16...v1.8.0-rc.17) (2026-04-02)
+
+### Bug Fixes
+
+* **openapi:** filter unused schemas from API subset documents ([bd56d79](https://github.com/agridata-ch/backend/commit/bd56d7972f6ee709c9db59868df60bf74ed34e2d))
+
 ## [1.8.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.15...v1.8.0-rc.16) (2026-04-02)
 
 ### Features
