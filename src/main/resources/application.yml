@@ -2,6 +2,8 @@ agridata:
   exception-handling:
     return-debug: true
 quarkus:
+  aws:
+    region: eu-central-2
   cache:
     caffeine:
       agis-api-register:
