@@ -6,6 +6,7 @@ import ch.agridata.agreement.dto.DataRequestContextDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -27,14 +28,20 @@ public interface ContractRevisionMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "dataRequest", source = "dataRequest")
   @Mapping(target = "dataConsumerName", source = "dataRequest.dataConsumerLegalName")
-  @Mapping(target = "dataProviderName", source = "dataProviderName")
+  @Mapping(target = "dataConsumerStreet", source = "dataRequest.dataConsumerStreet")
+  @Mapping(target = "dataConsumerZip", source = "dataRequest.dataConsumerZip")
+  @Mapping(target = "dataConsumerCity", source = "dataRequest.dataConsumerCity")
+  @Mapping(target = "dataProviderName", source = "dataProvider.legalName")
+  @Mapping(target = "dataProviderZip", source = "dataProvider.address.zip")
+  @Mapping(target = "dataProviderStreet", source = "dataProvider.address.street")
+  @Mapping(target = "dataProviderCity", source = "dataProvider.address.city")
   @Mapping(target = "consumerSignatureUserId1", ignore = true)
   @Mapping(target = "consumerSignatureName1", ignore = true)
   @Mapping(target = "consumerSignatureTimestamp1", ignore = true)
   @Mapping(target = "consumerSignatureUserId2", ignore = true)
   @Mapping(target = "consumerSignatureName2", ignore = true)
   @Mapping(target = "consumerSignatureTimestamp2", ignore = true)
-  ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, String dataProviderName);
+  ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, UidRegisterOrganisationDto dataProvider);
 
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
   DataRequestContextDto toDataRequestContextDto(DataRequestEntity entity);

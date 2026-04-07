@@ -4,13 +4,13 @@
     "url": "/uid-register/findByUid",
     "bodyPatterns": [
       {
-        "matchesXPath": "//*[local-name()='uidOrganisationId' and text()='403244345']"
+        "matchesXPath": "//*[local-name()='uidOrganisationId' and text()='105031830']"
       }
     ]
   },
   "response": {
     "status": 200,
-    "bodyFileName": "uid-register-api/blv.xml",
+    "bodyFileName": "uid-register-api/CHE105031830-identitas.xml",
     "headers": {
       "Content-Type": "text/xml; charset=utf-8"
     }

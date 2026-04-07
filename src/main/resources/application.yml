@@ -10,6 +10,9 @@ quarkus:
       tvd-api-fetch-equid-owner-legal-units:
         expire-after-write: 5M
         maximum-size: 100
+      uid-register:
+        expire-after-write: 5M
+        maximum-size: 100
   application:
     name: agridata.ch
   banner:
