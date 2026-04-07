@@ -4,13 +4,13 @@
     "url": "/uid-register/findByUid",
     "bodyPatterns": [
       {
-        "matchesXPath": "//*[local-name()='uidOrganisationId' and text()='101708094']"
+        "matchesXPath": "//*[local-name()='uidOrganisationId' and text()='146680598']"
       }
     ]
   },
   "response": {
     "status": 200,
-    "bodyFileName": "uid-register-api/bio-suisse.xml",
+    "bodyFileName": "uid-register-api/CHE146680598-blw.xml",
     "headers": {
       "Content-Type": "text/xml; charset=utf-8"
     }

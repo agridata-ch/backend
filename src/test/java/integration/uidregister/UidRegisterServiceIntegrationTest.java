@@ -4,7 +4,6 @@ import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PRE
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ch.agridata.uidregister.service.UidRegisterService;
-import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ class UidRegisterServiceIntegrationTest {
 
   @Test
   void getByUid() {
-    var result = uidRegisterService.getByUid(UidOrganisationIdCategorieType.CHE, UID_BIO_SUISSE_WITHOUT_PREFIX);
+    var result = uidRegisterService.getByUid(UID_BIO_SUISSE_WITHOUT_PREFIX);
 
     assertThat(result).isNotNull().satisfies(organisation -> {
       assertThat(organisation.name()).isEqualTo("INTERNATIONAL CERTIFICATION BIO SUISSE AG");

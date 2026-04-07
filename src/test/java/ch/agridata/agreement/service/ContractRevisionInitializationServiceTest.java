@@ -1,7 +1,6 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.utils.DataRequestTestUtils.DATA_SOURCE_SYSTEM_ID;
-import static ch.agridata.agreement.utils.DataRequestTestUtils.buildTranslationDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -21,7 +20,10 @@ import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProviderDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
+import ch.agridata.uidregister.api.UidRegisterServiceApi;
+import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import jakarta.ws.rs.NotFoundException;
+import java.math.BigInteger;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +43,9 @@ class ContractRevisionInitializationServiceTest {
   @Mock
   private DataProductApi dataProductApi;
 
+  @Mock
+  private UidRegisterServiceApi uidRegisterServiceApi;
+
   @InjectMocks
   private ContractRevisionInitializationService contractRevisionInitializationService;
 
@@ -50,23 +55,23 @@ class ContractRevisionInitializationServiceTest {
 
     UUID contractRevisionId = UUID.fromString("00000000-0000-0000-0000-000000000001");
     ContractRevisionEntity revision = ContractRevisionEntity.builder().
-        id(contractRevisionId).dataProviderName("Provider DE").build();
+        id(contractRevisionId).dataProviderName("Provider Name").build();
 
-    DataProviderDto dataProvider = DataProviderDto
-        .builder().name(buildTranslationDto("Provider DE", "Provider FR", "Provider IT")).build();
-
+    DataProviderDto dataProvider = DataProviderDto.builder().uid("CHE123456789").build();
     DataSourceSystemDto dataSourceSystem = DataSourceSystemDto.builder().dataProvider(dataProvider).build();
+    UidRegisterOrganisationDto dataProviderUidResult = UidRegisterOrganisationDto.builder().legalName("Provider Name").build();
 
-    when(contractRevisionMapper.toInitialEntity(same(dataRequest), eq("Provider DE"))).thenReturn(revision);
+    when(contractRevisionMapper.toInitialEntity(same(dataRequest), eq(dataProviderUidResult))).thenReturn(revision);
     when(dataProductApi.getDataSourceSystem(DATA_SOURCE_SYSTEM_ID)).thenReturn(dataSourceSystem);
+    when(uidRegisterServiceApi.getByUid(BigInteger.valueOf(123456789))).thenReturn(dataProviderUidResult);
 
     ContractRevisionEntity result = contractRevisionInitializationService.createAndAssignInitialRevision(dataRequest);
 
     assertSame(revision, result);
     assertSame(revision.getId(), dataRequest.getCurrentContractRevisionId());
-    assertEquals("Provider DE", revision.getDataProviderName());
+    assertEquals("Provider Name", revision.getDataProviderName());
 
-    verify(contractRevisionMapper).toInitialEntity(same(dataRequest), eq("Provider DE"));
+    verify(contractRevisionMapper).toInitialEntity(same(dataRequest), eq(dataProviderUidResult));
     verify(dataProductApi).getDataSourceSystem(DATA_SOURCE_SYSTEM_ID);
     verify(contractRevisionRepository).persist(same(revision));
   }
@@ -85,7 +90,7 @@ class ContractRevisionInitializationServiceTest {
 
     assertEquals("Data request already has a contract revision", exception.getMessage());
 
-    verify(contractRevisionMapper, never()).toInitialEntity(same(dataRequest), eq("Provider DE"));
+    verify(contractRevisionMapper, never()).toInitialEntity(same(dataRequest), any());
     verify(dataProductApi, never()).getDataSourceSystem(any());
     verify(contractRevisionRepository, never()).persist((ContractRevisionEntity) any());
   }
@@ -104,7 +109,7 @@ class ContractRevisionInitializationServiceTest {
     assertEquals("Data source system not found for id: " + DATA_SOURCE_SYSTEM_ID, exception.getMessage());
 
     verify(dataProductApi).getDataSourceSystem(DATA_SOURCE_SYSTEM_ID);
-    verify(contractRevisionMapper, never()).toInitialEntity(same(dataRequest), eq("Provider DE"));
+    verify(contractRevisionMapper, never()).toInitialEntity(same(dataRequest), any());
     verify(contractRevisionRepository, never()).persist((ContractRevisionEntity) any());
     assertNull(dataRequest.getCurrentContractRevisionId());
   }

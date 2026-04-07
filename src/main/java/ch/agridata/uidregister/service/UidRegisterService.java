@@ -15,6 +15,7 @@ import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
 import ch.ech.xmlns.ech_0097._5.UidStructureType;
 import ch.ech.xmlns.ech_0098._5.OrganisationType;
 import io.quarkiverse.cxf.annotation.CXFClient;
+import io.quarkus.cache.CacheResult;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -96,7 +97,7 @@ public class UidRegisterService implements UidRegisterServiceApi {
   public UidRegisterOrganisationDto getByUidOfCurrentUser() {
     String uid = agridataSecurityIdentity.getUidOrElseThrow();
     BigInteger uidWithoutPrefix = new BigInteger(uid.replace(UidOrganisationIdCategorieType.CHE.name(), ""));
-    return getByUid(UidOrganisationIdCategorieType.CHE, uidWithoutPrefix);
+    return getByUid(uidWithoutPrefix);
   }
 
   private UidRegisterOrganisationDto toUidOrganisationDto(ArrayOfOrganisationType result) {
@@ -138,7 +139,8 @@ public class UidRegisterService implements UidRegisterServiceApi {
   }
 
   @Override
-  public UidRegisterOrganisationDto getByUid(UidOrganisationIdCategorieType category, BigInteger id) {
+  @CacheResult(cacheName = "uid-register")
+  public UidRegisterOrganisationDto getByUid(BigInteger id) {
     UidStructureType uidStructureType = new UidStructureType();
     uidStructureType.setUidOrganisationId(id);
     uidStructureType.setUidOrganisationIdCategorie(UidOrganisationIdCategorieType.CHE);
@@ -147,7 +149,7 @@ public class UidRegisterService implements UidRegisterServiceApi {
     } catch (IPublicServicesGetByUIDBusinessFaultFaultFaultMessage
              | IPublicServicesGetByUIDInfrastructureFaultFaultFaultMessage
              | IPublicServicesGetByUIDSecurityFaultFaultFaultMessage e) {
-      throw new ExternalWebServiceException("Uid lookup failed for UID: " + category + id + " error: " + e.getMessage(), e);
+      throw new ExternalWebServiceException("Uid lookup failed for UID: CHE" + id + " error: " + e.getMessage(), e);
     }
   }
 

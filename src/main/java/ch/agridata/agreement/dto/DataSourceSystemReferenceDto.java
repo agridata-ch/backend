@@ -2,6 +2,7 @@ package ch.agridata.agreement.dto;
 
 import ch.agridata.common.dto.TranslationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -23,6 +24,7 @@ public record DataSourceSystemReferenceDto(
     TranslationDto name,
 
     @Schema(description = "Reference to the data provider")
+    @NotNull
     DataProviderReferenceDto dataProvider
 ) {
 

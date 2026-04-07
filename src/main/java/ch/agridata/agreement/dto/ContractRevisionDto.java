@@ -35,7 +35,6 @@ public record ContractRevisionDto(
     @NotNull
     String dataConsumerName,
 
-
     @Schema(
         description = "City of the data consumer",
         examples = {"Basel"}
@@ -49,6 +48,13 @@ public record ContractRevisionDto(
     )
     @NotNull
     String dataProviderName,
+
+    @Schema(
+        description = "City of the data provider",
+        examples = {"Bern"}
+    )
+    @NotNull
+    String dataProviderCity,
 
     @Schema(
         description = "Contextual information from the parent data request (e.g. logo, reduced metadata)"

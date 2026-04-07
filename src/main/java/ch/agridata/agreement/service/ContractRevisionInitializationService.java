@@ -4,11 +4,12 @@ import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
-import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataSourceSystemDto;
+import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import java.math.BigInteger;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -24,6 +25,7 @@ public class ContractRevisionInitializationService {
   private final ContractRevisionRepository contractRevisionRepository;
   private final ContractRevisionMapper contractRevisionMapper;
   private final DataProductApi dataproductApi;
+  private final UidRegisterServiceApi uidRegisterServiceApi;
 
   @Transactional
   public ContractRevisionEntity createAndAssignInitialRevision(DataRequestEntity dataRequest) {
@@ -32,12 +34,14 @@ public class ContractRevisionInitializationService {
     }
 
     DataSourceSystemDto dataSourceSystem = dataproductApi.getDataSourceSystem(dataRequest.getDataSourceSystemId());
-    TranslationDto dataProviderName = dataSourceSystem.dataProvider().name();
+    var uid = dataSourceSystem.dataProvider().uid();
+    var uidWithoutPrefix = new BigInteger(uid.replace("CHE", ""));
+    var dataProvider = uidRegisterServiceApi.getByUid(uidWithoutPrefix);
 
     ContractRevisionEntity revision =
         contractRevisionMapper.toInitialEntity(
             dataRequest,
-            dataProviderName.de() // TODO: Will probably be replaced to directly storing the TranslationDto as JSON
+            dataProvider
         );
 
     contractRevisionRepository.persist(revision);
