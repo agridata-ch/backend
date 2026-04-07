@@ -9,6 +9,7 @@ import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.UidMissingException;
+import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.OptimisticLockException;
@@ -67,7 +68,6 @@ public class ExceptionHandler {
         .build();
   }
 
-
   @ServerExceptionMapper(IllegalArgumentException.class)
   public Response handleIllegalArgumentException(IllegalArgumentException ex) {
     log.warn("IllegalArgumentException: {}", ex.getMessage(), ex);
@@ -89,7 +89,7 @@ public class ExceptionHandler {
   @ServerExceptionMapper(UidMissingException.class)
   public Response handleUidMissingException(UidMissingException ex) {
     log.error("UidMissingException: {}", ex.getMessage(), ex);
-    return Response.status(Status.FORBIDDEN)
+    return Response.status(Status.BAD_GATEWAY)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_MISSING))
         .build();
@@ -111,8 +111,10 @@ public class ExceptionHandler {
         .sorted()
         .collect(Collectors.joining(", "));
 
-    log.warn("ConstraintViolationException, violations: {}, exception: {}", violations,
-        ex.getMessage());
+    log.warn(
+        "ConstraintViolationException, violations: {}, exception: {}", violations,
+        ex.getMessage()
+    );
     return Response.status(Response.Status.BAD_REQUEST)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("Validation failed", violations))
@@ -152,6 +154,19 @@ public class ExceptionHandler {
     return Response.status(Status.BAD_GATEWAY)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createExternalServiceFailedResponse("External service failed", 0, ex.getMessage()))
+        .build();
+  }
+
+  @ServerExceptionMapper(UidProviderUnavailableException.class)
+  public Response handleUidProviderUnavailableException(UidProviderUnavailableException ex) {
+    log.error("ExternalWebServiceException: {}", ex.getMessage(), ex);
+    return Response.status(Status.GATEWAY_TIMEOUT)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createExternalServiceFailedResponse(
+            "External auth service failed",
+            Status.GATEWAY_TIMEOUT.getStatusCode(),
+            ex.getMessage()
+        ))
         .build();
   }
 
