@@ -1,0 +1,23 @@
+{
+  "relationDepth": "allRelations",
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 1,
+    "totalHits": 1
+  },
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": []
+    },
+    "personRelations": {
+      "person": []
+    },
+    "relevantFarms": {
+      "farm": []
+    },
+    "farmRelations": {
+      "farm": []
+    }
+  }
+}

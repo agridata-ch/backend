@@ -16,7 +16,7 @@ import ch.agridata.agis.dto.AgisPersonRelations;
 import ch.agridata.agis.dto.AgisPersonType;
 import ch.agridata.agis.dto.AgisRelevantFarms;
 import ch.agridata.agis.dto.AgisRelevantPersons;
-import ch.agridata.common.exceptions.ExternalWebServiceException;
+import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import ch.agridata.user.dto.LegalFormEnum;
 import ch.agridata.user.dto.UidDto;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 
@@ -47,39 +48,53 @@ public class FarmerUidProvider {
 
   private final AgisApi agisApi;
 
-  @Retry
+  @Retry(maxRetries = 1)
   @Timeout(value = 2, unit = ChronoUnit.SECONDS)
+  @Fallback(fallbackMethod = "fallbackAuthorizedUids")
   public List<UidDto> getAuthorizedUids(@NonNull String ktIdP) {
     var personFarmResponse = agisApi.fetchRegisterDataForKtIdP(ktIdP);
     return findAuthorizedUids(personFarmResponse);
   }
 
+  @SuppressWarnings("unused")
+  private List<UidDto> fallbackAuthorizedUids(@NonNull String ktIdP, Throwable throwable) {
+    log.warn("AgisApi is not available while resolving UIDs for ktIdP={}", ktIdP);
+    throw new UidProviderUnavailableException("AGIS service unavailable while resolving UIDs", throwable);
+  }
+
   private List<UidDto> findAuthorizedUids(@NonNull AgisPersonFarmResponseType response) {
     var personFarmTree = Optional.of(response)
-        .map(AgisPersonFarmResponseType::getPersonFarmTree)
-        .orElseThrow(() -> new ExternalWebServiceException("invalid response from AGIS: no personFarmTree found", null));
+        .map(AgisPersonFarmResponseType::getPersonFarmTree);
+    if (personFarmTree.isEmpty()) {
+      return List.of();
+    }
 
-    var matchedPersonKtIdP = Optional.of(personFarmTree)
+    var matchedPersonKtIdP = personFarmTree
         .map(AgisPersonFarmTreeType::getRelevantPersons)
         .map(AgisRelevantPersons::getPerson)
         .stream()
         .flatMap(List::stream)
         .findFirst()
-        .map(AgisPersonType::getKtIdP)
-        .orElseThrow(() -> new ExternalWebServiceException("invalid response from AGIS: no person found", null));
+        .map(AgisPersonType::getKtIdP);
+    if (matchedPersonKtIdP.isEmpty()) {
+      return List.of();
+    }
 
     var allPersons = Stream.concat(
-            Stream.of(personFarmTree)
+            personFarmTree
                 .map(AgisPersonFarmTreeType::getRelevantPersons)
-                .map(AgisRelevantPersons::getPerson),
-            Stream.of(personFarmTree)
+                .map(AgisRelevantPersons::getPerson)
+                .stream(),
+            personFarmTree
                 .map(AgisPersonFarmTreeType::getPersonRelations)
-                .map(AgisPersonRelations::getPerson))
+                .map(AgisPersonRelations::getPerson)
+                .stream()
+        )
         .flatMap(List::stream)
         .toList();
 
-    return findKtIdPsOfPerson(matchedPersonKtIdP, allPersons, new HashSet<>())
-        .flatMap(id -> findFarmsWithPersonRelationToKtIdP(personFarmTree, id))
+    return findKtIdPsOfPerson(matchedPersonKtIdP.get(), allPersons, new HashSet<>())
+        .flatMap(id -> findFarmsWithPersonRelationToKtIdP(personFarmTree.get(), id))
         .peek(farm -> log.debug("Found farm with BUR: {}", farm.getBer())) // NOSONAR: peek() is only used for debugging purposes
         .map(AgisFarmType::getUid)
         .peek(uid -> log.debug("Found UID: {}", uid)) // NOSONAR: peek() is only used for debugging purposes
@@ -87,15 +102,17 @@ public class FarmerUidProvider {
         .distinct()
         .map(uid -> UidDto.builder()
             .uid(uid)
-            .name(findNameOfUid(personFarmTree, uid).orElse(""))
-            .legalFormCode(findLegalFormOfUid(personFarmTree, uid).orElse(LegalFormEnum.UNKNOWN))
+            .name(findNameOfUid(personFarmTree.get(), uid).orElse(""))
+            .legalFormCode(findLegalFormOfUid(personFarmTree.get(), uid).orElse(LegalFormEnum.UNKNOWN))
             .build())
         .toList();
   }
 
-  private Stream<String> findKtIdPsOfPerson(String ktIdP,
-                                            List<AgisPersonType> persons,
-                                            Set<String> visited) {
+  private Stream<String> findKtIdPsOfPerson(
+      String ktIdP,
+      List<AgisPersonType> persons,
+      Set<String> visited
+  ) {
     if (ktIdP == null || !visited.add(ktIdP)) {
       return Stream.empty();
     }
@@ -116,8 +133,10 @@ public class FarmerUidProvider {
   }
 
 
-  private Stream<AgisFarmType> findFarmsWithPersonRelationToKtIdP(@NonNull AgisPersonFarmTreeType personFarmTree,
-                                                                  @NonNull String ktIdP) {
+  private Stream<AgisFarmType> findFarmsWithPersonRelationToKtIdP(
+      @NonNull AgisPersonFarmTreeType personFarmTree,
+      @NonNull String ktIdP
+  ) {
 
     return Stream.concat(
             Optional.of(personFarmTree)
@@ -125,13 +144,16 @@ public class FarmerUidProvider {
                 .map(AgisRelevantFarms::getFarm).stream(),
             Optional.of(personFarmTree)
                 .map(AgisPersonFarmTreeType::getFarmRelations)
-                .map(AgisFarmRelations::getFarm).stream())
+                .map(AgisFarmRelations::getFarm).stream()
+        )
         .flatMap(List::stream)
         .filter(farm -> farmHasRelationToKtIdP(farm, ktIdP));
   }
 
-  private boolean farmHasRelationToKtIdP(@NonNull AgisFarmType farm,
-                                         @NonNull String ktIdP) {
+  private boolean farmHasRelationToKtIdP(
+      @NonNull AgisFarmType farm,
+      @NonNull String ktIdP
+  ) {
 
     return Optional.of(farm)
         .map(AgisFarmType::getFarmToPersonRelations)
@@ -142,8 +164,10 @@ public class FarmerUidProvider {
         .anyMatch(ktIdP::equals);
   }
 
-  private Optional<String> findNameOfUid(@NonNull AgisPersonFarmTreeType personFarmTree,
-                                         @NonNull String uid) {
+  private Optional<String> findNameOfUid(
+      @NonNull AgisPersonFarmTreeType personFarmTree,
+      @NonNull String uid
+  ) {
 
     var responsiblePerson = findResponsiblePersonOfUid(personFarmTree, uid);
 
@@ -173,16 +197,20 @@ public class FarmerUidProvider {
     return name;
   }
 
-  private Optional<LegalFormEnum> findLegalFormOfUid(@NonNull AgisPersonFarmTreeType personFarmTree,
-                                                     @NonNull String uid) {
+  private Optional<LegalFormEnum> findLegalFormOfUid(
+      @NonNull AgisPersonFarmTreeType personFarmTree,
+      @NonNull String uid
+  ) {
 
     return findResponsiblePersonOfUid(personFarmTree, uid)
         .map(AgisPersonType::getLegalForm)
         .map(LegalFormEnum::fromNumber);
   }
 
-  private Optional<AgisPersonType> findResponsiblePersonOfUid(@NonNull AgisPersonFarmTreeType personFarmTree,
-                                                              @NonNull String uid) {
+  private Optional<AgisPersonType> findResponsiblePersonOfUid(
+      @NonNull AgisPersonFarmTreeType personFarmTree,
+      @NonNull String uid
+  ) {
     var responsibleKtIdP = findResponsibleKtIdPofUid(personFarmTree, uid);
 
     if (responsibleKtIdP.isEmpty()) {
@@ -195,7 +223,8 @@ public class FarmerUidProvider {
                 .map(AgisRelevantPersons::getPerson).stream(),
             Optional.of(personFarmTree)
                 .map(AgisPersonFarmTreeType::getPersonRelations)
-                .map(AgisPersonRelations::getPerson).stream())
+                .map(AgisPersonRelations::getPerson).stream()
+        )
         .flatMap(List::stream)
         .filter(person -> responsibleKtIdP.get().equals(person.getKtIdP()))
         .findFirst();
@@ -207,15 +236,18 @@ public class FarmerUidProvider {
     return responsiblePerson;
   }
 
-  private Optional<String> findResponsibleKtIdPofUid(@NonNull AgisPersonFarmTreeType personFarmTree,
-                                                     @NonNull String uid) {
+  private Optional<String> findResponsibleKtIdPofUid(
+      @NonNull AgisPersonFarmTreeType personFarmTree,
+      @NonNull String uid
+  ) {
     var responsibleKtIdP = Stream.concat(
             Optional.of(personFarmTree)
                 .map(AgisPersonFarmTreeType::getRelevantFarms)
                 .map(AgisRelevantFarms::getFarm).stream(),
             Optional.of(personFarmTree)
                 .map(AgisPersonFarmTreeType::getFarmRelations)
-                .map(AgisFarmRelations::getFarm).stream())
+                .map(AgisFarmRelations::getFarm).stream()
+        )
         .flatMap(List::stream)
         .filter(farm -> uid.equals(farm.getUid()))
         .findFirst()

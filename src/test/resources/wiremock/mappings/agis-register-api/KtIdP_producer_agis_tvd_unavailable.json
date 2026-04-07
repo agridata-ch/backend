@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/agis/register-data/1/register",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"personSearchParameters\":{\"ktIdP\":\"producer-agis-tvd-unavailable\"},\"dataRequestType\":{\"relationDepth\":\"allRelations\"}}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 3000
+  }
+}

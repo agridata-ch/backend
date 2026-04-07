@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
+import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
+import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -142,6 +144,30 @@ class ExceptionHandlerTest {
 
     if (debug) {
       assertThat(dto.debugMessage()).isEqualTo("Consent not granted for producer");
+    } else {
+      assertThat(dto.debugMessage()).isNull();
+    }
+  }
+
+  @ParameterizedTest(name = "handleUidProviderUnavailableException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleUidProviderUnavailableException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    UidProviderUnavailableException exception =
+        new UidProviderUnavailableException("AGIS and TVD are unavailable");
+
+    Response response = exceptionHandler.handleUidProviderUnavailableException(exception);
+    ExternalServiceExceptionDto dto = (ExternalServiceExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus())
+        .isEqualTo(Response.Status.GATEWAY_TIMEOUT.getStatusCode());
+    assertThat(dto.message()).isEqualTo("External auth service failed");
+    assertThat(dto.status()).isEqualTo(Response.Status.GATEWAY_TIMEOUT.getStatusCode());
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXTERNAL_SERVICE_ERROR);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+
+    if (debug) {
+      assertThat(dto.debugMessage()).isEqualTo("AGIS and TVD are unavailable");
     } else {
       assertThat(dto.debugMessage()).isNull();
     }
