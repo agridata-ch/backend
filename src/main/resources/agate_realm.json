@@ -2875,7 +2875,7 @@
       "totp": false
     },
     {
-      "username": "provider",
+      "username": "provider-1",
       "attributes": {
         "loginid": [
           "3477553"
@@ -2914,6 +2914,58 @@
       "emailVerified": true,
       "enabled": true,
       "firstName": "Teo",
+      "groups": [
+      ],
+      "lastName": "Provider",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenanbieter"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "provider-2",
+      "attributes": {
+        "loginid": [
+          "3477586"
+        ],
+        "street": [
+          "Nullnummerweg 55"
+        ],
+        "locality": [
+          "Schaffhausen"
+        ],
+        "postal_code": [
+          "8200"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+4179123456789"
+        ],
+        "uid": [
+          "CHE146680598"
+        ]
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "nina.provider@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Nina",
       "groups": [
       ],
       "lastName": "Provider",

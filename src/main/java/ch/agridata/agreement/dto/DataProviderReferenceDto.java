@@ -20,7 +20,10 @@ public record DataProviderReferenceDto(
     String code,
 
     @Schema(description = "Display name of the provider")
-    TranslationDto name
+    TranslationDto name,
+
+    @Schema(description = "UID of the data provider", examples = {"CHE123456789"})
+    String uid
 ) {
 
 }

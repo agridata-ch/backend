@@ -28,20 +28,18 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         .firstResultOptional();
   }
 
-  public Optional<DataRequestEntity> findActiveByIdAndDataProviderUid(UUID id, String dataProviderUid) {
+  public Optional<DataRequestEntity> findByIdAndInProviderWorkflowStates(UUID id) {
     return find(
         """
-            id = :id and dataSourceSystemId in (
-              select dss.id
-              from DataSourceSystemEntity dss
-              where dss.dataProvider.uid = :dataProviderUid
-            )
-            and stateCode = :state_code
+            id = :id and stateCode in (:state_codes)
             """,
         Map.of(
             "id", id,
-            "dataProviderUid", dataProviderUid,
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE
+            "state_codes", List.of(
+                DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+            )
         )
     )
         .firstResultOptional();
@@ -56,19 +54,16 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     ).list();
   }
 
-  public List<DataRequestEntity> findActiveByProviderUid(String dataProviderUid) {
+  public List<DataRequestEntity> findByInProviderWorkflowStates() {
     return find(
-        """
-            dataSourceSystemId in (
-              select dss.id
-              from DataSourceSystemEntity dss
-              where dss.dataProvider.uid = :dataProviderUid
-            )
-            and stateCode = :state_code
-            """,
+        "stateCode in (:state_codes)",
         Map.of(
-            "dataProviderUid", dataProviderUid,
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE
+            "state_codes", List.of(
+                DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+            )
         )
     ).list();
   }

@@ -3,17 +3,17 @@ package integration.agreement;
 import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
-import static integration.agreement.DataRequestTestFactory.requestOtpChallengeAs;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
-import static integration.agreement.DataRequestTestFactory.signContractRevisionAs;
+import static integration.agreement.DataRequestTestFactory.signContractRevision;
 import static integration.agreement.DataRequestTestFactory.updateDataRequestAs;
 import static integration.agreement.DataRequestTestFactory.updateLogoAs;
 import static integration.testutils.AuthTestUtils.requestAs;
-import static integration.testutils.TestDataIdentifiers.Uid;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
+import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -26,16 +26,18 @@ import static org.hamcrest.Matchers.nullValue;
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
-import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.product.controller.DataProductController;
 import ch.agridata.product.dto.DataProductDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
@@ -85,7 +87,7 @@ class DataRequestProcessTest {
         .then()
         .statusCode(204);
 
-    // Step 4: Set status to IN_REVIEW with invalid data
+    // Step 4: Set the status to IN_REVIEW with invalid data
     setStatusAs(dataRequestId, DataRequestStateEnum.IN_REVIEW, CONSUMER_BLV_1)
         .then()
         .statusCode(400)
@@ -119,12 +121,12 @@ class DataRequestProcessTest {
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.IN_REVIEW.name()));
 
-    // Step 10: As Admin set status to to be signed
+    // Step 10: As Admin set status to be signed
     var revisionId1 = setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER.name()))
-        .extract().path("currentContractRevisionId");
+        .extract().as(DataRequestDto.class).currentContractRevisionId();
 
     // Step 11: Verify initial contract revision
     requestAs(CONSUMER_BLV_1).given()
@@ -138,61 +140,71 @@ class DataRequestProcessTest {
         .body("dataProviderCity", equalTo("Liebefeld"))
         .body("consumerSignatures", empty());
 
-    // Step 12: As Consumer 1 request an otp challenge
-    OtpChallengeDto challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BLV_1)
-        .as(OtpChallengeDto.class);
-
-    // Step 13: As Consumer 1 sign the contract revision
-    var response = signContractRevisionAs(
-        revisionId1.toString(),
-        SignatureSlotCodeEnum.DATA_CONSUMER_01,
-        challenge1.challengeId(),
-        "123456",
-        CONSUMER_BLV_1
-    )
+    // Step 12: As Consumer 1 sign Contract
+    var revisionId2 = signContractRevision(revisionId1, CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01)
         .then()
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId1.toString()))
         .body("consumerSignatures.last().name", equalTo(
             CONSUMER_BLV_1.getGivenName() + " " + CONSUMER_BLV_1.getFamilyName()
-        ));
+        ))
+        .extract().as(ContractRevisionDto.class).id();
 
-    var revisionId2 = response.extract().path("id");
-
-    // Step 14: As Consumer 2 request an otp challenge
-    OtpChallengeDto challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_02, CONSUMER_BLV_2)
-        .as(OtpChallengeDto.class);
-
-    // Step 15: As Consumer 2 sign the contract revision
-    signContractRevisionAs(
-        revisionId2.toString(),
-        SignatureSlotCodeEnum.DATA_CONSUMER_02,
-        challenge2.challengeId(),
-        "123456",
-        CONSUMER_BLV_2
-    )
+    // Step 13: As Consumer 2 request an otp challenge
+    var revisionId3 = signContractRevision(revisionId2, CONSUMER_BLV_2, SignatureSlotCodeEnum.DATA_CONSUMER_02)
         .then()
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId2.toString()))
         .body("consumerSignatures.last().name", equalTo(
             CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
-        ));
+        ))
+        .extract().as(ContractRevisionDto.class).id();
 
-    // Step 16: As Consumer set status to toBeSignedByProvider
+    // Step 14: As Consumer set status to toBeSignedByProvider
     setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER, CONSUMER_BLV_2)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER.name()));
 
-    // Step 17: As Admin set status to active
+    // Step 15: As Provider 1 request an otp challenge
+    var revisionId4 = signContractRevision(revisionId3, PROVIDER_1,
+        SignatureSlotCodeEnum.DATA_PROVIDER_01)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("id", org.hamcrest.Matchers.not(revisionId3.toString()))
+        .body("providerSignatures.last().name", equalTo(
+            PROVIDER_1.getGivenName() + " " + PROVIDER_1.getFamilyName()
+        ))
+        .extract().as(ContractRevisionDto.class).id();
+
+    // Step 16: As Provider 2 request an otp challenge
+    signContractRevision(revisionId4, PROVIDER_2,
+        SignatureSlotCodeEnum.DATA_PROVIDER_02)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("id", org.hamcrest.Matchers.not(revisionId4.toString()))
+        .body("providerSignatures.last().name", equalTo(
+            PROVIDER_2.getGivenName() + " " + PROVIDER_2.getFamilyName()
+        ))
+        .extract().as(ContractRevisionDto.class);
+
+    // Step 17: As Provider set status to toBeActivated
+    setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_ACTIVATED, PROVIDER_1)
+        .then()
+        .statusCode(200)
+        .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_ACTIVATED.name()));
+
+    // Step 18: As Admin set status to active
     setStatusAs(dataRequestId, DataRequestStateEnum.ACTIVE, ADMIN)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.ACTIVE.name()));
 
-    // Step 18: As producer use consent request creation link
+    // Step 19: As producer use consent request creation link
     var createDtos = PRODUCER_B.getCompanyUids().stream()
         .map(uid -> CreateConsentRequestDto.builder().dataRequestId(UUID.fromString(dataRequestId)).uid(uid.name())
             .build())

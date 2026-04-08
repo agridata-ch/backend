@@ -141,6 +141,8 @@ public class DataRequestEntity extends AuditableEntity {
     TO_BE_SIGNED_BY_CONSUMER,
     TO_BE_RELEASED_BY_CONSUMER,
     TO_BE_SIGNED_BY_PROVIDER,
+    TO_BE_RELEASED_BY_PROVIDER,
+    TO_BE_ACTIVATED,
     ACTIVE,
   }
 

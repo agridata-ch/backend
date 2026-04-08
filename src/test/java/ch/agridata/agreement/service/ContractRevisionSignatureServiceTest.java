@@ -1,5 +1,7 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.utils.DataRequestTestUtils.CONTRACT_REVISION_ID;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.lenient;
@@ -13,9 +15,11 @@ import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.oidc.UserInfo;
 import jakarta.validation.ValidationException;
+import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,10 +45,11 @@ class ContractRevisionSignatureServiceTest {
   private AgridataSecurityIdentity agridataSecurityIdentity;
   @Mock
   private DataRequestStateService dataRequestStateService;
+  @Mock
+  private ContractRevisionQueryService contractRevisionQueryService;
 
-  private static final String CONSUMER_UID = "CHE123456789";
+  private static final String USER_UID = "CHE123456789";
   private static final UUID USER_ID = UUID.randomUUID();
-  private static final UUID REVISION_ID = UUID.randomUUID();
   private static final UUID VERIFICATION_ID = UUID.randomUUID();
   private static final String OTP_CODE = "123456";
 
@@ -53,13 +58,8 @@ class ContractRevisionSignatureServiceTest {
 
   @BeforeEach
   void setUp() {
-    dataRequest = new DataRequestEntity();
-    dataRequest.setCurrentContractRevisionId(REVISION_ID);
-
-    existingRevision = ContractRevisionEntity.builder()
-        .id(REVISION_ID)
-        .dataRequest(dataRequest)
-        .build();
+    existingRevision = DataRequestTestUtils.buildContractRevision();
+    dataRequest = existingRevision.getDataRequest();
   }
 
   @Test
@@ -69,14 +69,14 @@ class ContractRevisionSignatureServiceTest {
     nextRevision.setId(UUID.randomUUID());
 
     setupSecurityContext();
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
     when(contractRevisionMapper.toDto(nextRevision)).thenReturn(ContractRevisionDto.builder().build());
 
-    ContractRevisionDto result = signatureService.signContractRevision(REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
+    ContractRevisionDto result = signatureService.signContractRevision(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
 
-    verify(otpChallengeService).verifyAndConsume(VERIFICATION_ID, USER_ID, REVISION_ID, signatureSlotCode, OTP_CODE);
+    verify(otpChallengeService).verifyAndConsume(VERIFICATION_ID, USER_ID, CONTRACT_REVISION_ID, signatureSlotCode, OTP_CODE);
     verify(contractRevisionRepository).persist(nextRevision);
 
     assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
@@ -100,12 +100,12 @@ class ContractRevisionSignatureServiceTest {
 
     setupSecurityContext();
 
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
     when(contractRevisionMapper.toDto(nextRevision)).thenReturn(ContractRevisionDto.builder().build());
 
-    ContractRevisionDto result = signatureService.signContractRevision(REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
+    ContractRevisionDto result = signatureService.signContractRevision(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
 
     assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
     assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(existingSignatureUUID);
@@ -119,12 +119,13 @@ class ContractRevisionSignatureServiceTest {
   @Test
   void givenRevisionNotCurrent_whenSignContractRevision_thenThrowValidationException() {
     dataRequest.setCurrentContractRevisionId(UUID.randomUUID());
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID, OTP_CODE))
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+            OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("no longer current");
 
@@ -135,11 +136,12 @@ class ContractRevisionSignatureServiceTest {
   void givenUserAlreadySigned_whenSignContractRevision_thenThrowValidationException() {
     existingRevision.setConsumerSignatureUserId1(USER_ID);
     setupSecurityContext();
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID, OTP_CODE))
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
+            OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("already signed");
 
@@ -150,11 +152,12 @@ class ContractRevisionSignatureServiceTest {
   void givenSlotAlreadyOccupied_whenSignContractRevision_thenThrowValidationException() {
     existingRevision.setConsumerSignatureTimestamp1(LocalDateTime.now());
     setupSecurityContext();
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID, OTP_CODE))
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+            OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Signature already exists for this slot");
 
@@ -162,15 +165,55 @@ class ContractRevisionSignatureServiceTest {
   }
 
   @Test
-  void givenInvalidSlotId_whenSignContractRevision_thenThrowValidationException() {
+  void givenInvalidSlotId_whenSignContractRevisionByConsumer_thenThrowValidationException() {
     setupSecurityContext();
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, CONSUMER_UID))
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID, OTP_CODE))
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
+            OTP_CODE))
         .isInstanceOf(ValidationException.class)
-        .hasMessage("Invalid signature slot id");
+        .hasMessage("Invalid consumer signature slot id");
+
+    verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenInvalidSlotId_whenSignContractRevisionByProvider_thenThrowValidationException() {
+    setupSecurityContext();
+
+    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
+    when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
+        .thenReturn(Optional.of(existingRevision));
+    when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision))
+        .thenReturn(true);
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("Invalid provider signature slot id");
+
+    verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenRevisionNotAssignedToCurrentProvider_whenSignContractRevision_thenThrowNotFoundException() {
+    setupSecurityContext();
+
+    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
+    when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
+        .thenReturn(Optional.of(existingRevision));
+    when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision))
+        .thenReturn(false);
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID,
+            SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessageContaining(CONTRACT_REVISION_ID.toString());
 
     verifyNoInteractions(dataRequestStateService);
   }
@@ -180,7 +223,7 @@ class ContractRevisionSignatureServiceTest {
     lenient().when(userInfo.getString("given_name")).thenReturn("John");
     lenient().when(userInfo.getString("family_name")).thenReturn("Doe");
 
-    lenient().when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    lenient().when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     lenient().when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
     lenient().when(agridataSecurityIdentity.getUserInfoOrElseThrow()).thenReturn(userInfo);
   }

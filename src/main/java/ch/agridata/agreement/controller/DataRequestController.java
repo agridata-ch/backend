@@ -94,7 +94,7 @@ public class DataRequestController {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getAllNonDraftDataRequests();
     } else if (identity.isProvider()) {
-      return dataRequestQueryService.getActiveDataRequestsForCurrentProvider();
+      return dataRequestQueryService.getRelevantDataRequestsForCurrentProvider();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
@@ -113,7 +113,7 @@ public class DataRequestController {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getNonDraftDataRequest(requestId);
     } else if (identity.isProvider()) {
-      return dataRequestQueryService.getActiveDataRequestForCurrentProvider(requestId);
+      return dataRequestQueryService.getDataRequestForCurrentProvider(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
@@ -264,13 +264,15 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE, ADMIN_ROLE})
   public DataRequestDto setDataRequestStatus(
       @PathParam("id") UUID requestId,
       @Valid DataRequestStateEnum stateCode
   ) {
     if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
+    } else if (identity.isProvider()) {
+      return dataRequestStateService.setStateAsProvider(requestId, stateCode);
     }
     return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
 

@@ -4,6 +4,7 @@ import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.common.dto.TranslationDto;
@@ -17,6 +18,7 @@ public class DataRequestTestUtils {
 
   public static final UUID PRODUCT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
   public static final UUID DATA_SOURCE_SYSTEM_ID = UUID.fromString("00000000-0000-0000-0000-000000000002");
+  public static final UUID CONTRACT_REVISION_ID = UUID.fromString("00000000-0000-0000-0000-000000000003");
   public static final String USER_UID = "CHE101708094";
 
   public static DataRequestEntity buildEntity() {
@@ -58,6 +60,16 @@ public class DataRequestTestUtils {
     return UidRegisterOrganisationDto.builder()
         .uid(USER_UID)
         .legalName("Test Organisation")
+        .build();
+  }
+
+  public static ContractRevisionEntity buildContractRevision() {
+    DataRequestEntity dataRequest = new DataRequestEntity();
+    dataRequest.setCurrentContractRevisionId(CONTRACT_REVISION_ID);
+
+    return ContractRevisionEntity.builder()
+        .id(CONTRACT_REVISION_ID)
+        .dataRequest(dataRequest)
         .build();
   }
 }

@@ -65,6 +65,11 @@ public record ContractRevisionDto(
     @Schema(
         description = "List of signatures of the data consumer"
     )
-    List<ContractRevisionSignatureDto> consumerSignatures
+    List<ContractRevisionSignatureDto> consumerSignatures,
+
+    @Schema(
+        description = "List of signatures of the data provider"
+    )
+    List<ContractRevisionSignatureDto> providerSignatures
 ) {
 }

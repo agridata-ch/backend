@@ -1,6 +1,7 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
@@ -8,7 +9,7 @@ import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.ValidationException;
+import jakarta.ws.rs.NotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -24,21 +25,19 @@ public class ContractRevisionOtpChallengeService {
   private final OtpChallengeService otpChallengeService;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ContractRevisionRepository contractRevisionRepository;
+  private final ContractRevisionQueryService contractRevisionQueryService;
 
-  @RolesAllowed({CONSUMER_ROLE})
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   public OtpChallengeDto createOtpChallenge(
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode
   ) {
-    contractRevisionRepository
-        .findByIdAndDataConsumerUid(
-            contractRevisionId,
-            agridataSecurityIdentity.getUidOrElseThrow()
-        )
-        .orElseThrow(() -> new ValidationException("Contract revision not found"));
-
-    if (signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_01 && signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_02) {
-      throw new IllegalArgumentException("Invalid signature slot id");
+    if (agridataSecurityIdentity.isProvider()) {
+      verifyIsAssignedToCurrentProvider(contractRevisionId);
+      verifyProviderSlot(signatureSlotCode);
+    } else {
+      verifyConsumerOwnership(contractRevisionId);
+      verifyConsumerSlot(signatureSlotCode);
     }
 
     var challenge = otpChallengeService.createChallenge(
@@ -56,8 +55,37 @@ public class ContractRevisionOtpChallengeService {
     );
   }
 
+  private void verifyIsAssignedToCurrentProvider(UUID contractRevisionId) {
+    if (!contractRevisionQueryService.isAssignedToCurrentProvider(contractRevisionId)) {
+      throw new NotFoundException(contractRevisionId.toString());
+    }
+  }
+
+  private static void verifyConsumerSlot(SignatureSlotCodeEnum signatureSlotCode) {
+    if (signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_01
+        && signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_02) {
+      throw new IllegalArgumentException("Invalid consumer signature slot id=" + signatureSlotCode);
+    }
+  }
+
+  private void verifyConsumerOwnership(UUID contractRevisionId) {
+    contractRevisionRepository
+        .findByIdAndDataConsumerUid(
+            contractRevisionId,
+            agridataSecurityIdentity.getUidOrElseThrow()
+        )
+        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
+  }
+
+  private static void verifyProviderSlot(SignatureSlotCodeEnum signatureSlotCode) {
+    if (signatureSlotCode != SignatureSlotCodeEnum.DATA_PROVIDER_01
+        && signatureSlotCode != SignatureSlotCodeEnum.DATA_PROVIDER_02) {
+      throw new IllegalArgumentException("Invalid provider signature slot id=" + signatureSlotCode);
+    }
+  }
+
   private String maskPhoneNumber(String phoneNumber) {
-    if (phoneNumber == null || phoneNumber.length() < 10) {
+    if (phoneNumber.length() < 10) {
       return "****";
     }
     String phoneNumberWithoutWhitespaces = phoneNumber.replaceAll("\\s+", "");

@@ -190,15 +190,15 @@ class DataRequestStateServiceTest {
     var id = UUID.randomUUID();
 
     var entity = buildEntity();
-    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.ACTIVE);
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(id, DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
-        DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    verify(dataRequestStateAuditService).auditAdminStatusTransition(id,
+        DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED, DataRequestEntity.DataRequestStateEnum.ACTIVE);
     assertThat(result).isEqualTo(expectedDto);
   }
 

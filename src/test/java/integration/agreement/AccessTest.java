@@ -36,11 +36,11 @@ class AccessTest {
   @Test
   void testAccess_ContractRevisionController() {
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1",
-        CONSUMER_ROLE);
+        CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/signatures/1/otp-challenges",
-        CONSUMER_ROLE);
+        CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST,
-        ContractRevisionController.PATH + "/1/signatures/1/otp-challenges/1/verification", CONSUMER_ROLE);
+        ContractRevisionController.PATH + "/1/signatures/1/otp-challenges/1/verification", CONSUMER_ROLE, PROVIDER_ROLE);
   }
 
   @Test
@@ -64,7 +64,7 @@ class AccessTest {
         CONSUMER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/status",
-        CONSUMER_ROLE, ADMIN_ROLE);
+        CONSUMER_ROLE, PROVIDER_ROLE, ADMIN_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT,
         DataRequestController.PATH_V1 + "/1/valid-redirect-uri-regex",

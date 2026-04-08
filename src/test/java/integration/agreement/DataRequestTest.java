@@ -17,7 +17,7 @@ import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_6319423
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
-import static integration.testutils.TestUserEnum.PROVIDER;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -72,7 +72,7 @@ class DataRequestTest {
   void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
     createDataRequest().then()
         .statusCode(201).extract().path("id");
-    AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
+    AuthTestUtils.requestAs(PROVIDER_1).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(4));
   }
@@ -95,7 +95,7 @@ class DataRequestTest {
 
   @Test
   void givenExistingDataRequestAndProvider_whenGetDataRequest_thenReturnFound() {
-    AuthTestUtils.requestAs(PROVIDER).when()
+    AuthTestUtils.requestAs(PROVIDER_1).when()
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
@@ -150,7 +150,7 @@ class DataRequestTest {
   void givenExistingDraftDataRequestAndProvider_whenGetDataRequest_thenReturnNotFound() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
-    AuthTestUtils.requestAs(PROVIDER).when()
+    AuthTestUtils.requestAs(PROVIDER_1).when()
         .get(DataRequestController.PATH_V1 + "/" + id)
         .then()
         .statusCode(404);
