@@ -4,6 +4,7 @@ import static ch.agridata.agreement.controller.ContractRevisionController.PATH;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
@@ -14,6 +15,7 @@ import ch.agridata.agreement.service.ContractRevisionQueryService;
 import ch.agridata.agreement.service.ContractRevisionSealService;
 import ch.agridata.agreement.service.ContractRevisionSignatureService;
 import ch.agridata.common.openapi.ApiSubset;
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
@@ -34,7 +36,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
- * Provides an endpoint for retrieving contract revisions for consumers.
+ * Provides an endpoint for retrieving contract revisions for consumers and providers.
  *
  * @CommentLastReviewed 2026-03-16
  */
@@ -44,7 +46,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @RequiredArgsConstructor
 @Tag(
     name = "Contract Revisions",
-    description = "Provides access to contract revisions for consumers"
+    description = "Provides access to contract revisions for consumers and providers"
 )
 @RunOnVirtualThread
 public class ContractRevisionController {
@@ -54,18 +56,22 @@ public class ContractRevisionController {
   private final ContractRevisionOtpChallengeService contractRevisionOtpChallengeService;
   private final ContractRevisionSignatureService contractRevisionSignatureService;
   private final ContractRevisionSealService contractRevisionSealService;
+  private final AgridataSecurityIdentity agridataSecurityIdentity;
 
   @GET
   @ApiSubset({WEB_APP})
   @Path("/{id}")
   @Operation(
       operationId = "getContractRevision",
-      description = "Retrieves a specific contract revision by its ID. Accessible by the consumer"
-          + "that owns the associated datarequest."
+      description = "Retrieves a specific contract revision by its ID. Accessible by the consumer "
+          + "or provider that owns the associated datarequest."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({CONSUMER_ROLE})
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   public ContractRevisionDto getContractRevision(@PathParam("id") UUID id) {
+    if (agridataSecurityIdentity.isProvider()) {
+      return contractRevisionQueryService.getContractRevisionOfCurrentProvider(id);
+    }
     return contractRevisionQueryService.getContractRevisionOfCurrentConsumer(id);
   }
 
@@ -74,11 +80,11 @@ public class ContractRevisionController {
   @Path("/{id}/signatures/{slotCode}/otp-challenges")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(
-      operationId = "initiateConsumerSignatureChallenge",
+      operationId = "initiateSignatureChallenge",
       description = "Initiates a challenge for a specific signature slot of a specific contract revision."
   )
-  @RolesAllowed({CONSUMER_ROLE})
-  public OtpChallengeDto initiateConsumerSignatureChallenge(
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  public OtpChallengeDto initiateSignatureChallenge(
       @Parameter(
           description = "ID of the contract revision",
           required = true,
@@ -104,11 +110,11 @@ public class ContractRevisionController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(
-      operationId = "verifyConsumerSignature",
+      operationId = "verifySignature",
       description = "Verifies the otp and adds a signature to a specific signature slot."
   )
-  @RolesAllowed({CONSUMER_ROLE})
-  public ContractRevisionDto verifyConsumerSignature(
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  public ContractRevisionDto verifySignature(
       @Parameter(
           description = "ID of the contract revision",
           required = true,

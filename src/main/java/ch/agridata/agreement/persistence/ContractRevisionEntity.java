@@ -86,4 +86,22 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @Column(name = "consumer_signature_timestamp2")
   private LocalDateTime consumerSignatureTimestamp2;
+
+  @Column(name = "provider_signature_user_id1")
+  private UUID providerSignatureUserId1;
+
+  @Column(name = "provider_signature_name1")
+  private String providerSignatureName1;
+
+  @Column(name = "provider_signature_timestamp1")
+  private LocalDateTime providerSignatureTimestamp1;
+
+  @Column(name = "provider_signature_user_id2")
+  private UUID providerSignatureUserId2;
+
+  @Column(name = "provider_signature_name2")
+  private String providerSignatureName2;
+
+  @Column(name = "provider_signature_timestamp2")
+  private LocalDateTime providerSignatureTimestamp2;
 }

@@ -3,11 +3,14 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
@@ -40,6 +43,8 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class DataRequestStateService {
 
+  private final DataRequestQueryService dataRequestQueryService;
+
   private static final List<AllowedTransition> ALLOWED_TRANSITIONS = List.of(
       new AllowedTransition(DRAFT, IN_REVIEW, Set.of(Actor.CONSUMER)),
       new AllowedTransition(IN_REVIEW, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
@@ -49,11 +54,14 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_RELEASED_BY_CONSUMER, DRAFT, Set.of(Actor.CONSUMER)),
       new AllowedTransition(TO_BE_RELEASED_BY_CONSUMER, TO_BE_SIGNED_BY_PROVIDER, Set.of(Actor.CONSUMER)),
       new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
-      new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, ACTIVE, Set.of(Actor.ADMIN))
+      new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, TO_BE_RELEASED_BY_PROVIDER, Set.of(Actor.SYSTEM)),
+      new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
+      new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED, Set.of(Actor.PROVIDER)),
+      new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN))
   );
 
   private enum Actor {
-    CONSUMER, ADMIN, SYSTEM
+    CONSUMER, ADMIN, SYSTEM, PROVIDER
   }
 
   private record AllowedTransition(
@@ -87,6 +95,15 @@ public class DataRequestStateService {
     return dto;
   }
 
+  @Transactional
+  @RolesAllowed(PROVIDER_ROLE)
+  public DataRequestDto setStateAsProvider(UUID requestId, DataRequestStateEnum state) {
+    var entity = loadEntityForProvider(requestId);
+    var newStateCode = toEntityState(state);
+
+    return setStateTo(entity, newStateCode, Actor.PROVIDER);
+  }
+
   @RolesAllowed(ADMIN_ROLE)
   @Transactional
   public DataRequestDto setStateAsAdmin(UUID requestId, DataRequestStateEnum state) {
@@ -101,6 +118,10 @@ public class DataRequestStateService {
 
   public void transitionToPendingReleaseByConsumer(DataRequestEntity entity) {
     setStateTo(entity, TO_BE_RELEASED_BY_CONSUMER, Actor.SYSTEM);
+  }
+
+  public void transitionToPendingReleaseByProvider(DataRequestEntity entity) {
+    setStateTo(entity, TO_BE_RELEASED_BY_PROVIDER, Actor.SYSTEM);
   }
 
   private DataRequestDto setStateTo(DataRequestEntity entity,
@@ -147,6 +168,12 @@ public class DataRequestStateService {
 
   private DataRequestEntity loadEntityForConsumer(UUID requestId) {
     return dataRequestRepository.findByIdAndDataConsumerUid(requestId, agridataSecurityIdentity.getUidOrElseThrow())
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+  }
+
+  private DataRequestEntity loadEntityForProvider(UUID requestId) {
+    return dataRequestRepository.findByIdOptional(requestId)
+        .filter(dataRequestQueryService::isAssignedToCurrentProvider)
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 

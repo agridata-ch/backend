@@ -23,6 +23,7 @@ public interface ContractRevisionMapper {
   @Mapping(target = "dataRequestId", source = "dataRequest.id")
   @Mapping(target = "dataRequestContext", source = "dataRequest")
   @Mapping(target = "consumerSignatures", expression = "java(mapConsumerSignatures(entity))")
+  @Mapping(target = "providerSignatures", expression = "java(mapProviderSignatures(entity))")
   ContractRevisionDto toDto(ContractRevisionEntity entity);
 
   @Mapping(target = "id", ignore = true)
@@ -41,6 +42,12 @@ public interface ContractRevisionMapper {
   @Mapping(target = "consumerSignatureUserId2", ignore = true)
   @Mapping(target = "consumerSignatureName2", ignore = true)
   @Mapping(target = "consumerSignatureTimestamp2", ignore = true)
+  @Mapping(target = "providerSignatureUserId1", ignore = true)
+  @Mapping(target = "providerSignatureName1", ignore = true)
+  @Mapping(target = "providerSignatureTimestamp1", ignore = true)
+  @Mapping(target = "providerSignatureUserId2", ignore = true)
+  @Mapping(target = "providerSignatureName2", ignore = true)
+  @Mapping(target = "providerSignatureTimestamp2", ignore = true)
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, UidRegisterOrganisationDto dataProvider);
 
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
@@ -67,6 +74,30 @@ public interface ContractRevisionMapper {
           entity.getConsumerSignatureUserId2(),
           entity.getConsumerSignatureName2(),
           entity.getConsumerSignatureTimestamp2()
+      ));
+    }
+
+    return result;
+  }
+
+  default List<ContractRevisionSignatureDto> mapProviderSignatures(ContractRevisionEntity entity) {
+    List<ContractRevisionSignatureDto> result = new ArrayList<>();
+
+    if (entity.getProviderSignatureUserId1() != null) {
+      result.add(new ContractRevisionSignatureDto(
+          SignatureSlotCodeEnum.DATA_PROVIDER_01,
+          entity.getProviderSignatureUserId1(),
+          entity.getProviderSignatureName1(),
+          entity.getProviderSignatureTimestamp1()
+      ));
+    }
+
+    if (entity.getProviderSignatureUserId2() != null) {
+      result.add(new ContractRevisionSignatureDto(
+          SignatureSlotCodeEnum.DATA_PROVIDER_02,
+          entity.getProviderSignatureUserId2(),
+          entity.getProviderSignatureName2(),
+          entity.getProviderSignatureTimestamp2()
       ));
     }
 

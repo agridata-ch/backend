@@ -17,7 +17,7 @@ public class AccessTestUtils {
   private static final Map<String, TestUserEnum> ROLE_USER_MAPPING = Map.of(
       PRODUCER_ROLE, TestUserEnum.PRODUCER_B,
       CONSUMER_ROLE, TestUserEnum.CONSUMER_BIO_SUISSE,
-      PROVIDER_ROLE, TestUserEnum.PROVIDER,
+      PROVIDER_ROLE, TestUserEnum.PROVIDER_1,
       SUPPORT_ROLE, TestUserEnum.SUPPORT,
       ADMIN_ROLE, TestUserEnum.ADMIN,
       "no role", TestUserEnum.GUEST

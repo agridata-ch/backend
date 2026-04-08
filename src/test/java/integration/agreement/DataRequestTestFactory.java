@@ -12,6 +12,7 @@ import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -103,7 +104,7 @@ public class DataRequestTestFactory {
   }
 
   @SneakyThrows
-  public static Response signContractRevisionAs(
+  public static Response verifyOtpChallenge(
       String contractRevisionId,
       SignatureSlotCodeEnum slotCode,
       UUID challengeId,
@@ -141,16 +142,38 @@ public class DataRequestTestFactory {
         .put(DataRequestController.PATH_V1 + "/" + requestId + "/logo/");
   }
 
-  public static DataRequestDto createReadyForSigningDataRequestFor(TestUserEnum user) {
-    Response createResponse = createDataRequestAs(getDataRequestDto().build(), user);
+  public static DataRequestDto createReadyForSigningByConsumerDataRequestFor(TestUserEnum consumer) {
+    Response createResponse = createDataRequestAs(getDataRequestDto().build(), consumer);
     DataRequestDto created = createResponse.as(DataRequestDto.class);
     String requestId = created.id().toString();
-    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, user);
+    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, consumer);
     Response toBeSignedResponse = setStatusAs(requestId, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN);
     return toBeSignedResponse.as(DataRequestDto.class);
   }
 
+  public static DataRequestDto createReadyForSigningByProviderDataRequest(TestUserEnum consumer1, TestUserEnum consumer2) {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(consumer1);
+    String revisionId2 =
+        signContractRevision(dataRequest.currentContractRevisionId(), consumer1, SignatureSlotCodeEnum.DATA_CONSUMER_01).then().extract()
+            .path("id");
+    signContractRevision(UUID.fromString(revisionId2), consumer2, SignatureSlotCodeEnum.DATA_CONSUMER_02);
+    return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER, consumer1).as(DataRequestDto.class);
+  }
+
+  public static Response signContractRevision(UUID contractRevisionId, TestUserEnum user, SignatureSlotCodeEnum slot) {
+    OtpChallengeDto challenge1 = requestOtpChallengeAs(contractRevisionId.toString(), slot, user)
+        .as(OtpChallengeDto.class);
+
+    return verifyOtpChallenge(
+        contractRevisionId.toString(),
+        slot,
+        challenge1.challengeId(),
+        "123456",
+        user
+    );
+  }
+
   public static UUID createContractRevisionAndReturnId() {
-    return createReadyForSigningDataRequestFor(CONSUMER_BIO_SUISSE).currentContractRevisionId();
+    return createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE).currentContractRevisionId();
   }
 }
