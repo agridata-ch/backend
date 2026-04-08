@@ -1,3 +1,9 @@
+## [1.8.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.19...v1.8.0-rc.20) (2026-04-08)
+
+### Features
+
+* **agreement:** Implement sending out otp via sms ([136e02f](https://github.com/agridata-ch/backend/commit/136e02fc66afb01dbb156eeefffb73b99f9e1b62)), closes [DIGIB2-1276](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1276)
+
 ## [1.8.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.18...v1.8.0-rc.19) (2026-04-08)
 
 ### Features
