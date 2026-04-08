@@ -1,3 +1,9 @@
+## [1.8.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.18...v1.8.0-rc.19) (2026-04-08)
+
+### Features
+
+* **contract:** get data provider information from uid register ([e65656d](https://github.com/agridata-ch/backend/commit/e65656d6a2e35c263c920edc3637ede146fa8dd8)), closes [DIGIB2-395](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-395)
+
 ## [1.8.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.17...v1.8.0-rc.18) (2026-04-02)
 
 ### Bug Fixes
