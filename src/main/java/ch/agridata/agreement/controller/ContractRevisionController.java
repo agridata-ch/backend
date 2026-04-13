@@ -2,6 +2,7 @@ package ch.agridata.agreement.controller;
 
 import static ch.agridata.agreement.controller.ContractRevisionController.PATH;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
@@ -10,6 +11,7 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import ch.agridata.agreement.service.ContractRevisionOtpChallengeService;
 import ch.agridata.agreement.service.ContractRevisionQueryService;
+import ch.agridata.agreement.service.ContractRevisionSealService;
 import ch.agridata.agreement.service.ContractRevisionSignatureService;
 import ch.agridata.common.openapi.ApiSubset;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -22,7 +24,9 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +53,7 @@ public class ContractRevisionController {
   private final ContractRevisionQueryService contractRevisionQueryService;
   private final ContractRevisionOtpChallengeService contractRevisionOtpChallengeService;
   private final ContractRevisionSignatureService contractRevisionSignatureService;
+  private final ContractRevisionSealService contractRevisionSealService;
 
   @GET
   @ApiSubset({WEB_APP})
@@ -134,5 +139,25 @@ public class ContractRevisionController {
         challengeId,
         request.otpCode()
     );
+  }
+
+  @POST
+  @ApiSubset({WEB_APP})
+  @Path("/{id}/seals")
+  @Produces("application/pdf")
+  @Operation(
+      operationId = "sealContractRevision",
+      description = "Seals a contract revision PDF via BIT Evidence Signing API."
+  )
+  @RolesAllowed({ADMIN_ROLE})
+  public Response sealContractRevision(
+      @PathParam("id") UUID id,
+      // TODO: Remove this parameter once adminGlobalId is available in the agate token and can be read from the AgridataSecurityIdentity
+      @QueryParam("adminGlobalId") String adminGlobalId
+  ) {
+    byte[] sealedPdf = contractRevisionSealService.seal(id, adminGlobalId);
+    return Response.ok(sealedPdf)
+        .header("Content-Disposition", String.format("attachment; filename=\"%s-sealed.pdf\"", id))
+        .build();
   }
 }

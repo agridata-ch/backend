@@ -29,6 +29,8 @@ quarkus:
   rest-client:
     agis-api:
       url: http://localhost:8051/agis
+    bit-signature-api:
+      url: http://localhost:8051/bit-signature
     tvd-animal-tracing-api:
       url: http://localhost:8051/tvd/animal-tracing
     tvd-zo-api:
