@@ -1,3 +1,9 @@
+## [1.8.0-rc.22](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.21...v1.8.0-rc.22) (2026-04-13)
+
+### Features
+
+* **contracts:** initial connection to bit signature api ([0a893b4](https://github.com/agridata-ch/backend/commit/0a893b4fdf5f655454084fba07047aaa95baa8dd)), closes [DIGIB2-1330](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1330)
+
 ## [1.8.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.20...v1.8.0-rc.21) (2026-04-13)
 
 ### Bug Fixes
