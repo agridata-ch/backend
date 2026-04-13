@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bit-signature/secure/v1/initSign"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "OK",
+      "logId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "signProcessToken": "LOCAL-SIGN-PROCESS-TOKEN-FOR-TESTING"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

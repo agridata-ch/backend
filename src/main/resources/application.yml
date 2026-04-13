@@ -1,6 +1,10 @@
 agridata:
   exception-handling:
     return-debug: true
+bit:
+  signature:
+    key-bearer: "BLW-Agridata"
+    profile: "BLW-Agridata-SR-hs"
 quarkus:
   aws:
     region: eu-central-2
@@ -103,6 +107,10 @@ quarkus:
   rest-client:
     agis-api:
       key-store-type: PKCS12
+    bit-signature-api:
+      key-store-type: PKCS12
+      trust-store-type: PKCS12
+      read-timeout: 120000
   smallrye-openapi:
     info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users
     to discover, request, approve, and manage data sharing agreements.\n\n
