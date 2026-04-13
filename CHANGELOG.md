@@ -1,3 +1,9 @@
+## [1.8.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.20...v1.8.0-rc.21) (2026-04-13)
+
+### Bug Fixes
+
+* **deps:** update dependencies to fix vulnerabilities ([2b56fc7](https://github.com/agridata-ch/backend/commit/2b56fc73cd2591bff648e4703807b59bea170260))
+
 ## [1.8.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.19...v1.8.0-rc.20) (2026-04-08)
 
 ### Features
