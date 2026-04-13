@@ -3,9 +3,10 @@ FROM amazoncorretto:25.0.2-alpine3.23
 ENV LANGUAGE='en_US:en'
 
 # CVE-2026-22184: ensure patched zlib version (>=1.3.2).
-# amazoncorretto:25.0.2-alpine3.23 ships a vulnerable version.
-# TODO This line can be removed once a newer amazoncorretto base image includes zlib >=1.3.2.
-RUN apk add --no-cache "zlib>=1.3.2"
+# CVE-2026-28390: ensure patched openssl version (>=3.5.6-r0).
+# amazoncorretto:25.0.2-alpine3.23 ships vulnerable versions of both.
+# TODO This line can be removed once a newer amazoncorretto base image includes zlib >=1.3.2 and libcrypto3/libssl3 >=3.5.6-r0.
+RUN apk add --no-cache "zlib>=1.3.2" "libcrypto3>=3.5.6-r0" "libssl3>=3.5.6-r0"
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY target/quarkus-app/lib/ /deployments/lib/
