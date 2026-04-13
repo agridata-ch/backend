@@ -1,3 +1,9 @@
+## [1.8.0-rc.23](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.22...v1.8.0-rc.23) (2026-04-13)
+
+### Features
+
+* **contract:** implement provider signatures ([4738f62](https://github.com/agridata-ch/backend/commit/4738f6230798ca6c45d4ac56ac710e5baa67a38a)), closes [DIGIB2-1204](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1204)
+
 ## [1.8.0-rc.22](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.21...v1.8.0-rc.22) (2026-04-13)
 
 ### Features
