@@ -5,6 +5,7 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
 import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
+import static integration.agreement.DataRequestTestFactory.createReadyForActivatingDataRequest;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
@@ -16,8 +17,11 @@ import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A88
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_6319423C;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
 import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
+import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -99,6 +103,19 @@ class DataRequestTest {
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenToBeActivatedDataRequestAndProvider_whenGetDataRequest_thenReturnRequest() {
+    DataRequestDto existingDataRequest = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class);
+
+    AuthTestUtils.requestAs(PROVIDER_1).when()
+        .get(DataRequestController.PATH_V1 + "/" + existingDataRequest.id().toString())
+        .then()
+        .statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
   }
 
   @Test
