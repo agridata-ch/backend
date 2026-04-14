@@ -37,6 +37,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
             "id", id,
             "state_codes", List.of(
                 DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
                 DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
                 DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
             )

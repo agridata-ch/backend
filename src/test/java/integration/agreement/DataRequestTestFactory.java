@@ -2,10 +2,12 @@ package integration.agreement;
 
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static io.restassured.http.ContentType.JSON;
 
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
+import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
@@ -158,6 +160,15 @@ public class DataRequestTestFactory {
             .path("id");
     signContractRevision(UUID.fromString(revisionId2), consumer2, SignatureSlotCodeEnum.DATA_CONSUMER_02);
     return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER, consumer1).as(DataRequestDto.class);
+  }
+
+  public static Response createReadyForActivatingDataRequest(TestUserEnum consumer1, TestUserEnum consumer2, TestUserEnum provider1,
+                                                             TestUserEnum provider2) {
+    var dataRequest = createReadyForSigningByProviderDataRequest(consumer1, consumer2);
+    UUID revisionId2 = signContractRevision(dataRequest.currentContractRevisionId(), provider1, SignatureSlotCodeEnum.DATA_PROVIDER_01)
+        .then().extract().as(ContractRevisionDto.class).id();
+    signContractRevision(revisionId2, provider2, SignatureSlotCodeEnum.DATA_PROVIDER_02);
+    return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_ACTIVATED, PROVIDER_1);
   }
 
   public static Response signContractRevision(UUID contractRevisionId, TestUserEnum user, SignatureSlotCodeEnum slot) {
