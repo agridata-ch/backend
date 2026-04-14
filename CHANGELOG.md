@@ -1,3 +1,9 @@
+## [1.8.0-rc.24](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.23...v1.8.0-rc.24) (2026-04-14)
+
+### Features
+
+* **contract:** Allow provider to access datarequests in the state TO_BE_ACTIVATED. ([6e25eeb](https://github.com/agridata-ch/backend/commit/6e25eeb762423f57cd9b4fc6a432868c5f9ec021)), closes [DIGIB2-1204](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1204)
+
 ## [1.8.0-rc.23](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.22...v1.8.0-rc.23) (2026-04-13)
 
 ### Features
