@@ -1,3 +1,10 @@
+## [1.8.0-rc.25](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.24...v1.8.0-rc.25) (2026-04-15)
+
+### Bug Fixes
+
+* **owasp:** suppress owasp vulnerability until next quarkus update ([8485625](https://github.com/agridata-ch/backend/commit/8485625dd5b2f040757ab918d790fecae97a084c))
+* **trivy:** patch vulnerability in image ([87454a4](https://github.com/agridata-ch/backend/commit/87454a43c2f4d743610eefb554d20ab2993da519))
+
 ## [1.8.0-rc.24](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.23...v1.8.0-rc.24) (2026-04-14)
 
 ### Features
