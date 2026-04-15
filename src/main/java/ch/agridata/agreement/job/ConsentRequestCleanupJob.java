@@ -54,7 +54,7 @@ public class ConsentRequestCleanupJob {
   @Scheduled(cron = "0 15 2 * * ?")
   @ActivateRequestContext
   public void run() {
-    agridataSecurityIdentity.setScheduledJobUserId(USER_ID_SCHEDULED_JOB);
+    agridataSecurityIdentity.setRunAsUserId(USER_ID_SCHEDULED_JOB);
     long startedAt = System.nanoTime();
     log.info("consent request cleanup job started.");
 
