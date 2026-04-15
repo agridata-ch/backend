@@ -70,7 +70,7 @@ public class BitSignatureApiImpl implements BitSignatureApi {
   private static final String BIT_SIGNATURE_ALGORITHM = "SHA256";
   private static final String PKCS_VERSION = "PKCS7";
   private static final int PREFERRED_SIGNATURE_SIZE = 0x10000; // 64 KB
-  private static final int MAX_POLL_ITERATIONS = 10;
+  private static final int MAX_POLL_ITERATIONS = 5; // 5 * 60 sec
   private static final String AUTH_TYPE_MOBILE_ID = "mobileid";
 
   @RestClient

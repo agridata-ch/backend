@@ -3,6 +3,7 @@ package ch.agridata.agreement.mapper;
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.ContractRevisionSignatureDto;
 import ch.agridata.agreement.dto.DataRequestContextDto;
+import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
@@ -48,6 +49,8 @@ public interface ContractRevisionMapper {
   @Mapping(target = "providerSignatureUserId2", ignore = true)
   @Mapping(target = "providerSignatureName2", ignore = true)
   @Mapping(target = "providerSignatureTimestamp2", ignore = true)
+  @Mapping(target = "sealStartedAt", ignore = true)
+  @Mapping(target = "sealState", ignore = true)
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, UidRegisterOrganisationDto dataProvider);
 
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
@@ -55,6 +58,8 @@ public interface ContractRevisionMapper {
 
   @Mapping(target = "id", ignore = true)
   ContractRevisionEntity toNextRevisionEntity(ContractRevisionEntity previousRevision);
+
+  SealAttemptStateEnum toSealAttemptStateEnum(ContractRevisionEntity.SealAttemptState sealAttemptState);
 
   default List<ContractRevisionSignatureDto> mapConsumerSignatures(ContractRevisionEntity entity) {
     List<ContractRevisionSignatureDto> result = new ArrayList<>();

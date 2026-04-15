@@ -8,6 +8,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
+import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import ch.agridata.agreement.service.ContractRevisionOtpChallengeService;
@@ -150,7 +151,7 @@ public class ContractRevisionController {
   @POST
   @ApiSubset({WEB_APP})
   @Path("/{id}/seals")
-  @Produces("application/pdf")
+  @Produces(MediaType.APPLICATION_JSON)
   @Operation(
       operationId = "sealContractRevision",
       description = "Seals a contract revision PDF via BIT Evidence Signing API."
@@ -161,9 +162,25 @@ public class ContractRevisionController {
       // TODO: Remove this parameter once adminGlobalId is available in the agate token and can be read from the AgridataSecurityIdentity
       @QueryParam("adminGlobalId") String adminGlobalId
   ) {
-    byte[] sealedPdf = contractRevisionSealService.seal(id, adminGlobalId);
-    return Response.ok(sealedPdf)
-        .header("Content-Disposition", String.format("attachment; filename=\"%s-sealed.pdf\"", id))
-        .build();
+    contractRevisionSealService.sealAsync(id, adminGlobalId);
+    return Response.accepted().build();
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path("/{id}/seals/status")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(
+      operationId = "getContractRevisionSealStatus",
+      description = "Returns the current status of the seal process for a contract revision. "
+          + "If longPolling=true and the state is IN_PROGRESS, the response is held for up to 10 seconds "
+          + "until the state changes. If no state change occurs within that time, IN_PROGRESS is returned. "
+          + "If longPolling=false (default), the current state is returned immediately."
+  )
+  @RolesAllowed({ADMIN_ROLE})
+  public SealAttemptStateEnum getContractRevisionSealStatus(
+      @PathParam("id") UUID id,
+      @QueryParam("longPolling") boolean longPolling) {
+    return contractRevisionSealService.getSealState(id, longPolling);
   }
 }

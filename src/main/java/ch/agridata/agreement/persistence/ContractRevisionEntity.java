@@ -3,6 +3,8 @@ package ch.agridata.agreement.persistence;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -104,4 +106,22 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @Column(name = "provider_signature_timestamp2")
   private LocalDateTime providerSignatureTimestamp2;
+
+  @Column(name = "seal_state")
+  @Enumerated(EnumType.STRING)
+  private SealAttemptState sealState;
+
+  @Column(name = "seal_started_at")
+  private LocalDateTime sealStartedAt;
+
+  /**
+   * Represents the state of a seal attempt.
+   *
+   * @CommentLastReviewed 2026-04-14
+   */
+  public enum SealAttemptState {
+    IN_PROGRESS,
+    COMPLETED,
+    FAILED
+  }
 }

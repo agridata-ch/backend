@@ -188,7 +188,7 @@ class BitSignatureApiImplTest {
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("maximum polling iterations");
 
-    verify(restClient, times(10)).checkSignState(any()); // MAX_POLL_ITERATIONS = 10
+    verify(restClient, times(5)).checkSignState(any()); // MAX_POLL_ITERATIONS = 5
     verify(restClient).dropSign(any());
   }
 

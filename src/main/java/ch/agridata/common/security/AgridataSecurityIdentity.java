@@ -44,16 +44,16 @@ public class AgridataSecurityIdentity {
   @Setter
   private String impersonatedKtIdP;
   /**
-   * Optional technical user ID that can be set by scheduled jobs to provide a
+   * Optional user ID that can be set by scheduled or async jobs to provide a
    * dedicated identity for auditing and traceability when no regular user
    * context is available.
    */
   @Setter
-  private UUID scheduledJobUserId;
+  private UUID runAsUserId;
 
   public UUID getUserId() {
-    if (scheduledJobUserId != null) {
-      return scheduledJobUserId;
+    if (runAsUserId != null) {
+      return runAsUserId;
     }
     String agateLoginId = getAgateLoginId();
     if (agateLoginId == null) {
