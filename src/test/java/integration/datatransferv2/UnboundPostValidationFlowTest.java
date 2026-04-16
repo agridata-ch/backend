@@ -58,17 +58,17 @@ class UnboundPostValidationFlowTest {
         new Case("single UID CHE103000001 with consent",
             List.of(Uid.CHE103000001.name()), null, Map.of(), 200, null),
         new Case("single BUR 99910002 with consent",
-            null, List.of(Bur._99910002.getCode()), Map.of(), 200, null),
+            null, List.of(Bur.CODE_99910002.getCode()), Map.of(), 200, null),
         new Case("single BUR 99910003 with consent",
-            null, List.of(Bur._99910003.getCode()), Map.of(), 200, null),
+            null, List.of(Bur.CODE_99910003.getCode()), Map.of(), 200, null),
         new Case("UID and BUR both with consent",
-            List.of(Uid.CHE101000001.name()), List.of(Bur._99910003.getCode()), Map.of(), 200, null),
+            List.of(Uid.CHE101000001.name()), List.of(Bur.CODE_99910003.getCode()), Map.of(), 200, null),
         new Case("multiple UIDs and BURs, all with consent",
             List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
-            List.of(Bur._99910003.getCode(), Bur._99930004.getCode()),
+            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()),
             Map.of(), 200, null),
         new Case("two BURs without UIDs, both with consent",
-            null, List.of(Bur._99910002.getCode(), Bur._99910003.getCode()), Map.of(), 200, null),
+            null, List.of(Bur.CODE_99910002.getCode(), Bur.CODE_99910003.getCode()), Map.of(), 200, null),
 
         // --- 403: consent missing -----------------------------------------------------------------
 
@@ -79,19 +79,19 @@ class UnboundPostValidationFlowTest {
             List.of(Uid.CHE101000001.name(), Uid.CHE102000001.name()), null, Map.of(), 403,
             CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
         new Case("single BUR has no consent",
-            null, List.of(Bur._99910004.getCode()), Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Bur._99910004.getCode()),
+            null, List.of(Bur.CODE_99910004.getCode()), Map.of(), 403,
+            CONSENT_NOT_GRANTED_MSG + Bur.CODE_99910004.getCode()),
         new Case("one of multiple BURs has no consent",
             List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
-            List.of(Bur._99910003.getCode(), Bur._99910004.getCode()),
+            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99910004.getCode()),
             Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Bur._99910004.getCode()),
+            CONSENT_NOT_GRANTED_MSG + Bur.CODE_99910004.getCode()),
         new Case("UID without consent alongside BUR with consent",
-            List.of(Uid.CHE102000001.name()), List.of(Bur._99910003.getCode()), Map.of(), 403,
+            List.of(Uid.CHE102000001.name()), List.of(Bur.CODE_99910003.getCode()), Map.of(), 403,
             CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
         new Case("one UID and one BUR each without consent",
             List.of(Uid.CHE101000001.name(), Uid.CHE102000001.name()),
-            List.of(Bur._99910003.getCode(), Bur._99910004.getCode()),
+            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99910004.getCode()),
             Map.of(), 403,
             CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
 
@@ -101,9 +101,9 @@ class UnboundPostValidationFlowTest {
         // BURs are – so only the BURs appear in the debug message when a historic date is given
         new Case("all BUR consents outdated at historic date",
             List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
-            List.of(Bur._99910003.getCode(), Bur._99930004.getCode()),
+            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()),
             Map.of("date", "1999-01-01"), 403,
-            CONSENT_NOT_GRANTED_MSG + String.join(", ", Bur._99910003.getCode(), Bur._99930004.getCode()))
+            CONSENT_NOT_GRANTED_MSG + String.join(", ", Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()))
     );
 
     // Run all cases for both users: CONSUMER_BLV_1 (UID in token) and CONSUMER_BLV_WITHOUT_UID (no UID in token).

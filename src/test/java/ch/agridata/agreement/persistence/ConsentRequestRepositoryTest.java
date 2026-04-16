@@ -256,7 +256,9 @@ class ConsentRequestRepositoryTest {
 
   @Test
   void givenNullTerminatedAt_whenTerminateByIds_thenThrows() {
-    assertThatThrownBy(() -> repo.terminateByIdsReturningPairs(List.of(UUID.randomUUID()), 1000, null))
+    List<UUID> ids = List.of(UUID.randomUUID());
+
+    assertThatThrownBy(() -> repo.terminateByIdsReturningPairs(ids, 1000, null))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("terminatedAt must not be null");
 

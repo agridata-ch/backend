@@ -8,6 +8,7 @@ import jakarta.validation.groups.Default;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Entry point for generating JSON Schemas from DTOs using Jakarta Validation annotations. Takes class names as arguments, generates their
@@ -15,12 +16,13 @@ import java.util.Set;
  *
  * @CommentLastReviewed 2025-08-25
  */
+@Slf4j
 public class SchemaGeneratorMain {
   public static final String OUTPUT_PATH = "target/classes/schemas/agridata-schemas.json";
 
   public static void main(String[] args) throws Exception {
     if (args.length == 0) {
-      System.err.println("Usage: java SchemaGeneratorMain <fully.qualified.ClassName> [...]");
+      log.error("Usage: java SchemaGeneratorMain <fully.qualified.ClassName> [...]");
       System.exit(1);
     }
 
@@ -33,7 +35,7 @@ public class SchemaGeneratorMain {
       writeSchemaToFile(combinedSchema, OUTPUT_PATH, mapper);
 
     } catch (Exception e) {
-      System.err.println("Schema generation failed: " + e.getMessage());
+      log.error("Schema generation failed: {}", e.getMessage());
       e.printStackTrace();
       System.exit(1);
     }
@@ -57,8 +59,8 @@ public class SchemaGeneratorMain {
         Class<?> dtoClass = Class.forName(className);
         ObjectNode schema = generator.generateJsonSchema(dtoClass, groups);
         root.set(dtoClass.getSimpleName(), schema);
-      } catch (ClassNotFoundException e) {
-        System.err.println("Class not found: " + className);
+      } catch (ClassNotFoundException _) {
+        log.error("Class not found: {}", className);
       }
     }
     return root;
@@ -80,6 +82,6 @@ public class SchemaGeneratorMain {
     output.getParentFile().mkdirs();
     Files.writeString(output.toPath(),
         mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
-    System.out.println("Schemas written to: " + output.getAbsolutePath());
+    log.info("Schemas written to: {}", output.getAbsolutePath());
   }
 }

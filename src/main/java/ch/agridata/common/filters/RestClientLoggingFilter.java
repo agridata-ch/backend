@@ -103,12 +103,12 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     }
 
     // If entity is already a String, compact it if it's JSON
-    if (entity instanceof String) {
-      return compactIfJson((String) entity);
+    if (entity instanceof String str) {
+      return compactIfJson(str);
     }
     try {
       return OBJECT_MAPPER.writeValueAsString(entity);
-    } catch (Exception e) {
+    } catch (Exception _) {
       return entity.toString();
     }
   }
@@ -135,7 +135,7 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
         return OBJECT_MAPPER.writeValueAsString(OBJECT_MAPPER.readTree(trimmed));
-      } catch (Exception e) {
+      } catch (Exception _) {
         // fall through
       }
     }
