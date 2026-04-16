@@ -81,11 +81,11 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E08AF9D2.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_WITHOUT_UID,
             DataProduct.UUID_E08AF9D2.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_6319423C.uuid().toString(),
@@ -97,7 +97,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_C4D3B0A3.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(),
+            Map.of("bur", Bur.CODE_99910002.getCode(),
                 "dateFrom", LocalDate.now().toString(),
                 "dateTo", LocalDate.now().toString(),
                 "recipientUid", "CHE123456789")),
@@ -112,7 +112,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_B17AE68A.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_5DA9E6E0.uuid().toString(),
@@ -120,7 +120,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_5AA2EE15.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(),
+            Map.of("bur", Bur.CODE_99910002.getCode(),
                 "dateFrom", LocalDate.now().toString(),
                 "dateTo", LocalDate.now().toString(),
                 "recipientUid", "CHE123456789")),
@@ -131,7 +131,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_C6F18E45.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(),
+            Map.of("bur", Bur.CODE_99910002.getCode(),
                 "dateFrom", LocalDate.now().toString(),
                 "dateTo", LocalDate.now().toString(),
                 "recipientUid", "CHE123456789")),
@@ -149,15 +149,15 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_D10B898F.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_59115547.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_EC5B9F05.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_88DCF0F9.uuid().toString(),
@@ -171,7 +171,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_D156F252.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_720AA209.uuid().toString(),
@@ -185,7 +185,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
-            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")));
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")));
   }
 
   @ParameterizedTest(name = "[Product: {1}] consumer={0}, queryParams={2}")

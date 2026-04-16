@@ -30,6 +30,11 @@ import lombok.RequiredArgsConstructor;
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ValidationSchemaGenerator {
+  private static final String JAVA_PACKAGE_PREFIX = "java.";
+  private static final String JSON_TYPE_OBJECT = "object";
+  private static final String JSON_TYPE_STRING = "string";
+  private static final String PROPERTIES = "properties";
+  private static final String REQUIRED = "required";
   private final Validator validator;
   private final ObjectMapper objectMapper;
 
@@ -49,10 +54,10 @@ public class ValidationSchemaGenerator {
     processClass(rootClass, groups, propertiesNode, requiredFields, visitedPaths,
         rootClass.getSimpleName());
 
-    rootSchema.put("type", "object");
-    rootSchema.set("properties", propertiesNode);
+    rootSchema.put("type", JSON_TYPE_OBJECT);
+    rootSchema.set(PROPERTIES, propertiesNode);
     if (!requiredFields.isEmpty()) {
-      rootSchema.set("required", requiredFields);
+      rootSchema.set(REQUIRED, requiredFields);
     }
 
     return rootSchema;
@@ -70,7 +75,7 @@ public class ValidationSchemaGenerator {
    */
   private void processClass(Class<?> clazz, Set<Class<?>> groups, ObjectNode propertiesNode,
                             ArrayNode requiredFields, Set<String> visited, String path) {
-    if (clazz == null || clazz.getName().startsWith("java.")) {
+    if (clazz == null || clazz.getName().startsWith(JAVA_PACKAGE_PREFIX)) {
       return;
     }
     if (!visited.add(path)) {
@@ -114,7 +119,7 @@ public class ValidationSchemaGenerator {
 
     // ✅ Enum handling
     if (fieldType.isEnum()) {
-      fieldSchema.put("type", "string");
+      fieldSchema.put("type", JSON_TYPE_STRING);
       ArrayNode enumValues = objectMapper.createArrayNode();
       for (Object constant : fieldType.getEnumConstants()) {
         enumValues.add(constant.toString());
@@ -161,7 +166,7 @@ public class ValidationSchemaGenerator {
         ObjectNode itemSchema = objectMapper.createObjectNode();
 
         if (UUID.class.isAssignableFrom(itemClass)) {
-          itemSchema.put("type", "string");
+          itemSchema.put("type", JSON_TYPE_STRING);
           itemSchema.put("format", "uuid");
         } else if (isPrimitiveOrSimpleType(itemClass)) {
           itemSchema.put("type", mapTypeToJsonType(itemClass));
@@ -212,10 +217,10 @@ public class ValidationSchemaGenerator {
 
     processClass(fieldType, groups, nestedProps, nestedRequired, visited, path);
 
-    fieldSchema.put("type", "object");
-    fieldSchema.set("properties", nestedProps);
+    fieldSchema.put("type", JSON_TYPE_OBJECT);
+    fieldSchema.set(PROPERTIES, nestedProps);
     if (!nestedRequired.isEmpty()) {
-      fieldSchema.set("required", nestedRequired);
+      fieldSchema.set(REQUIRED, nestedRequired);
     }
   }
 
@@ -225,16 +230,16 @@ public class ValidationSchemaGenerator {
   private void processAnonymousNestedObject(Class<?> clazz, ObjectNode fieldSchema,
                                             Set<Class<?>> groups, Set<String> visited,
                                             String path) {
-    fieldSchema.put("type", "object");
+    fieldSchema.put("type", JSON_TYPE_OBJECT);
 
     ObjectNode nestedProps = objectMapper.createObjectNode();
     ArrayNode nestedRequired = objectMapper.createArrayNode();
 
     processClass(clazz, groups, nestedProps, nestedRequired, visited, path);
 
-    fieldSchema.set("properties", nestedProps);
+    fieldSchema.set(PROPERTIES, nestedProps);
     if (!nestedRequired.isEmpty()) {
-      fieldSchema.set("required", nestedRequired);
+      fieldSchema.set(REQUIRED, nestedRequired);
     }
   }
 
@@ -350,6 +355,10 @@ public class ValidationSchemaGenerator {
           // Multiple patterns are not merged; only first is kept
           info.setPattern(String.valueOf(attrs.get("regexp")));
         }
+
+        default -> {
+          // intentionally ignored
+        }
       }
     }
 
@@ -362,7 +371,7 @@ public class ValidationSchemaGenerator {
 
   private boolean hasConstraints(Class<?> clazz) {
     return clazz != null
-        && !clazz.getName().startsWith("java.")
+        && !clazz.getName().startsWith(JAVA_PACKAGE_PREFIX)
         && !clazz.isPrimitive()
         && validator.getConstraintsForClass(clazz).isBeanConstrained();
   }
@@ -373,7 +382,7 @@ public class ValidationSchemaGenerator {
 
   private boolean isCustomPojo(Class<?> clazz) {
     return !clazz.isPrimitive()
-        && !clazz.getName().startsWith("java.")
+        && !clazz.getName().startsWith(JAVA_PACKAGE_PREFIX)
         && !clazz.isEnum()
         && !Collection.class.isAssignableFrom(clazz)
         && !Map.class.isAssignableFrom(clazz);
@@ -383,12 +392,12 @@ public class ValidationSchemaGenerator {
    * Maps a Java type to its corresponding JSON Schema type.
    *
    * @param type Java class type.
-   * @return JSON Schema type string (e.g., "string", "integer").
+   * @return JSON Schema type string (e.g., STRING, "integer").
    */
 
   private String mapTypeToJsonType(Class<?> type) {
     if (UUID.class.isAssignableFrom(type) || String.class.isAssignableFrom(type)) {
-      return "string";
+      return JSON_TYPE_STRING;
     }
     if (Integer.class.isAssignableFrom(type) || int.class.isAssignableFrom(type)
         || Long.class.isAssignableFrom(type) || long.class.isAssignableFrom(type)) {
@@ -402,7 +411,7 @@ public class ValidationSchemaGenerator {
     if (Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type)) {
       return "boolean";
     }
-    return "object";
+    return JSON_TYPE_OBJECT;
   }
 
   private boolean isPrimitiveOrSimpleType(Class<?> type) {

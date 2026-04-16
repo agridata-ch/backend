@@ -142,8 +142,9 @@ class ChangeDetectionTest {
 
     var result = getModifiedProducers("1970-01-01");
 
-    assertThat(result).hasSize(1);
-    assertThat(result).containsExactly(new ProducerIdentifier(CHE102000001.name(), null));
+    assertThat(result)
+            .hasSize(1)
+            .containsExactly(new ProducerIdentifier(CHE102000001.name(), null));
   }
 
   private List<ProducerIdentifier> getModifiedProducers(String since) {

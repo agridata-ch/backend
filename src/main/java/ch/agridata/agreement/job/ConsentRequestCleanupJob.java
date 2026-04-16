@@ -62,29 +62,33 @@ public class ConsentRequestCleanupJob {
       if (!tryLock(c)) {
         log.info("consent request cleanup job skipped: another instance is already running.");
         return;
-      } else {
-        log.info("consent request cleanup job acquired advisory lock.");
       }
 
-      try {
-        cleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+      log.info("consent request cleanup job acquired advisory lock.");
+      executeCleanup(startedAt, c);
 
-        long durationMs = (System.nanoTime() - startedAt) / 1_000_000;
-        log.info("consent request cleanup job completed in {} ms.", durationMs);
-      } catch (Exception e) {
-        long duration = (System.nanoTime() - startedAt) / 1_000_000;
-        log.error("consent request cleanup job failed after {} ms.", duration, e);
-        throw e;
-      } finally {
-        boolean success = unlock(c);
-        if (!success) {
-          log.warn("consent request cleanup job failed to release advisory lock.");
-        }
-      }
     } catch (SQLException e) {
       long duration = (System.nanoTime() - startedAt) / 1_000_000;
       log.error("consent request cleanup job failed after {} ms due to SQL error.", duration, e);
       throw new RuntimeException(e);
+    }
+  }
+
+  private void executeCleanup(long startedAt, Connection c) throws SQLException {
+    try {
+      cleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+
+      long durationMs = (System.nanoTime() - startedAt) / 1_000_000;
+      log.info("consent request cleanup job completed in {} ms.", durationMs);
+    } catch (Exception e) {
+      long duration = (System.nanoTime() - startedAt) / 1_000_000;
+      log.error("consent request cleanup job failed after {} ms.", duration, e);
+      throw e;
+    } finally {
+      boolean success = unlock(c);
+      if (!success) {
+        log.warn("consent request cleanup job failed to release advisory lock.");
+      }
     }
   }
 

@@ -16,13 +16,14 @@ import java.util.UUID;
 @ApplicationScoped
 public class DataRequestRepository implements PanacheRepositoryBase<DataRequestEntity, UUID> {
   private static final String PARAM_STATE_CODE = "state_code";
+  private static final String DATA_CONSUMER_UID = "dataConsumerUid";
 
   public Optional<DataRequestEntity> findByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
     return find(
         "id = :id and dataConsumerUid = :dataConsumerUid",
         Map.of(
             "id", id,
-            "dataConsumerUid", dataConsumerUid
+            DATA_CONSUMER_UID, dataConsumerUid
         )
     )
         .firstResultOptional();
@@ -50,7 +51,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     return find(
         "dataConsumerUid = :dataConsumerUid",
         Map.of(
-            "dataConsumerUid", dataConsumerUid
+            DATA_CONSUMER_UID, dataConsumerUid
         )
     ).list();
   }
@@ -97,7 +98,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     return count(
         "dataConsumerUid = :dataConsumerUid and stateCode = :state_code",
         Map.of(
-            "dataConsumerUid", dataConsumerUid,
+            DATA_CONSUMER_UID, dataConsumerUid,
             PARAM_STATE_CODE, state
         )
     );

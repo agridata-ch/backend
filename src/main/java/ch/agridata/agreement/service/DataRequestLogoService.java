@@ -105,17 +105,8 @@ public class DataRequestLogoService {
 
       long width = reader.getWidth(0);
       long height = reader.getHeight(0);
-      long pixels;
 
-      try {
-        pixels = Math.multiplyExact(width, height);
-      } catch (ArithmeticException ex) {
-        throw new ValidationException("Input image dimensions too large");
-      }
-
-      if (width > MAX_INPUT_WIDTH || height > MAX_INPUT_HEIGHT || pixels > MAX_INPUT_PIXELS) {
-        throw new ValidationException("Input image dimensions too large");
-      }
+      validateImageDimensions(width, height);
 
       decodedImage = reader.read(0);
     } catch (IOException e) {
@@ -130,6 +121,19 @@ public class DataRequestLogoService {
       throw new ValidationException("Input image is invalid");
     } else {
       return decodedImage;
+    }
+  }
+
+  private static void validateImageDimensions(long width, long height) {
+    long pixels;
+    try {
+      pixels = Math.multiplyExact(width, height);
+    } catch (ArithmeticException _) {
+      throw new ValidationException("Input image dimensions too large");
+    }
+
+    if (width > MAX_INPUT_WIDTH || height > MAX_INPUT_HEIGHT || pixels > MAX_INPUT_PIXELS) {
+      throw new ValidationException("Input image dimensions too large");
     }
   }
 
