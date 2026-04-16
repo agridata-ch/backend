@@ -1,3 +1,9 @@
+## [1.8.0-rc.27](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.26...v1.8.0-rc.27) (2026-04-16)
+
+### Features
+
+* **error-message:** improve error messages missing uid person ([1942bd6](https://github.com/agridata-ch/backend/commit/1942bd669bb9e44b752ddb73da691f4616e5c0c5)), closes [DIGIB2-1249](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1249)
+
 ## [1.8.0-rc.26](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.25...v1.8.0-rc.26) (2026-04-16)
 
 ### Features
