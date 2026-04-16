@@ -1,3 +1,13 @@
+## [1.8.0-rc.26](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.25...v1.8.0-rc.26) (2026-04-16)
+
+### Features
+
+* **contracts:** make signing process async and add poll endpoint ([d215375](https://github.com/agridata-ch/backend/commit/d21537515f76a26607aa7de675ddc9bf3f6238dd)), closes [DIGIB2-1330](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1330)
+
+### Bug Fixes
+
+* **cicd:** increase timeout of owasp dependency check due to update duration ([d23bf39](https://github.com/agridata-ch/backend/commit/d23bf39e73148f7620d4c852f0a3c5c4660f6ecf))
+
 ## [1.8.0-rc.25](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.24...v1.8.0-rc.25) (2026-04-15)
 
 ### Bug Fixes
