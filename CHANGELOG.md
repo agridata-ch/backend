@@ -1,3 +1,9 @@
+## [1.8.0-rc.28](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.27...v1.8.0-rc.28) (2026-04-17)
+
+### Features
+
+* **data-products:** add and update identitas data products ([8d8fa82](https://github.com/agridata-ch/backend/commit/8d8fa824bd8e85a84bce48ff07b0b092c75c90f6)), closes [DIGIB2-1335](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1335)
+
 ## [1.8.0-rc.27](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.26...v1.8.0-rc.27) (2026-04-16)
 
 ### Features
