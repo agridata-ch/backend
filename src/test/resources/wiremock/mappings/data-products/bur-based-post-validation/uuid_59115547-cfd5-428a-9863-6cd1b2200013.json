@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/localunits/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_FarmDataV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "59115547-cfd5-428a-9863-6cd1b2200013"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

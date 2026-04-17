@@ -149,8 +149,43 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_D10B898F.uuid().toString(),
-            Map.of("recipientUid", "CHE123456789"))
-    );
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_59115547.uuid().toString(),
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_EC5B9F05.uuid().toString(),
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_88DCF0F9.uuid().toString(),
+            Map.of("dateFrom", LocalDate.now().toString(),
+                "dateTo", LocalDate.now().toString(),
+                "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_54DECB00.uuid().toString(),
+            Map.of("eartagNumber", "123456", "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_D156F252.uuid().toString(),
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_720AA209.uuid().toString(),
+            Map.of("dateFrom", LocalDate.now().toString(),
+                "dateTo", LocalDate.now().toString(),
+                "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_B0A4FF29.uuid().toString(),
+            Map.of("eartagNumber", "123456", "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_E6128E10.uuid().toString(),
+            Map.of("bur", Bur._99910002.getCode(), "recipientUid", "CHE123456789")));
   }
 
   @ParameterizedTest(name = "[Product: {1}] consumer={0}, queryParams={2}")

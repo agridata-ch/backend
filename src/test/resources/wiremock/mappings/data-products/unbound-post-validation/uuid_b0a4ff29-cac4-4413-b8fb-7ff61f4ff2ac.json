@@ -1,17 +1,17 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/cattle/livestock",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/sheep/[^/]+",
     "queryParameters": {
       "dataPackage": {
-        "equalTo": "ZOAPI_CattleLivestockV1"
+        "equalTo": "ZOAPI_SheepDetailV1"
       }
     }
   },
   "response": {
     "status": 200,
     "jsonBody": {
-      "dataOfProduct": "d10b898f-9796-4993-9654-8f092b97989d"
+      "dataOfProduct": "b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac"
     },
     "headers": {
       "Content-Type": "application/json",

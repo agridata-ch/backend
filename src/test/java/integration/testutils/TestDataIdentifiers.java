@@ -91,6 +91,12 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_D10B898F = id("d10b898f-9796-4993-9654-8f092b97989d");
     public static final Identifier<DataProductEntity> UUID_59115547 = id("59115547-cfd5-428a-9863-6cd1b2200013");
     public static final Identifier<DataProductEntity> UUID_EC5B9F05 = id("ec5b9f05-0b8d-4833-9447-d7338fe1dc78");
+    public static final Identifier<DataProductEntity> UUID_88DCF0F9 = id("88dcf0f9-8502-4596-b035-45c5d548d262");
+    public static final Identifier<DataProductEntity> UUID_54DECB00 = id("54decb00-cecd-4c64-b368-8ab999130ac4");
+    public static final Identifier<DataProductEntity> UUID_D156F252 = id("d156f252-c8c0-49de-8541-149c35aada6c");
+    public static final Identifier<DataProductEntity> UUID_720AA209 = id("720aa209-7aa8-4faf-8b1a-013a041084f2");
+    public static final Identifier<DataProductEntity> UUID_B0A4FF29 = id("b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac");
+    public static final Identifier<DataProductEntity> UUID_E6128E10 = id("e6128e10-5d2b-4096-8356-b6523cb30e92");
   }
 
   public static class DataProvider {
