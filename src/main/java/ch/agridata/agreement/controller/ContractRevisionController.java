@@ -12,6 +12,7 @@ import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import ch.agridata.agreement.service.ContractRevisionOtpChallengeService;
+import ch.agridata.agreement.service.ContractRevisionPdfService;
 import ch.agridata.agreement.service.ContractRevisionQueryService;
 import ch.agridata.agreement.service.ContractRevisionSealService;
 import ch.agridata.agreement.service.ContractRevisionSignatureService;
@@ -58,6 +59,7 @@ public class ContractRevisionController {
   private final ContractRevisionSignatureService contractRevisionSignatureService;
   private final ContractRevisionSealService contractRevisionSealService;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final ContractRevisionPdfService contractRevisionPdfService;
 
   @GET
   @ApiSubset({WEB_APP})
@@ -182,5 +184,23 @@ public class ContractRevisionController {
       @PathParam("id") UUID id,
       @QueryParam("longPolling") boolean longPolling) {
     return contractRevisionSealService.getSealState(id, longPolling);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path("/{id}/pdf")
+  @Produces("application/pdf")
+  @Operation(
+      operationId = "getContractRevisionPdf",
+      description = "Returns the pdf of the contract revision"
+  )
+  @RolesAllowed({CONSUMER_ROLE})
+  public Response getContractRevisionPdf(
+      @PathParam("id") UUID id
+  ) {
+    byte[] pdf = contractRevisionPdfService.generatePdf(id);
+    return Response.ok(pdf)
+        .header("Content-Disposition", String.format("attachment; filename=\"contract-revision-%s.pdf\"", id))
+        .build();
   }
 }

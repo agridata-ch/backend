@@ -41,6 +41,12 @@ class AccessTest {
         CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST,
         ContractRevisionController.PATH + "/1/signatures/1/otp-challenges/1/verification", CONSUMER_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/seals",
+        ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/seals/status",
+        ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/pdf",
+        CONSUMER_ROLE);
   }
 
   @Test
