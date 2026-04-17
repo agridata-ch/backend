@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/goat/livestock",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_GoatLivestockV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "d156f252-c8c0-49de-8541-149c35aada6c"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

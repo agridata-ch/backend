@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/goat",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_GoatDeltaV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "88dcf0f9-8502-4596-b035-45c5d548d262"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-UIDS": "[\"CHE101000001\"]",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "[\"99910002\"]"
+    }
+  }
+}
