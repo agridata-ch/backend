@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.OtpChallengeEntity;
 import ch.agridata.agreement.persistence.OtpChallengeRepository;
+import ch.agridata.aws.api.SmsApi;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import jakarta.validation.ValidationException;
 import java.time.Clock;
@@ -28,11 +30,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
-import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.PublishRequest;
-import software.amazon.awssdk.services.sns.model.PublishResponse;
-import software.amazon.awssdk.services.sns.model.SnsException;
 
 @ExtendWith(MockitoExtension.class)
 class OtpChallengeServiceTest {
@@ -44,10 +41,10 @@ class OtpChallengeServiceTest {
   private Clock clock;
 
   @Mock
-  private SnsClient snsClient;
+  private SmsApi smsApi;
 
   @Captor
-  private ArgumentCaptor<PublishRequest> publishRequestCaptor;
+  private ArgumentCaptor<String> stringArgumentCaptor;
 
   @InjectMocks
   private OtpChallengeService otpChallengeService;
@@ -64,19 +61,12 @@ class OtpChallengeServiceTest {
   void setUp() {
     lenient().when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
     lenient().when(clock.instant()).thenReturn(fixedNow);
-
-    otpChallengeService.activeProfile = "develop";
   }
 
   @Test
   void givenNoRecentChallenge_whenCreateChallenge_thenPersistAndReturnEntity() {
     when(otpChallengeRepository.existsRecentChallenge(eq(USER_ID), eq(REVISION_ID), eq(PERSISTENCE_SLOT_CODE), any()))
         .thenReturn(false);
-
-    PublishResponse mockResponse = PublishResponse.builder()
-        .messageId("mock-message-id-" + UUID.randomUUID())
-        .build();
-    when(snsClient.publish(any(PublishRequest.class))).thenReturn(mockResponse);
 
     OtpChallengeEntity result = otpChallengeService.createChallenge(USER_ID, REVISION_ID, SLOT_CODE, PHONE);
 
@@ -138,46 +128,21 @@ class OtpChallengeServiceTest {
   }
 
   @Test
-  void givenValidRequest_whenCreateChallenge_thenSnsPublishIsCalledWithCorrectData() {
-    when(otpChallengeRepository.existsRecentChallenge(any(), any(), any(), any())).thenReturn(false);
-    when(snsClient.publish(any(PublishRequest.class)))
-        .thenReturn(PublishResponse.builder().messageId("mock-msg-id").build());
-
-    otpChallengeService.createChallenge(USER_ID, REVISION_ID, SLOT_CODE, PHONE);
-
-    verify(snsClient).publish(publishRequestCaptor.capture());
-    PublishRequest capturedRequest = publishRequestCaptor.getValue();
-
-    assertThat(capturedRequest.phoneNumber()).isEqualTo(PHONE);
-    assertThat(capturedRequest.message()).contains("Sicherheitscode");
-    assertThat(capturedRequest.message()).containsPattern("\\d{6}"); // Contains 6-digit OTP
-  }
-
-  @Test
-  void givenSimulationProfile_whenCreateChallenge_thenSnsNeverCalled() {
-    otpChallengeService.activeProfile = "local";
+  void givenValidRequest_whenCreateChallenge_thenSmsApiIsCalledWithCorrectData() {
     when(otpChallengeRepository.existsRecentChallenge(any(), any(), any(), any())).thenReturn(false);
 
     otpChallengeService.createChallenge(USER_ID, REVISION_ID, SLOT_CODE, PHONE);
 
-    verify(snsClient, never()).publish(any(PublishRequest.class));
+    verify(smsApi).sendSms(eq(PHONE), stringArgumentCaptor.capture());
+    assertThat(stringArgumentCaptor.getValue()).contains("Sicherheitscode");
+    assertThat(stringArgumentCaptor.getValue()).containsPattern("\\d{6}");
   }
 
   @Test
-  void givenSnsThrowsException_whenCreateChallenge_thenThrowRuntimeException() {
+  void givenSmsApiThrowsException_whenCreateChallenge_thenExceptionPropagates() {
     when(otpChallengeRepository.existsRecentChallenge(any(), any(), any(), any())).thenReturn(false);
-
-    AwsErrorDetails errorDetails = AwsErrorDetails.builder()
-        .errorMessage("Invalid credentials")
-        .errorCode("403")
-        .build();
-
-    SnsException snsException = (SnsException) SnsException.builder()
-        .message("AWS Error")
-        .awsErrorDetails(errorDetails)
-        .build();
-
-    when(snsClient.publish(any(PublishRequest.class))).thenThrow(snsException);
+    doThrow(new ExternalWebServiceException("Service temporarily unavailable. Please try again later."))
+        .when(smsApi).sendSms(any(), any());
 
     assertThatThrownBy(() -> otpChallengeService.createChallenge(USER_ID, REVISION_ID, SLOT_CODE, PHONE))
         .isInstanceOf(ExternalWebServiceException.class)

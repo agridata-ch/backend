@@ -43,6 +43,7 @@ public class ContractRevisionSealService {
   private final ContractRevisionMapper contractRevisionMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ManagedExecutor managedExecutor;
+  private final ContractRevisionStorageService contractRevisionStorageService;
 
   public SealAttemptStateEnum getSealState(UUID contractRevisionId, boolean longPolling) {
     long deadline = System.currentTimeMillis() + 10_000;
@@ -111,7 +112,8 @@ public class ContractRevisionSealService {
   private void performSeal(UUID contractRevisionId, String adminGlobalId) {
     try {
       byte[] pdf = createDummyPdf(contractRevisionId); // TODO: Replace the stub with the actual contract revision PDF.
-      bitSignatureApi.sign(pdf, adminGlobalId); // TODO: Store the sealed contract revision PDF.
+      bitSignatureApi.sign(pdf, adminGlobalId);
+      contractRevisionStorageService.upload(contractRevisionId, pdf);
       updateSealState(contractRevisionId, SealAttemptState.COMPLETED);
     } catch (Exception e) {
       log.error("BIT seal failed for contractRevisionId={}: {}", contractRevisionId, e.getMessage());
