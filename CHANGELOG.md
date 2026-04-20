@@ -1,3 +1,9 @@
+## [1.8.0-rc.29](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.28...v1.8.0-rc.29) (2026-04-20)
+
+### Features
+
+* **contract:** implement contract PDF generation ([f1b4237](https://github.com/agridata-ch/backend/commit/f1b42372c078ac8ed7762e48a7058d5be42ff81b)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
 ## [1.8.0-rc.28](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.27...v1.8.0-rc.28) (2026-04-17)
 
 ### Features
