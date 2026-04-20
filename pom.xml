@@ -28,7 +28,6 @@
         <guava.version>33.5.0-jre</guava.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.39</swagger-parser.version>
-        <aws.java.sdk.version>2.42.25</aws.java.sdk.version>
         <pdfbox.version>3.0.7</pdfbox.version>
         <fop-core.version>2.11</fop-core.version>
 
@@ -55,6 +54,13 @@
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-cxf-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-amazon-services-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -122,13 +128,6 @@
                 <artifactId>swagger-parser</artifactId>
                 <version>${swagger-parser.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <type>pom</type>
-                <version>${aws.java.sdk.version}</version>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>
@@ -283,7 +282,15 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sns</artifactId>
+            <artifactId>url-connection-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-sns</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

@@ -1,7 +1,13 @@
 agridata:
+  agreement:
+    contract-bucket-name: contracts
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
+  aws:
+    devservices:
+      localstack:
+        port: 4566
   hibernate-orm:
     log:
       sql: false
@@ -71,6 +77,23 @@ quarkus:
     logging:
       body-limit: 10240
       scope: request-response
+  s3:
+    devservices:
+      buckets:
+        - contracts
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  sns:
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
   swagger-ui:
     oauth-client-id: agridata-ui
     oauth-client-secret: secret
