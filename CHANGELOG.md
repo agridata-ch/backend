@@ -1,3 +1,9 @@
+## [1.8.0-rc.30](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.29...v1.8.0-rc.30) (2026-04-21)
+
+### Features
+
+* **contract:** exclude unnecessary xml-apis dependency ([4f7595a](https://github.com/agridata-ch/backend/commit/4f7595a265026992b531315a54a4c01dfc968a60)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
 ## [1.8.0-rc.29](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.28...v1.8.0-rc.29) (2026-04-20)
 
 ### Features
