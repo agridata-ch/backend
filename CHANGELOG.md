@@ -1,3 +1,9 @@
+## [1.8.0-rc.32](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.31...v1.8.0-rc.32) (2026-04-21)
+
+### Bug Fixes
+
+* **sonarqube:** address minor sonarqube issues ([1fce2f5](https://github.com/agridata-ch/backend/commit/1fce2f5544edd17c0527f20842e7d6eed7f898c9)), closes [DIGIB2-1312](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1312)
+
 ## [1.8.0-rc.31](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.30...v1.8.0-rc.31) (2026-04-21)
 
 ### Features
