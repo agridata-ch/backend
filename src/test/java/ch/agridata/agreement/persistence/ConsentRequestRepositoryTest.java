@@ -247,7 +247,9 @@ class ConsentRequestRepositoryTest {
 
   @Test
   void givenInvalidBatchSize_whenTerminateByIds_thenThrows() {
-    assertThatThrownBy(() -> repo.terminateByIdsReturningPairs(List.of(UUID.randomUUID()), 0, LocalDateTime.now()))
+    var ids = List.of(UUID.randomUUID());
+    var now = LocalDateTime.now();
+    assertThatThrownBy(() -> repo.terminateByIdsReturningPairs(ids, 0, now))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Batch size must be greater than 0");
 
