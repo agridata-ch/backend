@@ -1,3 +1,9 @@
+## [1.8.0-rc.31](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.30...v1.8.0-rc.31) (2026-04-21)
+
+### Features
+
+* **contract:** Make adjustments to contract revision PDF ([31107a3](https://github.com/agridata-ch/backend/commit/31107a376769f4a2278dcde03bd485f8dc2da1fd)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
 ## [1.8.0-rc.30](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.29...v1.8.0-rc.30) (2026-04-21)
 
 ### Features
