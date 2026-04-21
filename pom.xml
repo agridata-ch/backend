@@ -30,7 +30,7 @@
         <swagger-parser.version>2.1.39</swagger-parser.version>
         <aws.java.sdk.version>2.42.25</aws.java.sdk.version>
         <pdfbox.version>3.0.7</pdfbox.version>
-        <fop.version>2.11</fop.version>
+        <fop-core.version>2.11</fop-core.version>
 
         <!-- plugin versions -->
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
@@ -114,8 +114,8 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
-                <artifactId>fop</artifactId>
-                <version>${fop.version}</version>
+                <artifactId>fop-core</artifactId>
+                <version>${fop-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.parser.v3</groupId>
@@ -291,7 +291,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>fop</artifactId>
+            <artifactId>fop-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
