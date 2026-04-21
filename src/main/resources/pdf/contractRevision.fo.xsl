@@ -410,16 +410,13 @@
                         <xsl:value-of select="consumerName"/>
                     </fo:block>
                     <fo:block>
-                        UID: CHE107900767
+                        UID: Lorem Ipsum
                     </fo:block>
                     <fo:block>
                         <xsl:value-of select="consumerStreet"/>
                     </fo:block>
                     <fo:block>
                         <xsl:value-of select="consumerZipCity"/>
-                    </fo:block>
-                    <fo:block>
-                        Schweiz
                     </fo:block>
 
                     <fo:block>Kontakt: +41 12 234 56 78, loremipsum@loremipsum.loremipsum</fo:block>
@@ -1026,7 +1023,6 @@
                                     <fo:block>Für
                                         <xsl:value-of select="consumerName"/>
                                     </fo:block>
-                                    <fo:block>Bundesamt für Landwirtschaft BLW</fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell padding-top="8mm" padding-left="8mm">
                                     <fo:block>Für
@@ -1081,12 +1077,6 @@
 
                         </fo:table-body>
                     </fo:table>
-
-                    <fo:block
-                            text-decoration="underline"
-                            space-before="18mm">
-                        In 2-facher Ausfertigung
-                    </fo:block>
                 </fo:flow>
             </fo:page-sequence>
         </fo:root>

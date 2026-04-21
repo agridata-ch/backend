@@ -6,6 +6,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import java.net.URL;
+import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
 import org.apache.fop.apps.FopFactory;
 
@@ -42,7 +43,12 @@ public class ContractRevisionFopConfig {
   @Produces
   @ApplicationScoped
   public TransformerFactory transformerFactory() {
-    return TransformerFactory.newInstance();
+    var factory = TransformerFactory.newInstance();
+    
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+    return factory;
   }
 
   @Produces
