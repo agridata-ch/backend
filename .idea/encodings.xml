@@ -3,5 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/target/generated-sources/openapi/agis-register-api/src/gen/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/target/generated-sources/openapi/agis-register-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/target/generated-sources/wsdl2java" charset="UTF-8" />
   </component>
 </project>
