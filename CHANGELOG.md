@@ -1,3 +1,9 @@
+## [1.9.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.8.0...v1.9.0-rc.1) (2026-04-22)
+
+### Features
+
+* **aws:** add quarkus amazon services for s3 and sns ([5e41606](https://github.com/agridata-ch/backend/commit/5e41606fe7547f10760d8e881e0e62017e78f760)), closes [DIGIB2-1301](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1301)
+
 ## [1.8.0](https://github.com/agridata-ch/backend/compare/v1.7.0...v1.8.0) (2026-04-22)
 
 ### Features
