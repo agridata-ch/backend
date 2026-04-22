@@ -1,3 +1,9 @@
+## [1.8.0-rc.33](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.32...v1.8.0-rc.33) (2026-04-22)
+
+### Bug Fixes
+
+* **image:** updated docker image ([b5cb51d](https://github.com/agridata-ch/backend/commit/b5cb51d2500eb3d2712181e71dcca75f39598c23))
+
 ## [1.8.0-rc.32](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.31...v1.8.0-rc.32) (2026-04-21)
 
 ### Bug Fixes
