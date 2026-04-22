@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -29,19 +30,14 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         .firstResultOptional();
   }
 
-  public Optional<DataRequestEntity> findByIdAndInProviderWorkflowStates(UUID id) {
+  public Optional<DataRequestEntity> findByIdAndStates(UUID id, Set<DataRequestEntity.DataRequestStateEnum> states) {
     return find(
         """
             id = :id and stateCode in (:state_codes)
             """,
         Map.of(
             "id", id,
-            "state_codes", List.of(
-                DataRequestEntity.DataRequestStateEnum.ACTIVE,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
-            )
+            "state_codes", states
         )
     )
         .firstResultOptional();
@@ -56,16 +52,11 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     ).list();
   }
 
-  public List<DataRequestEntity> findByInProviderWorkflowStates() {
+  public List<DataRequestEntity> findAllByStates(Set<DataRequestEntity.DataRequestStateEnum> states) {
     return find(
         "stateCode in (:state_codes)",
         Map.of(
-            "state_codes", List.of(
-                DataRequestEntity.DataRequestStateEnum.ACTIVE,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
-                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
-            )
+            "state_codes", states
         )
     ).list();
   }

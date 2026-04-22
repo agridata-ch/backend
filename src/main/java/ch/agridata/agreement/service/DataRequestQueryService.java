@@ -15,6 +15,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,13 @@ public class DataRequestQueryService implements DataRequestApi {
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
   private final DataProductApi dataProductApi;
 
+  private static final Set<DataRequestEntity.DataRequestStateEnum> PROVIDER_ACCESSIBLE_STATES = Set.of(
+      DataRequestEntity.DataRequestStateEnum.ACTIVE,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+  );
+
   @RolesAllowed(CONSUMER_ROLE)
   public List<DataRequestDto> getAllDataRequestsOfCurrentConsumer() {
     var dataRequestEntities = dataRequestRepository.findByDataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow());
@@ -43,7 +51,7 @@ public class DataRequestQueryService implements DataRequestApi {
 
   @RolesAllowed(PROVIDER_ROLE)
   public List<DataRequestDto> getRelevantDataRequestsForCurrentProvider() {
-    var dataRequestEntities = dataRequestRepository.findByInProviderWorkflowStates();
+    var dataRequestEntities = dataRequestRepository.findAllByStates(PROVIDER_ACCESSIBLE_STATES);
     return dataRequestEntities.stream()
         .map(dataRequestEnrichmentService::toEnrichedDto)
         .filter((DataRequestDto dataRequest) -> (dataRequest.dataSourceSystem().dataProvider().uid()
@@ -67,7 +75,7 @@ public class DataRequestQueryService implements DataRequestApi {
 
   @RolesAllowed(PROVIDER_ROLE)
   public DataRequestDto getDataRequestForCurrentProvider(UUID requestId) {
-    return dataRequestRepository.findByIdAndInProviderWorkflowStates(requestId)
+    return dataRequestRepository.findByIdAndStates(requestId, PROVIDER_ACCESSIBLE_STATES)
         .map(dataRequestEnrichmentService::toEnrichedDto)
         .filter(dr -> dr.dataSourceSystem().dataProvider().uid().equals(agridataSecurityIdentity.getUidOrElseThrow()))
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
@@ -85,12 +93,13 @@ public class DataRequestQueryService implements DataRequestApi {
     DataSourceSystemDto dataSourceSystem = dataProductApi.getDataSourceSystem(dataRequest.getDataSourceSystemId());
     String userUid = agridataSecurityIdentity.getUidOrElseThrow();
 
-    return dataSourceSystem.dataProvider().uid().equals(userUid);
+    return dataSourceSystem.dataProvider().uid().equals(userUid)
+        && PROVIDER_ACCESSIBLE_STATES.contains(dataRequest.getStateCode());
   }
 
   @RolesAllowed({PROVIDER_ROLE})
   public boolean isAssignedToCurrentProvider(UUID dataRequestId) {
-    DataRequestEntity dataRequest = dataRequestRepository.findByIdAndInProviderWorkflowStates(dataRequestId)
+    DataRequestEntity dataRequest = dataRequestRepository.findByIdOptional(dataRequestId)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
 
     return isAssignedToCurrentProvider(dataRequest);

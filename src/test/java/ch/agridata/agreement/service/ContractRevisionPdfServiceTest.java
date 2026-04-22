@@ -12,13 +12,10 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
 import ch.agridata.agreement.mapper.ContractRevisionPdfMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
-import ch.agridata.agreement.persistence.ContractRevisionRepository;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
-import java.util.Optional;
 import java.util.UUID;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -41,11 +38,9 @@ class ContractRevisionPdfServiceTest {
   @Mock
   private TransformerFactory transformerFactory;
   @Mock
-  private ContractRevisionRepository contractRevisionRepository;
-  @Mock
-  private AgridataSecurityIdentity agridataSecurityIdentity;
-  @Mock
   private ContractRevisionPdfMapper contractRevisionPdfMapper;
+  @Mock
+  private ContractRevisionQueryService contractRevisionQueryService;
   @Mock
   private Transformer transformer;
   @Mock
@@ -56,7 +51,6 @@ class ContractRevisionPdfServiceTest {
   private JAXBContext jaxbContext = JAXBContext.newInstance(ContractRevisionPdfDto.class);
 
   private static final UUID REVISION_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-  private static final String USER_UID = "CHE123456789";
 
   ContractRevisionPdfServiceTest() throws JAXBException {
   }
@@ -66,9 +60,8 @@ class ContractRevisionPdfServiceTest {
     ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder().build();
     ContractRevisionPdfDto contractRevisionPdfDto = ContractRevisionPdfDto.builder().build();
 
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID))
-        .thenReturn(Optional.of(contractRevisionEntity));
+    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
+        .thenReturn(contractRevisionEntity);
     when(contractRevisionPdfMapper.toPdfDto(contractRevisionEntity)).thenReturn(contractRevisionPdfDto);
 
     when(fopFactory.newFop(eq(MimeConstants.MIME_PDF), any(ByteArrayOutputStream.class))).thenReturn(fop);
@@ -78,14 +71,13 @@ class ContractRevisionPdfServiceTest {
 
     assertThat(result).isNotNull();
     verify(transformer).transform(any(Source.class), any(Result.class));
-    verify(contractRevisionRepository).findByIdAndDataConsumerUid(REVISION_ID, USER_UID);
+    verify(contractRevisionQueryService).getWithAccessCheck(REVISION_ID);
   }
 
   @Test
   void generatePdf_NotFound_ThrowsException() {
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID))
-        .thenReturn(Optional.empty());
+    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
+        .thenThrow(new NotFoundException(REVISION_ID.toString()));
 
     assertThatThrownBy(() -> contractRevisionPdfService.generatePdf(REVISION_ID))
         .isInstanceOf(NotFoundException.class);
@@ -94,9 +86,8 @@ class ContractRevisionPdfServiceTest {
   @Test
   void generatePdf_TransformationFails_ThrowsIllegalStateException() throws Exception {
     ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder().build();
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID))
-        .thenReturn(Optional.of(contractRevisionEntity));
+    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
+        .thenReturn(contractRevisionEntity);
     when(contractRevisionPdfMapper.toPdfDto(any())).thenReturn(new ContractRevisionPdfDto());
 
     when(fopFactory.newFop(eq(MimeConstants.MIME_PDF), any(ByteArrayOutputStream.class)))

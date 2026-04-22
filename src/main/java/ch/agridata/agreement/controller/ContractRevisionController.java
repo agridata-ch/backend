@@ -194,7 +194,7 @@ public class ContractRevisionController {
       operationId = "getContractRevisionPdf",
       description = "Returns the pdf of the contract revision"
   )
-  @RolesAllowed({CONSUMER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
   public Response getContractRevisionPdf(
       @PathParam("id") UUID id
   ) {
