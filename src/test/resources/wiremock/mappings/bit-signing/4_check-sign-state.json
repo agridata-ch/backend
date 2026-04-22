@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bit-signature/secure/v1/checkSignState"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "OK",
+      "logId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "signState": "SIGN_FINISHED"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "url": "/tvd/animal-tracing/v1.0/customer/legalunits/equidowner/producer-both-no-uid"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "tvd-animal-tracing-api/agateLoginId_producer_both_no_uid.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

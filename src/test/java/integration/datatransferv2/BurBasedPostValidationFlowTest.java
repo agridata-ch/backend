@@ -14,8 +14,6 @@ import integration.testutils.TestDataIdentifiers.Identifier;
 import io.quarkiverse.wiremock.devservice.ConnectWireMock;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -25,22 +23,13 @@ class BurBasedPostValidationFlowTest {
 
   private static final Identifier<DataProductEntity> PRODUCT_BUR_BASED_POST_VALIDATION = DataProduct.UUID_E08AF9D2;
 
-  private final Flyway flyway;
-
   WireMock wireMock;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata prior to executing each test
-    flyway.migrate();
-    wireMock.resetToDefaultMappings();
-  }
 
   @Test
   void givenAcceptedConsentRequest_whenProductRequested_thenProductReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910002.getCode())
+        .queryParam("bur", Bur.CODE_99910002.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then().statusCode(200)
@@ -48,7 +37,7 @@ class BurBasedPostValidationFlowTest {
 
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
-            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur._99910002.getCode()
+            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur.CODE_99910002.getCode()
                 + "?dataPackage=TVD_FarmDataV1&recipientUid=CHE123456789")));
   }
 
@@ -56,21 +45,21 @@ class BurBasedPostValidationFlowTest {
   void givenNoExistingConsentRequest_whenProductRequested_thenForbiddenReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910004.getCode())
+        .queryParam("bur", Bur.CODE_99910004.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
         .statusCode(403);
 
     wireMock.verifyThat(0, WireMock.anyRequestedFor(
-        WireMock.urlPathMatching(".*/tvd/.*")));
+        WireMock.urlPathMatching(".*/tvd/.*shared-data.*")));
   }
 
   @Test
   void givenGrantedButOutdatedConsentRequest_whenProductWithHistoricDateRequested_thenForbiddenReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910004.getCode())
+        .queryParam("bur", Bur.CODE_99910004.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .queryParam("date", "2000-01-01")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
@@ -78,14 +67,14 @@ class BurBasedPostValidationFlowTest {
         .statusCode(403);
 
     wireMock.verifyThat(0, WireMock.anyRequestedFor(
-        WireMock.urlPathMatching(".*/tvd/.*")));
+        WireMock.urlPathMatching(".*/tvd/.*shared-data.*")));
   }
 
   @Test
   void givenGrantedButOutdatedConsentRequest_whenProductWithHistoricDateFromRequested_thenForbiddenReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910004.getCode())
+        .queryParam("bur", Bur.CODE_99910004.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .queryParam("dateFrom", "2000-01-01")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
@@ -93,7 +82,7 @@ class BurBasedPostValidationFlowTest {
         .statusCode(403);
 
     wireMock.verifyThat(0, WireMock.anyRequestedFor(
-        WireMock.urlPathMatching(".*/tvd/.*")));
+        WireMock.urlPathMatching(".*/tvd/.*shared-data.*")));
   }
 
   @Test
@@ -106,7 +95,7 @@ class BurBasedPostValidationFlowTest {
         .statusCode(400);
 
     wireMock.verifyThat(0, WireMock.anyRequestedFor(
-        WireMock.urlPathMatching(".*/tvd/.*")));
+        WireMock.urlPathMatching(".*/tvd/.*shared-data.*")));
   }
 
   @Test
@@ -120,14 +109,14 @@ class BurBasedPostValidationFlowTest {
         .statusCode(400);
 
     wireMock.verifyThat(0, WireMock.anyRequestedFor(
-        WireMock.urlPathMatching(".*/tvd/.*")));
+        WireMock.urlPathMatching(".*/tvd/.*shared-data.*")));
   }
 
   @Test
   void givenNoConsumerUidInTokenButInResponseHeader_whenProductRequested_thenProductReturned() {
     AuthTestUtils.requestAs(CONSUMER_BLV_WITHOUT_UID)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910002.getCode())
+        .queryParam("bur", Bur.CODE_99910002.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
         .then()
@@ -135,7 +124,7 @@ class BurBasedPostValidationFlowTest {
 
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
-            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur._99910002.getCode()
+            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur.CODE_99910002.getCode()
                 + "?dataPackage=TVD_FarmDataV1&recipientUid=CHE123456789")));
   }
 
@@ -143,7 +132,7 @@ class BurBasedPostValidationFlowTest {
   void givenAdditionalQueryParametersInRequest_whenProductRequested_thenParametersAreForwardedToProvider() {
     AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", PRODUCT_BUR_BASED_POST_VALIDATION.uuid())
-        .queryParam("bur", Bur._99910002.getCode())
+        .queryParam("bur", Bur.CODE_99910002.getCode())
         .queryParam("recipientUid", "CHE123456789")
         .queryParam("additionalParam", "dummyParam")
         .when().get(DataTransferController.PATH + "/product/{productId}/data")
@@ -152,7 +141,7 @@ class BurBasedPostValidationFlowTest {
 
     wireMock.verifyThat(1, WireMock.getRequestedFor(
         WireMock.urlEqualTo(
-            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur._99910002.getCode()
+            "/tvd/animal-tracing/v1.0/customer/shared-data/localunits/" + Bur.CODE_99910002.getCode()
                 + "?dataPackage=TVD_FarmDataV1&recipientUid=CHE123456789&additionalParam=dummyParam")));
   }
 }

@@ -114,7 +114,7 @@ class UidRegisterServiceTest {
     when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
 
     // When
-    UidRegisterOrganisationDto result = uidRegisterService.getByUid(CHE, TEST_UID);
+    UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
 
     // Then
     assertThat(result)
@@ -148,7 +148,7 @@ class UidRegisterServiceTest {
     when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
 
     // When
-    UidRegisterOrganisationDto result = uidRegisterService.getByUid(CHE, TEST_UID);
+    UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
 
     // Then
     assertThat(result.address()).isNull();
@@ -161,7 +161,7 @@ class UidRegisterServiceTest {
     when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
 
     // When
-    UidRegisterOrganisationDto result = uidRegisterService.getByUid(CHE, TEST_UID);
+    UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
 
     // Then
     assertThat(result.address().street()).isEqualTo("Main St");
@@ -186,7 +186,7 @@ class UidRegisterServiceTest {
     when(port.getByUID(any(UidStructureType.class))).thenThrow(exception);
 
     // When & Then
-    assertThatThrownBy(() -> uidRegisterService.getByUid(CHE, TEST_UID))
+    assertThatThrownBy(() -> uidRegisterService.getByUid(TEST_UID))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasCause(exception);
   }
@@ -199,7 +199,7 @@ class UidRegisterServiceTest {
     when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
 
     // When & Then
-    assertThatThrownBy(() -> uidRegisterService.getByUid(CHE, TEST_UID))
+    assertThatThrownBy(() -> uidRegisterService.getByUid(TEST_UID))
         .isInstanceOf(NotFoundException.class)
         .hasMessage(expectedMessage);
   }

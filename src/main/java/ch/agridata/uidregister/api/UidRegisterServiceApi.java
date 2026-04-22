@@ -1,7 +1,6 @@
 package ch.agridata.uidregister.api;
 
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
-import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
 import java.math.BigInteger;
 
 /**
@@ -23,12 +22,11 @@ public interface UidRegisterServiceApi {
   UidRegisterOrganisationDto getByUidOfCurrentUser();
 
   /**
-   * Retrieves the organisation details for the current user based on their UID.
+   * Retrieves the organisation details for any UID.
    *
    * @return UidRegisterOrganisationDto containing the organisation details.
-   * @throws UidMissingException         if the current user does not have a valid UID.
    * @throws NotFoundException           if no organisation is found for the current user's UID.
    * @throws ExternalWebServiceException if there is an error communicating with the UID web service.
    */
-  UidRegisterOrganisationDto getByUid(UidOrganisationIdCategorieType category, BigInteger id);
+  UidRegisterOrganisationDto getByUid(BigInteger id);
 }

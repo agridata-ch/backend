@@ -50,6 +50,8 @@ quarkus:
         level: WARN
       ch.agridata.common.filters.RestClientLoggingFilter:
         level: DEBUG
+      ch.agridata.bit:
+        level: DEBUG
     level: INFO
   oidc:
     token:
@@ -60,8 +62,12 @@ quarkus:
   rest-client:
     agis-api:
       url: http://localhost:8050/agis
+    bit-signature-api:
+      url: http://localhost:8050/bit-signature
     tvd-animal-tracing-api:
       url: http://localhost:8050/tvd/animal-tracing
+    tvd-zo-api:
+      url: http://localhost:8050/tvd/zo
     logging:
       body-limit: 10240
       scope: request-response

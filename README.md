@@ -61,20 +61,21 @@ These are predefined users in the local agate realm:
 
 ### Data Producers
 
-| Username     | Password | Roles                               | KT_ID_P   | loginid  |
-|--------------|----------|-------------------------------------|-----------|----------|
-| producer-a   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXA0001 | 3477580  |
-| producer-b   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXB0001 | 3477581  |
-| producer-b-3 | secret   | agridata.ch.Agridata_Einwilliger    | FLXXB0003 | 3477582  |
-| producer-c   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXC0001 | 3477583  |
-| producer-d   | secret   | agridata.ch.Agridata_Einwilliger    | FLXXD0001 | 3477584  |
-| producer-e   | secret   | agridata.ch.Agridata_Einwilliger    | -         | 3477585  |
+| Username     | Password | Roles                            | KT_ID_P   | loginid |
+|--------------|----------|----------------------------------|-----------|---------|
+| producer-a   | secret   | agridata.ch.Agridata_Einwilliger | FLXXA0001 | 3477580 |
+| producer-b   | secret   | agridata.ch.Agridata_Einwilliger | FLXXB0001 | 3477581 |
+| producer-b-3 | secret   | agridata.ch.Agridata_Einwilliger | FLXXB0003 | 3477582 |
+| producer-c   | secret   | agridata.ch.Agridata_Einwilliger | FLXXC0001 | 3477583 |
+| producer-d   | secret   | agridata.ch.Agridata_Einwilliger | FLXXD0001 | 3477584 |
+| producer-e   | secret   | agridata.ch.Agridata_Einwilliger | -         | 3477585 |
 
 ### Data Providers
 
-| Username | Password | Roles                               | UID                | loginid |
-|----------|----------|-------------------------------------|--------------------|---------|
-| provider | secret   | agridata.ch.Agridata_Datenanbieters | CHE146680598 (BLW) | 3477553 |
+| Username   | Password | Roles                               | UID                | loginid |
+|------------|----------|-------------------------------------|--------------------|---------|
+| provider-1 | secret   | agridata.ch.Agridata_Datenanbieters | CHE146680598 (BLW) | 3477553 |
+| provider-2 | secret   | agridata.ch.Agridata_Datenanbieters | CHE146680598 (BLW) | 3477586 |
 
 ### Data Consumers
 

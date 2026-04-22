@@ -1,8 +1,8 @@
 package ch.agridata.datatransfer.service;
 
-import static ch.agridata.datatransfer.client.DataProviderRestClientFactory.RestClientIdentifier;
+import static ch.agridata.datatransfer.service.client.DataProviderRestClientFactory.RestClientIdentifier;
 
-import ch.agridata.datatransfer.client.DataProviderRestClientFactory;
+import ch.agridata.datatransfer.service.client.DataProviderRestClientFactory;
 import ch.agridata.product.api.DataProductApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,10 +35,10 @@ public class DataFetchingService {
 
     var restClientIdentifierCode = RestClientIdentifier.valueOf(dataProduct.restClientIdentifierCode());
     var restClientMethod = dataProduct.restClientMethodCode();
-    var restClientPath = dataProduct.restClientPath();
+    var restClientPathTemplate = dataProduct.restClientPathTemplate();
     var restClientRequestTemplate = dataProduct.restClientRequestTemplate();
     var request = buildRequest(restClientRequestTemplate, params);
-    return invokeRestClient(restClientIdentifierCode, restClientMethod, restClientPath, request);
+    return invokeRestClient(restClientIdentifierCode, restClientMethod, restClientPathTemplate, request);
   }
 
   private JsonNode buildRequest(String restClientRequestTemplate, Map<String, String> params) {

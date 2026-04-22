@@ -61,6 +61,7 @@ public class TestDataIdentifiers {
   }
 
   public static class DataProduct {
+    // AGIS
     public static final Identifier<DataProductEntity> UUID_C661EA48 = id("c661ea48-106d-4d7a-a5d1-a9a6db48dd8c");
     public static final Identifier<DataProductEntity> UUID_147E8C40 = id("147e8c40-78cc-4db3-a909-65504aa62a64");
     public static final Identifier<DataProductEntity> UUID_085E4B72 = id("085e4b72-964d-4bd5-a3c9-224d8c5585af");
@@ -71,11 +72,31 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_64E39DF0 = id("64e39df0-2e56-4204-9c44-a43e1e26a2e8");
     public static final Identifier<DataProductEntity> UUID_1DAD9F91 = id("1dad9f91-30d8-45c9-8c82-ad72f4cb22e7");
     public static final Identifier<DataProductEntity> UUID_46F8A883 = id("46f8a883-da7c-49b3-b986-10a24b1e09ef");
-    public static final Identifier<DataProductEntity> UUID_42BD4613 = id("42bd4613-a0e3-4bc9-8922-d458d60e7999");
+    public static final Identifier<DataProductEntity> UUID_7911D98D = id("7911d98d-59eb-4cf4-be61-bfe77fe9117e");
+    // Animal Tracing
+    public static final Identifier<DataProductEntity> UUID_6319423C = id("6319423c-e4fc-4a47-be6e-43888f58f94f");
+    public static final Identifier<DataProductEntity> UUID_C4D3B0A3 = id("c4d3b0a3-b486-40b8-a324-5029034433cc");
+    public static final Identifier<DataProductEntity> UUID_3E0BFD53 = id("3e0bfd53-94c7-4a73-8d71-0f2c64313c3f");
+    public static final Identifier<DataProductEntity> UUID_593913AC = id("593913ac-0294-431b-adf3-5227ff8fddff");
     public static final Identifier<DataProductEntity> UUID_298B653C = id("298b653c-b326-40d3-a3d1-97e2e9d9ca22");
     public static final Identifier<DataProductEntity> UUID_E08AF9D2 = id("e08af9d2-99ec-41b3-a77c-d4457415944f");
-    public static final Identifier<DataProductEntity> UUID_6319423C = id("6319423c-e4fc-4a47-be6e-43888f58f94f");
-    public static final Identifier<DataProductEntity> UUID_7911D98D = id("7911d98d-59eb-4cf4-be61-bfe77fe9117e");
+    public static final Identifier<DataProductEntity> UUID_B17AE68A = id("b17ae68a-42a8-47fe-ba7b-ec7105c5c5c7");
+    public static final Identifier<DataProductEntity> UUID_5DA9E6E0 = id("5da9e6e0-4c17-4683-af89-b49206472ae7");
+    public static final Identifier<DataProductEntity> UUID_5AA2EE15 = id("5aa2ee15-4f66-46ed-aaf2-55e6db55f960");
+    public static final Identifier<DataProductEntity> UUID_7E4B1B3E = id("7e4b1b3e-bcfb-4d94-923d-1277828de70b");
+    public static final Identifier<DataProductEntity> UUID_C6F18E45 = id("c6f18e45-95f8-47b3-9b11-9cbae351a9b2");
+    // ZO API
+    public static final Identifier<DataProductEntity> UUID_2F28D2EC = id("2f28d2ec-8797-46fd-8149-9c70ac5f2ebe");
+    public static final Identifier<DataProductEntity> UUID_0B42AFB7 = id("0b42afb7-3683-4065-9cb3-396995a5be97");
+    public static final Identifier<DataProductEntity> UUID_D10B898F = id("d10b898f-9796-4993-9654-8f092b97989d");
+    public static final Identifier<DataProductEntity> UUID_59115547 = id("59115547-cfd5-428a-9863-6cd1b2200013");
+    public static final Identifier<DataProductEntity> UUID_EC5B9F05 = id("ec5b9f05-0b8d-4833-9447-d7338fe1dc78");
+    public static final Identifier<DataProductEntity> UUID_88DCF0F9 = id("88dcf0f9-8502-4596-b035-45c5d548d262");
+    public static final Identifier<DataProductEntity> UUID_54DECB00 = id("54decb00-cecd-4c64-b368-8ab999130ac4");
+    public static final Identifier<DataProductEntity> UUID_D156F252 = id("d156f252-c8c0-49de-8541-149c35aada6c");
+    public static final Identifier<DataProductEntity> UUID_720AA209 = id("720aa209-7aa8-4faf-8b1a-013a041084f2");
+    public static final Identifier<DataProductEntity> UUID_B0A4FF29 = id("b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac");
+    public static final Identifier<DataProductEntity> UUID_E6128E10 = id("e6128e10-5d2b-4096-8356-b6523cb30e92");
   }
 
   public static class DataProvider {
@@ -99,17 +120,17 @@ public class TestDataIdentifiers {
   }
 
   public enum Bur {
-    _99910002("99910002"),
-    _99910003("99910003"),
-    _99910004("99910004"),
-    _99910005("99910005"),
-    _99920004("99920004"),
-    _99920005("99920005"),
-    _99920006("99920006"),
-    _99930004("99930004"),
-    _99930005("99930005"),
-    _99940003("99940003"),
-    _99940004("99940004");
+    CODE_99910002("99910002"),
+    CODE_99910003("99910003"),
+    CODE_99910004("99910004"),
+    CODE_99910005("99910005"),
+    CODE_99920004("99920004"),
+    CODE_99920005("99920005"),
+    CODE_99920006("99920006"),
+    CODE_99930004("99930004"),
+    CODE_99930005("99930005"),
+    CODE_99940003("99940003"),
+    CODE_99940004("99940004");
 
     private final String code;
 

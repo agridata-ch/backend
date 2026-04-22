@@ -61,11 +61,13 @@ class AgridataFlowTest {
   void givenTaskThrowsException_whenRunIsCalled_thenExceptionIsPropagated() {
     var context = createContext();
 
-    UnaryOperator<AgridataContext> failingTask = ctx -> {
+    List<UnaryOperator<AgridataContext>> tasksBefore = List.of(ctx -> {
       throw new IllegalArgumentException("Task failed");
-    };
+    });
 
-    assertThatThrownBy(() -> agridataFlow.run(context, List.of(failingTask), List.of()))
+    List<UnaryOperator<AgridataContext>> tasksAfter = List.of();
+
+    assertThatThrownBy(() -> agridataFlow.run(context, tasksBefore, tasksAfter))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Task failed");
   }

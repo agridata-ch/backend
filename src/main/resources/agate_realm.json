@@ -2771,6 +2771,9 @@
         "loginid": [
           "3477588"
         ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ],
         "uid": "CHE403244345"
       },
       "createdTimestamp": 1704813979950,
@@ -2805,6 +2808,9 @@
       "attributes": {
         "loginid": [
           "3477589"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
         ],
         "uid": "CHE403244345"
       },
@@ -2862,15 +2868,14 @@
       "lastName": "BLV",
       "notBefore": 0,
       "realmRoles": [
-        "default-roles-agate",
-        "agridata.ch.Agridata_Datenbezueger"
+        "default-roles-agate"
       ],
       "requiredActions": [
       ],
       "totp": false
     },
     {
-      "username": "provider",
+      "username": "provider-1",
       "attributes": {
         "loginid": [
           "3477553"
@@ -2909,6 +2914,58 @@
       "emailVerified": true,
       "enabled": true,
       "firstName": "Teo",
+      "groups": [
+      ],
+      "lastName": "Provider",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenanbieter"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "provider-2",
+      "attributes": {
+        "loginid": [
+          "3477586"
+        ],
+        "street": [
+          "Nullnummerweg 55"
+        ],
+        "locality": [
+          "Schaffhausen"
+        ],
+        "postal_code": [
+          "8200"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+4179123456789"
+        ],
+        "uid": [
+          "CHE146680598"
+        ]
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "nina.provider@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Nina",
       "groups": [
       ],
       "lastName": "Provider",
@@ -2992,6 +3049,9 @@
     {
       "username": "guest",
       "attributes": {
+        "loginid": [
+          "000000"
+        ]
       },
       "createdTimestamp": 1704813979950,
       "credentials": [
@@ -3319,6 +3379,213 @@
       "groups": [
       ],
       "lastName": "Demomann",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-agis-tvd-unavailable",
+      "attributes": {
+        "KT_ID_P": [
+          "producer-agis-tvd-unavailable"
+        ],
+        "loginid": [
+          "producer-agis-tvd-unavailable"
+        ],
+        "street": [
+          "Producergasse 1"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-agis-tvd-unavailable@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "groups": [
+      ],
+      "firstName": "Test",
+      "lastName": "AgisTvdUnavailable",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-agis-no-uid-tvd-unavailable",
+      "attributes": {
+        "KT_ID_P": [
+          "producer-agis-no-uid-tvd-unavailable"
+        ],
+        "loginid": [
+          "producer-agis-no-uid-tvd-unavailable"
+        ],
+        "street": [
+          "Producergasse 3"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-agis-no-uid-tvd-unavailable@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "groups": [
+      ],
+      "firstName": "Test",
+      "lastName": "AgisNoUidTvdUnavailable",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-agis-unavailable-tvd-no-uid",
+      "attributes": {
+        "KT_ID_P": [
+          "producer-agis-unavailable-tvd-no-uid"
+        ],
+        "loginid": [
+          "producer-agis-unavailable-tvd-no-uid"
+        ],
+        "street": [
+          "Procergasse 4"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-agis-unavailable-tvd-no-uid@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "groups": [
+      ],
+      "firstName": "Test",
+      "lastName": "AgisUnavailableTvdNoUid",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "producer-both-no-uid",
+      "attributes": {
+        "KT_ID_P": [
+          "producer-both-no-uid"
+        ],
+        "loginid": [
+          "producer-both-no-uid"
+        ],
+        "street": [
+          "Producergasse 2"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "producer-both-no-uid@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "groups": [
+      ],
+      "firstName": "Test",
+      "lastName": "ProducerBothNoUid",
       "notBefore": 0,
       "realmRoles": [
         "default-roles-agate",

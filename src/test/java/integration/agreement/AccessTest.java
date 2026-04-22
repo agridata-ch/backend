@@ -13,6 +13,7 @@ import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE
 import static io.restassured.http.ContentType.MULTIPART;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
+import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
 import integration.testutils.AccessTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -30,6 +31,22 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, ConsentRequestController.PATH + "/1/status",
         PRODUCER_ROLE);
+  }
+
+  @Test
+  void testAccess_ContractRevisionController() {
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1",
+        CONSUMER_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/signatures/1/otp-challenges",
+        CONSUMER_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(POST,
+        ContractRevisionController.PATH + "/1/signatures/1/otp-challenges/1/verification", CONSUMER_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/seals",
+        ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/seals/status",
+        ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/pdf",
+        CONSUMER_ROLE);
   }
 
   @Test
@@ -53,7 +70,11 @@ class AccessTest {
         CONSUMER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/status",
-        CONSUMER_ROLE, ADMIN_ROLE);
+        CONSUMER_ROLE, PROVIDER_ROLE, ADMIN_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(PUT,
+        DataRequestController.PATH_V1 + "/1/valid-redirect-uri-regex",
+        ADMIN_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataRequestController.PATH_V1 + "/1/kt-id-p/1/consent-requests",
         CONSUMER_ROLE, ADMIN_ROLE);

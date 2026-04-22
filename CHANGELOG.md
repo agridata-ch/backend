@@ -1,3 +1,206 @@
+## [1.8.0-rc.33](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.32...v1.8.0-rc.33) (2026-04-22)
+
+### Bug Fixes
+
+* **image:** updated docker image ([b5cb51d](https://github.com/agridata-ch/backend/commit/b5cb51d2500eb3d2712181e71dcca75f39598c23))
+
+## [1.8.0-rc.32](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.31...v1.8.0-rc.32) (2026-04-21)
+
+### Bug Fixes
+
+* **sonarqube:** address minor sonarqube issues ([1fce2f5](https://github.com/agridata-ch/backend/commit/1fce2f5544edd17c0527f20842e7d6eed7f898c9)), closes [DIGIB2-1312](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1312)
+
+## [1.8.0-rc.31](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.30...v1.8.0-rc.31) (2026-04-21)
+
+### Features
+
+* **contract:** Make adjustments to contract revision PDF ([31107a3](https://github.com/agridata-ch/backend/commit/31107a376769f4a2278dcde03bd485f8dc2da1fd)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
+## [1.8.0-rc.30](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.29...v1.8.0-rc.30) (2026-04-21)
+
+### Features
+
+* **contract:** exclude unnecessary xml-apis dependency ([4f7595a](https://github.com/agridata-ch/backend/commit/4f7595a265026992b531315a54a4c01dfc968a60)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
+## [1.8.0-rc.29](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.28...v1.8.0-rc.29) (2026-04-20)
+
+### Features
+
+* **contract:** implement contract PDF generation ([f1b4237](https://github.com/agridata-ch/backend/commit/f1b42372c078ac8ed7762e48a7058d5be42ff81b)), closes [DIGIB2-305](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-305)
+
+## [1.8.0-rc.28](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.27...v1.8.0-rc.28) (2026-04-17)
+
+### Features
+
+* **data-products:** add and update identitas data products ([8d8fa82](https://github.com/agridata-ch/backend/commit/8d8fa824bd8e85a84bce48ff07b0b092c75c90f6)), closes [DIGIB2-1335](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1335)
+
+## [1.8.0-rc.27](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.26...v1.8.0-rc.27) (2026-04-16)
+
+### Features
+
+* **error-message:** improve error messages missing uid person ([1942bd6](https://github.com/agridata-ch/backend/commit/1942bd669bb9e44b752ddb73da691f4616e5c0c5)), closes [DIGIB2-1249](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1249)
+
+## [1.8.0-rc.26](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.25...v1.8.0-rc.26) (2026-04-16)
+
+### Features
+
+* **contracts:** make signing process async and add poll endpoint ([d215375](https://github.com/agridata-ch/backend/commit/d21537515f76a26607aa7de675ddc9bf3f6238dd)), closes [DIGIB2-1330](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1330)
+
+### Bug Fixes
+
+* **cicd:** increase timeout of owasp dependency check due to update duration ([d23bf39](https://github.com/agridata-ch/backend/commit/d23bf39e73148f7620d4c852f0a3c5c4660f6ecf))
+
+## [1.8.0-rc.25](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.24...v1.8.0-rc.25) (2026-04-15)
+
+### Bug Fixes
+
+* **owasp:** suppress owasp vulnerability until next quarkus update ([8485625](https://github.com/agridata-ch/backend/commit/8485625dd5b2f040757ab918d790fecae97a084c))
+* **trivy:** patch vulnerability in image ([87454a4](https://github.com/agridata-ch/backend/commit/87454a43c2f4d743610eefb554d20ab2993da519))
+
+## [1.8.0-rc.24](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.23...v1.8.0-rc.24) (2026-04-14)
+
+### Features
+
+* **contract:** Allow provider to access datarequests in the state TO_BE_ACTIVATED. ([6e25eeb](https://github.com/agridata-ch/backend/commit/6e25eeb762423f57cd9b4fc6a432868c5f9ec021)), closes [DIGIB2-1204](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1204)
+
+## [1.8.0-rc.23](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.22...v1.8.0-rc.23) (2026-04-13)
+
+### Features
+
+* **contract:** implement provider signatures ([4738f62](https://github.com/agridata-ch/backend/commit/4738f6230798ca6c45d4ac56ac710e5baa67a38a)), closes [DIGIB2-1204](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1204)
+
+## [1.8.0-rc.22](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.21...v1.8.0-rc.22) (2026-04-13)
+
+### Features
+
+* **contracts:** initial connection to bit signature api ([0a893b4](https://github.com/agridata-ch/backend/commit/0a893b4fdf5f655454084fba07047aaa95baa8dd)), closes [DIGIB2-1330](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1330)
+
+## [1.8.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.20...v1.8.0-rc.21) (2026-04-13)
+
+### Bug Fixes
+
+* **deps:** update dependencies to fix vulnerabilities ([2b56fc7](https://github.com/agridata-ch/backend/commit/2b56fc73cd2591bff648e4703807b59bea170260))
+
+## [1.8.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.19...v1.8.0-rc.20) (2026-04-08)
+
+### Features
+
+* **agreement:** Implement sending out otp via sms ([136e02f](https://github.com/agridata-ch/backend/commit/136e02fc66afb01dbb156eeefffb73b99f9e1b62)), closes [DIGIB2-1276](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1276)
+
+## [1.8.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.18...v1.8.0-rc.19) (2026-04-08)
+
+### Features
+
+* **contract:** get data provider information from uid register ([e65656d](https://github.com/agridata-ch/backend/commit/e65656d6a2e35c263c920edc3637ede146fa8dd8)), closes [DIGIB2-395](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-395)
+
+## [1.8.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.17...v1.8.0-rc.18) (2026-04-02)
+
+### Bug Fixes
+
+* **archunit:** fix archunit rules ([9903a2a](https://github.com/agridata-ch/backend/commit/9903a2aaeb6342126dc130f9be20b6a66be633cf))
+
+## [1.8.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.16...v1.8.0-rc.17) (2026-04-02)
+
+### Bug Fixes
+
+* **openapi:** filter unused schemas from API subset documents ([bd56d79](https://github.com/agridata-ch/backend/commit/bd56d7972f6ee709c9db59868df60bf74ed34e2d))
+
+## [1.8.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.15...v1.8.0-rc.16) (2026-04-02)
+
+### Features
+
+* **job:** add scheduled job userId support for auditing in system jobs ([d6be1b8](https://github.com/agridata-ch/backend/commit/d6be1b86caaedac10002830b36c31e307c0fc9ba)), closes [DIGIB2-1261](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1261)
+
+## [1.8.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.14...v1.8.0-rc.15) (2026-04-01)
+
+### Features
+
+* **agreement:** improve maintainability of DataRequestStateService ([e3a6ad5](https://github.com/agridata-ch/backend/commit/e3a6ad56fe25f502ba74ce13042e5e5c90a1bf4d)), closes [DIGIB2-308](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-308)
+
+## [1.8.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.13...v1.8.0-rc.14) (2026-04-01)
+
+### Features
+
+* **agreement:** Allow consumers to release datarequests after signing. ([093fea0](https://github.com/agridata-ch/backend/commit/093fea0723f97d1fa83c7eba86ab40c77be94aa1)), closes [DIGIB2-308](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-308)
+
+## [1.8.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.12...v1.8.0-rc.13) (2026-04-01)
+
+### Features
+
+* **agreement:** add lastModifiedDateTime to ConsentRequestFundamentalViewDto ([ea75052](https://github.com/agridata-ch/backend/commit/ea75052267038371e587abaefe2da88aedf9783e))
+
+## [1.8.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.11...v1.8.0-rc.12) (2026-03-27)
+
+### Features
+
+* **deps:** update dependencies ([b360a04](https://github.com/agridata-ch/backend/commit/b360a0478986572e0d3bc83993ca432307efcbfc)), closes [DIGIB2-1289](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1289)
+
+## [1.8.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.10...v1.8.0-rc.11) (2026-03-27)
+
+### Features
+
+* **products:** add identitas data products and test requests ([147b8d6](https://github.com/agridata-ch/backend/commit/147b8d654a1246bd82fbd065c442d004cc152080)), closes [DIGIB2-1295](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1295)
+
+## [1.8.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.9...v1.8.0-rc.10) (2026-03-26)
+
+### Features
+
+* **data-transfer:** add change detection endpoint returning modified producers since a given date ([6d1de16](https://github.com/agridata-ch/backend/commit/6d1de16f400dbf441f15d54d8e9d92e0a937df51)), closes [DIGIB2-861](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-861)
+
+## [1.8.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.8...v1.8.0-rc.9) (2026-03-25)
+
+### Bug Fixes
+
+* **agreement:** Change phoneNumber anonymization, retrieve signatureName through .getString() and improve tests. ([a8131fe](https://github.com/agridata-ch/backend/commit/a8131fe348b5e997e95f456602f9edfe4513d8d5)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
+## [1.8.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.7...v1.8.0-rc.8) (2026-03-24)
+
+### Bug Fixes
+
+* **agreement:** Concatenate first- and familyName for signature name. ([aca90d5](https://github.com/agridata-ch/backend/commit/aca90d53bc16ad17d9ae5cdb74b90df0fd5c332b)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
+## [1.8.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.6...v1.8.0-rc.7) (2026-03-24)
+
+### Features
+
+* **agreement:** Add userId-field to user-info endpoint. ([733d010](https://github.com/agridata-ch/backend/commit/733d01009c1575ab3ebc637788c17d051e1dea7b)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
+## [1.8.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.5...v1.8.0-rc.6) (2026-03-20)
+
+### Features
+
+* **authentication:** add producer_role for equid owners and security arch unit tests ([179807d](https://github.com/agridata-ch/backend/commit/179807da3b1913a7872e07972aeda115f1386521)), closes [DIGIB2-1267](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1267)
+
+## [1.8.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.4...v1.8.0-rc.5) (2026-03-20)
+
+### Features
+
+* **agreement:** Allow consumer to sign contract. ([055a462](https://github.com/agridata-ch/backend/commit/055a462e10cf8f8919ec207fbfa4862fec0e91d7)), closes [DIGIB2-306](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-306)
+
+## [1.8.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.3...v1.8.0-rc.4) (2026-03-18)
+
+### Features
+
+* **data-request:** add edit of redirect uri regex as admin ([150dfa7](https://github.com/agridata-ch/backend/commit/150dfa7c7fa54dd5a425a452f983995e3b8f1c07)), closes [DIGIB2-1252](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1252)
+
+## [1.8.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.2...v1.8.0-rc.3) (2026-03-17)
+
+### Features
+
+* **agreement:** Add consumer-city and data consumer logo to contract-revision-response. ([a47ed1c](https://github.com/agridata-ch/backend/commit/a47ed1c6e0313046bc3a94b8eb018838619b064d)), closes [DIGIB2-1275](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1275)
+
+## [1.8.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.8.0-rc.1...v1.8.0-rc.2) (2026-03-17)
+
+### Bug Fixes
+
+* **security:** update zlib to fix vulnerability ([d4f2b57](https://github.com/agridata-ch/backend/commit/d4f2b572d23c0752d4a0056825512deda41e9cd8)), closes [DIGIB2-1277](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1277)
+
+## [1.8.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.7.0...v1.8.0-rc.1) (2026-03-17)
+
+### Features
+
+* **agreement:** Add contract revisions. ([777f473](https://github.com/agridata-ch/backend/commit/777f473df8cf5216e8f23aac7b620cf147a7757b)), closes [DIGIB2-1275](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1275)
+
 ## [1.7.0](https://github.com/agridata-ch/backend/compare/v1.6.0...v1.7.0) (2026-03-13)
 
 ### Features

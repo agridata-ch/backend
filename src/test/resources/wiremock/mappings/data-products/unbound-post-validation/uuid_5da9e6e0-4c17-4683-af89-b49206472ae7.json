@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/animal-tracing/v1.0/animal/shared-data/goats/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "TVD_GoatDetailV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "5da9e6e0-4c17-4683-af89-b49206472ae7"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-UIDS": "[\"CHE101000001\"]",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "[\"99910002\"]"
+    }
+  }
+}

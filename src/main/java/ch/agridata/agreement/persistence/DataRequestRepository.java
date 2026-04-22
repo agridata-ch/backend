@@ -16,32 +16,32 @@ import java.util.UUID;
 @ApplicationScoped
 public class DataRequestRepository implements PanacheRepositoryBase<DataRequestEntity, UUID> {
   private static final String PARAM_STATE_CODE = "state_code";
+  private static final String DATA_CONSUMER_UID = "dataConsumerUid";
 
   public Optional<DataRequestEntity> findByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
     return find(
         "id = :id and dataConsumerUid = :dataConsumerUid",
         Map.of(
             "id", id,
-            "dataConsumerUid", dataConsumerUid
+            DATA_CONSUMER_UID, dataConsumerUid
         )
     )
         .firstResultOptional();
   }
 
-  public Optional<DataRequestEntity> findActiveByIdAndDataProviderUid(UUID id, String dataProviderUid) {
+  public Optional<DataRequestEntity> findByIdAndInProviderWorkflowStates(UUID id) {
     return find(
         """
-            id = :id and dataSourceSystemId in (
-              select dss.id
-              from DataSourceSystemEntity dss
-              where dss.dataProvider.uid = :dataProviderUid
-            )
-            and stateCode = :state_code
+            id = :id and stateCode in (:state_codes)
             """,
         Map.of(
             "id", id,
-            "dataProviderUid", dataProviderUid,
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE
+            "state_codes", List.of(
+                DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+            )
         )
     )
         .firstResultOptional();
@@ -51,24 +51,21 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     return find(
         "dataConsumerUid = :dataConsumerUid",
         Map.of(
-            "dataConsumerUid", dataConsumerUid
+            DATA_CONSUMER_UID, dataConsumerUid
         )
     ).list();
   }
 
-  public List<DataRequestEntity> findActiveByProviderUid(String dataProviderUid) {
+  public List<DataRequestEntity> findByInProviderWorkflowStates() {
     return find(
-        """
-            dataSourceSystemId in (
-              select dss.id
-              from DataSourceSystemEntity dss
-              where dss.dataProvider.uid = :dataProviderUid
-            )
-            and stateCode = :state_code
-            """,
+        "stateCode in (:state_codes)",
         Map.of(
-            "dataProviderUid", dataProviderUid,
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.ACTIVE
+            "state_codes", List.of(
+                DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+                DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+            )
         )
     ).list();
   }
@@ -101,7 +98,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     return count(
         "dataConsumerUid = :dataConsumerUid and stateCode = :state_code",
         Map.of(
-            "dataConsumerUid", dataConsumerUid,
+            DATA_CONSUMER_UID, dataConsumerUid,
             PARAM_STATE_CODE, state
         )
     );

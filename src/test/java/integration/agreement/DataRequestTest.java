@@ -4,18 +4,24 @@ import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
+import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
+import static integration.agreement.DataRequestTestFactory.createReadyForActivatingDataRequest;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
+import static integration.agreement.DataRequestTestFactory.updateValidRedirectUriRegex;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_147E8C40;
-import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_42BD4613;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_46F8A883;
+import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_6319423C;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
 import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
-import static integration.testutils.TestUserEnum.PROVIDER;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
+import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -40,23 +46,15 @@ import io.restassured.common.mapper.TypeRef;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class DataRequestTest {
   private static final UUID NONEXISTENT_PRODUCT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-  private final Flyway flyway;
+
   private final DataRequestRepository dataRequestRepository;
   private final AuditLogTestUtils auditLogTestUtils;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata is reset between tests
-    flyway.migrate();
-  }
 
   @Test
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
@@ -78,7 +76,7 @@ class DataRequestTest {
   void givenProvider_whenGetActiveDataRequests_thenOnlyActiveRequestsForThatProviderAreReturned() {
     createDataRequest().then()
         .statusCode(201).extract().path("id");
-    AuthTestUtils.requestAs(PROVIDER).when().get(DataRequestController.PATH_V1).then()
+    AuthTestUtils.requestAs(PROVIDER_1).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(4));
   }
@@ -101,10 +99,23 @@ class DataRequestTest {
 
   @Test
   void givenExistingDataRequestAndProvider_whenGetDataRequest_thenReturnFound() {
-    AuthTestUtils.requestAs(PROVIDER).when()
+    AuthTestUtils.requestAs(PROVIDER_1).when()
         .get(DataRequestController.PATH_V1 + "/" + DataRequest.IP_SUISSE_01)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenToBeActivatedDataRequestAndProvider_whenGetDataRequest_thenReturnRequest() {
+    DataRequestDto existingDataRequest = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class);
+
+    AuthTestUtils.requestAs(PROVIDER_1).when()
+        .get(DataRequestController.PATH_V1 + "/" + existingDataRequest.id().toString())
+        .then()
+        .statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
   }
 
   @Test
@@ -156,7 +167,7 @@ class DataRequestTest {
   void givenExistingDraftDataRequestAndProvider_whenGetDataRequest_thenReturnNotFound() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
-    AuthTestUtils.requestAs(PROVIDER).when()
+    AuthTestUtils.requestAs(PROVIDER_1).when()
         .get(DataRequestController.PATH_V1 + "/" + id)
         .then()
         .statusCode(404);
@@ -211,9 +222,9 @@ class DataRequestTest {
   @Test
   void givenDraftWithProductsFromDifferentSystems_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
-        .products(List.of(UUID_46F8A883.uuid(), UUID_42BD4613.uuid()))
+        .products(List.of(UUID_46F8A883.uuid(), UUID_6319423C.uuid()))
         .build();
-    createDataRequest(invalidDto).then().statusCode(400);
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -221,7 +232,7 @@ class DataRequestTest {
     DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(UUID_147E8C40.uuid()))
         .build();
-    createDataRequest(dto).then().statusCode(400);
+    createDataRequestAs(dto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -229,7 +240,7 @@ class DataRequestTest {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))
         .build();
-    createDataRequest(invalidDto).then().statusCode(400);
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
   }
 
   @Test
@@ -321,7 +332,7 @@ class DataRequestTest {
         .products(List.of())
         .build();
 
-    createDataRequest(invalidDto).then()
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
         .statusCode(400);
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
@@ -337,6 +348,29 @@ class DataRequestTest {
         .statusCode(400);
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
+  }
+
+  @Test
+  void givenAdminUpdatesValidRedirectUriRegexWithInvalidPattern_thenBadRequest() {
+    updateValidRedirectUriRegex(DataRequest.BIO_SUISSE_01.toString(), "(", ADMIN)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenAdminUpdatesValidRedirectUriRegex_whenConsumerReadsOwnDataRequest_thenRegexIsVisible() {
+    String regex = "^https:\\/\\/consumer\\.example\\.ch(\\/.*)?$";
+
+    updateValidRedirectUriRegex(DataRequest.BIO_SUISSE_01.toString(), regex, ADMIN)
+        .then()
+        .statusCode(200)
+        .body("validRedirectUriRegex", equalTo(regex));
+
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
+        .then()
+        .statusCode(200)
+        .body("validRedirectUriRegex", equalTo(regex));
   }
 
   @Test

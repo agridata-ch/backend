@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.7.0</version>
+    <version>1.8.0-rc.33</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -13,27 +13,32 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.32.2</quarkus.platform.version>
-        <quarkus.cxf.version>3.31.3</quarkus.cxf.version>
+        <quarkus.platform.version>3.34.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version> <!-- or latest -->
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <plexus-utils.version>4.0.3</plexus-utils.version>
         <lombok.version>1.18.42</lombok.version>
-        <assertj.version>3.27.4</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.4.1</archunit-junit5.version>
-        <wiremock.version>1.5.1</wiremock.version>
-        <openapi-generator.version>7.19.0</openapi-generator.version>
+        <wiremock.version>1.6.1</wiremock.version>
+        <guava.version>33.5.0-jre</guava.version>
+        <swagger-annotations.version>2.2.46</swagger-annotations.version>
+        <swagger-parser.version>2.1.39</swagger-parser.version>
+        <aws.java.sdk.version>2.42.25</aws.java.sdk.version>
+        <pdfbox.version>3.0.7</pdfbox.version>
+        <fop-core.version>2.11</fop-core.version>
 
         <!-- plugin versions -->
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
         <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>13.2.0</checkstyle.version>
+        <checkstyle.version>13.3.0</checkstyle.version>
         <dependency-check-maven.version>12.2.0</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.19.0</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.21.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>
@@ -48,9 +53,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.quarkiverse.cxf</groupId>
-                <artifactId>quarkus-cxf</artifactId>
-                <version>${quarkus.cxf.version}</version>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-cxf-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
@@ -61,6 +68,14 @@
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar-maven-plugin.version}</version>
+            </dependency>
+            <!-- TODO: Remove when sonar-maven-plugin ships plexus-utils >= 4.0.3
+                 Check with: mvn dependency:tree -Dincludes=org.codehaus.plexus:plexus-utils
+                 CVE-2025-67030 fixed in plexus-utils 4.0.3, introduced via sonar-maven-plugin 5.5.0.6356 -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -83,9 +98,37 @@
                 <version>${wiremock.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.openapitools</groupId>
-                <artifactId>openapi-generator</artifactId>
-                <version>${openapi-generator.version}</version>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>fop-core</artifactId>
+                <version>${fop-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.parser.v3</groupId>
+                <artifactId>swagger-parser</artifactId>
+                <version>${swagger-parser.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <type>pom</type>
+                <version>${aws.java.sdk.version}</version>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>
@@ -206,12 +249,29 @@
             <artifactId>quarkus-cxf</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>openapi-generator</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-virtual-threads</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-virtual-threads</artifactId>
+            <artifactId>quarkus-jaxb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -220,6 +280,24 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -484,6 +562,7 @@
                                     and caused Hibernate validation error HV000271 -->
                                     <useBeanValidation>false</useBeanValidation>
                                     <openApiNullable>false</openApiNullable>
+                                    <useSwaggerAnnotations>false</useSwaggerAnnotations>
                                 </configOptions>
                             </configuration>
                         </execution>

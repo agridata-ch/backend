@@ -212,7 +212,7 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     return ids.stream().distinct().toList();
   }
 
-  public List<TerminatedBurUid> terminateByIdsReturningPairs(List<UUID> ids, int batchSize, LocalDateTime terminatedAt) {
+  public List<ConsentRequestEntity> terminateByIdsReturningPairs(List<UUID> ids, int batchSize, LocalDateTime terminatedAt) {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
@@ -223,30 +223,25 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
       throw new IllegalArgumentException("terminatedAt must not be null");
     }
 
-    final String sql = """
-        update consent_request
-        set uid_bur_relation_until = :terminatedAt
-        where id = any(:ids)
-          and archived = false
-          and uid_bur_relation_until is null
-        returning id, data_producer_bur, data_producer_uid
-        """;
-
-    List<TerminatedBurUid> result = new ArrayList<>();
+    List<ConsentRequestEntity> result = new ArrayList<>();
 
     for (int from = 0; from < ids.size(); from += batchSize) {
       int to = Math.min(from + batchSize, ids.size());
       List<UUID> batchIds = ids.subList(from, to);
 
-      var query = entityManager.createNativeQuery(sql)
-          .setParameter("terminatedAt", terminatedAt)
-          .setParameter("ids", batchIds.toArray(UUID[]::new));
+      List<ConsentRequestEntity> batchResult = entityManager.createQuery("""
+              select cr
+              from ConsentRequestEntity cr
+              where cr.id in :ids
+                and cr.archived = false
+                and cr.uidBurRelationUntil is null
+              """, ConsentRequestEntity.class)
+          .setParameter("ids", batchIds)
+          .getResultList();
 
-      List<Object[]> rows = query.getResultList();
-      for (Object row : rows) {
-        Object[] r = (Object[]) row;
-        result.add(new TerminatedBurUid((UUID) r[0], (String) r[1], (String) r[2]));
-      }
+      batchResult.forEach(entity -> entity.setUidBurRelationUntil(terminatedAt));
+
+      result.addAll(batchResult);
     }
 
     return result;
@@ -261,25 +256,5 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
    */
 
   public record BurUidPair(String bur, String uid) {
-  }
-
-  /**
-   * Lightweight projection representing a consent request that was terminated.
-   *
-   * <p>This record is used when terminating consent requests via a database
-   * operation that returns affected rows (e.g. PostgreSQL {@code RETURNING}).
-   * It contains only the minimal information required for auditing and logging:
-   * the consent request identifier together with the associated BUR–UID pair.
-   *
-   * <p>Instances of this record are typically produced by repository methods
-   * performing bulk termination operations and should be treated as immutable
-   * snapshots of the state at the time of termination.
-   *
-   * @param id  unique identifier of the consent request that was terminated
-   * @param bur business unit register (BUR) of the data producer at termination time
-   * @param uid UID of the data producer at termination time
-   * @CommentLastReviewed 2026-03-02
-   */
-  public record TerminatedBurUid(UUID id, String bur, String uid) {
   }
 }

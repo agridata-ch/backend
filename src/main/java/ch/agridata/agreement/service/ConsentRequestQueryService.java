@@ -14,7 +14,6 @@ import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
-import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -22,6 +21,7 @@ import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.product.api.DataProductApi;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.Nullable;
@@ -53,7 +53,8 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   private final UserApi userApi;
   private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
-  private final DataRequestMapper dataRequestMapper;
+  private final DataRequestQueryService dataRequestQueryService;
+  private final DataProductApi dataProductApi;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
@@ -159,7 +160,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
       ResourceQueryDto resourceQueryDto,
       UUID dataRequestId,
       LocalDateTime lastModifiedFrom) {
-    if (dataRequestRepository.findActiveByIdAndDataProviderUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+    if (!dataRequestQueryService.isAssignedToCurrentProvider(dataRequestId)) {
       throw new NotFoundException(dataRequestId.toString());
     }
     var pagedEntities = consentRequestRepository.findByDataRequestIdAndLastModifiedFrom(

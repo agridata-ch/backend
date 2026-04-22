@@ -2,6 +2,7 @@ package ch.agridata.user.service;
 
 import static ch.agridata.user.dto.LegalFormEnum.EQUIDENEIGENTUEMER;
 
+import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import ch.agridata.tvd.api.TvdApi;
 import ch.agridata.tvd.dto.TvdEquidOwnerUidDto;
 import ch.agridata.user.dto.UidDto;
@@ -35,7 +36,7 @@ public class EquidOwnerUidProvider {
 
   private final TvdApi tvdApi;
 
-  @Retry
+  @Retry(maxRetries = 1)
   @Timeout(value = 2, unit = ChronoUnit.SECONDS)
   @Fallback(fallbackMethod = "fallbackAuthorizedUids")
   public List<UidDto> getAuthorizedUids(@NonNull String agateLoginId) {
@@ -50,9 +51,9 @@ public class EquidOwnerUidProvider {
   }
 
   @SuppressWarnings("unused")
-  private List<UidDto> fallbackAuthorizedUids(@NonNull String agateLoginId, Throwable t) {
-    log.error("TvdApi is not available. Returning empty list for agateLoginId={}", agateLoginId, t);
-    return List.of();
+  private List<UidDto> fallbackAuthorizedUids(@NonNull String agateLoginId, Throwable throwable) {
+    log.warn("TvdApi is not available while resolving UIDs for agateLoginId={}", agateLoginId);
+    throw new UidProviderUnavailableException("TVD service unavailable while resolving UIDs", throwable);
   }
 
   private UidDto buildDto(TvdEquidOwnerUidDto.Data tvdResponse) {
@@ -62,5 +63,4 @@ public class EquidOwnerUidProvider {
         .legalFormCode(EQUIDENEIGENTUEMER)
         .build();
   }
-
 }

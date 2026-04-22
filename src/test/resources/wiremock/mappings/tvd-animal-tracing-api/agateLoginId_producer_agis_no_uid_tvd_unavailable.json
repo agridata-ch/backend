@@ -1,0 +1,11 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "url": "/tvd/animal-tracing/v1.0/customer/legalunits/equidowner/producer-agis-no-uid-tvd-unavailable"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 3000
+  }
+}

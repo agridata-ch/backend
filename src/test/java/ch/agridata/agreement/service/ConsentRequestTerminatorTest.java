@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import java.time.Clock;
 import java.time.Instant;
@@ -53,9 +54,9 @@ class ConsentRequestTerminatorTest {
         .thenReturn(List.of(id2, id3));
 
     var terminatedRows = List.of(
-        new ConsentRequestRepository.TerminatedBurUid(id1, "BUR1", "UID1"),
-        new ConsentRequestRepository.TerminatedBurUid(id2, "BUR2", "UID2"),
-        new ConsentRequestRepository.TerminatedBurUid(id3, "BUR3", "UID3")
+        ConsentRequestEntity.builder().id(id1).dataProducerBur("BUR1").dataProducerUid("UID1").build(),
+        ConsentRequestEntity.builder().id(id2).dataProducerBur("BUR2").dataProducerUid("UID2").build(),
+        ConsentRequestEntity.builder().id(id3).dataProducerBur("BUR3").dataProducerUid("UID3").build()
     );
 
     when(consentRequestRepository.terminateByIdsReturningPairs(List.of(id1, id2, id3), BATCH_SIZE, terminatedAt))

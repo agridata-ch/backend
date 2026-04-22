@@ -1,9 +1,16 @@
 package ch.agridata.agreement.service;
 
-import static ch.agridata.agreement.dto.DataRequestStateEnum.DRAFT;
-import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
@@ -21,7 +28,6 @@ import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,87 +37,106 @@ import org.jetbrains.annotations.NotNull;
  * Manages state transitions of data requests and enforces transition rules. Handles validation and submission logic related to changing
  * request states.
  *
- * @CommentLastReviewed 2026-01-22
+ * @CommentLastReviewed 2026-04-01
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 public class DataRequestStateService {
 
-  public static final Map<DataRequestEntity.DataRequestStateEnum, Set<DataRequestEntity.DataRequestStateEnum>> ALLOWED_TRANSITIONS = Map.of(
-      DataRequestEntity.DataRequestStateEnum.DRAFT,
-      Set.of(DataRequestEntity.DataRequestStateEnum.IN_REVIEW),
-      DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
-      Set.of(DataRequestEntity.DataRequestStateEnum.DRAFT, DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED),
-      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED,
-      Set.of(DataRequestEntity.DataRequestStateEnum.ACTIVE),
-      DataRequestEntity.DataRequestStateEnum.ACTIVE,
-      Set.of()
+  private final DataRequestQueryService dataRequestQueryService;
+
+  private static final List<AllowedTransition> ALLOWED_TRANSITIONS = List.of(
+      new AllowedTransition(DRAFT, IN_REVIEW, Set.of(Actor.CONSUMER)),
+      new AllowedTransition(IN_REVIEW, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
+      new AllowedTransition(IN_REVIEW, TO_BE_SIGNED_BY_CONSUMER, Set.of(Actor.ADMIN)),
+      new AllowedTransition(TO_BE_SIGNED_BY_CONSUMER, DRAFT, Set.of(Actor.CONSUMER)),
+      new AllowedTransition(TO_BE_SIGNED_BY_CONSUMER, TO_BE_RELEASED_BY_CONSUMER, Set.of(Actor.SYSTEM)),
+      new AllowedTransition(TO_BE_RELEASED_BY_CONSUMER, DRAFT, Set.of(Actor.CONSUMER)),
+      new AllowedTransition(TO_BE_RELEASED_BY_CONSUMER, TO_BE_SIGNED_BY_PROVIDER, Set.of(Actor.CONSUMER)),
+      new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
+      new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, TO_BE_RELEASED_BY_PROVIDER, Set.of(Actor.SYSTEM)),
+      new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
+      new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED, Set.of(Actor.PROVIDER)),
+      new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN))
   );
+
+  private enum Actor {
+    CONSUMER, ADMIN, SYSTEM, PROVIDER
+  }
+
+  private record AllowedTransition(
+      DataRequestEntity.DataRequestStateEnum from,
+      DataRequestEntity.DataRequestStateEnum to,
+      Set<Actor> allowedActors
+  ) {
+  }
 
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Validator validator;
-  private final AuditingService auditingService;
+  private final DataRequestStateAuditService dataRequestStateAuditService;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
-
-
-  public static void verifyStatusTransition(DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to) {
-    if (!ALLOWED_TRANSITIONS.getOrDefault(from, Set.of()).contains(to)) {
-      throw new IllegalStateException(
-          "Unable to transition data request from state: " + from + " to: " + to);
-    }
-  }
+  private final ContractRevisionInitializationService contractRevisionInitializationService;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
   public DataRequestDto setStateAsConsumer(UUID requestId, DataRequestStateEnum state) {
-    verifyConsumerStateAllowed(state);
     var entity = loadEntityForConsumer(requestId);
     var oldStateCode = entity.getStateCode();
     var newStateCode = toEntityState(state);
 
-    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
+    if (oldStateCode == DRAFT && newStateCode == IN_REVIEW) {
       validate(dataRequestMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
     }
 
-    verifyStatusTransition(oldStateCode, newStateCode);
-
-    var dto = setStateTo(entity, newStateCode);
-
-    auditConsumerStatusTransition(requestId, oldStateCode, newStateCode);
-
+    var dto = setStateTo(entity, newStateCode, Actor.CONSUMER);
+    dataRequestStateAuditService.auditConsumerStatusTransition(requestId, oldStateCode, newStateCode);
     return dto;
+  }
+
+  @Transactional
+  @RolesAllowed(PROVIDER_ROLE)
+  public DataRequestDto setStateAsProvider(UUID requestId, DataRequestStateEnum state) {
+    var entity = loadEntityForProvider(requestId);
+    var newStateCode = toEntityState(state);
+
+    return setStateTo(entity, newStateCode, Actor.PROVIDER);
   }
 
   @RolesAllowed(ADMIN_ROLE)
   @Transactional
   public DataRequestDto setStateAsAdmin(UUID requestId, DataRequestStateEnum state) {
     var entity = loadEntityForAdmin(requestId);
-
     var oldStateCode = entity.getStateCode();
     var newStateCode = toEntityState(state);
 
-    verifyAdminMayChangeFrom(oldStateCode);
-    verifyStatusTransition(oldStateCode, newStateCode);
-
-    var dto = setStateTo(entity, newStateCode);
-
-    auditAdminStatusTransition(requestId, oldStateCode, newStateCode);
-
+    var dto = setStateTo(entity, newStateCode, Actor.ADMIN);
+    dataRequestStateAuditService.auditAdminStatusTransition(requestId, oldStateCode, newStateCode);
     return dto;
   }
 
-  private DataRequestDto setStateTo(DataRequestEntity entity, DataRequestEntity.DataRequestStateEnum newStateCode) {
+  public void transitionToPendingReleaseByConsumer(DataRequestEntity entity) {
+    setStateTo(entity, TO_BE_RELEASED_BY_CONSUMER, Actor.SYSTEM);
+  }
 
+  public void transitionToPendingReleaseByProvider(DataRequestEntity entity) {
+    setStateTo(entity, TO_BE_RELEASED_BY_PROVIDER, Actor.SYSTEM);
+  }
+
+  private DataRequestDto setStateTo(DataRequestEntity entity,
+                                    DataRequestEntity.DataRequestStateEnum newStateCode,
+                                    Actor actor) {
+    verifyStatusTransition(entity.getStateCode(), newStateCode, actor);
     entity.setStateCode(newStateCode);
 
-    if (newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
+    if (newStateCode == DRAFT) {
       entity.setSubmissionDate(null);
-    } else if (newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
+      entity.setCurrentContractRevisionId(null);
+    } else if (newStateCode == IN_REVIEW) {
       entity.setSubmissionDate(LocalDateTime.now());
+    } else if (newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
+      contractRevisionInitializationService.createAndAssignInitialRevision(entity);
     }
 
     dataRequestRepository.persist(entity);
@@ -125,9 +150,15 @@ public class DataRequestStateService {
     }
   }
 
-  private static void verifyConsumerStateAllowed(DataRequestStateEnum state) {
-    if (!List.of(DRAFT, IN_REVIEW).contains(state)) {
-      throw new IllegalStateException("Only DRAFT and IN_REVIEW state can be set by consumer");
+  private void verifyStatusTransition(
+      DataRequestEntity.DataRequestStateEnum from,
+      DataRequestEntity.DataRequestStateEnum to,
+      Actor actor) {
+    boolean allowed = ALLOWED_TRANSITIONS.stream()
+        .anyMatch(t -> t.from() == from && t.to() == to && t.allowedActors().contains(actor));
+    if (!allowed) {
+      throw new IllegalStateException(
+          "Unable to transition data request from state: " + from + " to: " + to + " as " + actor);
     }
   }
 
@@ -140,24 +171,10 @@ public class DataRequestStateService {
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
-  private void auditAdminStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
-                                          DataRequestEntity.DataRequestStateEnum newStateCode) {
-    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW && newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
-      auditingService.logDataRequestRejected(requestId);
-    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED) {
-      auditingService.logDataRequestApproved(requestId);
-    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.ACTIVE) {
-      auditingService.logDataRequestActivated(requestId);
-    }
-  }
-
-  private static void verifyAdminMayChangeFrom(DataRequestEntity.DataRequestStateEnum oldStateCode) {
-    if (DataRequestEntity.DataRequestStateEnum.DRAFT == oldStateCode) {
-      throw new IllegalStateException(
-          "Cannot change state from DRAFT - data request must be set to IN_REVIEW by the consumer first");
-    }
+  private DataRequestEntity loadEntityForProvider(UUID requestId) {
+    return dataRequestRepository.findByIdOptional(requestId)
+        .filter(dataRequestQueryService::isAssignedToCurrentProvider)
+        .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
   private DataRequestEntity loadEntityForAdmin(UUID requestId) {
@@ -165,14 +182,4 @@ public class DataRequestStateService {
         .orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
-  private void auditConsumerStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
-                                             DataRequestEntity.DataRequestStateEnum newStateCode) {
-    if (oldStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT) {
-      auditingService.logDataRequestWithdrawn(requestId);
-    } else if (oldStateCode == DataRequestEntity.DataRequestStateEnum.DRAFT
-        && newStateCode == DataRequestEntity.DataRequestStateEnum.IN_REVIEW) {
-      auditingService.logDataRequestSubmitted(requestId);
-    }
-  }
 }

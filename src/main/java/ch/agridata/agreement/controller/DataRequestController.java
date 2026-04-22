@@ -13,6 +13,7 @@ import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
@@ -23,7 +24,6 @@ import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -46,6 +46,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.ResponseStatus;
 import org.jboss.resteasy.reactive.RestForm;
@@ -66,7 +67,6 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
     description = "Provides access to data requests for consumers and admins. "
         + "Consumers can create, update, submit, and retrieve their own data requests, "
         + "while admins have full access to all data requests and their associated consent requests.")
-@RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
 @RunOnVirtualThread
 public class DataRequestController {
 
@@ -89,11 +89,12 @@ public class DataRequestController {
           + "while consumers receive only the data requests they own."
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
   public List<DataRequestDto> getDataRequests() {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getAllNonDraftDataRequests();
     } else if (identity.isProvider()) {
-      return dataRequestQueryService.getActiveDataRequestsForCurrentProvider();
+      return dataRequestQueryService.getRelevantDataRequestsForCurrentProvider();
     }
     return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
   }
@@ -107,11 +108,12 @@ public class DataRequestController {
           + "or the consumer who owns the data request. "
   )
   @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
     if (identity.isAdmin()) {
       return dataRequestQueryService.getNonDraftDataRequest(requestId);
     } else if (identity.isProvider()) {
-      return dataRequestQueryService.getActiveDataRequestForCurrentProvider(requestId);
+      return dataRequestQueryService.getDataRequestForCurrentProvider(requestId);
     }
     return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
   }
@@ -262,16 +264,35 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE, ADMIN_ROLE})
   public DataRequestDto setDataRequestStatus(
       @PathParam("id") UUID requestId,
       @Valid DataRequestStateEnum stateCode
   ) {
     if (identity.isAdmin()) {
       return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
+    } else if (identity.isProvider()) {
+      return dataRequestStateService.setStateAsProvider(requestId, stateCode);
     }
     return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
 
+  }
+
+  @PUT
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/valid-redirect-uri-regex")
+  @Operation(
+      operationId = "updateDataRequestValidRedirectUriRegex",
+      description = "Updates the valid redirect URI regex of a specific data request. Only accessible to admins."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed(ADMIN_ROLE)
+  public DataRequestDto updateDataRequestValidRedirectUriRegex(
+      @PathParam("id") UUID requestId,
+      @Valid DataRequestValidRedirectUriRegexUpdateDto dto
+  ) {
+    return dataRequestMutationService.updateValidRedirectUriRegex(requestId, dto);
   }
 
   @PUT

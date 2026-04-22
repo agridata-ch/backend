@@ -1,6 +1,6 @@
 package ch.agridata.datatransferv2.service.task;
 
-import static ch.agridata.datatransferv2.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
+import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,10 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.datatransferv2.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.client.DataProviderRestClientProvider;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
+import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
@@ -167,7 +167,7 @@ class BuildProviderRequestTaskTest {
         .id(PRODUCT_ID)
         .restClientIdentifierCode("AGIS_API")
         .restClientMethodCode(method)
-        .restClientPath(path)
+        .restClientPathTemplate(path)
         .restClientRequestTemplate(template)
         .build();
   }

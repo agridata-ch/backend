@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @CommentLastReviewed 2025-09-11
  */
-public abstract class BaseSearchRepository<T, IdT> implements PanacheRepositoryBase<T, IdT> {
+public abstract class BaseSearchRepository<T, I> implements PanacheRepositoryBase<T, I> {
 
   /**
    * Find a page of entities matching the given search criteria.

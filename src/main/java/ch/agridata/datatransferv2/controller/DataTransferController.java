@@ -4,10 +4,15 @@ import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 
 import ch.agridata.common.openapi.ApiSubset;
+import ch.agridata.datatransferv2.dto.ProducerIdentifier;
+import ch.agridata.datatransferv2.service.ChangeDetectionService;
+import ch.agridata.datatransferv2.service.DataTransferAuthorizationService;
 import ch.agridata.datatransferv2.service.FlowProvider;
+import io.quarkus.security.Authenticated;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -17,6 +22,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,12 +46,13 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "Data Transfer V2")
-@RolesAllowed({CONSUMER_ROLE})
 @RunOnVirtualThread
 public class DataTransferController {
   public static final String PATH = "/api/data-transfer/v2";
 
   private final FlowProvider flowProvider;
+  private final DataTransferAuthorizationService dataTransferAuthorizationService;
+  private final ChangeDetectionService changeDetectionService;
 
   @GET
   @ApiSubset({DATA_CONSUMER})
@@ -58,6 +65,7 @@ public class DataTransferController {
           + "Before any data is transferred, the producer must have accepted an active data request that includes the requested product."
   )
   @Produces(MediaType.WILDCARD)
+  @Authenticated // @Authenticated suffices here: role enforcement is delegated to DataTransferAuthorizationService
   public Response dataTransfer(
       @Parameter(
           name = "productId",
@@ -85,8 +93,37 @@ public class DataTransferController {
       @Context UriInfo uriInfo
   ) {
     var flowWithConfiguration = flowProvider.getFlowByProduct(productId);
-    Map<String, String> requestParameters = uriInfo.getQueryParameters(true).entrySet().stream()
+    dataTransferAuthorizationService.enforceAuthorization(flowWithConfiguration);
+    Map<String, String> queryParameters = uriInfo.getQueryParameters(true).entrySet().stream()
         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getFirst()));
-    return flowWithConfiguration.flow().run(flowWithConfiguration.productProviderConfiguration(), requestParameters);
+    return flowWithConfiguration.flow().run(flowWithConfiguration.productProviderConfiguration(), queryParameters);
+  }
+
+  @GET
+  @ApiSubset({DATA_CONSUMER})
+  @Path("/product/{productId}/modified-producers")
+  @Operation(
+      operationId = "getModifiedProducers",
+      description = "Returns producer IDs for which either a new consent was granted or data has changed at the upstream provider since "
+          + "the given timestamp. Only producer IDs with a currently valid consent are included. "
+          + "This endpoint requires the product to have change detection configured."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ProducerIdentifier> getModifiedProducers(
+      @Parameter(
+          name = "productId",
+          description = "productId for which the change detection is requested",
+          example = "085e4b72-964d-4bd5-a3c9-224d8c5585af"
+      )
+      @PathParam("productId") @Valid UUID productId,
+      @Parameter(
+          name = "since",
+          description = "Only changes and new consents after this date are returned.",
+          example = "2025-01-01"
+      )
+      @QueryParam("since") @NotNull @Valid LocalDate since
+  ) {
+    return changeDetectionService.getModifiedProducers(productId, since);
   }
 }

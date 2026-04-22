@@ -127,13 +127,23 @@ public class DataRequestEntity extends AuditableEntity {
   @Builder.Default
   private List<DataRequestDataProductEntity> dataProducts = new ArrayList<>();
 
+  @Column(name = "current_contract_revision_id")
+  private UUID currentContractRevisionId;
+
   /**
    * Lists the possible states of a data request.
    *
    * @CommentLastReviewed 2025-08-25
    */
   public enum DataRequestStateEnum {
-    DRAFT, IN_REVIEW, TO_BE_SIGNED, ACTIVE
+    DRAFT,
+    IN_REVIEW,
+    TO_BE_SIGNED_BY_CONSUMER,
+    TO_BE_RELEASED_BY_CONSUMER,
+    TO_BE_SIGNED_BY_PROVIDER,
+    TO_BE_RELEASED_BY_PROVIDER,
+    TO_BE_ACTIVATED,
+    ACTIVE,
   }
 
 }

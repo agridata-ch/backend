@@ -48,6 +48,7 @@ public interface ConsentRequestMapper {
   ConsentRequestCreatedDto toConsentRequestCreatedDto(ConsentRequestEntity entity, boolean isCreated);
 
   @Mapping(target = "dataRequestId", source = "entity.dataRequest.id")
+  @Mapping(target = "lastModifiedDateTime", source = "modifiedAt")
   ConsentRequestFundamentalViewDto toConsentRequestFundamentalViewDto(ConsentRequestEntity entity);
 
   PageResponseDto<ConsentRequestFundamentalViewDto> toPagedConsentRequestFundamentalViewDto(

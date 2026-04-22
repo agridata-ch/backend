@@ -55,7 +55,7 @@ class ConsentRequestStateServiceTest {
     boolean validationResult = true;
     try {
       consentRequestStateService.verifyStatusTransition(testCase.from, testCase.to, testCase.lastStateChangeDate);
-    } catch (Exception e) {
+    } catch (Exception _) {
       validationResult = false;
     }
     assertEquals(testCase.expectedAllowed(), validationResult, () ->

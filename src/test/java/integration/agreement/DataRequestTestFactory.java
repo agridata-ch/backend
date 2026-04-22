@@ -1,14 +1,22 @@
 package integration.agreement;
 
+import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static io.restassured.http.ContentType.JSON;
 
+import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
+import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.OtpChallengeDto;
+import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
@@ -17,6 +25,7 @@ import io.restassured.response.Response;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 import lombok.SneakyThrows;
 
 public class DataRequestTestFactory {
@@ -48,12 +57,17 @@ public class DataRequestTestFactory {
 
   @SneakyThrows
   public static Response createDataRequest() {
-    return createDataRequest(getPartialDataRequestUpdateDtoBuilder().build());
+    return createDataRequestAs(getPartialDataRequestUpdateDtoBuilder().build(), CONSUMER_BIO_SUISSE);
   }
 
   @SneakyThrows
-  public static Response createDataRequest(DataRequestUpdateDto dto) {
-    return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
+  public static Response createDataRequestAs(TestUserEnum user) {
+    return createDataRequestAs(getPartialDataRequestUpdateDtoBuilder().build(), user);
+  }
+
+  @SneakyThrows
+  public static Response createDataRequestAs(DataRequestUpdateDto dto, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(dto))
         .when()
@@ -61,15 +75,18 @@ public class DataRequestTestFactory {
   }
 
 
-  @SneakyThrows
   public static Response updateDataRequest(String requestId, DataRequestUpdateDto dto) {
-    return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
+    return updateDataRequestAs(requestId, dto, CONSUMER_BIO_SUISSE);
+  }
+
+  @SneakyThrows
+  public static Response updateDataRequestAs(String requestId, DataRequestUpdateDto dto, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(dto))
         .when()
         .put(DataRequestController.PATH_V1 + "/" + requestId);
   }
-
 
   @SneakyThrows
   public static Response setStatusAs(String requestId, DataRequestStateEnum stateCode, TestUserEnum user) {
@@ -81,11 +98,93 @@ public class DataRequestTestFactory {
   }
 
   @SneakyThrows
+  public static Response requestOtpChallengeAs(String contractRevisionId, SignatureSlotCodeEnum slotCode, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .pathParam("id", contractRevisionId)
+        .pathParam("slotCode", slotCode.name())
+        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges");
+  }
+
+  @SneakyThrows
+  public static Response verifyOtpChallenge(
+      String contractRevisionId,
+      SignatureSlotCodeEnum slotCode,
+      UUID challengeId,
+      String otpCode,
+      TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .contentType("application/json")
+        .pathParam("id", contractRevisionId)
+        .pathParam("slotCode", slotCode.name())
+        .pathParam("challengeId", challengeId.toString())
+        .body(new VerifyOtpRequestDto(otpCode))
+        .when()
+        .post(ContractRevisionController.PATH + "/{id}/signatures/{slotCode}/otp-challenges/{challengeId}/verification");
+  }
+
+  @SneakyThrows
+  public static Response updateValidRedirectUriRegex(String requestId, String regex, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .contentType(JSON)
+        .body(MAPPER.writeValueAsString(java.util.Map.of("validRedirectUriRegex", regex)))
+        .when()
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/valid-redirect-uri-regex");
+  }
+
   public static Response updateLogo(String requestId, String logoFileName) {
+    return updateLogoAs(requestId, logoFileName, CONSUMER_BIO_SUISSE);
+  }
+
+  @SneakyThrows
+  public static Response updateLogoAs(String requestId, String logoFileName, TestUserEnum user) {
     File logo = new File("src/test/resources/data-request-logos/" + logoFileName);
-    return AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).given()
+    return AuthTestUtils.requestAs(user).given()
         .multiPart("logo", logo, Files.probeContentType(logo.toPath()))
         .when()
         .put(DataRequestController.PATH_V1 + "/" + requestId + "/logo/");
+  }
+
+  public static DataRequestDto createReadyForSigningByConsumerDataRequestFor(TestUserEnum consumer) {
+    Response createResponse = createDataRequestAs(getDataRequestDto().build(), consumer);
+    DataRequestDto created = createResponse.as(DataRequestDto.class);
+    String requestId = created.id().toString();
+    setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, consumer);
+    Response toBeSignedResponse = setStatusAs(requestId, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN);
+    return toBeSignedResponse.as(DataRequestDto.class);
+  }
+
+  public static DataRequestDto createReadyForSigningByProviderDataRequest(TestUserEnum consumer1, TestUserEnum consumer2) {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(consumer1);
+    String revisionId2 =
+        signContractRevision(dataRequest.currentContractRevisionId(), consumer1, SignatureSlotCodeEnum.DATA_CONSUMER_01).then().extract()
+            .path("id");
+    signContractRevision(UUID.fromString(revisionId2), consumer2, SignatureSlotCodeEnum.DATA_CONSUMER_02);
+    return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER, consumer1).as(DataRequestDto.class);
+  }
+
+  public static Response createReadyForActivatingDataRequest(TestUserEnum consumer1, TestUserEnum consumer2, TestUserEnum provider1,
+                                                             TestUserEnum provider2) {
+    var dataRequest = createReadyForSigningByProviderDataRequest(consumer1, consumer2);
+    UUID revisionId2 = signContractRevision(dataRequest.currentContractRevisionId(), provider1, SignatureSlotCodeEnum.DATA_PROVIDER_01)
+        .then().extract().as(ContractRevisionDto.class).id();
+    signContractRevision(revisionId2, provider2, SignatureSlotCodeEnum.DATA_PROVIDER_02);
+    return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_ACTIVATED, PROVIDER_1);
+  }
+
+  public static Response signContractRevision(UUID contractRevisionId, TestUserEnum user, SignatureSlotCodeEnum slot) {
+    OtpChallengeDto challenge1 = requestOtpChallengeAs(contractRevisionId.toString(), slot, user)
+        .as(OtpChallengeDto.class);
+
+    return verifyOtpChallenge(
+        contractRevisionId.toString(),
+        slot,
+        challenge1.challengeId(),
+        "123456",
+        user
+    );
+  }
+
+  public static UUID createContractRevisionAndReturnId() {
+    return createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE).currentContractRevisionId();
   }
 }

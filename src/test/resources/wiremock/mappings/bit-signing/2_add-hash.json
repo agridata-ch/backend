@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bit-signature/secure/v1/addHash"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "OK",
+      "logId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

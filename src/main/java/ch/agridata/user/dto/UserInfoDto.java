@@ -2,6 +2,7 @@ package ch.agridata.user.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -13,6 +14,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(description = "Represents basic user information, such as name, contact details, and address.")
 @Builder
 public record UserInfoDto(
+
+    @Schema(
+        description = "Unique identifier assigned by Agridata to a user (UUID format).",
+        examples = {"3fa85f64-5717-4562-b3fc-2c963f66afa6"}
+    )
+    UUID userId,
 
     @Schema(
         description = "AgateLoginId of the user.",

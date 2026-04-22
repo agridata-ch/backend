@@ -19,9 +19,6 @@ public class DeltaService {
   private final ConsentRequestApi consentRequestApi;
 
   public List<String> getDeltaIds(UUID productId, LocalDateTime since) {
-    // TODO: Extend logic to also include UIDs where the product content itself
-    //       has changed since the given timestamp. Such change information
-    //       must be provided by the data provider. See ticket https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-861
     return consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(productId, since);
   }
 

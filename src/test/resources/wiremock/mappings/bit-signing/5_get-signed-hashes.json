@@ -1,0 +1,29 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bit-signature/secure/v1/getSignedHashes"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "OK",
+      "logId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "signerCert": "TG9jYWxUZXN0Q2VydA==",
+      "signerCertOcsp": [],
+      "signerCertCrl": [],
+      "signatures": [
+        {
+          "signature": "TG9jYWxUZXN0U2lnbmF0dXJlRm9yRGV2ZWxvcG1lbnRPbmx5",
+          "pkcsVersion": "PKCS7",
+          "tag": "local-test-tag",
+          "timestamp": "TG9jYWxUZXN0VGltZXN0YW1w",
+          "timestampCrl": [],
+          "timestampOcsp": []
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

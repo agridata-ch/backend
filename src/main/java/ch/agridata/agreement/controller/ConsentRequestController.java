@@ -3,8 +3,6 @@ package ch.agridata.agreement.controller;
 import static ch.agridata.agreement.controller.ConsentRequestController.PATH;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
-import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
-import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
@@ -55,7 +53,6 @@ import org.jboss.resteasy.reactive.RestResponse;
         + "Data producers can retrieve and update consent requests assigned to them, "
         + "consumers can access consent requests linked to their data requests, "
         + "and admins have full access to all consent requests.")
-@RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE})
 @RunOnVirtualThread
 public class ConsentRequestController {
 

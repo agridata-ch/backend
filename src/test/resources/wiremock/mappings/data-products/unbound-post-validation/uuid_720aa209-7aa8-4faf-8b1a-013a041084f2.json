@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/sheep",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_SheepDeltaV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "720aa209-7aa8-4faf-8b1a-013a041084f2"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-UIDS": "[\"CHE101000001\"]",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "[\"99910002\"]"
+    }
+  }
+}

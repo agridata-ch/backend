@@ -14,8 +14,6 @@ import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkiverse.wiremock.devservice.ConnectWireMock;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -25,16 +23,7 @@ class UidBasedPreValidationFlowTest {
 
   private static final Identifier<DataProductEntity> PRODUCT_UID_BASED_PRE_VALIDATION = DataProduct.UUID_085E4B72;
 
-  private final Flyway flyway;
-
   WireMock wireMock;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata prior to executing each test
-    flyway.migrate();
-    wireMock.resetToDefaultMappings();
-  }
 
   @Test
   void givenAcceptedConsentRequest_whenProductRequested_thenProductReturned() {

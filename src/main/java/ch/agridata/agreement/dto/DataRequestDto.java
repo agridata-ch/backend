@@ -1,6 +1,5 @@
 package ch.agridata.agreement.dto;
 
-import ch.agridata.product.dto.DataSourceSystemDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,7 +38,7 @@ public record DataRequestDto(
 
     UUID dataSourceSystemId,
 
-    DataSourceSystemDto dataSourceSystem,
+    DataSourceSystemReferenceDto dataSourceSystem,
 
     @Schema(
         description = "Human friendly id of the data request",
@@ -154,10 +153,16 @@ public record DataRequestDto(
     String targetGroup,
 
     @Schema(
-        description = "Regex of valid redirect_uri",
+        description = "Regex of valid redirect_uri. Must compile as regex successfully.",
         examples = {"^https:\\/\\/www\\.dummy-label-organisation\\/.*$"}
     )
-    String validRedirectUriRegex
+    @Size(max = 255)
+    String validRedirectUriRegex,
+
+    @Schema(
+        description = "Id of current contract revision"
+    )
+    UUID currentContractRevisionId
 
 ) {
 

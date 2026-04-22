@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bit-signature/secure/v1/startSign"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "OK",
+      "logId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "mode": "INTERACTIVE",
+      "interactionUrl": "http://localhost:8050/bit-signature/client/v1/interactionStart/LOCAL-SIGN-PROCESS-TOKEN-FOR-TESTING"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

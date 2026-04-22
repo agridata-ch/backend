@@ -1,6 +1,6 @@
 package integration.agreement;
 
-import static integration.testutils.TestUserEnum.PROVIDER;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.agreement.controller.DataRequestController;
@@ -15,28 +15,20 @@ import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class ConsentRequestsOfDataRequestProviderTest {
 
-  private final Flyway flyway;
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestMapper consentRequestMapper;
-
-  @BeforeEach
-  void setUp() {
-    flyway.migrate();
-  }
 
   @Test
   void givenProvider_whenRequestingConsentRequestsOfOwnDataRequest_thenAllConsentRequestsReturned() {
     // IP_SUISSE_01 belongs to the BLW/AGIS provider (uid=CHE146680598), which is the PROVIDER test user.
     // It has 4 consent requests.
-    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER)
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
         .then().statusCode(200)
         .extract().as(new TypeRef<>() {
@@ -58,7 +50,7 @@ class ConsentRequestsOfDataRequestProviderTest {
   @Test
   void givenProvider_whenRequestingWithPagination_thenCorrectPageAndMetadataReturned() {
     // IP_SUISSE_01 has 4 consent requests. With page=0 and size=2 we expect a partial page.
-    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER)
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
         .queryParam("page", 0)
         .queryParam("size", 2)
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
@@ -76,7 +68,7 @@ class ConsentRequestsOfDataRequestProviderTest {
   @Test
   void givenProvider_whenFilteringByLastModifiedFromFarInFuture_thenEmptyResultReturned() {
     // All test data has modifiedAt = NOW(), so a far-future filter must yield an empty result.
-    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER)
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
         .queryParam("lastModifiedFrom", "9999-12-31T00:00:00")
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
         .then().statusCode(200)
@@ -91,7 +83,7 @@ class ConsentRequestsOfDataRequestProviderTest {
   void givenProvider_whenRequestingDataRequestOfDifferentProvider_thenNotFound() {
     // BLV_1 uses the TVD/IDENTITAS data source system (uid=CHE105031830).
     // The PROVIDER test user is BLW (uid=CHE146680598) and must not see it.
-    AuthTestUtils.requestAs(PROVIDER)
+    AuthTestUtils.requestAs(PROVIDER_1)
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.BLV_1 + "/consent-requests")
         .then().statusCode(404);
   }

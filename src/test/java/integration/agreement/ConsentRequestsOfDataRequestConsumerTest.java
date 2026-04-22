@@ -22,22 +22,14 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @RequiredArgsConstructor
 class ConsentRequestsOfDataRequestConsumerTest {
 
-  private final Flyway flyway;
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestMapper consentRequestMapper;
-
-  @BeforeEach
-  void setUp() {
-    flyway.migrate();
-  }
 
   @Test
   void givenAdmin_whenAnyDataRequestIsRequested_thenConsentRequestsReturned() {

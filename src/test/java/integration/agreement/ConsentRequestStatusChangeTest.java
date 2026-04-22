@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -32,13 +30,6 @@ import org.junit.jupiter.api.Test;
 class ConsentRequestStatusChangeTest {
 
   private final AuditLogTestUtils auditLogTestUtils;
-  private final Flyway flyway;
-
-  @BeforeEach
-  void setUp() {
-    // will make sure testdata is reset between tests
-    flyway.migrate();
-  }
 
   @Test
   void givenApplicationRunning_whenApiCalled_thenStatusOk() {

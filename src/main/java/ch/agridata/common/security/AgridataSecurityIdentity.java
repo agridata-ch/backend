@@ -1,6 +1,7 @@
 package ch.agridata.common.security;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
@@ -34,6 +35,7 @@ public class AgridataSecurityIdentity {
       UUID.nameUUIDFromBytes("agridata-agate-login-id".getBytes(StandardCharsets.UTF_8));
   private static final String ACCESS_TOKEN_CLAIM_UID = "uid";
   private static final String ACCESS_TOKEN_CLAIM_KT_ID_P = "KT_ID_P";
+  private static final String ACCESS_TOKEN_CLAIM_PHONE_NUMBER = "phone_number";
 
   private final SecurityIdentity securityIdentity;
 
@@ -41,8 +43,18 @@ public class AgridataSecurityIdentity {
   private String impersonatedAgateLoginId;
   @Setter
   private String impersonatedKtIdP;
+  /**
+   * Optional user ID that can be set by scheduled or async jobs to provide a
+   * dedicated identity for auditing and traceability when no regular user
+   * context is available.
+   */
+  @Setter
+  private UUID runAsUserId;
 
   public UUID getUserId() {
+    if (runAsUserId != null) {
+      return runAsUserId;
+    }
     String agateLoginId = getAgateLoginId();
     if (agateLoginId == null) {
       throw new IllegalStateException("No agateLoginId found");
@@ -114,6 +126,15 @@ public class AgridataSecurityIdentity {
     return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID));
   }
 
+  public String getPhoneNumberOrElseThrow() {
+    return getPhoneNumber().orElseThrow(
+        () -> new IllegalStateException("User with agateLoginId " + getAgateLoginId() + " has no phone number assigned"));
+  }
+
+  public Optional<String> getPhoneNumber() {
+    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_PHONE_NUMBER));
+  }
+
   public UserInfo getUserInfoOrElseThrow() {
     UserInfo userInfo = securityIdentity.getAttribute("userinfo");
     if (userInfo == null) {
@@ -136,6 +157,10 @@ public class AgridataSecurityIdentity {
 
   public boolean isAdmin() {
     return securityIdentity.hasRole(ADMIN_ROLE);
+  }
+
+  public boolean isConsumer() {
+    return securityIdentity.hasRole(CONSUMER_ROLE);
   }
 
   public boolean isProvider() {

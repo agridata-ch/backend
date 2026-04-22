@@ -3,22 +3,17 @@ set -e
 
 BASE_DIR=/certs
 
-# Ensures that a required environment variable is set; exits if missing
-require_env() {
-  VAR_NAME=$1
-  if [ -z "$(eval echo \$$VAR_NAME)" ]; then
-    echo "ERROR: Environment variable '$VAR_NAME' is not set." >&2
-    exit 1
-  fi
-}
-
-# Decodes a base64-encoded environment variable and writes it to a target file
+# Decodes a base64-encoded environment variable and writes it to a target file.
+# Prints a warning and skips if the variable is not set.
 decode_and_write() {
   TARGET_DIR=$1
   VAR_NAME=$2
   FILENAME=$3
 
-  require_env "$VAR_NAME"
+  if [ -z "$(eval echo \$$VAR_NAME)" ]; then
+    echo "WARNING: Environment variable '$VAR_NAME' is not set – skipping $TARGET_DIR/$FILENAME." >&2
+    return
+  fi
 
   mkdir -p "$TARGET_DIR"
   echo "$(eval echo \$$VAR_NAME)" | base64 -d > "$TARGET_DIR/$FILENAME"
@@ -27,3 +22,7 @@ decode_and_write() {
 
 # === AGIS certificate ===
 decode_and_write "$BASE_DIR/agis" AGIS_CERTIFICATE_P12_BASE64 key-store.p12
+
+# === BIT Signature certificate ===
+decode_and_write "$BASE_DIR/bit-signature" BIT_SIGNATURE_CERTIFICATE_P12_BASE64 key-store.p12
+decode_and_write "$BASE_DIR/bit-signature" BIT_SIGNATURE_TRUST_STORE_P12_BASE64 trust-store.p12
