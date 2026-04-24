@@ -1,3 +1,10 @@
+## [1.9.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.1...v1.9.0-rc.2) (2026-04-24)
+
+### Features
+
+* **contract:** Give provider and admin access to contract revision PDF endpoint. ([db9627f](https://github.com/agridata-ch/backend/commit/db9627f1ea1b55694babe9eb2252f005ca2f470a)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+* **deps:** Update quarkus to 3.34.6 ([f8b53d0](https://github.com/agridata-ch/backend/commit/f8b53d00116a311a93b877954c4deb6789860f82)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+
 ## [1.9.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.8.0...v1.9.0-rc.1) (2026-04-22)
 
 ### Features
