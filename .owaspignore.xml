@@ -7,12 +7,12 @@
 
     <!-- CVE-2026-39883: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
          Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-04-24Z">
+    <suppress until="2026-05-08Z">
         <cve>CVE-2026-39883</cve>
     </suppress>
     <!-- CVE-2026-29181: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
          Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-04-24Z">
+    <suppress until="2026-05-08Z">
         <cve>CVE-2026-29181</cve>
     </suppress>
 </suppressions>
