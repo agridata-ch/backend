@@ -1,3 +1,9 @@
+## [1.9.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.2...v1.9.0-rc.3) (2026-04-27)
+
+### Features
+
+* **deps:** Give admin access to contractRevision GET-endpoint ([48c0965](https://github.com/agridata-ch/backend/commit/48c0965ada30031344a3f8031cbea7a74d34102e)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+
 ## [1.9.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.1...v1.9.0-rc.2) (2026-04-24)
 
 ### Features
