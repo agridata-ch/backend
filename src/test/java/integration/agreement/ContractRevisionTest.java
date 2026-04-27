@@ -1,6 +1,9 @@
 package integration.agreement;
 
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor;
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByProviderDataRequest;
 import static integration.agreement.DataRequestTestFactory.requestOtpChallengeAs;
+import static integration.agreement.DataRequestTestFactory.setSignatureType;
 import static integration.agreement.DataRequestTestFactory.signContractRevision;
 import static integration.agreement.DataRequestTestFactory.verifyOtpChallenge;
 import static integration.testutils.TestUserEnum.ADMIN;
@@ -18,6 +21,7 @@ import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
@@ -183,6 +187,51 @@ class ContractRevisionTest {
         .body("consumerSignatures.last().name", equalTo(
             CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
         ));
+  }
+
+  @Test
+  void givenWrongSlotOrder_whenApplySignatureByConsumer_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    signContractRevision(dataRequest.currentContractRevisionId(), CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_02)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenWrongSlotOrder_whenApplySignatureByProvider_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+    signContractRevision(dataRequest.currentContractRevisionId(), PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_02)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenValidRevision_whenApplyIndividualSignatureByConsumer_thenReturnUpdatedContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    UUID revisionId1 = dataRequest.currentContractRevisionId();
+
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, CONSUMER_BLV_1);
+
+    signContractRevision(revisionId1, CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("consumerSignatureType", equalTo(SignatureTypeEnum.INDIVIDUAL_SIGNATURE.name()));
+  }
+
+  @Test
+  void givenValidRevision_whenApplyIndividualSignatureByProvider_thenReturnUpdatedContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+
+    UUID revisionId1 = dataRequest.currentContractRevisionId();
+
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, PROVIDER_1);
+
+    signContractRevision(revisionId1, PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_01)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("providerSignatureType", equalTo(SignatureTypeEnum.INDIVIDUAL_SIGNATURE.name()));
   }
 
   @Test

@@ -90,6 +90,9 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(GET, ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE102000002,
         PRODUCER_ROLE, SUPPORT_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/signature-type",
+        CONSUMER_ROLE, PROVIDER_ROLE);
   }
 
 }

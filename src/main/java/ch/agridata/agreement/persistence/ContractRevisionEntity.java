@@ -114,6 +114,14 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "seal_started_at")
   private LocalDateTime sealStartedAt;
 
+  @Column(name = "consumer_signature_type")
+  @Enumerated(EnumType.STRING)
+  private SignatureTypeEnum consumerSignatureType;
+
+  @Column(name = "provider_signature_type")
+  @Enumerated(EnumType.STRING)
+  private SignatureTypeEnum providerSignatureType;
+
   /**
    * Represents the state of a seal attempt.
    *

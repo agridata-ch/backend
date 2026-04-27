@@ -82,7 +82,8 @@
 
     <xsl:attribute-set name="signature-block-container">
         <xsl:attribute name="margin-left">2mm</xsl:attribute>
-        <xsl:attribute name="height">6mm</xsl:attribute>
+        <xsl:attribute name="height">12mm</xsl:attribute>
+        <xsl:attribute name="display-align">after</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="signature-placeholder-inline">
@@ -108,8 +109,10 @@
         <xsl:param name="side"/>
         <xsl:param name="signatureDate"/>
         <xsl:param name="signatureName"/>
+        <xsl:param name="bottomName" select="$signatureName"/>
+        <xsl:param name="signatureText"/>
 
-        <fo:table-cell padding-top="18mm">
+        <fo:table-cell padding-top="12mm">
             <xsl:choose>
                 <xsl:when test="$side = 'left'">
                     <xsl:attribute name="padding-right">8mm</xsl:attribute>
@@ -121,12 +124,21 @@
 
             <fo:block-container xsl:use-attribute-sets="signature-block-container">
                 <fo:block margin-left="2mm">
-                    <fo:inline xsl:use-attribute-sets="signature-placeholder-inline">
-                        <xsl:if test="$signatureName and $signatureName != ''">
-                            <xsl:value-of select="$signatureDate"/>,
-                            <xsl:value-of select="$signatureName"/>
-                        </xsl:if>
-                    </fo:inline>
+
+                    <xsl:choose>
+                        <xsl:when test="$signatureText and $signatureText != ''">
+                            <xsl:value-of select="$signatureText"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <fo:inline xsl:use-attribute-sets="signature-placeholder-inline">
+                                <xsl:if test="$signatureName and $signatureName != ''">
+                                    <xsl:value-of select="$signatureDate"/>,
+                                    <xsl:value-of select="$signatureName"/>
+                                </xsl:if>
+                            </fo:inline>
+                        </xsl:otherwise>
+                    </xsl:choose>
+
                 </fo:block>
             </fo:block-container>
 
@@ -135,7 +147,7 @@
             </fo:block>
 
             <fo:block>
-                <xsl:value-of select="$signatureName"/>
+                <xsl:value-of select="$bottomName"/>
             </fo:block>
         </fo:table-cell>
     </xsl:template>
@@ -1040,6 +1052,7 @@
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="consumerSignatureName1"/>
                                     </xsl:with-param>
+                                    <xsl:with-param name="signatureText"/>
                                 </xsl:call-template>
 
                                 <xsl:call-template name="signature-cell">
@@ -1050,6 +1063,7 @@
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="providerSignatureName1"/>
                                     </xsl:with-param>
+                                    <xsl:with-param name="signatureText"/>
                                 </xsl:call-template>
                             </fo:table-row>
 
@@ -1062,6 +1076,13 @@
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="consumerSignatureName2"/>
                                     </xsl:with-param>
+                                    <xsl:with-param name="signatureText">
+                                        <xsl:if test="consumerSignatureType = 'INDIVIDUAL_SIGNATURE'">
+                                            <xsl:text>Unterzeichnet durch </xsl:text>
+                                            <xsl:value-of select="consumerSignatureName1"/>
+                                            <xsl:text> in der Funktion als einzelzeichnungsberechtigte Person</xsl:text>
+                                        </xsl:if>
+                                    </xsl:with-param>
                                 </xsl:call-template>
 
                                 <xsl:call-template name="signature-cell">
@@ -1072,9 +1093,15 @@
                                     <xsl:with-param name="signatureDate">
                                         <xsl:value-of select="providerSignatureDate2"/>
                                     </xsl:with-param>
+                                    <xsl:with-param name="signatureText">
+                                        <xsl:if test="providerSignatureType = 'INDIVIDUAL_SIGNATURE'">
+                                            <xsl:text>Unterzeichnet durch </xsl:text>
+                                            <xsl:value-of select="providerSignatureName1"/>
+                                            <xsl:text> in der Funktion als einzelzeichnungsberechtigte Person</xsl:text>
+                                        </xsl:if>
+                                    </xsl:with-param>
                                 </xsl:call-template>
                             </fo:table-row>
-
                         </fo:table-body>
                     </fo:table>
                 </fo:flow>

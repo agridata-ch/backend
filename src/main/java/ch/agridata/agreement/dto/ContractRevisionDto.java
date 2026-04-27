@@ -70,6 +70,16 @@ public record ContractRevisionDto(
     @Schema(
         description = "List of signatures of the data provider"
     )
-    List<ContractRevisionSignatureDto> providerSignatures
+    List<ContractRevisionSignatureDto> providerSignatures,
+
+    @Schema(
+        description = "Defines whether the consumer party uses a individual or a collective signature"
+    )
+    SignatureTypeEnum consumerSignatureType,
+
+    @Schema(
+        description = "Defines whether the provider party uses a individual or a collective signature"
+    )
+    SignatureTypeEnum providerSignatureType
 ) {
 }

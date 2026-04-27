@@ -40,10 +40,13 @@ public record ContractRevisionPdfDto(
     String providerSignatureName1,
     String providerSignatureDate1,
     String providerSignatureName2,
-    String providerSignatureDate2
+    String providerSignatureDate2,
+
+    String consumerSignatureType,
+    String providerSignatureType
 ) {
   // Constructor for JAXB
   public ContractRevisionPdfDto() {
-    this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
 }

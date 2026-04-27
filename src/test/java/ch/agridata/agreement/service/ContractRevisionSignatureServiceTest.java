@@ -15,6 +15,7 @@ import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.oidc.UserInfo;
@@ -82,6 +83,7 @@ class ContractRevisionSignatureServiceTest {
     assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
     assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(USER_ID);
     assertThat(nextRevision.getConsumerSignatureName1()).isEqualTo("John Doe");
+    assertThat(nextRevision.getConsumerSignatureType()).isEqualTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
     assertThat(result).isNotNull();
 
     verifyNoInteractions(dataRequestStateService);
@@ -95,6 +97,7 @@ class ContractRevisionSignatureServiceTest {
     ContractRevisionEntity nextRevision = ContractRevisionEntity.builder()
         .consumerSignatureUserId1(UUID.fromString(existingSignatureUUID.toString()))
         .consumerSignatureUserId2(UUID.fromString(USER_ID.toString()))
+        .consumerSignatureType(SignatureTypeEnum.COLLECTIVE_SIGNATURE)
         .build();
     nextRevision.setId(UUID.randomUUID());
 
@@ -144,6 +147,38 @@ class ContractRevisionSignatureServiceTest {
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("already signed");
+
+    verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenWrongSigningOrder_whenSignContractRevisionAsConsumer_thenThrowValidationException() {
+    setupSecurityContext();
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
+        .thenReturn(Optional.of(existingRevision));
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("Must sign first signature slot before signing the second one");
+
+    verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenWrongSigningOrder_whenSignContractRevisionAsProvider_thenThrowValidationException() {
+    setupSecurityContext();
+    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
+    when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
+        .thenReturn(Optional.of(existingRevision));
+    when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision)).thenReturn(true);
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_02, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(ValidationException.class)
+        .hasMessageContaining("Must sign first signature slot before signing the second one");
 
     verifyNoInteractions(dataRequestStateService);
   }

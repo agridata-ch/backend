@@ -33,6 +33,7 @@ import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.product.controller.DataProductController;
 import ch.agridata.product.dto.DataProductDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -149,6 +150,7 @@ class DataRequestProcessTest {
         .body("consumerSignatures.last().name", equalTo(
             CONSUMER_BLV_1.getGivenName() + " " + CONSUMER_BLV_1.getFamilyName()
         ))
+        .body("consumerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
     // Step 13: As Consumer 2 request an otp challenge
@@ -178,6 +180,7 @@ class DataRequestProcessTest {
         .body("providerSignatures.last().name", equalTo(
             PROVIDER_1.getGivenName() + " " + PROVIDER_1.getFamilyName()
         ))
+        .body("providerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
     // Step 16: As Provider 2 request an otp challenge
