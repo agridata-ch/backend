@@ -3,6 +3,7 @@ package integration.agreement;
 import static integration.agreement.DataRequestTestFactory.requestOtpChallengeAs;
 import static integration.agreement.DataRequestTestFactory.signContractRevision;
 import static integration.agreement.DataRequestTestFactory.verifyOtpChallenge;
+import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
@@ -14,6 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
+import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import integration.testutils.AuthTestUtils;
@@ -34,6 +36,33 @@ class ContractRevisionTest {
   @BeforeEach
   void setUp() {
     flyway.migrate();
+  }
+
+  @Test
+  void givenExistingContractRevision_whenGetByIdAsAdmin_thenReturnContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID contractRevisionId = dataRequest.currentContractRevisionId();
+
+    AuthTestUtils.requestAs(ADMIN).given()
+        .when()
+        .get(ContractRevisionController.PATH + "/" + contractRevisionId)
+        .then()
+        .statusCode(200)
+        .body("id", equalTo(contractRevisionId.toString()))
+        .body("dataRequestId", equalTo(dataRequest.id().toString()));
+  }
+
+  @Test
+  void givenExistingContractRevisionInDraftState_whenGetByIdAsAdmin_thenReturn404() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID contractRevisionId = dataRequest.currentContractRevisionId();
+    DataRequestTestFactory.setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.DRAFT, CONSUMER_BIO_SUISSE);
+
+    AuthTestUtils.requestAs(ADMIN).given()
+        .when()
+        .get(ContractRevisionController.PATH + "/" + contractRevisionId)
+        .then()
+        .statusCode(404);
   }
 
   @Test

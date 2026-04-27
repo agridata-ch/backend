@@ -36,7 +36,7 @@ class AccessTest {
   @Test
   void testAccess_ContractRevisionController() {
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1",
-        CONSUMER_ROLE, PROVIDER_ROLE);
+        ADMIN_ROLE, CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/signatures/1/otp-challenges",
         CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST,

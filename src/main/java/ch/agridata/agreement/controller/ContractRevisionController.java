@@ -70,9 +70,11 @@ public class ContractRevisionController {
           + "or provider that owns the associated datarequest."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, CONSUMER_ROLE, PROVIDER_ROLE})
   public ContractRevisionDto getContractRevision(@PathParam("id") UUID id) {
-    if (agridataSecurityIdentity.isProvider()) {
+    if (agridataSecurityIdentity.isAdmin()) {
+      return contractRevisionQueryService.getContractRevisionOfAdmin(id);
+    } else if (agridataSecurityIdentity.isProvider()) {
       return contractRevisionQueryService.getContractRevisionOfCurrentProvider(id);
     }
     return contractRevisionQueryService.getContractRevisionOfCurrentConsumer(id);
