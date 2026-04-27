@@ -30,6 +30,15 @@ public class ContractRevisionQueryService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataRequestQueryService dataRequestQueryService;
 
+  @RolesAllowed(ADMIN_ROLE)
+  public ContractRevisionDto getContractRevisionOfAdmin(UUID contractRevisionId) {
+    return contractRevisionRepository
+        .findByIdAndDataRequestStateNotDraft(contractRevisionId)
+        .map(contractRevisionMapper::toDto)
+        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
   public ContractRevisionDto getContractRevisionOfCurrentConsumer(UUID contractRevisionId) {
     return contractRevisionRepository
         .findByIdAndDataConsumerUid(contractRevisionId, agridataSecurityIdentity.getUidOrElseThrow())

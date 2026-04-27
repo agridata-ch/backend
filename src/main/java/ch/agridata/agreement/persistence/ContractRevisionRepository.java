@@ -22,4 +22,16 @@ public class ContractRevisionRepository implements PanacheRepositoryBase<Contrac
             + "where cr.id = :id and dr.dataConsumerUid = :consumerUid",
         Map.of("id", id, "consumerUid", consumerUid)).firstResultOptional();
   }
+
+  public Optional<ContractRevisionEntity> findByIdAndDataRequestStateNotDraft(UUID id) {
+    return find(
+        "select cr "
+            + "from ContractRevisionEntity cr "
+            + "join fetch cr.dataRequest dr "
+            + "where cr.id = :id and dr.stateCode <> :state_code",
+        Map.of("id", id,
+            "state_code", DataRequestEntity.DataRequestStateEnum.DRAFT
+        )
+    ).firstResultOptional();
+  }
 }
