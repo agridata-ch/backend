@@ -16,6 +16,7 @@ import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
@@ -151,6 +152,15 @@ public class DataRequestTestFactory {
     setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, consumer);
     Response toBeSignedResponse = setStatusAs(requestId, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN);
     return toBeSignedResponse.as(DataRequestDto.class);
+  }
+
+  @SneakyThrows
+  public static Response setSignatureType(UUID requestId, SignatureTypeEnum signatureType, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .contentType(JSON)
+        .body(MAPPER.writeValueAsString(signatureType))
+        .when()
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/signature-type");
   }
 
   public static DataRequestDto createReadyForSigningByProviderDataRequest(TestUserEnum consumer1, TestUserEnum consumer2) {

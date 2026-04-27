@@ -1,14 +1,20 @@
 package integration.agreement;
 
 import static ch.agridata.agreement.dto.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.dto.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
+import static ch.agridata.agreement.dto.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
 import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
 import static integration.agreement.DataRequestTestFactory.createReadyForActivatingDataRequest;
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor;
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByProviderDataRequest;
 import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
+import static integration.agreement.DataRequestTestFactory.setSignatureType;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
+import static integration.agreement.DataRequestTestFactory.signContractRevision;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.agreement.DataRequestTestFactory.updateValidRedirectUriRegex;
 import static integration.testutils.TestDataConstants.UID_BIO_SUISSE_WITHOUT_PREFIX;
@@ -34,6 +40,8 @@ import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import integration.auditing.utils.AuditLogTestUtils;
@@ -406,6 +414,67 @@ class DataRequestTest {
         .statusCode(400);
 
     assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
+  }
+
+  @Test
+  void givenDataRequestWithSignedContractRevision_whenSubmitSignatureTypeByConsumer_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    signContractRevision(dataRequest.currentContractRevisionId(), CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, CONSUMER_BLV_1)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenDataRequestWithSignedContractRevision_whenSubmitSignatureTypeByProvider_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+    signContractRevision(dataRequest.currentContractRevisionId(), PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_01);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, PROVIDER_1)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenDataRequestInWrongState_whenSubmitSignatureTypeByConsumer_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createDataRequest().as(DataRequestDto.class);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, CONSUMER_BIO_SUISSE)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenDataRequestInWrongState_whenSubmitSignatureTypeByProvider_thenReturnBadRequest() {
+    DataRequestDto dataRequest =
+        createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2).as(DataRequestDto.class);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, PROVIDER_1)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenIndividualSignatureType_whenSignByConsumer_thenProceedDataRequestState() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, CONSUMER_BLV_1).as(DataRequestDto.class);
+    signContractRevision(dataRequest.currentContractRevisionId(), CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01);
+
+    AuthTestUtils.requestAs(CONSUMER_BLV_1).when()
+        .get(DataRequestController.PATH_V1 + "/" + dataRequest.id())
+        .then()
+        .statusCode(200)
+        .body("stateCode", equalTo(TO_BE_RELEASED_BY_CONSUMER.name()));
+  }
+
+  @Test
+  void givenIndividualSignatureType_whenSignByProvider_thenProceedDataRequestState() {
+    DataRequestDto dataRequest = createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, PROVIDER_1).as(DataRequestDto.class);
+    signContractRevision(dataRequest.currentContractRevisionId(), PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_01);
+
+    AuthTestUtils.requestAs(PROVIDER_1).when()
+        .get(DataRequestController.PATH_V1 + "/" + dataRequest.id())
+        .then()
+        .statusCode(200)
+        .body("stateCode", equalTo(TO_BE_RELEASED_BY_PROVIDER.name()));
   }
 
 }

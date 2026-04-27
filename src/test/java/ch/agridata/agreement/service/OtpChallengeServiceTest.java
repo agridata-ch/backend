@@ -156,7 +156,7 @@ class OtpChallengeServiceTest {
         .contractRevisionId(REVISION_ID)
         .signatureSlotCode(PERSISTENCE_SLOT_CODE)
         .expiresAt(LocalDateTime.now(clock).plusMinutes(4))
-        .maxAttempts(1)
+        .maxAttempts(3)
         .attemptCount(0)
         .build();
   }

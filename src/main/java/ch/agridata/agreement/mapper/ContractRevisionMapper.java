@@ -7,6 +7,7 @@ import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,8 @@ public interface ContractRevisionMapper {
   @Mapping(target = "providerSignatureTimestamp2", ignore = true)
   @Mapping(target = "sealStartedAt", ignore = true)
   @Mapping(target = "sealState", ignore = true)
+  @Mapping(target = "consumerSignatureType", ignore = true)
+  @Mapping(target = "providerSignatureType", ignore = true)
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, UidRegisterOrganisationDto dataProvider);
 
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
@@ -108,4 +111,6 @@ public interface ContractRevisionMapper {
 
     return result;
   }
+
+  SignatureTypeEnum toEntitySignatureType(ch.agridata.agreement.dto.SignatureTypeEnum signatureType);
 }

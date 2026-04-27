@@ -7,6 +7,7 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
@@ -66,6 +67,7 @@ public class DataRequestTestUtils {
   public static ContractRevisionEntity buildContractRevision() {
     DataRequestEntity dataRequest = new DataRequestEntity();
     dataRequest.setCurrentContractRevisionId(CONTRACT_REVISION_ID);
+    dataRequest.setConsumerSignatureType(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
 
     return ContractRevisionEntity.builder()
         .id(CONTRACT_REVISION_ID)
