@@ -19,10 +19,9 @@ public class NotificationBatchRepository implements PanacheRepositoryBase<Notifi
    */
   @SuppressWarnings("unchecked")
   public List<NotificationBatchEntity> findPendingWithLock() {
-    return getEntityManager()
-        .createNativeQuery(
-            "SELECT * FROM notification_batch WHERE status_code = 'PENDING' AND archived = false FOR UPDATE SKIP LOCKED",
-            NotificationBatchEntity.class)
-        .getResultList();
+    return getEntityManager().createNativeQuery(
+        "SELECT * FROM notification_batch WHERE status_code = 'PENDING' AND archived = false FOR UPDATE SKIP LOCKED",
+        NotificationBatchEntity.class
+    ).getResultList();
   }
 }

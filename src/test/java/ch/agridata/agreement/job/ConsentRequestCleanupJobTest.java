@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.service.ConsentRequestCleanupService;
+import ch.agridata.common.exceptions.DatabaseConnectionException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -109,12 +110,9 @@ class ConsentRequestCleanupJobTest {
     when(unlockRs.next()).thenReturn(true);
     when(unlockRs.getBoolean(1)).thenReturn(true);
 
-    doThrow(new RuntimeException("failure")).when(cleanupService)
-        .cleanupConsentRequestsFromYesterdayAndDayBefore();
+    doThrow(new RuntimeException("failure")).when(cleanupService).cleanupConsentRequestsFromYesterdayAndDayBefore();
 
-    assertThatThrownBy(job::run)
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage("failure");
+    assertThatThrownBy(job::run).isInstanceOf(RuntimeException.class).hasMessage("failure");
 
     verify(connection).prepareStatement("select pg_advisory_unlock(?)");
     verify(unlockPs).setLong(1, ConsentRequestCleanupJob.LOCK_KEY);
@@ -147,9 +145,7 @@ class ConsentRequestCleanupJobTest {
   void givenSqlExceptionDuringTryLock_whenRun_thenWrapsInRuntimeExceptionAndClosesConnection() throws Exception {
     when(connection.prepareStatement("select pg_try_advisory_lock(?)")).thenThrow(new SQLException("failure"));
 
-    assertThatThrownBy(job::run)
-        .isInstanceOf(RuntimeException.class)
-        .hasCauseInstanceOf(SQLException.class);
+    assertThatThrownBy(job::run).isInstanceOf(DatabaseConnectionException.class).hasCauseInstanceOf(SQLException.class);
 
     verify(cleanupService, never()).cleanupConsentRequestsFromYesterdayAndDayBefore();
     verify(connection).close();

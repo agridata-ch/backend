@@ -114,6 +114,11 @@ quarkus:
       region: eu-central-2
       credentials:
         type: default
+  ses:
+    aws:
+      region: eu-central-2
+      credentials:
+        type: default
   sns:
     aws:
       region: eu-central-2

@@ -1,4 +1,7 @@
 agridata:
+  email:
+    enabled: true
+    sender-address: support@agridata.local
   agreement:
     contract-bucket-name: contracts
   tvd-equid-owner-dropdown:
@@ -60,6 +63,8 @@ quarkus:
         level: DEBUG
     level: INFO
   oidc:
+    application-type: service
+    client-id: agridata-ui
     token:
       audience: agridata-backend
   oidc-client:
@@ -81,6 +86,13 @@ quarkus:
     devservices:
       buckets:
         - contracts
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  ses:
     aws:
       credentials:
         type: static

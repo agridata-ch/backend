@@ -1,0 +1,2 @@
+### List all emails sent via LocalStack SES (stored in memory)
+GET http://localhost:4566/_aws/ses
