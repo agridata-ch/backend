@@ -8,11 +8,16 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.SignatureTypeEnum;
+import ch.agridata.common.dto.TranslationDto;
+import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.product.dto.DataProductDto;
+import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 /**
  * Maps contract revision entities and DTOs and creates initial contract revisions from data requests.
@@ -54,7 +59,13 @@ public interface ContractRevisionMapper {
   @Mapping(target = "sealState", ignore = true)
   @Mapping(target = "consumerSignatureType", ignore = true)
   @Mapping(target = "providerSignatureType", ignore = true)
-  ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest, UidRegisterOrganisationDto dataProvider);
+  @Mapping(target = "systemName", source = "dataSourceSystemDto.name")
+  @Mapping(target = "dataProducts", source = "dataProductDtos", qualifiedByName = "mapDataProductToName")
+  ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest,
+                                         UidRegisterOrganisationDto dataProvider,
+                                         DataSourceSystemDto dataSourceSystemDto,
+                                         List<DataProductDto> dataProductDtos
+  );
 
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
   DataRequestContextDto toDataRequestContextDto(DataRequestEntity entity);
@@ -113,4 +124,16 @@ public interface ContractRevisionMapper {
   }
 
   SignatureTypeEnum toEntitySignatureType(ch.agridata.agreement.dto.SignatureTypeEnum signatureType);
+
+  @Named("mapDataProductToName")
+  default TranslationPersistenceDto mapDataProductToName(DataProductDto dto) {
+    TranslationDto name = dto.name();
+
+    return TranslationPersistenceDto.builder()
+        .de(name.de())
+        .fr(name.fr())
+        .it(name.it())
+        .build();
+  }
+
 }

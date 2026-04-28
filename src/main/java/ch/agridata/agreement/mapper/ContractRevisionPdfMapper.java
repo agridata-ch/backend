@@ -1,9 +1,12 @@
 package ch.agridata.agreement.mapper;
 
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
+import ch.agridata.agreement.dto.ContractRevisionPdfTranslationDto;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
+import ch.agridata.common.persistence.TranslationPersistenceDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -19,14 +22,22 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "jakarta")
 public interface ContractRevisionPdfMapper {
+  @Mapping(target = "requestTitle", source = "title", qualifiedByName = "toContractRevisionPdfTranslationDto")
+  @Mapping(target = "requestDescription", source = "description", qualifiedByName = "toContractRevisionPdfTranslationDto")
+  @Mapping(target = "requestPurpose", source = "purpose", qualifiedByName = "toContractRevisionPdfTranslationDto")
+  @Mapping(target = "products", source = "dataProducts", qualifiedByName = "toContractRevisionPdfTranslationDtoList")
   @Mapping(target = "consumerName", source = "dataConsumerName")
   @Mapping(target = "consumerStreet", source = "dataConsumerStreet")
   @Mapping(target = "consumerZipCity", expression = "java(entity.getDataConsumerZip() + \" \" + entity.getDataConsumerCity())")
   @Mapping(target = "consumerAddressInline", source = "entity", qualifiedByName = "mapConsumerAddressInline")
+  @Mapping(target = "consumerPhoneNumber", source = "contactPhoneNumber")
+  @Mapping(target = "consumerEmailAddress", source = "contactEmailAddress")
+  @Mapping(target = "consumerUid", source = "dataConsumerUid")
   @Mapping(target = "providerName", source = "dataProviderName")
   @Mapping(target = "providerStreet", source = "dataProviderStreet")
   @Mapping(target = "providerZipCity", expression = "java(entity.getDataProviderZip() + \" \" + entity.getDataProviderCity())")
   @Mapping(target = "providerAddressInline", source = "entity", qualifiedByName = "mapProviderAddressInline")
+  @Mapping(target = "providerSystemName", source = "systemName", qualifiedByName = "toContractRevisionPdfTranslationDto")
   @Mapping(target = "consumerSignatureDate1",
       source = "consumerSignatureTimestamp1",
       qualifiedByName = "toSwissDate")
@@ -39,6 +50,7 @@ public interface ContractRevisionPdfMapper {
   @Mapping(target = "providerSignatureDate2",
       source = "providerSignatureTimestamp2",
       qualifiedByName = "toSwissDate")
+  @Mapping(target = "targetGroup", source = "targetGroup")
   ContractRevisionPdfDto toPdfDto(ContractRevisionEntity entity);
 
   @Named("mapConsumerAddressInline")
@@ -65,5 +77,24 @@ public interface ContractRevisionPdfMapper {
       return null;
     }
     return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+  }
+
+  @Named("toContractRevisionPdfTranslationDto")
+  default ContractRevisionPdfTranslationDto toContractRevisionPdfTranslationDto(TranslationPersistenceDto dto) {
+    return dto == null ? null : ContractRevisionPdfTranslationDto.builder().de(dto.de()).fr(dto.fr()).it(dto.it()).build();
+  }
+
+
+  @Named("toContractRevisionPdfTranslationDtoList")
+  default List<ContractRevisionPdfTranslationDto> toContractRevisionPdfTranslationDtoList(
+      List<TranslationPersistenceDto> dtos
+  ) {
+    if (dtos == null || dtos.isEmpty()) {
+      return List.of();
+    }
+
+    return dtos.stream()
+        .map(this::toContractRevisionPdfTranslationDto)
+        .toList();
   }
 }

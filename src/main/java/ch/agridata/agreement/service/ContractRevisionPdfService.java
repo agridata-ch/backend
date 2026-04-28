@@ -7,6 +7,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
 import ch.agridata.agreement.mapper.ContractRevisionPdfMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.xml.bind.JAXBContext;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,11 @@ public class ContractRevisionPdfService {
   private final JAXBContext jaxbContext;
   private final ContractRevisionStorageService contractRevisionStorageService;
 
+  @PostConstruct
+  void init() {
+    transformerFactory.setURIResolver(classpathResolver());
+  }
+
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
   public byte[] getPdf(UUID contractRevisionId) {
     ContractRevisionEntity entity = contractRevisionQueryService.getWithAccessCheck(contractRevisionId);
@@ -60,6 +67,7 @@ public class ContractRevisionPdfService {
     try (ByteArrayOutputStream out = new ByteArrayOutputStream();
          InputStream xsltIn = getClass().getClassLoader()
              .getResourceAsStream("pdf/contractRevision.fo.xsl")) {
+
       if (xsltIn == null) {
         throw new IllegalStateException("Missing resource: pdf/contractRevision.fo.xsl");
       }
@@ -69,10 +77,26 @@ public class ContractRevisionPdfService {
 
       Source xmlSource = new JAXBSource(jaxbContext, pdfDto);
       SAXResult fopResult = new SAXResult(fop.getDefaultHandler());
+
       transformer.transform(xmlSource, fopResult);
+
       return out.toByteArray();
     } catch (Exception e) {
       throw new IllegalStateException("PDF generation failed", e);
     }
+  }
+
+  private URIResolver classpathResolver() {
+    return (href, base) -> {
+      String path = "pdf/" + href;
+
+      InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+
+      if (inputStream == null) {
+        throw new IllegalStateException("Missing XSL resource: " + path);
+      }
+
+      return new StreamSource(inputStream);
+    };
   }
 }

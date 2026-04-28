@@ -3,6 +3,7 @@ package ch.agridata.agreement.dto;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 import lombok.Builder;
 
 /**
@@ -19,9 +20,22 @@ import lombok.Builder;
 @Builder
 public record ContractRevisionPdfDto(
 
+    // request information
+    ContractRevisionPdfTranslationDto requestTitle,
+    ContractRevisionPdfTranslationDto requestDescription,
+    ContractRevisionPdfTranslationDto requestPurpose,
+
+    String targetGroup,
+
+    List<ContractRevisionPdfTranslationDto> products,
+
+    // consumer
     String consumerName,
     String consumerStreet,
     String consumerZipCity,
+    String consumerPhoneNumber,
+    String consumerEmailAddress,
+    String consumerUid,
 
     // Pre-formatted Address in the style "name, street, zip city"
     String consumerAddressInline,
@@ -32,6 +46,8 @@ public record ContractRevisionPdfDto(
 
     // Pre-formatted Address in the style "name, street, zip city"
     String providerAddressInline,
+
+    ContractRevisionPdfTranslationDto providerSystemName,
 
     String consumerSignatureName1,
     String consumerSignatureDate1,
@@ -47,6 +63,11 @@ public record ContractRevisionPdfDto(
 ) {
   // Constructor for JAXB
   public ContractRevisionPdfDto() {
-    this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    this(
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null
+    );
   }
 }
