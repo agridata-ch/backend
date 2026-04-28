@@ -11,7 +11,11 @@ import ch.agridata.product.persistence.DataSourceSystemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -61,5 +65,23 @@ public class DataProductService implements DataProductApi {
         .orElseThrow(() ->
             new NotFoundException("DataSourceSystem not found: " + dataSourceSystemId)
         );
+  }
+
+  @Override
+  public List<DataProductDto> getProductsByIds(List<UUID> productIds) {
+    if (productIds == null || productIds.isEmpty()) {
+      return List.of();
+    }
+
+    Map<UUID, DataProductDto> byId = dataProductRepository.find("id in ?1", productIds)
+        .list()
+        .stream()
+        .map(dataProductEntityMapper::toDto)
+        .collect(Collectors.toMap(DataProductDto::id, Function.identity()));
+    
+    return productIds.stream()
+        .map(byId::get)
+        .filter(Objects::nonNull)
+        .toList();
   }
 }

@@ -1,6 +1,7 @@
 package ch.agridata.agreement.persistence;
 
 import ch.agridata.common.persistence.AuditableEntity;
+import ch.agridata.common.persistence.TranslationPersistenceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,13 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Defines the persistence representation for contract revisions. It contains fields for storing values of
@@ -69,6 +74,41 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @Column(name = "data_provider_city", nullable = false)
   private String dataProviderCity;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "title", nullable = false)
+  @Valid
+  private TranslationPersistenceDto title;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "description", nullable = false)
+  @Valid
+  private TranslationPersistenceDto description;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "purpose", nullable = false)
+  @Valid
+  private TranslationPersistenceDto purpose;
+
+  @Column(name = "contact_phone_number", length = 50, nullable = false)
+  private String contactPhoneNumber;
+
+  @Column(name = "contact_email_address", length = 255, nullable = false)
+  private String contactEmailAddress;
+
+  @Column(name = "target_group", length = 150, nullable = false)
+  private String targetGroup;
+
+  @Column(name = "data_consumer_uid", length = 20, nullable = false)
+  private String dataConsumerUid;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "system_name", nullable = false)
+  private TranslationPersistenceDto systemName;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "data_product", nullable = false)
+  private List<TranslationPersistenceDto> dataProducts;
 
   // Signature information
 
