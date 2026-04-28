@@ -1,6 +1,6 @@
 package integration.agreement;
 
-import static ch.agridata.agreement.job.ConsentRequestCleanupJob.USER_ID_SCHEDULED_JOB;
+import static ch.agridata.agreement.job.ConsentRequestCleanupJob.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
@@ -46,7 +46,7 @@ class ConsentRequestCleanupJobTest {
           assertThat(row[0]).isInstanceOf(UUID.class);
           assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination));
           assertThat(((LocalDateTime) row[2]).isEqual((LocalDateTime) row[1]));
-          assertThat(row[3].equals(USER_ID_SCHEDULED_JOB));
+          assertThat(row[3].equals(USER_ID_SCHEDULED_CLEANUP_JOB));
         });
 
     List<UUID> affectedIds = rows.stream()

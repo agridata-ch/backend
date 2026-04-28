@@ -6,9 +6,5 @@ package ch.agridata.notification.persistence;
  * @CommentLastReviewed 2026-04-22
  */
 public enum NotificationBatchStatusEnum {
-  PENDING,
-  IN_PROGRESS,
-  COMPLETE,
-  FAILED,
-  PARTIALLY_FAILED
+  PENDING, COMPLETE, FAILED, PARTIALLY_FAILED
 }

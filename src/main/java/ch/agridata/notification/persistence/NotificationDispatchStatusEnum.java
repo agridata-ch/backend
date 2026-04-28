@@ -6,6 +6,5 @@ package ch.agridata.notification.persistence;
  * @CommentLastReviewed 2026-04-22
  */
 public enum NotificationDispatchStatusEnum {
-  SENT,
-  FAILED
+  SUBMITTED, FAILED
 }
