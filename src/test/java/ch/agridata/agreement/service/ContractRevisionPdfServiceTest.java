@@ -42,6 +42,8 @@ class ContractRevisionPdfServiceTest {
   @Mock
   private ContractRevisionQueryService contractRevisionQueryService;
   @Mock
+  private ContractRevisionStorageService contractRevisionStorageService;
+  @Mock
   private Transformer transformer;
   @Mock
   private Fop fop;
@@ -56,38 +58,47 @@ class ContractRevisionPdfServiceTest {
   }
 
   @Test
-  void generatePdf_Success() throws Exception {
-    ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder().build();
-    ContractRevisionPdfDto contractRevisionPdfDto = ContractRevisionPdfDto.builder().build();
+  void getPdf_Success() {
+    ContractRevisionEntity entity = ContractRevisionEntity.builder().id(REVISION_ID).build();
+    byte[] expectedPdf = new byte[]{37, 80, 68, 70}; // %PDF
 
-    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
-        .thenReturn(contractRevisionEntity);
-    when(contractRevisionPdfMapper.toPdfDto(contractRevisionEntity)).thenReturn(contractRevisionPdfDto);
+    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID)).thenReturn(entity);
+    when(contractRevisionStorageService.download(REVISION_ID)).thenReturn(expectedPdf);
 
-    when(fopFactory.newFop(eq(MimeConstants.MIME_PDF), any(ByteArrayOutputStream.class))).thenReturn(fop);
-    when(transformerFactory.newTransformer(any())).thenReturn(transformer);
+    byte[] result = contractRevisionPdfService.getPdf(REVISION_ID);
 
-    byte[] result = contractRevisionPdfService.generatePdf(REVISION_ID);
-
-    assertThat(result).isNotNull();
-    verify(transformer).transform(any(Source.class), any(Result.class));
+    assertThat(result).isEqualTo(expectedPdf);
     verify(contractRevisionQueryService).getWithAccessCheck(REVISION_ID);
+    verify(contractRevisionStorageService).download(REVISION_ID);
   }
 
   @Test
-  void generatePdf_NotFound_ThrowsException() {
+  void getPdf_NotFound_ThrowsException() {
     when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
         .thenThrow(new NotFoundException(REVISION_ID.toString()));
 
-    assertThatThrownBy(() -> contractRevisionPdfService.generatePdf(REVISION_ID))
+    assertThatThrownBy(() -> contractRevisionPdfService.getPdf(REVISION_ID))
         .isInstanceOf(NotFoundException.class);
   }
 
   @Test
-  void generatePdf_TransformationFails_ThrowsIllegalStateException() throws Exception {
-    ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder().build();
-    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
-        .thenReturn(contractRevisionEntity);
+  void generateAndUploadPdf_Success() throws Exception {
+    ContractRevisionEntity entity = ContractRevisionEntity.builder().build();
+    ContractRevisionPdfDto pdfDto = ContractRevisionPdfDto.builder().build();
+
+    when(contractRevisionPdfMapper.toPdfDto(entity)).thenReturn(pdfDto);
+    when(fopFactory.newFop(eq(MimeConstants.MIME_PDF), any(ByteArrayOutputStream.class))).thenReturn(fop);
+    when(transformerFactory.newTransformer(any())).thenReturn(transformer);
+
+    contractRevisionPdfService.generateAndUploadPdf(entity);
+
+    verify(transformer).transform(any(Source.class), any(Result.class));
+    verify(contractRevisionStorageService).upload(eq(entity.getId()), any(byte[].class));
+  }
+
+  @Test
+  void generateAndUploadPdf_GenerationFails_ThrowsIllegalState() throws Exception {
+    ContractRevisionEntity entity = ContractRevisionEntity.builder().build();
     when(contractRevisionPdfMapper.toPdfDto(any())).thenReturn(new ContractRevisionPdfDto());
 
     when(fopFactory.newFop(eq(MimeConstants.MIME_PDF), any(ByteArrayOutputStream.class)))
@@ -97,7 +108,7 @@ class ContractRevisionPdfServiceTest {
     doThrow(new RuntimeException("XSLT Error")).when(transformer).transform(any(), any());
 
     IllegalStateException ex = assertThrows(IllegalStateException.class,
-        () -> contractRevisionPdfService.generatePdf(REVISION_ID));
+        () -> contractRevisionPdfService.generateAndUploadPdf(entity));
     assertThat(ex.getMessage()).contains("PDF generation failed");
   }
 }

@@ -43,90 +43,31 @@ class ContractRevisionQueryServiceTest {
   private static final String USER_UID = "CHE000000001";
 
   @Test
-  void givenExistingContractRevision_whenGetDataRequestForCurrentConsumer_thenReturnMappedDto() {
-    ContractRevisionEntity entity = ContractRevisionEntity.builder().id(REVISION_ID).build();
+  void givenExistingContractRevision_whenGetDtoWithAccessCheckAsAdmin_thenReturnMappedDto() {
+    ContractRevisionEntity entity = ContractRevisionEntity.builder()
+        .id(REVISION_ID)
+        .dataRequest(DataRequestEntity.builder().stateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE).build())
+        .build();
     ContractRevisionDto expectedDto = ContractRevisionDto.builder().id(REVISION_ID).build();
 
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID))
-        .thenReturn(Optional.of(entity));
+    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(entity));
     when(contractRevisionMapper.toDto(entity)).thenReturn(expectedDto);
 
-    ContractRevisionDto result = service.getContractRevisionOfCurrentConsumer(REVISION_ID);
+    ContractRevisionDto result = service.getDtoWithAccessCheck(REVISION_ID);
 
     assertThat(result).isSameAs(expectedDto);
-    verify(contractRevisionRepository).findByIdAndDataConsumerUid(REVISION_ID, USER_UID);
     verify(contractRevisionMapper).toDto(entity);
   }
 
   @Test
-  void givenMissingContractRevision_whenGetContractRevisionOfCurrentConsumer_thenThrowNotFoundException() {
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID))
-        .thenReturn(Optional.empty());
+  void givenMissingContractRevision_whenGetDtoWithAccessCheck_thenThrowNotFoundException() {
+    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.getContractRevisionOfCurrentConsumer(REVISION_ID))
-        .isInstanceOf(NotFoundException.class)
-        .hasMessage(REVISION_ID.toString());
+    assertThatThrownBy(() -> service.getDtoWithAccessCheck(REVISION_ID))
+        .isInstanceOf(NotFoundException.class);
 
-    verify(contractRevisionRepository)
-        .findByIdAndDataConsumerUid(REVISION_ID, USER_UID);
-    verifyNoInteractions(contractRevisionMapper);
-  }
-
-  @Test
-  void givenExistingContractRevision_whenGetDataRequestForCurrentProvider_thenReturnMappedDto() {
-    DataRequestEntity dataRequestEntity = DataRequestEntity.builder().id(DATA_REQUEST_ID).build();
-    ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder()
-        .id(REVISION_ID)
-        .dataRequest(dataRequestEntity)
-        .build();
-    ContractRevisionDto expectedDto = ContractRevisionDto.builder().id(REVISION_ID).build();
-
-    when(contractRevisionRepository.findByIdOptional(REVISION_ID))
-        .thenReturn(Optional.of(contractRevisionEntity));
-    when(dataRequestQueryService.isAssignedToCurrentProvider(dataRequestEntity)).thenReturn(true);
-    when(contractRevisionMapper.toDto(contractRevisionEntity)).thenReturn(expectedDto);
-
-    ContractRevisionDto result = service.getContractRevisionOfCurrentProvider(REVISION_ID);
-
-    assertThat(result).isSameAs(expectedDto);
-    verify(contractRevisionRepository).findByIdOptional(REVISION_ID);
-    verify(contractRevisionMapper).toDto(contractRevisionEntity);
-  }
-
-  @Test
-  void givenExistingContractRevision_whenGetDataRequestForUnauthorizedProvider_thenThrowNotFoundException() {
-    DataRequestEntity dataRequestEntity = DataRequestEntity.builder().id(DATA_REQUEST_ID).build();
-    ContractRevisionEntity contractRevisionEntity = ContractRevisionEntity.builder()
-        .id(REVISION_ID)
-        .dataRequest(dataRequestEntity)
-        .build();
-
-    when(contractRevisionRepository.findByIdOptional(REVISION_ID))
-        .thenReturn(Optional.of(contractRevisionEntity));
-    when(dataRequestQueryService.isAssignedToCurrentProvider(dataRequestEntity)).thenReturn(false);
-
-    assertThatThrownBy(() -> service.getContractRevisionOfCurrentProvider(REVISION_ID))
-        .isInstanceOf(NotFoundException.class)
-        .hasMessage(REVISION_ID.toString());
-
-    verify(contractRevisionRepository).findByIdOptional(REVISION_ID);
-    verify(dataRequestQueryService)
-        .isAssignedToCurrentProvider(dataRequestEntity);
-  }
-
-  @Test
-  void givenMissingContractRevision_whenGetContractRevisionOfCurrentProvider_thenThrowNotFoundException() {
-    when(contractRevisionRepository.findByIdOptional(REVISION_ID))
-        .thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> service.getContractRevisionOfCurrentProvider(REVISION_ID))
-        .isInstanceOf(NotFoundException.class)
-        .hasMessage(REVISION_ID.toString());
-
-    verify(contractRevisionRepository)
-        .findByIdOptional(REVISION_ID);
     verifyNoInteractions(contractRevisionMapper);
   }
 

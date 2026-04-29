@@ -29,7 +29,7 @@ import org.apache.xmlgraphics.util.MimeConstants;
  * This service utilizes Apache FOP (Formatting Objects Processor) and XSLT to
  * render {@link ContractRevisionPdfDto} into a PDF byte stream.
  *
- * @CommentLastReviewed: 2026-04-17
+ * @CommentLastReviewed: 2026-04-23
  */
 
 @ApplicationScoped
@@ -40,12 +40,23 @@ public class ContractRevisionPdfService {
   private final ContractRevisionPdfMapper contractRevisionPdfMapper;
   private final ContractRevisionQueryService contractRevisionQueryService;
   private final JAXBContext jaxbContext;
+  private final ContractRevisionStorageService contractRevisionStorageService;
 
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
-  public byte[] generatePdf(UUID contractRevisionId) {
-    ContractRevisionEntity entity = contractRevisionQueryService
-        .getWithAccessCheck(contractRevisionId);
-    ContractRevisionPdfDto pdfDto = contractRevisionPdfMapper.toPdfDto(entity);
+  public byte[] getPdf(UUID contractRevisionId) {
+    ContractRevisionEntity entity = contractRevisionQueryService.getWithAccessCheck(contractRevisionId);
+
+    return contractRevisionStorageService.download(entity.getId());
+  }
+
+  public void generateAndUploadPdf(ContractRevisionEntity contractRevisionEntity) {
+    byte[] pdf = generatePdf(contractRevisionEntity);
+    contractRevisionStorageService.upload(contractRevisionEntity.getId(), pdf);
+  }
+
+  private byte[] generatePdf(ContractRevisionEntity contractRevisionEntity) {
+    ContractRevisionPdfDto pdfDto = contractRevisionPdfMapper.toPdfDto(contractRevisionEntity);
+
     try (ByteArrayOutputStream out = new ByteArrayOutputStream();
          InputStream xsltIn = getClass().getClassLoader()
              .getResourceAsStream("pdf/contractRevision.fo.xsl")) {

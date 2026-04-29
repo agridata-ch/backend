@@ -30,28 +30,10 @@ public class ContractRevisionQueryService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataRequestQueryService dataRequestQueryService;
 
-  @RolesAllowed(ADMIN_ROLE)
-  public ContractRevisionDto getContractRevisionOfAdmin(UUID contractRevisionId) {
-    return contractRevisionRepository
-        .findByIdAndDataRequestStateNotDraft(contractRevisionId)
-        .map(contractRevisionMapper::toDto)
-        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
-  }
-
-  @RolesAllowed(CONSUMER_ROLE)
-  public ContractRevisionDto getContractRevisionOfCurrentConsumer(UUID contractRevisionId) {
-    return contractRevisionRepository
-        .findByIdAndDataConsumerUid(contractRevisionId, agridataSecurityIdentity.getUidOrElseThrow())
-        .map(contractRevisionMapper::toDto)
-        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
-  }
-
-  @RolesAllowed(PROVIDER_ROLE)
-  public ContractRevisionDto getContractRevisionOfCurrentProvider(UUID contractRevisionId) {
-    return contractRevisionRepository.findByIdOptional(contractRevisionId)
-        .filter(this::isAssignedToCurrentProvider)
-        .map(contractRevisionMapper::toDto)
-        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
+  public ContractRevisionDto getDtoWithAccessCheck(UUID id) {
+    var contract = getWithAccessCheck(id);
+    return contractRevisionMapper.toDto(contract);
   }
 
   @RolesAllowed(PROVIDER_ROLE)

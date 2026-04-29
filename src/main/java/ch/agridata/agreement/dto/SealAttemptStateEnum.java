@@ -6,6 +6,7 @@ package ch.agridata.agreement.dto;
  * @CommentLastReviewed 2026-04-14
  */
 public enum SealAttemptStateEnum {
+  NOT_STARTED,
   IN_PROGRESS,
   COMPLETED,
   FAILED

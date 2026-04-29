@@ -48,6 +48,8 @@ class ContractRevisionSignatureServiceTest {
   private DataRequestStateService dataRequestStateService;
   @Mock
   private ContractRevisionQueryService contractRevisionQueryService;
+  @Mock
+  private ContractRevisionPdfService contractRevisionPdfService;
 
   private static final String USER_UID = "CHE123456789";
   private static final UUID USER_ID = UUID.randomUUID();

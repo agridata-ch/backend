@@ -32,6 +32,7 @@ import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
+import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.product.controller.DataProductController;
@@ -45,7 +46,10 @@ import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -54,7 +58,13 @@ import org.junit.jupiter.api.Test;
 class DataRequestProcessTest {
   private final ObjectMapper mapper = new ObjectMapper();
 
+  private static final String ADMIN_GLOBAL_ID = "test-admin-global-id";
+  private static final String PDF_PATH = ContractRevisionController.PATH + "/{id}/pdf";
+  private static final String SEALS_PATH = ContractRevisionController.PATH + "/{id}/seals";
+  private static final String SEAL_STATUS_PATH = ContractRevisionController.PATH + "/{id}/seals/status";
+
   @Test
+  @SneakyThrows
   void givenValidRequestFlow_whenDraftUpdatedAndSubmitted_thenAllStepsSucceed() throws JsonProcessingException {
     RequestSpecification consumer1 = requestAs(CONSUMER_BLV_1);
     // Load a valid product ID via API
@@ -122,7 +132,7 @@ class DataRequestProcessTest {
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.IN_REVIEW.name()));
 
-    // Step 10: As Admin set status to be signed
+    // Step 10: As Admin set status to be signed — creates the initial contract revision
     var revisionId1 = setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN)
         .then()
         .statusCode(200)
@@ -141,7 +151,18 @@ class DataRequestProcessTest {
         .body("dataProviderCity", equalTo("Liebefeld"))
         .body("consumerSignatures", empty());
 
-    // Step 12: As Consumer 1 sign Contract
+    // Step 12: Verify PDF is available for download immediately after revision creation
+    byte[] initialPdf = requestAs(CONSUMER_BLV_1)
+        .pathParam("id", revisionId1)
+        .when().get(PDF_PATH)
+        .then()
+        .statusCode(200)
+        .contentType("application/pdf")
+        .extract().asByteArray();
+    assertThat(initialPdf).isNotEmpty();
+    assertThat(new String(initialPdf, 0, 4)).isEqualTo("%PDF");
+
+    // Step 13: As Consumer 1 sign Contract
     var revisionId2 = signContractRevision(revisionId1, CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01)
         .then()
         .statusCode(200)
@@ -153,7 +174,7 @@ class DataRequestProcessTest {
         .body("consumerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
-    // Step 13: As Consumer 2 request an otp challenge
+    // Step 14: As Consumer 2 sign Contract
     var revisionId3 = signContractRevision(revisionId2, CONSUMER_BLV_2, SignatureSlotCodeEnum.DATA_CONSUMER_02)
         .then()
         .statusCode(200)
@@ -164,13 +185,13 @@ class DataRequestProcessTest {
         ))
         .extract().as(ContractRevisionDto.class).id();
 
-    // Step 14: As Consumer set status to toBeSignedByProvider
+    // Step 15: As Consumer set status to toBeSignedByProvider
     setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER, CONSUMER_BLV_2)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER.name()));
 
-    // Step 15: As Provider 1 request an otp challenge
+    // Step 16: As Provider 1 sign Contract
     var revisionId4 = signContractRevision(revisionId3, PROVIDER_1,
         SignatureSlotCodeEnum.DATA_PROVIDER_01)
         .then()
@@ -183,8 +204,8 @@ class DataRequestProcessTest {
         .body("providerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
-    // Step 16: As Provider 2 request an otp challenge
-    signContractRevision(revisionId4, PROVIDER_2,
+    // Step 17: As Provider 2 sign Contract — captures the final revision ID for sealing
+    UUID revisionId5 = signContractRevision(revisionId4, PROVIDER_2,
         SignatureSlotCodeEnum.DATA_PROVIDER_02)
         .then()
         .statusCode(200)
@@ -193,21 +214,57 @@ class DataRequestProcessTest {
         .body("providerSignatures.last().name", equalTo(
             PROVIDER_2.getGivenName() + " " + PROVIDER_2.getFamilyName()
         ))
-        .extract().as(ContractRevisionDto.class);
+        .extract().as(ContractRevisionDto.class).id();
 
-    // Step 17: As Provider set status to toBeActivated
+    // Step 18: As Provider set status to toBeActivated
     setStatusAs(dataRequestId, DataRequestStateEnum.TO_BE_ACTIVATED, PROVIDER_1)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_ACTIVATED.name()));
 
-    // Step 18: As Admin set status to active
+    // Step 19: Verify seal status is NOT_STARTED before seal is initiated
+    SealAttemptStateEnum statusBeforeSeal = requestAs(ADMIN)
+        .pathParam("id", revisionId5)
+        .when().get(SEAL_STATUS_PATH)
+        .then().statusCode(200)
+        .extract().as(SealAttemptStateEnum.class);
+    assertThat(statusBeforeSeal).isEqualTo(SealAttemptStateEnum.NOT_STARTED);
+
+    // Step 20: As Admin initiate the seal process
+    requestAs(ADMIN)
+        .pathParam("id", revisionId5)
+        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
+        .when().post(SEALS_PATH)
+        .then().statusCode(202);
+
+    // Step 21: Poll seal status until completed
+    SealAttemptStateEnum sealResult = requestAs(ADMIN)
+        .pathParam("id", revisionId5)
+        .queryParam("longPolling", true)
+        .when().get(SEAL_STATUS_PATH)
+        .then().statusCode(200)
+        .extract().as(SealAttemptStateEnum.class);
+    assertThat(sealResult).isEqualTo(SealAttemptStateEnum.COMPLETED);
+
+    // Step 22: Verify sealed PDF has an embedded digital signature
+    byte[] sealedPdf = requestAs(ADMIN)
+        .pathParam("id", revisionId5)
+        .when().get(PDF_PATH)
+        .then().statusCode(200)
+        .contentType("application/pdf")
+        .extract().asByteArray();
+    assertThat(sealedPdf).isNotEmpty();
+    try (PDDocument doc = Loader.loadPDF(sealedPdf)) {
+      assertThat(doc.getSignatureDictionaries()).isNotEmpty();
+    }
+
+    // Step 23: As Admin set status to active
     setStatusAs(dataRequestId, DataRequestStateEnum.ACTIVE, ADMIN)
         .then()
         .statusCode(200)
         .body("stateCode", equalTo(DataRequestStateEnum.ACTIVE.name()));
 
-    // Step 19: As producer use consent request creation link
+    // Step 24: As producer use consent request creation link
     var createDtos = PRODUCER_B.getCompanyUids().stream()
         .map(uid -> CreateConsentRequestDto.builder().dataRequestId(UUID.fromString(dataRequestId)).uid(uid.name())
             .build())

@@ -36,6 +36,7 @@ public class ContractRevisionSignatureService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataRequestStateService dataRequestStateService;
   private final ContractRevisionQueryService contractRevisionQueryService;
+  private final ContractRevisionPdfService contractRevisionPdfService;
 
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   @Transactional
@@ -92,6 +93,7 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
 
     var dataRequest = revisionToSign.getDataRequest();
@@ -146,6 +148,7 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
 
     var dataRequest = revisionToSign.getDataRequest();

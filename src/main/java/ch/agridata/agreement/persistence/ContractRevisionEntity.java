@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -34,10 +33,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractRevisionEntity extends AuditableEntity {
+
   @Id
-  @GeneratedValue
   @Column(name = "id", nullable = false, updatable = false)
-  private UUID id;
+  @Builder.Default
+  // UUID is pre-assigned at construction time so it is available before persist, allowing it to be used as the S3 key for the contract PDF.
+  private UUID id = UUID.randomUUID();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "data_request_id", nullable = false)
@@ -107,9 +108,10 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "provider_signature_timestamp2")
   private LocalDateTime providerSignatureTimestamp2;
 
-  @Column(name = "seal_state")
+  @Column(name = "seal_state", nullable = false)
   @Enumerated(EnumType.STRING)
-  private SealAttemptState sealState;
+  @Builder.Default
+  private SealAttemptState sealState = SealAttemptState.NOT_STARTED;
 
   @Column(name = "seal_started_at")
   private LocalDateTime sealStartedAt;
@@ -128,6 +130,7 @@ public class ContractRevisionEntity extends AuditableEntity {
    * @CommentLastReviewed 2026-04-14
    */
   public enum SealAttemptState {
+    NOT_STARTED,
     IN_PROGRESS,
     COMPLETED,
     FAILED
