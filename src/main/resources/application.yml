@@ -27,10 +27,10 @@ quarkus:
         client-endpoint-url: https://www.uid-wse-a.admin.ch/V5.0/PublicServices.svc
         service-interface: ch.admin.uid.xmlns.uid_wse.IPublicServices
         wsdl: classpath:wsdl/uid-register.wsdl
-    codegen:
-      wsdl2java:
-        uid:
-          includes: wsdl/uid-register.wsdl
+    # codegen:
+    #   wsdl2java:
+    #     uid:
+    #       includes: wsdl/uid-register.wsdl
   datasource:
     db-kind: postgresql
     jdbc:

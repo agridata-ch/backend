@@ -540,6 +540,18 @@
                                 </sources>
                             </configuration>
                         </execution>
+                        <execution>
+                            <id>add-wsdl2java-generated</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>src/main/generated/wsdl</source>
+                                </sources>
+                            </configuration>
+                        </execution>
                     </executions>
                 </plugin>
                 <plugin>
