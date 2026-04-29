@@ -46,6 +46,9 @@ class ContractRevisionInitializationServiceTest {
   @Mock
   private UidRegisterServiceApi uidRegisterServiceApi;
 
+  @Mock
+  private ContractRevisionPdfService contractRevisionPdfService;
+
   @InjectMocks
   private ContractRevisionInitializationService contractRevisionInitializationService;
 

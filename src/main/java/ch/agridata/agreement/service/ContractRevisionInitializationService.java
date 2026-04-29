@@ -26,6 +26,7 @@ public class ContractRevisionInitializationService {
   private final ContractRevisionMapper contractRevisionMapper;
   private final DataProductApi dataproductApi;
   private final UidRegisterServiceApi uidRegisterServiceApi;
+  private final ContractRevisionPdfService contractRevisionPdfService;
 
   @Transactional
   public ContractRevisionEntity createAndAssignInitialRevision(DataRequestEntity dataRequest) {
@@ -43,7 +44,7 @@ public class ContractRevisionInitializationService {
             dataRequest,
             dataProvider
         );
-
+    contractRevisionPdfService.generateAndUploadPdf(revision);
     contractRevisionRepository.persist(revision);
     dataRequest.setCurrentContractRevisionId(revision.getId());
 
