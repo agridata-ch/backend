@@ -1,3 +1,10 @@
+## [1.9.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.3...v1.9.0-rc.4) (2026-05-01)
+
+### Features
+
+* **agreement:** Allow consumer and provider to choose between individual and collective signature ([24b742c](https://github.com/agridata-ch/backend/commit/24b742c716364a9e1fab7034edd19b45d1a04dfe)), closes [DIGIB2-1286](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1286)
+* **notifications:** create notification database entities ([0fdbf94](https://github.com/agridata-ch/backend/commit/0fdbf94f92dac556838e46e64055755c9ecbf072)), closes [DIGIB2-1322](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1322)
+
 ## [1.9.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.2...v1.9.0-rc.3) (2026-04-27)
 
 ### Features
