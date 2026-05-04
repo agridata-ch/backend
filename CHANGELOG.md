@@ -1,3 +1,9 @@
+## [1.9.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.5...v1.9.0-rc.6) (2026-05-04)
+
+### Features
+
+* **vertragsvorlage_franz:** add french contract ([9b1b2a8](https://github.com/agridata-ch/backend/commit/9b1b2a81298f92f4aa9f3c5b62bfdf5d56a33e40)), closes [DIGIB2-316](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-316)
+
 ## [1.9.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.4...v1.9.0-rc.5) (2026-05-04)
 
 ### Features
