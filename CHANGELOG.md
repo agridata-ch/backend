@@ -1,3 +1,9 @@
+## [1.9.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.6...v1.9.0-rc.7) (2026-05-04)
+
+### Features
+
+* **vertrag_franz:** fix typo ([f9ce6dd](https://github.com/agridata-ch/backend/commit/f9ce6dd0e62fb3d87aa74fec44670270377458eb)), closes [DIGIB2-361](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-361)
+
 ## [1.9.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.5...v1.9.0-rc.6) (2026-05-04)
 
 ### Features
