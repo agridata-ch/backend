@@ -5,14 +5,30 @@
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
 
-    <!-- CVE-2026-39883: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
-         Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-05-08Z">
+    <!-- neethi is pulled in transitively via quarkus-cxf -> cxf-rt-ws-policy.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42402</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42403</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42404</cve>
+    </suppress>
+
+    <!-- opentelemetry-semconv is pulled in transitively via quarkus-opentelemetry.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
         <cve>CVE-2026-39883</cve>
     </suppress>
-    <!-- CVE-2026-29181: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
-         Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-05-08Z">
+    <suppress until="2026-05-31Z">
         <cve>CVE-2026-29181</cve>
+    </suppress>
+
+    <!-- postgresql is pulled in transitively via quarkus-jdbc-postgresql.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42198</cve>
     </suppress>
 </suppressions>
