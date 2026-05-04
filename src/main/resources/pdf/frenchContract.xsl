@@ -252,7 +252,7 @@
 
         <fo:block xsl:use-attribute-sets="body-text">
             DE:
-            <xsl:value-of select="requestDescription/De"/>
+            <xsl:value-of select="requestDescription/de"/>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             FR:
