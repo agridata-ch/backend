@@ -1,3 +1,10 @@
+## [1.9.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.4...v1.9.0-rc.5) (2026-05-04)
+
+### Features
+
+* **agreement:** store and retrieve contract PDFs in S3 bucket ([f313743](https://github.com/agridata-ch/backend/commit/f31374352be6cc8d0c1aec96e2f79d396a0d3cdb)), closes [DIGIB2-1300](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1300)
+* **deps:** update quarkus version ([bd0ab19](https://github.com/agridata-ch/backend/commit/bd0ab19c1ac5c9f03e4c44abd4f3fa922d145c10))
+
 ## [1.9.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.3...v1.9.0-rc.4) (2026-05-01)
 
 ### Features
