@@ -93,14 +93,14 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
-    contractRevisionPdfService.generateAndUploadPdf(newRevision);
-    contractRevisionRepository.persist(newRevision);
-
     var dataRequest = revisionToSign.getDataRequest();
 
     if (signatureSlotCode == SignatureSlotCodeEnum.DATA_CONSUMER_01) {
       newRevision.setConsumerSignatureType(dataRequest.getConsumerSignatureType());
     }
+
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
+    contractRevisionRepository.persist(newRevision);
 
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 
@@ -148,14 +148,14 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
-    contractRevisionPdfService.generateAndUploadPdf(newRevision);
-    contractRevisionRepository.persist(newRevision);
-
     var dataRequest = revisionToSign.getDataRequest();
 
     if (signatureSlotCode == SignatureSlotCodeEnum.DATA_PROVIDER_01) {
       newRevision.setProviderSignatureType(dataRequest.getProviderSignatureType());
     }
+
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
+    contractRevisionRepository.persist(newRevision);
 
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 
