@@ -1,3 +1,9 @@
+## [1.9.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.7...v1.9.0-rc.8) (2026-05-05)
+
+### Features
+
+* **agreement:** set signature type before generating and uploading pdf ([d437747](https://github.com/agridata-ch/backend/commit/d43774710ff8cfff9eabcbc2cd440eea68d00b66)), closes [DIGIB2-1300](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1300)
+
 ## [1.9.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.6...v1.9.0-rc.7) (2026-05-04)
 
 ### Features
