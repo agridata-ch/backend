@@ -65,11 +65,8 @@ public class DataRequestStateService {
   }
 
   private record AllowedTransition(
-      DataRequestEntity.DataRequestStateEnum from,
-      DataRequestEntity.DataRequestStateEnum to,
-      Set<Actor> allowedActors
-  ) {
-  }
+      DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to, Set<Actor> allowedActors
+  ) {}
 
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
@@ -92,6 +89,7 @@ public class DataRequestStateService {
 
     var dto = setStateTo(entity, newStateCode, Actor.CONSUMER);
     dataRequestStateAuditService.auditConsumerStatusTransition(requestId, oldStateCode, newStateCode);
+
     return dto;
   }
 
@@ -124,9 +122,7 @@ public class DataRequestStateService {
     setStateTo(entity, TO_BE_RELEASED_BY_PROVIDER, Actor.SYSTEM);
   }
 
-  private DataRequestDto setStateTo(DataRequestEntity entity,
-                                    DataRequestEntity.DataRequestStateEnum newStateCode,
-                                    Actor actor) {
+  private DataRequestDto setStateTo(DataRequestEntity entity, DataRequestEntity.DataRequestStateEnum newStateCode, Actor actor) {
     verifyStatusTransition(entity.getStateCode(), newStateCode, actor);
     entity.setStateCode(newStateCode);
 
@@ -150,15 +146,10 @@ public class DataRequestStateService {
     }
   }
 
-  private void verifyStatusTransition(
-      DataRequestEntity.DataRequestStateEnum from,
-      DataRequestEntity.DataRequestStateEnum to,
-      Actor actor) {
-    boolean allowed = ALLOWED_TRANSITIONS.stream()
-        .anyMatch(t -> t.from() == from && t.to() == to && t.allowedActors().contains(actor));
+  private void verifyStatusTransition(DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to, Actor actor) {
+    boolean allowed = ALLOWED_TRANSITIONS.stream().anyMatch(t -> t.from() == from && t.to() == to && t.allowedActors().contains(actor));
     if (!allowed) {
-      throw new IllegalStateException(
-          "Unable to transition data request from state: " + from + " to: " + to + " as " + actor);
+      throw new IllegalStateException("Unable to transition data request from state: " + from + " to: " + to + " as " + actor);
     }
   }
 
@@ -178,8 +169,7 @@ public class DataRequestStateService {
   }
 
   private DataRequestEntity loadEntityForAdmin(UUID requestId) {
-    return dataRequestRepository.findByIdOptional(requestId)
-        .orElseThrow(() -> new NotFoundException(requestId.toString()));
+    return dataRequestRepository.findByIdOptional(requestId).orElseThrow(() -> new NotFoundException(requestId.toString()));
   }
 
 }

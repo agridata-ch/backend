@@ -21,9 +21,13 @@ import lombok.RequiredArgsConstructor;
 public class DataRequestStateAuditService {
 
   private final AuditingService auditingService;
+  private final NotificationService notificationService;
 
-  public void auditAdminStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
-                                         DataRequestEntity.DataRequestStateEnum newStateCode) {
+  public void auditAdminStatusTransition(
+      UUID requestId,
+      DataRequestEntity.DataRequestStateEnum oldStateCode,
+      DataRequestEntity.DataRequestStateEnum newStateCode
+  ) {
     if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
       auditingService.logDataRequestRejected(requestId);
     } else if (oldStateCode == IN_REVIEW && newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
@@ -33,12 +37,16 @@ public class DataRequestStateAuditService {
     }
   }
 
-  public void auditConsumerStatusTransition(UUID requestId, DataRequestEntity.DataRequestStateEnum oldStateCode,
-                                            DataRequestEntity.DataRequestStateEnum newStateCode) {
+  public void auditConsumerStatusTransition(
+      UUID requestId,
+      DataRequestEntity.DataRequestStateEnum oldStateCode,
+      DataRequestEntity.DataRequestStateEnum newStateCode
+  ) {
     if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
       auditingService.logDataRequestWithdrawn(requestId);
     } else if (oldStateCode == DRAFT && newStateCode == IN_REVIEW) {
       auditingService.logDataRequestSubmitted(requestId);
+      notificationService.queueDataRequestInReview();
     }
   }
 }
