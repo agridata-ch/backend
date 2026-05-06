@@ -1,5 +1,6 @@
-    TRUNCATE TABLE data_request, consent_request, audit_log, data_request_data_product, contract_revision, otp_challenge;
-    DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
+TRUNCATE TABLE data_request, consent_request, audit_log, data_request_data_product, contract_revision, otp_challenge, notification_batch, notification_recipient, notification_inbox, notification_dispatch;
+DELETE FROM notification_template WHERE id IN ('a0000000-1111-2222-3333-000000000001', 'a0000000-1111-2222-3333-000000000002') ;
+DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- ===============================================
     -- data_request
@@ -231,3 +232,91 @@
     ('550e8400-e29b-41d4-a716-446655440052', false, '2023-03-07 15:50:00', '2023-03-07 15:50:00', 'dummy_52', 'agate_user_52', 'ruby.schneider@networks.dummy.com', null, null, 'Switzerland', 'Wallisellen', '8304', 'Richtistrasse 21', 'Schneider', 'Ruby', '+41799994411', '2024-03-07 11:18:46', 'USR052', jsonb_build_array('agridata.ch.Agridata_Einwilliger')),
     ('550e8400-e29b-41d4-a716-446655440053', false, '2023-03-08 08:30:00', '2023-03-08 08:30:00', 'dummy_53', 'agate_user_53', 'river.martin@processes.dummy.com', null, null, 'Switzerland', 'Opfikon', '8152', 'Wallisellerstrasse 8', 'Martin', 'River', '+41791117755', '2024-03-08 14:41:22', 'USR053', jsonb_build_array('agridata.ch.Agridata_Einwilliger')),
     ('550e8400-e29b-41d4-a716-446655440054', false, '2023-03-09 12:40:00', '2023-03-09 12:40:00', 'dummy_54', 'agate_user_54', 'sage.johnson@frameworks.dummy.com', null, null, 'Switzerland', 'Dübendorf', '8600', 'Bahnhofstrasse 26', 'Johnson', 'Sage', '+41792228866', '2024-03-09 08:29:58', 'USR054', jsonb_build_array('agridata.ch.Agridata_Einwilliger'));
+
+-- ===============================================
+-- notification_template
+-- ===============================================
+INSERT INTO notification_template (id, archived, created_at, modified_at, event_type_code, template_version, email_subject, email_text,
+                                   webapp_text, mobile_text, required_generic_placeholders)
+VALUES ('a0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_1', 1, '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '{"de": "Beispiel Email Benachrichtigungstext 1, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 1, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 1, con il segnaposto di esempio {{example}}."}', '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '["requestTitle"]'),
+       ('a0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_2', 1, '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}', '{"de": "Beispiel Email Benachrichtigungstext 2, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 2, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 2, con il segnaposto di esempio {{example}}."}', '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}', '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}',   '["requestTitle"]');
+
+-- ===============================================
+-- notification_batch
+-- ===============================================
+INSERT INTO notification_batch (id, archived, created_at, modified_at, template_id, generic_placeholders, status_code)
+VALUES ('b0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000001', '{"example": "-Platzhalter 1 ausgefüllt-"}', 'COMPLETE'),
+       ('b0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000002', '{"example": "-Platzhalter 2 ausgefüllt-"}', 'COMPLETE');
+
+-- ===============================================
+-- notification_recipient
+-- ===============================================
+INSERT INTO notification_recipient (id, archived, created_at, modified_at, batch_id, user_id, email)
+VALUES ('c0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'f9fd1071-f276-58c8-be12-e1703c72576f', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000003', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'dd844010-7127-52cb-918a-4671506b1de1', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000004', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '1b55eb14-beaf-5417-9313-ad8c58ed3694', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000005', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000006', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000007', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'c84f1403-717a-581a-acff-2584781e4c8f', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000008', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '4d036f00-0a93-5504-9927-a4acd89c47ad', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000009', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '012347f3-ecac-517d-97df-3093b4ca66ee', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000010', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000011', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '1298de0e-610b-5243-b503-eaa49abc825c', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000012', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000013', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000014', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000001', '0f56fb6d-f217-5ebb-aabc-c88117732e21', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000015', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000016', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'f9fd1071-f276-58c8-be12-e1703c72576f', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000017', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'dd844010-7127-52cb-918a-4671506b1de1', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000018', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '1b55eb14-beaf-5417-9313-ad8c58ed3694', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000019', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000020', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000021', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'c84f1403-717a-581a-acff-2584781e4c8f', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000022', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '4d036f00-0a93-5504-9927-a4acd89c47ad', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000023', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '012347f3-ecac-517d-97df-3093b4ca66ee', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000024', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000025', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '1298de0e-610b-5243-b503-eaa49abc825c', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000026', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000027', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000028', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '0f56fb6d-f217-5ebb-aabc-c88117732e21', 'test-date@agridata.local');
+
+-- ===============================================
+-- notification_inbox
+-- ===============================================
+INSERT INTO notification_inbox (id, archived, created_at, modified_at, recipient_id, user_id, is_read)
+VALUES ('d0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000001', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', false),
+       ('d0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000002', 'f9fd1071-f276-58c8-be12-e1703c72576f', false),
+       ('d0000000-1111-2222-3333-000000000003', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000003', 'dd844010-7127-52cb-918a-4671506b1de1', false),
+       ('d0000000-1111-2222-3333-000000000004', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000004', '1b55eb14-beaf-5417-9313-ad8c58ed3694', false),
+       ('d0000000-1111-2222-3333-000000000005', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000005', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', false),
+       ('d0000000-1111-2222-3333-000000000006', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000006', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', false),
+       ('d0000000-1111-2222-3333-000000000007', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000007', 'c84f1403-717a-581a-acff-2584781e4c8f', false),
+       ('d0000000-1111-2222-3333-000000000008', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000008', '4d036f00-0a93-5504-9927-a4acd89c47ad', false),
+       ('d0000000-1111-2222-3333-000000000009', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000009', '012347f3-ecac-517d-97df-3093b4ca66ee', false),
+       ('d0000000-1111-2222-3333-000000000010', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000010', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', false),
+       ('d0000000-1111-2222-3333-000000000011', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000011', '1298de0e-610b-5243-b503-eaa49abc825c', false),
+       ('d0000000-1111-2222-3333-000000000012', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000012', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', false),
+       ('d0000000-1111-2222-3333-000000000013', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000013', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', false),
+       ('d0000000-1111-2222-3333-000000000014', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000014', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true),
+       ('d0000000-1111-2222-3333-000000000015', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000015', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', true),
+       ('d0000000-1111-2222-3333-000000000016', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000016', 'f9fd1071-f276-58c8-be12-e1703c72576f', true),
+       ('d0000000-1111-2222-3333-000000000017', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000017', 'dd844010-7127-52cb-918a-4671506b1de1', true),
+       ('d0000000-1111-2222-3333-000000000018', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000018', '1b55eb14-beaf-5417-9313-ad8c58ed3694', true),
+       ('d0000000-1111-2222-3333-000000000019', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000019', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', true),
+       ('d0000000-1111-2222-3333-000000000020', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000020', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', true),
+       ('d0000000-1111-2222-3333-000000000021', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000021', 'c84f1403-717a-581a-acff-2584781e4c8f', true),
+       ('d0000000-1111-2222-3333-000000000022', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000022', '4d036f00-0a93-5504-9927-a4acd89c47ad', true),
+       ('d0000000-1111-2222-3333-000000000023', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000023', '012347f3-ecac-517d-97df-3093b4ca66ee', true),
+       ('d0000000-1111-2222-3333-000000000024', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000024', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', true),
+       ('d0000000-1111-2222-3333-000000000025', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000025', '1298de0e-610b-5243-b503-eaa49abc825c', true),
+       ('d0000000-1111-2222-3333-000000000026', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000026', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', true),
+       ('d0000000-1111-2222-3333-000000000027', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000027', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', true),
+       ('d0000000-1111-2222-3333-000000000028', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000028', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true);
+
+-- ===============================================
+-- notification_dispatch
+-- ===============================================
+INSERT INTO notification_dispatch (id, archived, created_at, modified_at, recipient_id, channel_code, status_code, error)
+VALUES ('e0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000001', 'EMAIL', 'SUBMITTED',   null                     ),
+       ('e0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000002', 'EMAIL', 'FAILED', 'SMTP connection timeout');

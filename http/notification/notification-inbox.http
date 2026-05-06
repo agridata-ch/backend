@@ -1,0 +1,27 @@
+### Get inbox for current user
+GET {{baseUrl}}/notification/v1/inbox
+Authorization: Bearer {{$auth.token("producer-a")}}
+Content-Type: application/json
+
+> {%
+    client.test("Get inbox entries", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    })
+%}
+
+### Mark inbox entries as read
+PUT {{baseUrl}}/notification/v1/inbox/mark-as-read
+Authorization: Bearer {{$auth.token("producer-a")}}
+Content-Type: application/json
+
+{
+  "inboxIds": [
+    "d0000000-0000-0000-0000-000000000001"
+  ]
+}
+
+> {%
+    client.test("Mark inbox as read", function () {
+        client.assert(response.status === 204 || response.status === 200, "Expected 200 or 204, got: " + response.status)
+    })
+%}

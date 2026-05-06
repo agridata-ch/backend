@@ -6,13 +6,14 @@ import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Implements the participant API by delegating to authorization services.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-05-06
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class UserApiImpl implements UserApi {
 
   private final BurAuthorizationService burAuthorizationService;
   private final UidAuthorizationService uidAuthorizationService;
+  private final UserService userService;
 
   @Override
   public List<BurDto> getAuthorizedBurs(@NonNull String uid) {
@@ -29,5 +31,10 @@ public class UserApiImpl implements UserApi {
   @Override
   public List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId) {
     return uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
+  }
+
+  @Override
+  public List<UUID> getAdminUserIds() {
+    return userService.getAdminUserIds();
   }
 }

@@ -52,15 +52,12 @@ class DataRequestStateServiceTest {
   @Test
   void givenSubmittedRequest_whenSetStateToInReview_thenThrowIllegalStateAsAdminException() {
     var id = UUID.randomUUID();
-    var entity = DataRequestEntity.builder()
-        .stateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW)
-        .build();
+    var entity = DataRequestEntity.builder().stateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW).build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
 
-    assertThrows(IllegalStateException.class,
-        () -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.IN_REVIEW));
+    assertThrows(IllegalStateException.class, () -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.IN_REVIEW));
   }
 
   @Test
@@ -76,8 +73,11 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
-    verify(dataRequestStateAuditService).auditConsumerStatusTransition(id, DataRequestEntity.DataRequestStateEnum.DRAFT,
-        DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
+    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+        id,
+        DataRequestEntity.DataRequestStateEnum.DRAFT,
+        DataRequestEntity.DataRequestStateEnum.IN_REVIEW
+    );
     assertThat(result).isEqualTo(expectedDto);
   }
 
@@ -93,8 +93,11 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(id, DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
-        DataRequestEntity.DataRequestStateEnum.DRAFT);
+    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+        id,
+        DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
     assertThat(result).isEqualTo(expectedDto);
   }
 
@@ -112,8 +115,11 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
-    verify(dataRequestStateAuditService).auditConsumerStatusTransition(id, DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
-        DataRequestEntity.DataRequestStateEnum.DRAFT);
+    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+        id,
+        DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
     assertThat(result).isEqualTo(expectedDto);
   }
 
@@ -128,10 +134,13 @@ class DataRequestStateServiceTest {
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
-    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(
-        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(id, DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
-        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
+    assertThat(dataRequestEntityCaptor.getValue()
+        .getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
+    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+        id,
+        DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
+        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER
+    );
     verify(contractRevisionInitializationService).createAndAssignInitialRevision(entity);
     assertThat(result).isEqualTo(expectedDto);
   }
@@ -149,8 +158,8 @@ class DataRequestStateServiceTest {
     var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
-    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(
-        DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
+    assertThat(dataRequestEntityCaptor.getValue()
+        .getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER);
     assertThat(result).isEqualTo(expectedDto);
   }
 
@@ -163,9 +172,8 @@ class DataRequestStateServiceTest {
 
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
-    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("TO_BE_SIGNED_BY_PROVIDER");
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER)).isInstanceOf(
+        IllegalStateException.class).hasMessageContaining("TO_BE_SIGNED_BY_PROVIDER");
 
     verifyNoInteractions(dataRequestStateAuditService);
   }
@@ -179,8 +187,10 @@ class DataRequestStateServiceTest {
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
 
-    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.ACTIVE))
-        .isInstanceOf(IllegalStateException.class);
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(
+        id,
+        DataRequestStateEnum.ACTIVE
+    )).isInstanceOf(IllegalStateException.class);
 
     verifyNoInteractions(dataRequestStateAuditService);
   }
@@ -197,8 +207,11 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(id,
-        DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED, DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+        id,
+        DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+        DataRequestEntity.DataRequestStateEnum.ACTIVE
+    );
     assertThat(result).isEqualTo(expectedDto);
   }
 
@@ -210,8 +223,10 @@ class DataRequestStateServiceTest {
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.DRAFT);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
 
-    assertThrows(IllegalStateException.class,
-        () -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER));
+    assertThrows(
+        IllegalStateException.class,
+        () -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER)
+    );
     verifyNoInteractions(dataRequestStateAuditService);
   }
 
