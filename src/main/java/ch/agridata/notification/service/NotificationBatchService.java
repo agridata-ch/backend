@@ -39,7 +39,8 @@ public class NotificationBatchService {
    */
   @Transactional
   public void queueNotification(
-      List<RecipientRequestDto> recipients, EventTypeCodeEnum eventTypeCode,
+      List<RecipientRequestDto> recipients,
+      EventTypeCodeEnum eventTypeCode,
       Map<String, String> placeholders
   ) {
     var template = templateRepository.findLatestByEventTypeCode(eventTypeCode.name())
@@ -52,11 +53,11 @@ public class NotificationBatchService {
         .build();
     batchRepository.persist(batch);
 
-    for (RecipientRequestDto r : recipients) {
+    for (RecipientRequestDto recipientDto : recipients) {
       var recipient = NotificationRecipientEntity.builder()
           .batch(batch)
-          .userId(r.userId())
-          .email(r.email())
+          .userId(recipientDto.userId())
+          .email(recipientDto.email())
           .build();
       recipientRepository.persist(recipient);
     }

@@ -35,7 +35,8 @@ import org.hibernate.type.SqlTypes;
     indexes = {
         @Index(name = "idx_notification_batch_template_id", columnList = "template_id"),
         @Index(name = "idx_notification_batch_status_code", columnList = "status_code"),
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE notification_batch SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder

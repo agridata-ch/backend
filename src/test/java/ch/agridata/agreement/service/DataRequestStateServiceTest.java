@@ -74,7 +74,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     verify(dataRequestStateAuditService).auditConsumerStatusTransition(
-        id,
+        entity,
         DataRequestEntity.DataRequestStateEnum.DRAFT,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW
     );
@@ -94,7 +94,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(dataRequestStateAuditService).auditAdminStatusTransition(
-        id,
+        entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.DRAFT
     );
@@ -116,7 +116,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(dataRequestStateAuditService).auditConsumerStatusTransition(
-        id,
+        entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.DRAFT
     );
@@ -137,7 +137,7 @@ class DataRequestStateServiceTest {
     assertThat(dataRequestEntityCaptor.getValue()
         .getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
     verify(dataRequestStateAuditService).auditAdminStatusTransition(
-        id,
+        entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER
     );
@@ -208,7 +208,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
     verify(dataRequestStateAuditService).auditAdminStatusTransition(
-        id,
+        entity,
         DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
         DataRequestEntity.DataRequestStateEnum.ACTIVE
     );

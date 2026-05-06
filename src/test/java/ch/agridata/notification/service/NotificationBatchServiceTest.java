@@ -74,8 +74,7 @@ class NotificationBatchServiceTest {
     var recipientCaptor = ArgumentCaptor.forClass(NotificationRecipientEntity.class);
     verify(recipientRepository, times(2)).persist(recipientCaptor.capture());
     var persistedRecipients = recipientCaptor.getAllValues();
-    assertThat(persistedRecipients).extracting(NotificationRecipientEntity::getEmail)
-        .containsExactlyInAnyOrder(null, "user@example.com");
+    assertThat(persistedRecipients).extracting(NotificationRecipientEntity::getEmail).containsExactlyInAnyOrder(null, "user@example.com");
   }
 
   @Test
@@ -94,9 +93,7 @@ class NotificationBatchServiceTest {
 
     var captor = ArgumentCaptor.forClass(NotificationBatchEntity.class);
     verify(batchRepository).persist(captor.capture());
-    assertThat(captor.getValue()
-        .getTemplate()
-        .getTemplateVersion()).isEqualTo(2);
+    assertThat(captor.getValue().getTemplate().getTemplateVersion()).isEqualTo(2);
   }
 
   @Test
