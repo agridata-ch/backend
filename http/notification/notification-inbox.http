@@ -1,6 +1,6 @@
 ### Get inbox for current user
 GET {{baseUrl}}/notification/v1/inbox
-Authorization: Bearer {{$auth.token("producer-a")}}
+Authorization: Bearer {{$auth.token("admin")}}
 Content-Type: application/json
 
 > {%

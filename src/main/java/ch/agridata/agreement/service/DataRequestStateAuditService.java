@@ -11,7 +11,6 @@ import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestSta
 
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,39 +26,41 @@ public class DataRequestStateAuditService {
   private final NotificationService notificationService;
 
   public void auditAdminStatusTransition(
-      UUID requestId,
+      DataRequestEntity entity,
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode
   ) {
     if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
-      auditingService.logDataRequestRejected(requestId);
+      auditingService.logDataRequestRejected(entity.getId());
     } else if (oldStateCode == IN_REVIEW && newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
-      auditingService.logDataRequestApproved(requestId);
+      auditingService.logDataRequestApproved(entity.getId());
     } else if (oldStateCode == TO_BE_ACTIVATED && newStateCode == ACTIVE) {
-      auditingService.logDataRequestActivated(requestId);
+      auditingService.logDataRequestActivated(entity.getId());
     }
   }
 
   public void auditConsumerStatusTransition(
-      UUID requestId,
+      DataRequestEntity entity,
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode
   ) {
     if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
-      auditingService.logDataRequestWithdrawn(requestId);
+      auditingService.logDataRequestWithdrawn(entity.getId());
     } else if (oldStateCode == DRAFT && newStateCode == IN_REVIEW) {
-      auditingService.logDataRequestSubmitted(requestId);
-      notificationService.queueDataRequestInReview(requestId);
+      auditingService.logDataRequestSubmitted(entity.getId());
+      notificationService.queueDataRequestInReview(entity);
     } else if (oldStateCode == TO_BE_RELEASED_BY_CONSUMER && newStateCode == TO_BE_SIGNED_BY_PROVIDER) {
-      auditingService.logDataRequestReleasedByConsumer(requestId);
+      auditingService.logDataRequestReleasedByConsumer(entity.getId());
     }
   }
 
-  public void auditProviderStatusTransition(UUID requestId,
-                                            DataRequestEntity.DataRequestStateEnum oldStateCode,
-                                            DataRequestEntity.DataRequestStateEnum newStateCode) {
+  public void auditProviderStatusTransition(
+      DataRequestEntity entity,
+      DataRequestEntity.DataRequestStateEnum oldStateCode,
+      DataRequestEntity.DataRequestStateEnum newStateCode
+  ) {
     if (oldStateCode == TO_BE_RELEASED_BY_PROVIDER && newStateCode == TO_BE_ACTIVATED) {
-      auditingService.logDataRequestReleasedByProvider(requestId);
+      auditingService.logDataRequestReleasedByProvider(entity.getId());
     }
   }
 }

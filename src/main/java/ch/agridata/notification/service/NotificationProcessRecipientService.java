@@ -38,7 +38,7 @@ public class NotificationProcessRecipientService {
    * does not yet exist, and dispatches an email if the recipient has an email address and no
    * successful dispatch record yet exists. Both operations are committed atomically.
    *
-   * @param recipientId               the ID of the recipient to process
+   * @param recipientId               the ID of the recipient to process, reloaded cause of the new transaction
    * @param resolvedNotificationTexts the notification with all generic placeholders already substituted
    * @return the processing outcome for this recipient
    */

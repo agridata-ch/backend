@@ -29,7 +29,8 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "notification_template",
     indexes = {
         @Index(name = "idx_notification_template_event_type_code", columnList = "event_type_code"),
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE notification_template SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder

@@ -1,8 +1,15 @@
 package ch.agridata.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -14,7 +21,10 @@ import ch.agridata.notification.persistence.NotificationDispatchEntity;
 import ch.agridata.notification.persistence.NotificationDispatchRepository;
 import ch.agridata.notification.persistence.NotificationDispatchStatusEnum;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -45,6 +55,11 @@ class NotificationSubmitEmailServiceTest {
 
   @Captor
   private ArgumentCaptor<NotificationDispatchEntity> dispatchCaptor;
+
+  @BeforeEach
+  void setUp() {
+    service.loadEmailTemplate();
+  }
 
   // ── fixtures ─────────────────────────────────────────────────────────────
 
@@ -96,7 +111,7 @@ class NotificationSubmitEmailServiceTest {
     var result = service.dispatch(recipient, resolved);
 
     assertThat(result).isTrue();
-    verify(emailApi).submitEmail(recipient.getEmail(), "Welcome", "<p>Hello</p>");
+    verify(emailApi).submitEmail(eq(recipient.getEmail()), eq("Welcome"), argThat(body -> body.contains("<p>Hello</p>")));
     verify(dispatchRepository).persist(dispatchCaptor.capture());
     var dispatch = dispatchCaptor.getValue();
     assertThat(dispatch.getStatusCode()).isEqualTo(NotificationDispatchStatusEnum.SUBMITTED);
@@ -110,7 +125,58 @@ class NotificationSubmitEmailServiceTest {
 
     service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail("test@example.com", "Hallo Hans", "<p>Lieber Hans, deine ID ist 42.</p>");
+    verify(emailApi).submitEmail(anyString(), eq("Hallo Hans"), argThat(body -> body.contains("<p>Lieber Hans, deine ID ist 42.</p>")));
+  }
+
+  @Test
+  void givenMultilingualEmailText_whenDispatch_thenBodyContainsAllLanguageParts() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").build(),
+        TranslationDto.builder().de("<p>DE text</p>").fr("<p>FR text</p>").it("<p>IT text</p>").build(),
+        null
+    );
+
+    service.dispatch(recipient(), resolved);
+
+    verify(emailApi).submitEmail(
+        anyString(), anyString(),
+        argThat(body -> body.contains("<p>DE text</p>") && body.contains("<p>FR text</p>") && body.contains("<p>IT text</p>"))
+    );
+  }
+
+  @Test
+  void givenNullLanguageParts_whenDispatch_thenNullPartsOmittedFromBody() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").build(),
+        TranslationDto.builder().de("<p>DE only</p>").fr(null).it(null).build(),
+        null
+    );
+
+    service.dispatch(recipient(), resolved);
+
+    verify(emailApi).submitEmail(anyString(), anyString(),
+        argThat(body -> body.contains("<p>DE only</p>") && !body.contains("null")));
+  }
+
+  @Test
+  void givenBlankLanguageParts_whenDispatch_thenBlankPartsOmittedFromBody() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").build(),
+        TranslationDto.builder().de("<p>DE only</p>").fr("   ").it("").build(),
+        null
+    );
+
+    service.dispatch(recipient(), resolved);
+
+    verify(emailApi).submitEmail(anyString(), anyString(),
+        argThat(body -> body.contains("<p>DE only</p>")
+            && body.indexOf("<p>DE only</p>") == body.lastIndexOf("<p>DE only</p>")));
   }
 
   @Test
@@ -148,5 +214,31 @@ class NotificationSubmitEmailServiceTest {
 
     verify(dispatchRepository).persist(dispatchCaptor.capture());
     assertThat(dispatchCaptor.getValue().getError()).hasSize(1000);
+  }
+
+  // ── loadEmailTemplate error handling ──────────────────────────────────────
+
+  @Test
+  void whenTemplateResourceNotFound_thenLoadEmailTemplateThrowsIllegalStateException() {
+    var svc = spy(new NotificationSubmitEmailService(emailApi, dispatchRepository));
+    doReturn(null).when(svc).openTemplateResource();
+
+    assertThatThrownBy(svc::loadEmailTemplate)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Email template not found on classpath");
+  }
+
+  @Test
+  void whenTemplateInputStreamThrowsIOException_thenLoadEmailTemplateThrowsIllegalStateException() throws IOException {
+    var brokenStream = mock(InputStream.class);
+    doThrow(new IOException("disk error")).when(brokenStream).readAllBytes();
+
+    var svc = spy(new NotificationSubmitEmailService(emailApi, dispatchRepository));
+    doReturn(brokenStream).when(svc).openTemplateResource();
+
+    assertThatThrownBy(svc::loadEmailTemplate)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Failed to load email template")
+        .hasCauseInstanceOf(IOException.class);
   }
 }

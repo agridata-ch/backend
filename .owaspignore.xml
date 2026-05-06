@@ -31,4 +31,30 @@
     <suppress until="2026-05-31Z">
         <cve>CVE-2026-42198</cve>
     </suppress>
+
+    <!-- netty-transport is pulled in transitively via the Quarkus BOM.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-41417</cve>
+    </suppress>
+
+    <!-- opentelemetry-semconv is pulled in transitively via quarkus-opentelemetry.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-39882</cve>
+    </suppress>
+
+    <!-- pdfbox is a direct dependency. No fixed version available yet. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-23907</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-33929</cve>
+    </suppress>
+
+    <!-- simpleclient (Prometheus) is pulled in transitively via quarkus-micrometer.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42154</cve>
+    </suppress>
 </suppressions>

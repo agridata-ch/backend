@@ -2,6 +2,8 @@ package integration.notification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -92,7 +94,7 @@ class NotificationSubmitEmailServiceTest {
       service.dispatch(entityManager.find(NotificationRecipientEntity.class, recipientId), resolved);
     });
 
-    verify(emailApi).submitEmail("test@example.com", "Hello Hans", "<p>Dear Hans</p>");
+    verify(emailApi).submitEmail(eq("test@example.com"), eq("Hello Hans"), argThat(body -> body.contains("<p>Dear Hans</p>")));
 
     List<NotificationDispatchEntity> dispatches =
         QuarkusTransaction.requiringNew().call(() -> dispatchRepository.list("recipient.id = ?1", recipientId));

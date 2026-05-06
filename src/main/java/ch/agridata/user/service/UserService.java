@@ -7,6 +7,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.mapper.UserMapper;
@@ -18,7 +19,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -80,7 +80,10 @@ public class UserService {
     user.setUserPreferences(userMapper.toUserPreferenceEntity(userPreferences));
   }
 
-  public List<UUID> getAdminUserIds() {
-    return userRepository.findAllIdsByRoleAtLastLogin(ADMIN_ROLE);
+  public List<AdminUserDto> getAdminUsers() {
+    return userRepository.findAllByRoleAtLastLogin(ADMIN_ROLE)
+        .stream()
+        .map(user -> new AdminUserDto(user.getId(), user.getEmail()))
+        .toList();
   }
 }
