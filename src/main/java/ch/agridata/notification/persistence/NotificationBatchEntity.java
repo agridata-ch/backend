@@ -54,9 +54,9 @@ public class NotificationBatchEntity extends AuditableEntity {
   @JoinColumn(name = "template_id", nullable = false)
   private NotificationTemplateEntity template;
 
-  @Column(name = "generic_placeholders")
+  @Column(name = "placeholders")
   @JdbcTypeCode(SqlTypes.JSON)
-  private Map<String, String> genericPlaceholders;
+  private Map<String, String> placeholders;
 
   @Column(name = "status_code", nullable = false, length = 50)
   @Enumerated(EnumType.STRING)

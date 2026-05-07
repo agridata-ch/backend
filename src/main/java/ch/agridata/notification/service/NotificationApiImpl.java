@@ -26,8 +26,8 @@ public class NotificationApiImpl implements NotificationApi {
   public void queueNotification(
       List<RecipientRequestDto> recipients,
       EventTypeCodeEnum eventTypeCode,
-      Map<String, String> genericPlaceholders
+      Map<String, String> placeholders
   ) {
-    batchService.queueNotification(recipients, eventTypeCode, genericPlaceholders);
+    batchService.queueNotification(recipients, eventTypeCode, placeholders);
   }
 }

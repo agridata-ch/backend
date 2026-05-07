@@ -237,14 +237,14 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 -- notification_template
 -- ===============================================
 INSERT INTO notification_template (id, archived, created_at, modified_at, event_type_code, template_version, email_subject, email_text,
-                                   webapp_text, mobile_text, required_generic_placeholders)
-VALUES ('a0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_1', 1, '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '{"de": "Beispiel Email Benachrichtigungstext 1, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 1, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 1, con il segnaposto di esempio {{example}}."}', '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '["requestTitle"]'),
-       ('a0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_2', 1, '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}', '{"de": "Beispiel Email Benachrichtigungstext 2, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 2, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 2, con il segnaposto di esempio {{example}}."}', '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}', '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}',   '["requestTitle"]');
+                                   webapp_title, webapp_text, mobile_text, required_placeholders)
+VALUES ('a0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_1', 1, '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '{"de": "Beispiel Email Benachrichtigungstext 1, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 1, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 1, con il segnaposto di esempio {{example}}."}', '{"de": "Beispieltitel Benachrichtigung 1", "fr": "Exemple de titre notification 1", "it": "Esempio di titolo notifica 1"}', '{"de": "Dies ist eine Beispielbenachrichtigung.", "fr": "Ceci est une notification d''exemple.", "it": "Questa è una notifica di esempio."}', '{"de": "Beispiel Benachrichtigung 1", "fr": "Exemple de notification 1", "it": "Esempio di notifica 1"}', '["requestTitle"]'),
+       ('a0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'EXAMPLE_NOTIFICATION_2', 1, '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}', '{"de": "Beispiel Email Benachrichtigungstext 2, mit Beispiel-Platzhalter {{example}}.", "fr": "Exemple de texte de notification par e-mail 2, avec l''espace réservé {{example}}.", "it": "Esempio di testo di notifica via e-mail 2, con il segnaposto di esempio {{example}}."}', '{"de": "Beispieltitel Benachrichtigung 2", "fr": "Exemple de titre notification 2", "it": "Esempio di titolo notifica 2"}', '{"de": "Dies ist eine Beispielbenachrichtigung, die als Beschreibung einen längeren Text besizt, der nicht auf einer Zeile Platz hat.", "fr": "Ceci est une notification d''exemple dont la description contient un texte plus long qui ne tient pas sur une seule ligne.", "it": "Questa è una notifica di esempio la cui descrizione contiene un testo più lungo che non sta su una sola riga."}', '{"de": "Beispiel Benachrichtigung 2", "fr": "Exemple de notification 2", "it": "Esempio di notifica 2"}',   '["requestTitle"]');
 
 -- ===============================================
 -- notification_batch
 -- ===============================================
-INSERT INTO notification_batch (id, archived, created_at, modified_at, template_id, generic_placeholders, status_code)
+INSERT INTO notification_batch (id, archived, created_at, modified_at, template_id, placeholders, status_code)
 VALUES ('b0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000001', '{"example": "-Platzhalter 1 ausgefüllt-"}', 'COMPLETE'),
        ('b0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000002', '{"example": "-Platzhalter 2 ausgefüllt-"}', 'COMPLETE');
 
@@ -285,34 +285,34 @@ VALUES ('c0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'b0000000-1
 -- notification_inbox
 -- ===============================================
 INSERT INTO notification_inbox (id, archived, created_at, modified_at, recipient_id, user_id, is_read)
-VALUES ('d0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000001', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', false),
-       ('d0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000002', 'f9fd1071-f276-58c8-be12-e1703c72576f', false),
-       ('d0000000-1111-2222-3333-000000000003', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000003', 'dd844010-7127-52cb-918a-4671506b1de1', false),
-       ('d0000000-1111-2222-3333-000000000004', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000004', '1b55eb14-beaf-5417-9313-ad8c58ed3694', false),
-       ('d0000000-1111-2222-3333-000000000005', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000005', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', false),
-       ('d0000000-1111-2222-3333-000000000006', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000006', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', false),
-       ('d0000000-1111-2222-3333-000000000007', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000007', 'c84f1403-717a-581a-acff-2584781e4c8f', false),
-       ('d0000000-1111-2222-3333-000000000008', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000008', '4d036f00-0a93-5504-9927-a4acd89c47ad', false),
-       ('d0000000-1111-2222-3333-000000000009', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000009', '012347f3-ecac-517d-97df-3093b4ca66ee', false),
-       ('d0000000-1111-2222-3333-000000000010', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000010', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', false),
-       ('d0000000-1111-2222-3333-000000000011', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000011', '1298de0e-610b-5243-b503-eaa49abc825c', false),
-       ('d0000000-1111-2222-3333-000000000012', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000012', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', false),
-       ('d0000000-1111-2222-3333-000000000013', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000013', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', false),
-       ('d0000000-1111-2222-3333-000000000014', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000014', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true),
-       ('d0000000-1111-2222-3333-000000000015', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000015', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', true),
-       ('d0000000-1111-2222-3333-000000000016', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000016', 'f9fd1071-f276-58c8-be12-e1703c72576f', true),
-       ('d0000000-1111-2222-3333-000000000017', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000017', 'dd844010-7127-52cb-918a-4671506b1de1', true),
-       ('d0000000-1111-2222-3333-000000000018', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000018', '1b55eb14-beaf-5417-9313-ad8c58ed3694', true),
-       ('d0000000-1111-2222-3333-000000000019', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000019', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', true),
-       ('d0000000-1111-2222-3333-000000000020', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000020', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', true),
-       ('d0000000-1111-2222-3333-000000000021', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000021', 'c84f1403-717a-581a-acff-2584781e4c8f', true),
-       ('d0000000-1111-2222-3333-000000000022', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000022', '4d036f00-0a93-5504-9927-a4acd89c47ad', true),
-       ('d0000000-1111-2222-3333-000000000023', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000023', '012347f3-ecac-517d-97df-3093b4ca66ee', true),
-       ('d0000000-1111-2222-3333-000000000024', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000024', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', true),
-       ('d0000000-1111-2222-3333-000000000025', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000025', '1298de0e-610b-5243-b503-eaa49abc825c', true),
-       ('d0000000-1111-2222-3333-000000000026', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000026', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', true),
-       ('d0000000-1111-2222-3333-000000000027', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000027', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', true),
-       ('d0000000-1111-2222-3333-000000000028', false, NOW(), NOW(), 'c0000000-1111-2222-3333-000000000028', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true);
+VALUES ('d0000000-1111-2222-3333-000000000001', false, NOW() + interval '01 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000001', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', false),
+       ('d0000000-1111-2222-3333-000000000002', false, NOW() + interval '02 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000002', 'f9fd1071-f276-58c8-be12-e1703c72576f', false),
+       ('d0000000-1111-2222-3333-000000000003', false, NOW() + interval '03 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000003', 'dd844010-7127-52cb-918a-4671506b1de1', false),
+       ('d0000000-1111-2222-3333-000000000004', false, NOW() + interval '04 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000004', '1b55eb14-beaf-5417-9313-ad8c58ed3694', false),
+       ('d0000000-1111-2222-3333-000000000005', false, NOW() + interval '05 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000005', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', false),
+       ('d0000000-1111-2222-3333-000000000006', false, NOW() + interval '06 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000006', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', false),
+       ('d0000000-1111-2222-3333-000000000007', false, NOW() + interval '07 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000007', 'c84f1403-717a-581a-acff-2584781e4c8f', false),
+       ('d0000000-1111-2222-3333-000000000008', false, NOW() + interval '08 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000008', '4d036f00-0a93-5504-9927-a4acd89c47ad', false),
+       ('d0000000-1111-2222-3333-000000000009', false, NOW() + interval '09 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000009', '012347f3-ecac-517d-97df-3093b4ca66ee', false),
+       ('d0000000-1111-2222-3333-000000000010', false, NOW() + interval '10 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000010', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', false),
+       ('d0000000-1111-2222-3333-000000000011', false, NOW() + interval '11 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000011', '1298de0e-610b-5243-b503-eaa49abc825c', false),
+       ('d0000000-1111-2222-3333-000000000012', false, NOW() + interval '12 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000012', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', false),
+       ('d0000000-1111-2222-3333-000000000013', false, NOW() + interval '13 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000013', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', false),
+       ('d0000000-1111-2222-3333-000000000014', false, NOW() + interval '14 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000014', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true),
+       ('d0000000-1111-2222-3333-000000000015', false, NOW() + interval '15 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000015', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', true),
+       ('d0000000-1111-2222-3333-000000000016', false, NOW() + interval '16 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000016', 'f9fd1071-f276-58c8-be12-e1703c72576f', true),
+       ('d0000000-1111-2222-3333-000000000017', false, NOW() + interval '17 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000017', 'dd844010-7127-52cb-918a-4671506b1de1', true),
+       ('d0000000-1111-2222-3333-000000000018', false, NOW() + interval '18 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000018', '1b55eb14-beaf-5417-9313-ad8c58ed3694', true),
+       ('d0000000-1111-2222-3333-000000000019', false, NOW() + interval '19 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000019', 'd15e3043-677a-5bc7-907a-e6d23ba688b8', true),
+       ('d0000000-1111-2222-3333-000000000020', false, NOW() + interval '10 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000020', '6f7c9c09-7d03-5c9e-af39-557d4cc39d0a', true),
+       ('d0000000-1111-2222-3333-000000000021', false, NOW() + interval '21 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000021', 'c84f1403-717a-581a-acff-2584781e4c8f', true),
+       ('d0000000-1111-2222-3333-000000000022', false, NOW() + interval '22 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000022', '4d036f00-0a93-5504-9927-a4acd89c47ad', true),
+       ('d0000000-1111-2222-3333-000000000023', false, NOW() + interval '23 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000023', '012347f3-ecac-517d-97df-3093b4ca66ee', true),
+       ('d0000000-1111-2222-3333-000000000024', false, NOW() + interval '24 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000024', 'eeb98b83-82f4-543f-b2f0-fe2741584c07', true),
+       ('d0000000-1111-2222-3333-000000000025', false, NOW() + interval '25 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000025', '1298de0e-610b-5243-b503-eaa49abc825c', true),
+       ('d0000000-1111-2222-3333-000000000026', false, NOW() + interval '26 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000026', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', true),
+       ('d0000000-1111-2222-3333-000000000027', false, NOW() + interval '27 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000027', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', true),
+       ('d0000000-1111-2222-3333-000000000028', false, NOW() + interval '28 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000028', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true);
 
 -- ===============================================
 -- notification_dispatch

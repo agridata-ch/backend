@@ -3,7 +3,6 @@ package ch.agridata.notification.persistence;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
@@ -45,13 +44,13 @@ public class NotificationRecipientEntity extends AuditableEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "batch_id", nullable = false)
   private NotificationBatchEntity batch;
 
   @Column(name = "user_id")
   private UUID userId;
 
-  @Column(name = "email", length = 255)
+  @Column(name = "email")
   private String email;
 }

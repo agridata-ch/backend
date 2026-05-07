@@ -40,14 +40,14 @@ public class NotificationBatchService {
   @Transactional
   public void queueNotification(
       List<RecipientRequestDto> recipients, EventTypeCodeEnum eventTypeCode,
-      Map<String, String> genericPlaceholders
+      Map<String, String> placeholders
   ) {
     var template = templateRepository.findLatestByEventTypeCode(eventTypeCode.name())
         .orElseThrow(() -> new NotFoundException("No template found for event type: " + eventTypeCode));
 
     var batch = NotificationBatchEntity.builder()
         .template(template)
-        .genericPlaceholders(genericPlaceholders)
+        .placeholders(placeholders)
         .statusCode(NotificationBatchStatusEnum.PENDING)
         .build();
     batchRepository.persist(batch);

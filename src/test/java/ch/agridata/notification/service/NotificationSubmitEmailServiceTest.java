@@ -2,21 +2,18 @@ package ch.agridata.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import ch.agridata.aws.api.EmailApi;
+import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
-import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationDispatchEntity;
 import ch.agridata.notification.persistence.NotificationDispatchRepository;
 import ch.agridata.notification.persistence.NotificationDispatchStatusEnum;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
-import ch.agridata.notification.persistence.NotificationTemplateEntity;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for {@link NotificationSubmitEmailService}.
- * Verifies email dispatch logic, placeholder substitution, dispatch-entry creation,
- * and error handling without a real database or email infrastructure.
+ * Verifies email dispatch logic, dispatch-entry creation, and error handling without
+ * a real database or email infrastructure. Placeholder substitution is the
+ * responsibility of {@link NotificationPlaceholderService} and is tested separately.
  *
- * @CommentLastReviewed 2026-05-05
+ * @CommentLastReviewed 2026-05-08
  */
 @ExtendWith(MockitoExtension.class)
 class NotificationSubmitEmailServiceTest {
@@ -54,49 +52,48 @@ class NotificationSubmitEmailServiceTest {
     return NotificationRecipientEntity.builder().id(UUID.randomUUID()).email("test@example.com").build();
   }
 
-  private static NotificationTemplateEntity templateWith(String subject, String htmlText) {
-    return NotificationTemplateEntity.builder()
-        .id(UUID.randomUUID())
-        .emailSubject(new TranslationPersistenceDto(subject, null, null))
-        .emailText(new TranslationPersistenceDto(htmlText, null, null))
-        .build();
+  private static ResolvedNotificationTextsDto resolvedWith(String subject, String htmlText) {
+    return new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de(subject).build(),
+        TranslationDto.builder().de(htmlText).build(),
+        null
+    );
   }
 
-  private static NotificationTemplateEntity templateWithoutSubject() {
-    return NotificationTemplateEntity.builder().id(UUID.randomUUID()).emailText(new TranslationPersistenceDto("body", null, null)).build();
+  private static ResolvedNotificationTextsDto resolvedWithoutSubject() {
+    return new ResolvedNotificationTextsDto(null, null, null, TranslationDto.builder().de("body").build(), null);
   }
 
-  private static NotificationTemplateEntity templateWithoutEmailText() {
-    return NotificationTemplateEntity.builder()
-        .id(UUID.randomUUID())
-        .emailSubject(new TranslationPersistenceDto("subject", null, null))
-        .build();
+  private static ResolvedNotificationTextsDto resolvedWithoutEmailText() {
+    return new ResolvedNotificationTextsDto(null, null, TranslationDto.builder().de("subject").build(), null, null);
   }
 
   // ── tests ─────────────────────────────────────────────────────────────────
 
   @Test
-  void givenTemplateWithoutEmailSubject_whenDispatch_thenSkipsEmailAndReturnsTrue() {
-    var result = service.dispatch(recipient(), templateWithoutSubject(), Map.of());
+  void givenResolvedWithoutEmailSubject_whenDispatch_thenSkipsEmailAndReturnsTrue() {
+    var result = service.dispatch(recipient(), resolvedWithoutSubject());
 
     assertThat(result).isTrue();
     verifyNoInteractions(emailApi, dispatchRepository);
   }
 
   @Test
-  void givenTemplateWithoutEmailText_whenDispatch_thenSkipsEmailAndReturnsTrue() {
-    var result = service.dispatch(recipient(), templateWithoutEmailText(), Map.of());
+  void givenResolvedWithoutEmailText_whenDispatch_thenSkipsEmailAndReturnsTrue() {
+    var result = service.dispatch(recipient(), resolvedWithoutEmailText());
 
     assertThat(result).isTrue();
     verifyNoInteractions(emailApi, dispatchRepository);
   }
 
   @Test
-  void givenValidTemplate_whenDispatch_thenSubmitEmailCalledAndSubmittedDispatchPersisted() {
+  void givenValidResolved_whenDispatch_thenSubmitEmailCalledAndSubmittedDispatchPersisted() {
     var recipient = recipient();
-    var template = templateWith("Welcome", "<p>Hello</p>");
+    var resolved = resolvedWith("Welcome", "<p>Hello</p>");
 
-    var result = service.dispatch(recipient, template, Map.of());
+    var result = service.dispatch(recipient, resolved);
 
     assertThat(result).isTrue();
     verify(emailApi).submitEmail(recipient.getEmail(), "Welcome", "<p>Hello</p>");
@@ -108,21 +105,12 @@ class NotificationSubmitEmailServiceTest {
   }
 
   @Test
-  void givenPlaceholders_whenDispatch_thenSubjectAndBodyAreInterpolated() {
-    var template = templateWith("Hello {{name}}", "<p>Dear {{name}}, your ID is {{id}}.</p>");
+  void givenResolvedDeFields_whenDispatch_thenSubjectAndBodyTakenFromGermanField() {
+    var resolved = resolvedWith("Hallo Hans", "<p>Lieber Hans, deine ID ist 42.</p>");
 
-    service.dispatch(recipient(), template, Map.of("name", "Hans", "id", "42"));
+    service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail(anyString(), eq("Hello Hans"), eq("<p>Dear Hans, your ID is 42.</p>"));
-  }
-
-  @Test
-  void givenHtmlBody_whenDispatch_thenTextBodyStripsHtmlTags() {
-    var template = templateWith("Subject", "<p>Plain <b>text</b></p>");
-
-    service.dispatch(recipient(), template, Map.of());
-
-    verify(emailApi).submitEmail(anyString(), anyString(), eq("<p>Plain <b>text</b></p>"));
+    verify(emailApi).submitEmail("test@example.com", "Hallo Hans", "<p>Lieber Hans, deine ID ist 42.</p>");
   }
 
   @Test
@@ -131,7 +119,7 @@ class NotificationSubmitEmailServiceTest {
     var cause = new RuntimeException("SES error");
     doThrow(new ExternalWebServiceException("dispatch failed", cause)).when(emailApi).submitEmail(any(), any(), any());
 
-    var result = service.dispatch(recipient, templateWith("Subject", "Body"), Map.of());
+    var result = service.dispatch(recipient, resolvedWith("Subject", "Body"));
 
     assertThat(result).isFalse();
     verify(dispatchRepository).persist(dispatchCaptor.capture());
@@ -145,7 +133,7 @@ class NotificationSubmitEmailServiceTest {
   void givenEmailApiFailsWithNullMessage_whenDispatch_thenErrorStoredAsUnknown() {
     doThrow(new ExternalWebServiceException(null, new RuntimeException("cause"))).when(emailApi).submitEmail(any(), any(), any());
 
-    service.dispatch(recipient(), templateWith("Subject", "Body"), Map.of());
+    service.dispatch(recipient(), resolvedWith("Subject", "Body"));
 
     verify(dispatchRepository).persist(dispatchCaptor.capture());
     assertThat(dispatchCaptor.getValue().getError()).isEqualTo("Unknown error");
@@ -156,7 +144,7 @@ class NotificationSubmitEmailServiceTest {
     String longMessage = "e".repeat(2000);
     doThrow(new ExternalWebServiceException(longMessage, new RuntimeException("cause"))).when(emailApi).submitEmail(any(), any(), any());
 
-    service.dispatch(recipient(), templateWith("Subject", "Body"), Map.of());
+    service.dispatch(recipient(), resolvedWith("Subject", "Body"));
 
     verify(dispatchRepository).persist(dispatchCaptor.capture());
     assertThat(dispatchCaptor.getValue().getError()).hasSize(1000);

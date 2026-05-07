@@ -17,6 +17,7 @@ import ch.agridata.notification.persistence.NotificationDispatchRepository;
 import ch.agridata.notification.persistence.NotificationDispatchStatusEnum;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
+import ch.agridata.notification.service.NotificationPlaceholderService;
 import ch.agridata.notification.service.NotificationSubmitEmailService;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.InjectMock;
@@ -34,13 +35,14 @@ import org.junit.jupiter.api.Test;
  * Verifies that dispatch entries are correctly persisted in the database
  * for both successful and failed email submissions.
  *
- * @CommentLastReviewed 2026-05-05
+ * @CommentLastReviewed 2026-05-08
  */
 @QuarkusTest
 @RequiredArgsConstructor
 class NotificationSubmitEmailServiceTest {
 
   private final NotificationSubmitEmailService service;
+  private final NotificationPlaceholderService placeholderService;
   private final NotificationDispatchRepository dispatchRepository;
   private final EntityManager entityManager;
 
@@ -53,11 +55,12 @@ class NotificationSubmitEmailServiceTest {
   private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
   private UUID recipientId;
+  private UUID batchId;
 
   @BeforeEach
   void setUpTestData() {
     when(securityIdentity.getUserId()).thenReturn(TEST_USER_ID);
-    recipientId = QuarkusTransaction.requiringNew().call(() -> {
+    QuarkusTransaction.requiringNew().run(() -> {
       var template = NotificationTemplateEntity.builder()
           .eventTypeCode("TEST_EVENT")
           .templateVersion(1)
@@ -69,32 +72,25 @@ class NotificationSubmitEmailServiceTest {
       var batch = NotificationBatchEntity.builder()
           .template(template)
           .statusCode(NotificationBatchStatusEnum.PENDING)
-          .genericPlaceholders(Map.of("name", "Hans"))
+          .placeholders(Map.of("name", "Hans"))
           .build();
       entityManager.persist(batch);
 
       var recipient = NotificationRecipientEntity.builder().batch(batch).userId(UUID.randomUUID()).email("test@example.com").build();
       entityManager.persist(recipient);
 
-      return recipient.getId();
+      recipientId = recipient.getId();
+      batchId = batch.getId();
     });
   }
 
   @Test
   void givenValidTemplateAndRecipient_whenDispatch_thenSubmittedDispatchEntityPersistedInDb() {
-    NotificationTemplateEntity template = QuarkusTransaction.requiringNew()
-        .call(() -> entityManager.createQuery(
-                "SELECT r.batch.template FROM NotificationRecipientEntity r WHERE r.id = :id",
-                NotificationTemplateEntity.class
-            )
-            .setParameter("id", recipientId)
-            .getSingleResult());
-
-    QuarkusTransaction.requiringNew().run(() -> service.dispatch(
-        entityManager.find(NotificationRecipientEntity.class, recipientId),
-        entityManager.find(NotificationTemplateEntity.class, template.getId()),
-        Map.of("name", "Hans")
-    ));
+    QuarkusTransaction.requiringNew().run(() -> {
+      var batch = entityManager.find(NotificationBatchEntity.class, batchId);
+      var resolved = placeholderService.resolve(batch);
+      service.dispatch(entityManager.find(NotificationRecipientEntity.class, recipientId), resolved);
+    });
 
     verify(emailApi).submitEmail("test@example.com", "Hello Hans", "<p>Dear Hans</p>");
 
@@ -112,19 +108,11 @@ class NotificationSubmitEmailServiceTest {
     doThrow(new ExternalWebServiceException("SES unavailable", new RuntimeException("timeout"))).when(emailApi)
         .submitEmail(any(), any(), any());
 
-    NotificationTemplateEntity template = QuarkusTransaction.requiringNew()
-        .call(() -> entityManager.createQuery(
-                "SELECT r.batch.template FROM NotificationRecipientEntity r WHERE r.id = :id",
-                NotificationTemplateEntity.class
-            )
-            .setParameter("id", recipientId)
-            .getSingleResult());
-
-    boolean result = QuarkusTransaction.requiringNew().call(() -> service.dispatch(
-        entityManager.find(NotificationRecipientEntity.class, recipientId),
-        entityManager.find(NotificationTemplateEntity.class, template.getId()),
-        Map.of()
-    ));
+    boolean result = QuarkusTransaction.requiringNew().call(() -> {
+      var batch = entityManager.find(NotificationBatchEntity.class, batchId);
+      var resolved = placeholderService.resolve(batch);
+      return service.dispatch(entityManager.find(NotificationRecipientEntity.class, recipientId), resolved);
+    });
 
     assertThat(result).isFalse();
 

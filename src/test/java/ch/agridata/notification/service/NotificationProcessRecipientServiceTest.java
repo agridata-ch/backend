@@ -6,13 +6,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.common.dto.TranslationDto;
+import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationDispatchRepository;
 import ch.agridata.notification.persistence.NotificationInboxEntity;
 import ch.agridata.notification.persistence.NotificationInboxRepository;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationRecipientRepository;
-import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import ch.agridata.notification.service.NotificationProcessRecipientService.RecipientProcessingResult;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Unit tests for {@link NotificationProcessRecipientService}.
  *
- * @CommentLastReviewed 2026-04-28
+ * @CommentLastReviewed 2026-05-08
  */
 @ExtendWith(MockitoExtension.class)
 class NotificationProcessRecipientServiceTest {
@@ -50,12 +50,13 @@ class NotificationProcessRecipientServiceTest {
   @Captor
   private ArgumentCaptor<NotificationInboxEntity> inboxCaptor;
 
-  private static final NotificationTemplateEntity TEMPLATE = NotificationTemplateEntity.builder()
-      .id(UUID.randomUUID())
-      .eventTypeCode("TEST_EVENT")
-      .emailSubject(new TranslationPersistenceDto("Betreff", null, null))
-      .emailText(new TranslationPersistenceDto("<p>Text</p>", null, null))
-      .build();
+  private static final ResolvedNotificationTextsDto RESOLVED = new ResolvedNotificationTextsDto(
+      TranslationDto.builder().de("Titel").build(),
+      TranslationDto.builder().de("Text").build(),
+      TranslationDto.builder().de("Betreff").build(),
+      TranslationDto.builder().de("<p>Text</p>").build(),
+      null
+  );
 
   @Test
   void givenUserRecipient_whenInboxNotYetCreated_thenCreatesInbox() {
@@ -65,10 +66,10 @@ class NotificationProcessRecipientServiceTest {
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(inboxRepository.existsByRecipientId(recipient.getId())).thenReturn(false);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     verify(inboxRepository).existsByRecipientId(recipient.getId());
-    verify(inboxRepository).persist((NotificationInboxEntity) inboxCaptor.capture());
+    verify(inboxRepository).persist(inboxCaptor.capture());
     assertThat(inboxCaptor.getValue().getUserId()).isEqualTo(userId);
     assertThat(inboxCaptor.getValue().isRead()).isFalse();
     assertThat(result.inboxCreated()).isTrue();
@@ -81,7 +82,7 @@ class NotificationProcessRecipientServiceTest {
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(inboxRepository.existsByRecipientId(recipient.getId())).thenReturn(true);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     verify(inboxRepository).existsByRecipientId(recipient.getId());
     verify(inboxRepository, never()).persist((NotificationInboxEntity) any());
@@ -94,12 +95,12 @@ class NotificationProcessRecipientServiceTest {
 
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(dispatchRepository.existsSentByRecipientId(recipient.getId())).thenReturn(false);
-    when(emailDispatchService.dispatch(recipient, TEMPLATE, null)).thenReturn(true);
+    when(emailDispatchService.dispatch(recipient, RESOLVED)).thenReturn(true);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     verify(dispatchRepository).existsSentByRecipientId(recipient.getId());
-    verify(emailDispatchService).dispatch(recipient, TEMPLATE, null);
+    verify(emailDispatchService).dispatch(recipient, RESOLVED);
     assertThat(result.emailSubmitted()).isTrue();
     assertThat(result.emailSubmissionFailed()).isFalse();
   }
@@ -111,10 +112,10 @@ class NotificationProcessRecipientServiceTest {
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(dispatchRepository.existsSentByRecipientId(recipient.getId())).thenReturn(true);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     verify(dispatchRepository).existsSentByRecipientId(recipient.getId());
-    verify(emailDispatchService, never()).dispatch(any(), any(), any());
+    verify(emailDispatchService, never()).dispatch(any(), any());
     assertThat(result.emailSubmitted()).isFalse();
     assertThat(result.emailSubmissionFailed()).isFalse();
   }
@@ -125,9 +126,9 @@ class NotificationProcessRecipientServiceTest {
 
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(dispatchRepository.existsSentByRecipientId(recipient.getId())).thenReturn(false);
-    when(emailDispatchService.dispatch(recipient, TEMPLATE, null)).thenReturn(false);
+    when(emailDispatchService.dispatch(recipient, RESOLVED)).thenReturn(false);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     assertThat(result.emailSubmissionFailed()).isTrue();
     assertThat(result.emailSubmitted()).isFalse();
@@ -141,9 +142,9 @@ class NotificationProcessRecipientServiceTest {
     when(recipientRepository.findByIdOptional(recipient.getId())).thenReturn(Optional.of(recipient));
     when(inboxRepository.existsByRecipientId(recipient.getId())).thenReturn(false);
     when(dispatchRepository.existsSentByRecipientId(recipient.getId())).thenReturn(false);
-    when(emailDispatchService.dispatch(recipient, TEMPLATE, null)).thenReturn(true);
+    when(emailDispatchService.dispatch(recipient, RESOLVED)).thenReturn(true);
 
-    RecipientProcessingResult result = service.processRecipient(recipient.getId(), TEMPLATE, null);
+    RecipientProcessingResult result = service.processRecipient(recipient.getId(), RESOLVED);
 
     verify(inboxRepository).existsByRecipientId(recipient.getId());
     verify(dispatchRepository).existsSentByRecipientId(recipient.getId());

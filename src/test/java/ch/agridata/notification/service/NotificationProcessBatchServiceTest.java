@@ -9,7 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.common.dto.TranslationDto;
+import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationBatchRepository;
 import ch.agridata.notification.persistence.NotificationBatchStatusEnum;
@@ -30,7 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * Verifies batch status transitions and delegation to {@link NotificationProcessRecipientService}
  * across all result combinations (inbox-only, email sent, email failed, mixed).
  *
- * @CommentLastReviewed 2026-04-29
+ * @CommentLastReviewed 2026-05-08
  */
 @ExtendWith(MockitoExtension.class)
 class NotificationProcessBatchServiceTest {
@@ -47,6 +48,9 @@ class NotificationProcessBatchServiceTest {
   @Mock
   private NotificationProcessRecipientService recipientProcessorService;
 
+  @Mock
+  private NotificationPlaceholderService placeholderService;
+
   // ----- helpers -----
 
   private static final RecipientProcessingResult INBOX_ONLY = new RecipientProcessingResult(true, false, false);
@@ -54,12 +58,18 @@ class NotificationProcessBatchServiceTest {
   private static final RecipientProcessingResult EMAIL_FAILED = new RecipientProcessingResult(false, false, true);
   private static final RecipientProcessingResult NOTHING = new RecipientProcessingResult(false, false, false);
 
+  private static final ResolvedNotificationTextsDto RESOLVED = new ResolvedNotificationTextsDto(
+      TranslationDto.builder().de("Titel").build(),
+      TranslationDto.builder().de("Text").build(),
+      TranslationDto.builder().de("Testbetreff").build(),
+      TranslationDto.builder().de("<p>Testinhalt</p>").build(),
+      null
+  );
+
   private static NotificationTemplateEntity buildTemplate() {
     return NotificationTemplateEntity.builder()
         .id(UUID.randomUUID())
         .eventTypeCode("TEST_EVENT")
-        .emailSubject(new TranslationPersistenceDto("Testbetreff", null, null))
-        .emailText(new TranslationPersistenceDto("<p>Testinhalt</p>", null, null))
         .build();
   }
 
@@ -83,13 +93,14 @@ class NotificationProcessBatchServiceTest {
 
     service.processPendingBatches();
 
-    verify(recipientProcessorService, never()).processRecipient(any(), any(), any());
+    verify(recipientProcessorService, never()).processRecipient(any(), any());
   }
 
   @Test
   void givenPendingBatchWithNoRecipients_whenProcessPendingBatches_thenBatchSetToComplete() {
     var batch = buildBatch();
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of());
 
     service.processPendingBatches();
@@ -104,13 +115,14 @@ class NotificationProcessBatchServiceTest {
     var r2 = buildRecipient(batch);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of(r1, r2));
-    when(recipientProcessorService.processRecipient(eq(r1.getId()), any(), any())).thenReturn(INBOX_ONLY);
-    when(recipientProcessorService.processRecipient(eq(r2.getId()), any(), any())).thenReturn(INBOX_ONLY);
+    when(recipientProcessorService.processRecipient(eq(r1.getId()), any())).thenReturn(INBOX_ONLY);
+    when(recipientProcessorService.processRecipient(eq(r2.getId()), any())).thenReturn(INBOX_ONLY);
 
     service.processPendingBatches();
 
-    verify(recipientProcessorService, times(2)).processRecipient(any(), any(), any());
+    verify(recipientProcessorService, times(2)).processRecipient(any(), any());
     assertThat(batch.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.COMPLETE);
   }
 
@@ -121,9 +133,10 @@ class NotificationProcessBatchServiceTest {
     var r2 = buildRecipient(batch);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of(r1, r2));
-    when(recipientProcessorService.processRecipient(eq(r1.getId()), any(), any())).thenReturn(EMAIL_SENT);
-    when(recipientProcessorService.processRecipient(eq(r2.getId()), any(), any())).thenReturn(EMAIL_SENT);
+    when(recipientProcessorService.processRecipient(eq(r1.getId()), any())).thenReturn(EMAIL_SENT);
+    when(recipientProcessorService.processRecipient(eq(r2.getId()), any())).thenReturn(EMAIL_SENT);
 
     service.processPendingBatches();
 
@@ -136,8 +149,9 @@ class NotificationProcessBatchServiceTest {
     var r1 = buildRecipient(batch);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of(r1));
-    when(recipientProcessorService.processRecipient(eq(r1.getId()), any(), any())).thenReturn(EMAIL_FAILED);
+    when(recipientProcessorService.processRecipient(eq(r1.getId()), any())).thenReturn(EMAIL_FAILED);
 
     service.processPendingBatches();
 
@@ -151,9 +165,10 @@ class NotificationProcessBatchServiceTest {
     var r2 = buildRecipient(batch);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of(r1, r2));
-    when(recipientProcessorService.processRecipient(eq(r1.getId()), any(), any())).thenReturn(EMAIL_SENT);
-    when(recipientProcessorService.processRecipient(eq(r2.getId()), any(), any())).thenReturn(EMAIL_FAILED);
+    when(recipientProcessorService.processRecipient(eq(r1.getId()), any())).thenReturn(EMAIL_SENT);
+    when(recipientProcessorService.processRecipient(eq(r2.getId()), any())).thenReturn(EMAIL_FAILED);
 
     service.processPendingBatches();
 
@@ -165,6 +180,7 @@ class NotificationProcessBatchServiceTest {
     var batch = buildBatch();
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenThrow(new RuntimeException("DB error"));
 
     assertThatThrownBy(() -> service.processPendingBatches())
@@ -172,7 +188,7 @@ class NotificationProcessBatchServiceTest {
         .hasMessage("DB error");
 
     assertThat(batch.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.FAILED);
-    verify(recipientProcessorService, never()).processRecipient(any(), any(), any());
+    verify(recipientProcessorService, never()).processRecipient(any(), any());
   }
 
   @Test
@@ -181,8 +197,9 @@ class NotificationProcessBatchServiceTest {
     var r1 = buildRecipient(batch);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch));
+    when(placeholderService.resolve(batch)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch.getId())).thenReturn(List.of(r1));
-    when(recipientProcessorService.processRecipient(eq(r1.getId()), any(), any()))
+    when(recipientProcessorService.processRecipient(eq(r1.getId()), any()))
         .thenThrow(new RuntimeException("processor error"));
 
     assertThatThrownBy(() -> service.processPendingBatches())
@@ -200,13 +217,15 @@ class NotificationProcessBatchServiceTest {
     var r2 = buildRecipient(batch2);
 
     when(batchRepository.findPendingWithLock()).thenReturn(List.of(batch1, batch2));
+    when(placeholderService.resolve(batch1)).thenReturn(RESOLVED);
+    when(placeholderService.resolve(batch2)).thenReturn(RESOLVED);
     when(recipientRepository.findByBatchId(batch1.getId())).thenReturn(List.of(r1));
     when(recipientRepository.findByBatchId(batch2.getId())).thenReturn(List.of(r2));
-    when(recipientProcessorService.processRecipient(any(), any(), any())).thenReturn(NOTHING);
+    when(recipientProcessorService.processRecipient(any(), any())).thenReturn(NOTHING);
 
     service.processPendingBatches();
 
-    verify(recipientProcessorService, times(2)).processRecipient(any(), any(), any());
+    verify(recipientProcessorService, times(2)).processRecipient(any(), any());
     assertThat(batch1.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.COMPLETE);
     assertThat(batch2.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.COMPLETE);
   }
