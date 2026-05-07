@@ -1,14 +1,13 @@
 package ch.agridata.notification.service;
 
+import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationDispatchRepository;
 import ch.agridata.notification.persistence.NotificationInboxEntity;
 import ch.agridata.notification.persistence.NotificationInboxRepository;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationRecipientRepository;
-import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * in a previous (partially committed) run, it is silently skipped and no duplicate inbox entry
  * or email is produced.
  *
- * @CommentLastReviewed 2026-04-28
+ * @CommentLastReviewed 2026-05-08
  */
 @Slf4j
 @ApplicationScoped
@@ -39,18 +38,12 @@ public class NotificationProcessRecipientService {
    * does not yet exist, and dispatches an email if the recipient has an email address and no
    * successful dispatch record yet exists. Both operations are committed atomically.
    *
-   * @param recipientId         the ID of the recipient to process
-   * @param template            the pre-loaded notification template (read-only; fields must be
-   *                            initialized in the caller's transaction before this is invoked)
-   * @param genericPlaceholders placeholder values to substitute into the template
+   * @param recipientId               the ID of the recipient to process
+   * @param resolvedNotificationTexts the notification with all generic placeholders already substituted
    * @return the processing outcome for this recipient
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  public RecipientProcessingResult processRecipient(
-      UUID recipientId,
-      NotificationTemplateEntity template,
-      Map<String, String> genericPlaceholders
-  ) {
+  public RecipientProcessingResult processRecipient(UUID recipientId, ResolvedNotificationTextsDto resolvedNotificationTexts) {
 
     var recipient = recipientRepository.findByIdOptional(recipientId)
         .orElseThrow(() -> new IllegalStateException("Recipient not found: " + recipientId));
@@ -65,7 +58,7 @@ public class NotificationProcessRecipientService {
     boolean emailSent = false;
     boolean emailFailed = false;
     if (recipient.getEmail() != null && !dispatchRepository.existsSentByRecipientId(recipientId)) {
-      boolean success = emailDispatchService.dispatch(recipient, template, genericPlaceholders);
+      boolean success = emailDispatchService.dispatch(recipient, resolvedNotificationTexts);
       if (success) {
         emailSent = true;
       } else {

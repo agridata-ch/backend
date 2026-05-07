@@ -27,6 +27,7 @@ public class NotificationProcessBatchService {
   private final NotificationBatchRepository batchRepository;
   private final NotificationRecipientRepository recipientRepository;
   private final NotificationProcessRecipientService recipientProcessorService;
+  private final NotificationPlaceholderService placeholderService;
 
   /**
    * Loads all PENDING batches (with a row-level lock) and processes each one.
@@ -47,14 +48,14 @@ public class NotificationProcessBatchService {
 
   private void processBatch(NotificationBatchEntity batch) {
     try {
-      var template = batch.getTemplate();
+      var resolvedNotificationTexts = placeholderService.resolve(batch);
       var recipients = recipientRepository.findByBatchId(batch.getId());
       int inboxCreated = 0;
       int emailSubmitted = 0;
       int emailSubmissionFailed = 0;
 
       for (var recipient : recipients) {
-        var result = recipientProcessorService.processRecipient(recipient.getId(), template, batch.getGenericPlaceholders());
+        var result = recipientProcessorService.processRecipient(recipient.getId(), resolvedNotificationTexts);
         if (result.inboxCreated()) {
           inboxCreated++;
         }

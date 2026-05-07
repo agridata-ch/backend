@@ -1,19 +1,16 @@
 package ch.agridata.notification.dto;
 
+import ch.agridata.common.dto.TranslationDto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
  * Represents a user-facing inbox notification entry.
  *
- * @CommentLastReviewed 2026-04-22
+ * @CommentLastReviewed 2026-05-08
  */
 public record InboxEntryDto(
-    UUID id,
-    UUID recipientId,
-    UUID userId,
-    boolean isRead,
-    LocalDateTime createdAt
+    UUID id, TranslationDto title, TranslationDto text, UUID userId, boolean isRead, LocalDateTime createdAt
 ) {
 
 }

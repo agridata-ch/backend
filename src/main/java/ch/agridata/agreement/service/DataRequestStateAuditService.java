@@ -46,7 +46,7 @@ public class DataRequestStateAuditService {
       auditingService.logDataRequestWithdrawn(requestId);
     } else if (oldStateCode == DRAFT && newStateCode == IN_REVIEW) {
       auditingService.logDataRequestSubmitted(requestId);
-      notificationService.queueDataRequestInReview();
+      notificationService.queueDataRequestInReview(requestId);
     }
   }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 public record QueueNotificationRequestDto(
     @NotEmpty List<@Valid RecipientRequestDto> recipients,
     @NotNull EventTypeCodeEnum eventTypeCode,
-    Map<String, String> genericPlaceholders
+    Map<String, String> placeholders
 ) {
 
 }

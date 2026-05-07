@@ -68,7 +68,7 @@ class NotificationBatchServiceTest {
     verify(batchRepository).persist(batchCaptor.capture());
     var batch = batchCaptor.getValue();
     assertThat(batch.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.PENDING);
-    assertThat(batch.getGenericPlaceholders()).isEqualTo(placeholders);
+    assertThat(batch.getPlaceholders()).isEqualTo(placeholders);
     assertThat(batch.getTemplate()).isEqualTo(template);
 
     var recipientCaptor = ArgumentCaptor.forClass(NotificationRecipientEntity.class);

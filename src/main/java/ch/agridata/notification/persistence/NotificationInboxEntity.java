@@ -3,7 +3,6 @@ package ch.agridata.notification.persistence;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
@@ -23,7 +22,7 @@ import org.hibernate.annotations.SQLRestriction;
 /**
  * Represents a user-facing inbox entry for in-(web)app notifications.
  *
- * @CommentLastReviewed 2026-04-22
+ * @CommentLastReviewed 2026-05-08
  */
 @Entity
 @Table(name = "notification_inbox",
@@ -49,7 +48,7 @@ public class NotificationInboxEntity extends AuditableEntity {
   @Column(name = "id", nullable = false, updatable = false)
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "recipient_id", nullable = false)
   private NotificationRecipientEntity recipient;
 

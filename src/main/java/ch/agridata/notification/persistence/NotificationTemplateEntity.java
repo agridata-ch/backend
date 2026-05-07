@@ -23,7 +23,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Defines reusable message templates keyed to a notification event type.
  *
- * @CommentLastReviewed 2026-04-22
+ * @CommentLastReviewed 2026-05-08
  */
 @Entity
 @Table(name = "notification_template",
@@ -58,6 +58,10 @@ public class NotificationTemplateEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   private TranslationPersistenceDto emailText;
 
+  @Column(name = "webapp_title")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private TranslationPersistenceDto webappTitle;
+
   @Column(name = "webapp_text")
   @JdbcTypeCode(SqlTypes.JSON)
   private TranslationPersistenceDto webappText;
@@ -66,7 +70,7 @@ public class NotificationTemplateEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   private TranslationPersistenceDto mobileText;
 
-  @Column(name = "required_generic_placeholders")
+  @Column(name = "required_placeholders")
   @JdbcTypeCode(SqlTypes.JSON)
-  private List<String> requiredGenericPlaceholders;
+  private List<String> requiredPlaceholders;
 }

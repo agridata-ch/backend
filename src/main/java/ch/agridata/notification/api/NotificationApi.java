@@ -15,5 +15,5 @@ public interface NotificationApi {
   /**
    * Queues a notification batch for the given list of recipients by event type and generic placeholders.
    */
-  void queueNotification(List<RecipientRequestDto> recipients, EventTypeCodeEnum eventTypeCode, Map<String, String> genericPlaceholders);
+  void queueNotification(List<RecipientRequestDto> recipients, EventTypeCodeEnum eventTypeCode, Map<String, String> placeholders);
 }
