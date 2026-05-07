@@ -50,6 +50,8 @@ class ContractRevisionSignatureServiceTest {
   private ContractRevisionQueryService contractRevisionQueryService;
   @Mock
   private ContractRevisionPdfService contractRevisionPdfService;
+  @Mock
+  private AuditingService auditingService;
 
   private static final String USER_UID = "CHE123456789";
   private static final UUID USER_ID = UUID.randomUUID();
@@ -81,6 +83,8 @@ class ContractRevisionSignatureServiceTest {
 
     verify(otpChallengeService).verifyAndConsume(VERIFICATION_ID, USER_ID, CONTRACT_REVISION_ID, signatureSlotCode, OTP_CODE);
     verify(contractRevisionRepository).persist(nextRevision);
+    verify(auditingService)
+        .logContractRevisionSigned(CONTRACT_REVISION_ID, signatureSlotCode);
 
     assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
     assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(USER_ID);
@@ -112,6 +116,8 @@ class ContractRevisionSignatureServiceTest {
 
     ContractRevisionDto result = signatureService.signContractRevision(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
 
+    verify(auditingService)
+        .logContractRevisionSigned(CONTRACT_REVISION_ID, signatureSlotCode);
     assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(nextRevision.getId());
     assertThat(nextRevision.getConsumerSignatureUserId1()).isEqualTo(existingSignatureUUID);
     assertThat(nextRevision.getConsumerSignatureUserId2()).isEqualTo(USER_ID);

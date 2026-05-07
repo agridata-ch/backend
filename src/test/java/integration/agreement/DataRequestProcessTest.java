@@ -35,10 +35,13 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.auditing.api.ActionEnum;
+import ch.agridata.auditing.api.EntityTypeEnum;
 import ch.agridata.product.controller.DataProductController;
 import ch.agridata.product.dto.DataProductDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import integration.auditing.utils.AuditLogTestUtils;
 import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -57,6 +60,7 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class DataRequestProcessTest {
   private final ObjectMapper mapper = new ObjectMapper();
+  private final AuditLogTestUtils auditLogTestUtils;
 
   private static final String ADMIN_GLOBAL_ID = "test-admin-global-id";
   private static final String PDF_PATH = ContractRevisionController.PATH + "/{id}/pdf";
@@ -278,6 +282,42 @@ class DataRequestProcessTest {
         });
     assertThat(createdConsentRequests).hasSize(2).extracting(ConsentRequestCreatedDto::dataProducerUid)
         .containsExactlyInAnyOrderElementsOf(PRODUCER_B.getCompanyUids().stream().map(Uid::name).toList());
+
+    // Verify the last 11 audit log entries
+    verifyAuditEntry(0, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_ACTIVATED,
+        "Step 23: As Admin set status to active");
+    verifyAuditEntry(1, EntityTypeEnum.CONTRACT_REVISION, revisionId5, ActionEnum.CONTRACT_PDF_ELECTRONICALLY_SIGNED,
+        "Step 20/21: Contract PDF electronically signed (seal)");
+    verifyAuditEntry(2, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER,
+        "Step 18: As Provider set status to toBeActivated");
+    verifyAuditEntry(3, EntityTypeEnum.CONTRACT_REVISION, revisionId4, ActionEnum.CONTRACT_SECOND_PROVIDER_SLOT_SIGNED,
+        "Step 17: Provider 2 signed contract");
+    verifyAuditEntry(4, EntityTypeEnum.CONTRACT_REVISION, revisionId3, ActionEnum.CONTRACT_FIRST_PROVIDER_SLOT_SIGNED,
+        "Step 16: Provider 1 signed contract");
+    verifyAuditEntry(5, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER,
+        "Step 15: Consumer set status to toBeSignedByProvider");
+    verifyAuditEntry(6, EntityTypeEnum.CONTRACT_REVISION, revisionId2, ActionEnum.CONTRACT_SECOND_CONSUMER_SLOT_SIGNED,
+        "Step 14: Consumer 2 signed contract");
+    verifyAuditEntry(7, EntityTypeEnum.CONTRACT_REVISION, revisionId1, ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED,
+        "Step 13: Consumer 1 signed contract");
+    verifyAuditEntry(8, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_APPROVED,
+        "Step 10: Admin approved data request (TO_BE_SIGNED_BY_CONSUMER)");
+    verifyAuditEntry(9, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_SUBMITTED,
+        "Step 6: Consumer submitted data request (IN_REVIEW)");
+    verifyAuditEntry(10, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_REJECTED,
+        "Step 4: Consumer attempted to submit with invalid data");
+  }
+
+  private void verifyAuditEntry(int offset, EntityTypeEnum expectedEntityType, Object expectedEntityId, ActionEnum expectedAction,
+                                String stepDescription) {
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry(offset))
+        .as(stepDescription)
+        .satisfies(log -> {
+          assertThat(log.getEntityTypeCode()).isEqualTo(expectedEntityType.name());
+          assertThat(log.getEntityId()).isEqualTo(
+              expectedEntityId instanceof String ? UUID.fromString((String) expectedEntityId) : expectedEntityId);
+          assertThat(log.getActionCode()).isEqualTo(expectedAction.name());
+        });
   }
 
 }

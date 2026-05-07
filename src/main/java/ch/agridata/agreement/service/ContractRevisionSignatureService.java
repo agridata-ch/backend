@@ -37,6 +37,7 @@ public class ContractRevisionSignatureService {
   private final DataRequestStateService dataRequestStateService;
   private final ContractRevisionQueryService contractRevisionQueryService;
   private final ContractRevisionPdfService contractRevisionPdfService;
+  private final AuditingService auditingService;
 
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   @Transactional
@@ -102,6 +103,8 @@ public class ContractRevisionSignatureService {
     contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
 
+    auditingService.logContractRevisionSigned(contractRevisionId, signatureSlotCode);
+
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 
     if (hasAllRequiredConsumerSignatures(newRevision)) {
@@ -156,6 +159,8 @@ public class ContractRevisionSignatureService {
 
     contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
+
+    auditingService.logContractRevisionSigned(contractRevisionId, signatureSlotCode);
 
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 

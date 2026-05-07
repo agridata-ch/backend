@@ -39,7 +39,7 @@ public class ContractRevisionSealService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ManagedExecutor managedExecutor;
   private final ContractRevisionStorageService contractRevisionStorageService;
-  private final ContractRevisionPdfService contractRevisionPdfService;
+  private final AuditingService auditingService;
 
   public SealAttemptStateEnum getSealState(UUID contractRevisionId, boolean longPolling) {
     long deadline = System.currentTimeMillis() + 10_000;
@@ -114,6 +114,7 @@ public class ContractRevisionSealService {
       byte[] sealedPdf = bitSignatureApi.sign(unsealedPdf, adminGlobalId);
       contractRevisionStorageService.upload(contractRevisionId, sealedPdf);
       updateSealState(contractRevisionId, SealAttemptState.COMPLETED);
+      auditingService.logContractPdfElectronicallySigned(contractRevisionId);
     } catch (Exception e) {
       log.error("BIT seal failed for contractRevisionId={}: {}", contractRevisionId, e.getMessage(), e);
       updateSealState(contractRevisionId, SealAttemptState.FAILED);

@@ -44,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 public class DataRequestStateService {
 
   private final DataRequestQueryService dataRequestQueryService;
+  private final AuditingService auditingService;
 
   private static final List<AllowedTransition> ALLOWED_TRANSITIONS = List.of(
       new AllowedTransition(DRAFT, IN_REVIEW, Set.of(Actor.CONSUMER)),
@@ -97,9 +98,12 @@ public class DataRequestStateService {
   @RolesAllowed(PROVIDER_ROLE)
   public DataRequestDto setStateAsProvider(UUID requestId, DataRequestStateEnum state) {
     var entity = loadEntityForProvider(requestId);
+    var oldStateCode = entity.getStateCode();
     var newStateCode = toEntityState(state);
 
-    return setStateTo(entity, newStateCode, Actor.PROVIDER);
+    var dto = setStateTo(entity, newStateCode, Actor.PROVIDER);
+    dataRequestStateAuditService.auditProviderStatusTransition(requestId, oldStateCode, newStateCode);
+    return dto;
   }
 
   @RolesAllowed(ADMIN_ROLE)
