@@ -46,6 +46,7 @@ public class DataRequestSignatureTypeMutationService {
   private final DataRequestQueryService dataRequestQueryService;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ContractRevisionMapper contractRevisionMapper;
+  private final AuditingService auditingService;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
@@ -95,6 +96,8 @@ public class DataRequestSignatureTypeMutationService {
     verifyNoSignatureApplied(contractRevision, signatureUserId1Getter);
 
     signatureTypeSetter.accept(dataRequest, contractRevisionMapper.toEntitySignatureType(signatureType));
+
+    auditingService.logSignatureTypeChosen(dataRequest.getId(), signatureType, requiredState);
 
     return dataRequestEnrichmentService.toEnrichedDto(dataRequest);
   }
