@@ -4,6 +4,9 @@ agridata:
     sender-address: support@agridata.local
   agreement:
     contract-bucket-name: contracts
+    otp:
+      validation:
+        enabled: false
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:

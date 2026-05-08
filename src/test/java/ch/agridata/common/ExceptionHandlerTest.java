@@ -9,6 +9,10 @@ import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
+import ch.agridata.common.exceptions.OtpExpiredException;
+import ch.agridata.common.exceptions.OtpInvalidException;
+import ch.agridata.common.exceptions.OtpLockedException;
+import ch.agridata.common.exceptions.OtpResendCooldownException;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -18,6 +22,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.MDC;
@@ -171,6 +176,46 @@ class ExceptionHandlerTest {
     } else {
       assertThat(dto.debugMessage()).isNull();
     }
+  }
+
+  @Test
+  void handleOtpInvalidException() {
+    Response response = exceptionHandler.handleOtpInvalidException(new OtpInvalidException("Invalid OTP code."));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("OTP invalid");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_INVALID);
+  }
+
+  @Test
+  void handleOtpLockedException() {
+    Response response = exceptionHandler.handleOtpLockedException(new OtpLockedException("locked"));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("OTP locked");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_LOCKED);
+  }
+
+  @Test
+  void handleOtpExpiredException() {
+    Response response = exceptionHandler.handleOtpExpiredException(new OtpExpiredException("expired"));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("OTP expired");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_EXPIRED);
+  }
+
+  @Test
+  void handleOtpResendCooldownException() {
+    Response response = exceptionHandler.handleOtpResendCooldownException(new OtpResendCooldownException(30L));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("OTP resend cooldown active");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_RESEND_COOLDOWN);
   }
 
   private ConstraintViolation<?> mockConstraintViolation(String path, String message) {
