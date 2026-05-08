@@ -1,12 +1,16 @@
 package ch.agridata.aws.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.common.exceptions.ExternalWebServiceException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,6 +38,11 @@ class SmsSnsServiceTest {
 
   private static final String PHONE = "+41791234567";
   private static final String MESSAGE = "Sicherheitscode / Code Sécuritaire / Codice di sicurezza: 123456";
+
+  @BeforeEach
+  void setUp() {
+    smsSnsService.smsSendingEnabled = true;
+  }
 
   @Test
   void givenValidRequest_whenSendSms_thenPublishCalledWithCorrectData() {
@@ -86,5 +95,15 @@ class SmsSnsServiceTest {
     assertThatThrownBy(() -> smsSnsService.sendSms(PHONE, MESSAGE))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("Service temporarily unavailable");
+  }
+
+  @Test
+  void givenSendSmsDisabled_whenSendSms_thenNoPublishAndNoThrow() {
+    smsSnsService.smsSendingEnabled = false;
+
+    assertThatCode(() -> smsSnsService.sendSms(PHONE, MESSAGE)).doesNotThrowAnyException();
+
+    verify(snsClient, never()).publish(any(PublishRequest.class));
+    verifyNoInteractions(snsClient);
   }
 }

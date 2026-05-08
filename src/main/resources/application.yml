@@ -1,6 +1,13 @@
 agridata:
   exception-handling:
     return-debug: true
+  agreement:
+    otp:
+      validation:
+        enabled: true
+  aws:
+    send-sms:
+      enabled: true
 bit:
   signature:
     key-bearer: "BLW-Agridata"

@@ -152,6 +152,7 @@ class ContractRevisionTest {
 
     var challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BLV_1)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge1.challengeId());
 
     var response = verifyOtpChallenge(
         revisionId1.toString(),
@@ -172,6 +173,7 @@ class ContractRevisionTest {
 
     var challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_02, CONSUMER_BLV_2)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge2.challengeId());
 
     verifyOtpChallenge(
         revisionId2.toString(),
@@ -254,6 +256,7 @@ class ContractRevisionTest {
 
     var challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_01, PROVIDER_1)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge1.challengeId());
 
     var response = verifyOtpChallenge(
         revisionId1.toString(),
@@ -274,6 +277,7 @@ class ContractRevisionTest {
 
     var challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_02, PROVIDER_2)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge2.challengeId());
 
     verifyOtpChallenge(
         revisionId2.toString(),
