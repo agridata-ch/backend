@@ -1,3 +1,9 @@
+## [1.9.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.9...v1.9.0-rc.10) (2026-05-11)
+
+### Features
+
+* **notifications:** web notification text ([a8bf8ba](https://github.com/agridata-ch/backend/commit/a8bf8ba774d030e26a663c18c354daaeed6a59a2)), closes [DIGIB2-323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-323)
+
 ## [1.9.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.8...v1.9.0-rc.9) (2026-05-11)
 
 ### Features
