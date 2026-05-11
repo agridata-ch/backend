@@ -1,3 +1,9 @@
+## [1.9.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.10...v1.9.0-rc.11) (2026-05-11)
+
+### Features
+
+* **auditing:** enhance auditing for data request and contract revision states ([e70614e](https://github.com/agridata-ch/backend/commit/e70614e3a1d6e06601ec4955d2d0d3bb2fdbec2e)), closes [DIGIB2-322](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-322)
+
 ## [1.9.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.9...v1.9.0-rc.10) (2026-05-11)
 
 ### Features
