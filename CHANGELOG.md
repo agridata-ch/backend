@@ -1,3 +1,14 @@
+## [1.9.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.8...v1.9.0-rc.9) (2026-05-11)
+
+### Features
+
+* **notifications:** create web notification ([0c5fd2a](https://github.com/agridata-ch/backend/commit/0c5fd2ad78459401bdf31ce5c6c5d06dc193fc21)), closes [DIGIB2-323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-323)
+* **notifications:** send email proof of concept ([bee81dd](https://github.com/agridata-ch/backend/commit/bee81dd1f4131e9f05d504e6b1fb51e9272465e2)), closes [DIGIB2-1324](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1324)
+
+### Bug Fixes
+
+* **cicd:** increase owasp timeout ([f5bb9d2](https://github.com/agridata-ch/backend/commit/f5bb9d2aeb6df9076a548d67d02af989a364b2c3))
+
 ## [1.9.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.7...v1.9.0-rc.8) (2026-05-05)
 
 ### Features
