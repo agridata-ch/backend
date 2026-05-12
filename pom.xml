@@ -13,19 +13,20 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.35.2</quarkus.platform.version>
+        <quarkus.platform.version>3.35.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version> <!-- or latest -->
-        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
         <plexus-utils.version>4.0.3</plexus-utils.version>
         <lombok.version>1.18.42</lombok.version>
         <assertj.version>3.27.7</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.4.1</archunit-junit5.version>
         <wiremock.version>1.6.1</wiremock.version>
-        <guava.version>33.5.0-jre</guava.version>
+        <guava.version>33.6.0-jre</guava.version>
+        <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.39</swagger-parser.version>
         <pdfbox.version>3.0.7</pdfbox.version>
@@ -35,9 +36,9 @@
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
         <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>13.3.0</checkstyle.version>
+        <checkstyle.version>13.4.2</checkstyle.version>
         <dependency-check-maven.version>12.2.0</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.21.0</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.22.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>
@@ -107,6 +108,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
@@ -194,6 +200,10 @@
         <dependency>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
