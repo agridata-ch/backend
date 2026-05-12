@@ -20,10 +20,19 @@ To launch the application in development mode:
 mvn quarkus:dev -Dquarkus.profile=local
 ```
 
+**If working on Windows: ensure Docker Desktop is running before running the above command.**
+
 This will automatically spin up:
 
 - A PostgreSQL database
 - A Keycloak instance with the agate_realm.json imported
+
+If you are using **Windows Powershell** and encounter an error like `unknown lifecyle phase ".profile=local"`, use the
+following command instead:
+
+```powershell
+mvn quarkus:dev --define quarkus.profile=local
+```
 
 ## Quarkus Dev UI
 
