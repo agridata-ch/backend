@@ -1,3 +1,9 @@
+## [1.9.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.12...v1.9.0-rc.13) (2026-05-12)
+
+### Features
+
+* **agreement:** add sms otp validation ([4fb37b2](https://github.com/agridata-ch/backend/commit/4fb37b2d1d9fb39bf085c14c7213a04a141e741c)), closes [DIGIB2-1285](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1285)
+
 ## [1.9.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.11...v1.9.0-rc.12) (2026-05-12)
 
 ### Features
