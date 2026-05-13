@@ -33,7 +33,7 @@ public class NotificationProcessBatchService {
    * Loads all PENDING batches (with a row-level lock) and processes each one.
    * The batch status transitions are committed atomically when this transaction completes.
    */
-  @Transactional
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void processPendingBatches() {
     List<NotificationBatchEntity> pendingBatches = batchRepository.findPendingWithLock();
 
