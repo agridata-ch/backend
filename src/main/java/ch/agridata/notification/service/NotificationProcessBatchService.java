@@ -26,7 +26,7 @@ public class NotificationProcessBatchService {
 
   private final NotificationBatchRepository batchRepository;
   private final NotificationRecipientRepository recipientRepository;
-  private final NotificationProcessRecipientService recipientProcessorService;
+  private final NotificationProcessRecipientService processRecipientService;
   private final NotificationPlaceholderService placeholderService;
 
   /**
@@ -55,7 +55,7 @@ public class NotificationProcessBatchService {
       int emailSubmissionFailed = 0;
 
       for (var recipient : recipients) {
-        var result = recipientProcessorService.processRecipient(recipient.getId(), resolvedNotificationTexts);
+        var result = processRecipientService.processRecipient(recipient.getId(), resolvedNotificationTexts);
         if (result.inboxCreated()) {
           inboxCreated++;
         }

@@ -33,7 +33,7 @@ public class NotificationSubmitEmailService {
 
   private String emailHtmlTemplate;
 
-  private static final String EMAIL_TEMPLATE_PATH = "notification/email-template-full.html";
+  private static final String EMAIL_TEMPLATE_PATH = "notification/email-template.html";
   private static final String CONTENT_PLACEHOLDER = "{{content}}";
 
   public boolean dispatch(NotificationRecipientEntity recipient, ResolvedNotificationTextsDto resolvedNotificationTexts) {
@@ -76,13 +76,8 @@ public class NotificationSubmitEmailService {
   private String buildMultilingualBody(ResolvedNotificationTextsDto text) {
     String content = Stream.of(text.emailText().de(), text.emailText().fr(), text.emailText().it())
         .filter(part -> part != null && !part.isBlank())
-        .collect(Collectors.joining());
+        .collect(Collectors.joining("\n\n--------\n\n"));
     return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, content);
-  }
-
-  /** Returns the raw input stream for the email HTML template, or {@code null} if not found. */
-  protected InputStream openTemplateResource() {
-    return getClass().getClassLoader().getResourceAsStream(EMAIL_TEMPLATE_PATH);
   }
 
   @PostConstruct
@@ -95,5 +90,9 @@ public class NotificationSubmitEmailService {
     } catch (IOException e) {
       throw new IllegalStateException("Failed to load email template: " + EMAIL_TEMPLATE_PATH, e);
     }
+  }
+
+  protected InputStream openTemplateResource() {
+    return getClass().getClassLoader().getResourceAsStream(EMAIL_TEMPLATE_PATH);
   }
 }

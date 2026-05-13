@@ -5,16 +5,24 @@ import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationInboxEntity;
+import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Substitutes placeholders into values used by notification templates.
  *
- * @CommentLastReviewed 2026-05-08
+ * @CommentLastReviewed 2026-05-18
  */
 @ApplicationScoped
 public class NotificationPlaceholderService {
+
+  private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*(\\w+)\\s*}}");
 
   public ResolvedNotificationTextsDto resolve(NotificationBatchEntity batch) {
     var template = batch.getTemplate();
@@ -42,6 +50,32 @@ public class NotificationPlaceholderService {
         .fr(substitute(translations.fr(), placeholders))
         .it(substitute(translations.it(), placeholders))
         .build();
+  }
+
+  /**
+   * Collects all placeholder names referenced via {@code {{name}}} in the template's
+   * {@code emailSubject}, {@code emailText}, {@code webappText} and {@code mobileText}.
+   * Insertion order is preserved (de → fr → it per field, fields in the listed order).
+   */
+  public Set<String> extractRequiredPlaceholders(NotificationTemplateEntity template) {
+    Set<String> names = new LinkedHashSet<>();
+    Stream.of(template.getEmailSubject(), template.getEmailText(), template.getWebappText(), template.getMobileText())
+        .forEach(translation -> collectPlaceholderNames(translation, names));
+    return names;
+  }
+
+  private static void collectPlaceholderNames(TranslationPersistenceDto translation, Set<String> sink) {
+    if (translation == null) {
+      return;
+    }
+    Stream.of(translation.de(), translation.fr(), translation.it())
+        .filter(text -> text != null && !text.isBlank())
+        .forEach(text -> {
+          Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
+          while (matcher.find()) {
+            sink.add(matcher.group(1));
+          }
+        });
   }
 
   private static String substitute(String text, Map<String, String> placeholders) {

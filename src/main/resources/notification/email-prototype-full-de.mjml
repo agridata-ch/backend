@@ -25,9 +25,8 @@
       <mj-section
         css-class="header-section"
         background-color="#FFFFFF"
-        border-radius="6px 6px 0 0"
+        border-radius="6px"
         border="1px solid #D1D5DC"
-        border-bottom="2px solid #000000"
         padding="0"
       >
         <mj-column>
@@ -58,83 +57,17 @@
           >
             Ein neuer Antrag wurde zur Kontrolle eingereicht. Bitte prüfen Sie diesen im Admin-Portal.
           </mj-text>
-        </mj-column>
-      </mj-section>
-      <mj-section
-        css-class="header-section"
-        background-color="#FFFFFF"
-        border-radius="0"
-        border="1px solid #D1D5DC"
-        border-top="0"
-        border-bottom="2px solid #000000"
-        padding="0"
-      >
-        <mj-column>
-          <mj-text
-            css-class="header-text"
-            font-size="36px"
-            font-weight="bold"
-            color="#263645"
-            padding="24px 40px"
+          <mj-text font-size="16px" font-weight="bold" padding="0 40px 4px 40px">Antragsname:</mj-text>
+          <mj-text font-size="16px" padding="0 40px 24px 40px">{{ dataRequestTitleDe }}</mj-text>
+          <mj-button
+            href="https://agridata.ch"
+            background-color="#3366CC"
+            color="#FFFFFF"
+            border-radius="6px"
+            padding="20px"
           >
-            Nouvelle demande de
-          </mj-text>
-
-          <mj-text
-            css-class="header-text"
-            font-size="36px"
-            font-weight="bold"
-            color="#263645"
-            padding="0 40px 24px 40px"
-          >
-            {{ dataConsumer }}
-          </mj-text>
-          <mj-text
-            css-class="header-text"
-            font-size="18px"
-            color="#263645"
-            padding="0 40px 24px 40px"
-          >
-            Une nouvelle demande a été soumise pour vérification. Veuillez la consulter dans le portail d’administration.
-          </mj-text>
-        </mj-column>
-      </mj-section>
-      <mj-section
-        css-class="header-section"
-        background-color="#FFFFFF"
-        border-radius="0 0 6px 6px"
-        border="1px solid #D1D5DC"
-        border-top="0"
-        padding="0"
-      >
-        <mj-column>
-          <mj-text
-            css-class="header-text"
-            font-size="36px"
-            font-weight="bold"
-            color="#263645"
-            padding="24px 40px"
-          >
-            Nuova richiesta da parte di
-          </mj-text>
-
-          <mj-text
-            css-class="header-text"
-            font-size="36px"
-            font-weight="bold"
-            color="#263645"
-            padding="0 40px 24px 40px"
-          >
-            {{ dataConsumer }}
-          </mj-text>
-          <mj-text
-            css-class="header-text"
-            font-size="18px"
-            color="#263645"
-            padding="0 40px 24px 40px"
-          >
-            Una nuova richiesta è stata inviata per la verifica. La preghiamo di controllarla nel portale amministrativo.
-          </mj-text>
+            Antrag öffnen
+          </mj-button>
         </mj-column>
       </mj-section>
       <mj-section full-width="full-width">

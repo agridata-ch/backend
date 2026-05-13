@@ -1,4 +1,5 @@
 agridata:
+  base-url: https://localhost:4200
   email:
     enabled: true
     sender-address: support@agridata.local
