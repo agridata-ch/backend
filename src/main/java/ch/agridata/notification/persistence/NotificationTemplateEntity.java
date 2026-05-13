@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Defines reusable message templates keyed to a notification event type.
  *
- * @CommentLastReviewed 2026-05-08
+ * @CommentLastReviewed 2026-05-18
  */
 @Entity
 @Table(name = "notification_template",
@@ -70,8 +69,4 @@ public class NotificationTemplateEntity extends AuditableEntity {
   @Column(name = "mobile_text")
   @JdbcTypeCode(SqlTypes.JSON)
   private TranslationPersistenceDto mobileText;
-
-  @Column(name = "required_placeholders")
-  @JdbcTypeCode(SqlTypes.JSON)
-  private List<String> requiredPlaceholders;
 }

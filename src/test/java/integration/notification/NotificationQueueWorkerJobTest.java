@@ -71,7 +71,13 @@ class NotificationQueueWorkerJobTest {
     batchService.queueNotification(
         List.of(new RecipientRequestDto(null, RECIPIENT_EMAIL)),
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
-        Map.of("consumer_name", "Test AG")
+        Map.of(
+            "dataRequestUrl", "/admin/" + UUID.randomUUID(),
+            "dataRequestTitleDe", "Testantrag DE",
+            "dataRequestTitleFr", "Demande de test FR",
+            "dataRequestTitleIt", "Richiesta di test IT",
+            "dataConsumer", "Test AG"
+        )
     );
 
     job.run();

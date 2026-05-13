@@ -7,6 +7,7 @@ import ch.agridata.notification.persistence.NotificationBatchRepository;
 import ch.agridata.notification.persistence.NotificationBatchStatusEnum;
 import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationRecipientRepository;
+import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import ch.agridata.notification.persistence.NotificationTemplateRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * Creates one {@link NotificationBatchEntity} per call and one {@link NotificationRecipientEntity}
  * per recipient entry.
  *
- * @CommentLastReviewed 2026-04-22
+ * @CommentLastReviewed 2026-05-18
  */
 @Slf4j
 @ApplicationScoped
@@ -31,11 +32,13 @@ public class NotificationBatchService {
   private final NotificationTemplateRepository templateRepository;
   private final NotificationBatchRepository batchRepository;
   private final NotificationRecipientRepository recipientRepository;
+  private final NotificationPlaceholderService placeholderService;
 
   /**
    * Creates a PENDING batch and individual recipient rows for the given event type and recipients.
    *
-   * @throws NotFoundException if no template exists for the given event type code
+   * @throws NotFoundException        if no template exists for the given event type code
+   * @throws IllegalArgumentException if any placeholder referenced by the template texts is missing from {@code placeholders}
    */
   @Transactional
   public void queueNotification(
@@ -45,6 +48,8 @@ public class NotificationBatchService {
   ) {
     var template = templateRepository.findLatestByEventTypeCode(eventTypeCode.name())
         .orElseThrow(() -> new NotFoundException("No template found for event type: " + eventTypeCode));
+
+    validateRequiredPlaceholdersPresent(eventTypeCode, placeholders, template);
 
     var batch = NotificationBatchEntity.builder()
         .template(template)
@@ -63,5 +68,18 @@ public class NotificationBatchService {
     }
 
     log.info("Queued notification batch for event type '{}' with {} recipient(s).", eventTypeCode, recipients.size());
+  }
+
+  private void validateRequiredPlaceholdersPresent(
+      EventTypeCodeEnum eventTypeCode,
+      Map<String, String> placeholders,
+      NotificationTemplateEntity template
+  ) {
+    var missing = placeholderService.extractRequiredPlaceholders(template).stream()
+        .filter(key -> !placeholders.containsKey(key))
+        .toList();
+    if (!missing.isEmpty()) {
+      throw new IllegalArgumentException("Missing required placeholders for event type " + eventTypeCode + ": " + missing);
+    }
   }
 }

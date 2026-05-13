@@ -15,6 +15,7 @@ import ch.agridata.user.dto.AdminUserDto;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Unit tests for {@link NotificationService}.
  *
- * @CommentLastReviewed 2026-05-11
+ * @CommentLastReviewed 2026-05-18
  */
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
@@ -39,19 +40,31 @@ class NotificationServiceTest {
   @Mock
   private UserApi userApi;
 
+  @BeforeEach
+  void setUp() {
+    service.baseUrl = "https://agridata.ch";
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────────────
+
+  private static DataRequestEntity entityWithId(UUID id) {
+    return DataRequestEntity.builder()
+        .id(id)
+        .title(new TranslationPersistenceDto("Titel DE", "Titre FR", "Titolo IT"))
+        .dataConsumerDisplayName("Bio Suisse")
+        .build();
+  }
+
+  // ── queueDataRequestInReview ──────────────────────────────────────────────
+
   @Test
   void givenMultipleAdmins_whenQueueDataRequestInReview_thenQueuesNotificationForEachAdminWithAllPlaceholders() {
     var admin1 = new AdminUserDto(UUID.randomUUID(), "admin1@example.com");
     var admin2 = new AdminUserDto(UUID.randomUUID(), null);
     when(userApi.getAdminUsers()).thenReturn(List.of(admin1, admin2));
 
-    var entity = DataRequestEntity.builder()
-        .id(UUID.randomUUID())
-        .title(new TranslationPersistenceDto("Titel DE", "Titre FR", "Titolo IT"))
-        .dataConsumerDisplayName("Bio Suisse")
-        .build();
-
-    service.queueDataRequestInReview(entity);
+    var id = UUID.randomUUID();
+    service.queueDataRequestInReview(entityWithId(id));
 
     @SuppressWarnings("unchecked") ArgumentCaptor<List<RecipientRequestDto>> recipientCaptor = ArgumentCaptor.forClass(List.class);
     @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> placeholderCaptor = ArgumentCaptor.forClass(Map.class);
@@ -64,37 +77,33 @@ class NotificationServiceTest {
     assertThat(recipientCaptor.getValue()).hasSize(2)
         .extracting(RecipientRequestDto::userId)
         .containsExactly(admin1.userId(), admin2.userId());
-    assertThat(recipientCaptor.getValue()).extracting(RecipientRequestDto::email).containsExactly("admin1@example.com", null);
+    assertThat(recipientCaptor.getValue()).extracting(RecipientRequestDto::email)
+        .containsExactly("admin1@example.com", null);
 
-    assertThat(placeholderCaptor.getValue()).containsEntry("data_request_title_de", "Titel DE")
-        .containsEntry("data_request_title_fr", "Titre FR")
-        .containsEntry("data_request_title_it", "Titolo IT")
-        .containsEntry("dataConsumer", "Bio Suisse");
+    assertThat(placeholderCaptor.getValue())
+        .containsEntry("dataRequestTitleDe", "Titel DE")
+        .containsEntry("dataRequestTitleFr", "Titre FR")
+        .containsEntry("dataRequestTitleIt", "Titolo IT")
+        .containsEntry("dataConsumer", "Bio Suisse")
+        .containsEntry("dataRequestUrl", "https://agridata.ch/admin/" + id);
   }
 
   @Test
   void givenNoAdmins_whenQueueDataRequestInReview_thenQueuesNotificationWithEmptyRecipients() {
     when(userApi.getAdminUsers()).thenReturn(List.of());
 
-    var entity = DataRequestEntity.builder()
-        .id(UUID.randomUUID())
-        .title(new TranslationPersistenceDto("Titel DE", "Titre FR", "Titolo IT"))
-        .dataConsumerDisplayName("Bio Suisse")
-        .build();
+    service.queueDataRequestInReview(entityWithId(UUID.randomUUID()));
 
-    service.queueDataRequestInReview(entity);
-
+    @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> placeholderCaptor = ArgumentCaptor.forClass(Map.class);
     verify(api).queueNotification(
-        List.of(), EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, Map.of(
-            "data_request_title_de",
-            "Titel DE",
-            "data_request_title_fr",
-            "Titre FR",
-            "data_request_title_it",
-            "Titolo IT",
-            "dataConsumer",
-            "Bio Suisse"
-        )
+        eq(List.of()),
+        eq(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW),
+        placeholderCaptor.capture()
     );
+    assertThat(placeholderCaptor.getValue())
+        .containsEntry("dataRequestTitleDe", "Titel DE")
+        .containsEntry("dataRequestTitleFr", "Titre FR")
+        .containsEntry("dataRequestTitleIt", "Titolo IT")
+        .containsEntry("dataConsumer", "Bio Suisse");
   }
 }
