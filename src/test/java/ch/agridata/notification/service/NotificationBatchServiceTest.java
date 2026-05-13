@@ -18,6 +18,7 @@ import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationRecipientRepository;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import ch.agridata.notification.persistence.NotificationTemplateRepository;
+import jakarta.enterprise.event.Event;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -56,6 +57,9 @@ class NotificationBatchServiceTest {
   @Mock
   private NotificationPlaceholderService placeholderService;
 
+  @Mock
+  private Event<NotificationBatchQueuedEvent> batchQueuedEvent;
+
   @Test
   void givenUserAndEmailRecipients_whenQueueNotification_thenPersistsBatchAndRecipients() {
     var template = NotificationTemplateEntity.builder()
@@ -81,6 +85,8 @@ class NotificationBatchServiceTest {
     verify(recipientRepository, times(2)).persist(recipientCaptor.capture());
     var persistedRecipients = recipientCaptor.getAllValues();
     assertThat(persistedRecipients).extracting(NotificationRecipientEntity::getEmail).containsExactlyInAnyOrder(null, "user@example.com");
+
+    verify(batchQueuedEvent).fire(any(NotificationBatchQueuedEvent.class));
   }
 
   @Test
@@ -116,6 +122,7 @@ class NotificationBatchServiceTest {
 
     verify(batchRepository, never()).persist(any(NotificationBatchEntity.class));
     verify(recipientRepository, never()).persist(any(NotificationRecipientEntity.class));
+    verify(batchQueuedEvent, never()).fire(any(NotificationBatchQueuedEvent.class));
   }
 
   @Test

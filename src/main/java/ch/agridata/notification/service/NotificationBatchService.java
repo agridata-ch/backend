@@ -10,6 +10,7 @@ import ch.agridata.notification.persistence.NotificationRecipientRepository;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import ch.agridata.notification.persistence.NotificationTemplateRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
@@ -20,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Queues notification batches for asynchronous processing by the outbox processor job.
  * Creates one {@link NotificationBatchEntity} per call and one {@link NotificationRecipientEntity}
- * per recipient entry.
+ * per recipient entry. After the surrounding transaction commits, a {@link NotificationBatchQueuedEvent}
+ * is fired so that {@code NotificationQueueWorkerJob} can immediately pick the batch up.
  *
  * @CommentLastReviewed 2026-05-18
  */
@@ -33,6 +35,7 @@ public class NotificationBatchService {
   private final NotificationBatchRepository batchRepository;
   private final NotificationRecipientRepository recipientRepository;
   private final NotificationPlaceholderService placeholderService;
+  private final Event<NotificationBatchQueuedEvent> batchQueuedEvent;
 
   /**
    * Creates a PENDING batch and individual recipient rows for the given event type and recipients.
@@ -68,6 +71,8 @@ public class NotificationBatchService {
     }
 
     log.info("Queued notification batch for event type '{}' with {} recipient(s).", eventTypeCode, recipients.size());
+
+    batchQueuedEvent.fire(new NotificationBatchQueuedEvent());
   }
 
   private void validateRequiredPlaceholdersPresent(
