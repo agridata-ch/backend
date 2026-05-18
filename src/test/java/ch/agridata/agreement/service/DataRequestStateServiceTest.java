@@ -5,6 +5,7 @@ import static ch.agridata.agreement.utils.DataRequestTestUtils.buildEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -15,6 +16,7 @@ import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.validation.Validator;
 import java.util.Optional;
@@ -65,13 +67,18 @@ class DataRequestStateServiceTest {
     var id = UUID.randomUUID();
 
     var entity = buildEntity();
+    var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder()
+        .stateCode(DataRequestStateEnum.IN_REVIEW)
+        .build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenReturn(expectedDto);
 
     var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.IN_REVIEW);
 
-    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     verify(dataRequestStateAuditService).auditConsumerStatusTransition(
         entity,
@@ -86,12 +93,18 @@ class DataRequestStateServiceTest {
     var id = UUID.randomUUID();
 
     var entity = buildEntity();
+    var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder()
+        .stateCode(DataRequestStateEnum.DRAFT)
+        .build();
+
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenReturn(expectedDto);
 
     var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.DRAFT);
 
-    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(dataRequestStateAuditService).auditAdminStatusTransition(
         entity,

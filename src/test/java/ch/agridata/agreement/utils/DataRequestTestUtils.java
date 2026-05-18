@@ -1,6 +1,7 @@
 package ch.agridata.agreement.utils;
 
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -36,6 +37,14 @@ public class DataRequestTestUtils {
 
   public static DataRequestUpdateDto.DataRequestUpdateDtoBuilder updateDtoBuilder() {
     return DataRequestUpdateDto.builder()
+        .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
+        .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
+        .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
+        .products(List.of(PRODUCT_ID));
+  }
+
+  public static DataRequestDto.DataRequestDtoBuilder dataRequestDtoBuilder() {
+    return DataRequestDto.builder()
         .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
         .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
         .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
