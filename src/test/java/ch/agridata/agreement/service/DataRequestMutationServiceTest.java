@@ -5,6 +5,7 @@ import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +61,7 @@ class DataRequestMutationServiceTest {
   void givenValidInput_whenCreateDataRequestDraft_thenReturnMappedDto() {
     DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder().build();
     UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder().build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
@@ -70,10 +72,11 @@ class DataRequestMutationServiceTest {
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getProductById(PRODUCT_ID))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).build());
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class))).thenReturn(expectedDto);
 
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
-    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getHumanFriendlyId()).isEqualTo("AB57");
     assertThat(result).isEqualTo(expectedDto);
   }
@@ -87,15 +90,18 @@ class DataRequestMutationServiceTest {
     var updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(updateProductId))
         .build();
+    var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder().build();
+
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(dataProductApi.getProductById(updateProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(updateProductId).build());
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class))).thenReturn(expectedDto);
 
     var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
 
-    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     assertThat(result).isEqualTo(expectedDto);
   }
@@ -108,16 +114,21 @@ class DataRequestMutationServiceTest {
     var updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(PRODUCT_ID))
         .build();
+    var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder()
+        .products(List.of(PRODUCT_ID))
+        .build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(dataProductApi.getProductById(PRODUCT_ID))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
             .dataSourceSystemCode("AGIS").build());
-    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(DataRequestDto.builder().build());
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(expectedDto);
 
     var result = dataRequestMutationService.updateDataRequestDetails(id, updateDto);
-    assertThat(result).isNotNull();
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    assertThat(dataRequestEntityCaptor.getValue().getDataProducts().getFirst().getDataProductId()).isEqualTo(PRODUCT_ID);
+    assertThat(result).isEqualTo(expectedDto);
   }
 
   @Test
@@ -240,6 +251,10 @@ class DataRequestMutationServiceTest {
     DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of())
         .build();
+    DataRequestDto expectedDto = DataRequestTestUtils.dataRequestDtoBuilder()
+        .products(List.of())
+        .build();
+
     UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
@@ -249,10 +264,12 @@ class DataRequestMutationServiceTest {
     )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+    when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
+        .thenReturn(expectedDto);
 
     var result = dataRequestMutationService.createDataRequestDraft(dto);
 
-    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getHumanFriendlyId()).isEqualTo("AB57");
     assertThat(result).isEqualTo(expectedDto);
   }
