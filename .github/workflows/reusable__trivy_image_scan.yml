@@ -34,7 +34,7 @@ jobs:
         run: docker build -t agridata-backend:trivy .
 
       - name: Run Trivy image scan
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: agridata-backend:trivy
           format: table
