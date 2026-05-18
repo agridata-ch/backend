@@ -1,3 +1,9 @@
+## [1.9.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.15...v1.9.0-rc.16) (2026-05-18)
+
+### Features
+
+* **notification:** trigger notification job ([919ce6d](https://github.com/agridata-ch/backend/commit/919ce6d8c0ce1f88823626a05a7266307764a025)), closes [DIGIB2-1363](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1363)
+
 ## [1.9.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.14...v1.9.0-rc.15) (2026-05-18)
 
 ### Features
