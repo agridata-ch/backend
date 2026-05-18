@@ -1,3 +1,9 @@
+## [1.9.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.13...v1.9.0-rc.14) (2026-05-18)
+
+### Features
+
+* **deps:** update dependencies ([3e6159b](https://github.com/agridata-ch/backend/commit/3e6159b2373f438b6570cdbae0c625409c36e61b))
+
 ## [1.9.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.12...v1.9.0-rc.13) (2026-05-12)
 
 ### Features
