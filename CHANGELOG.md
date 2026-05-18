@@ -1,3 +1,9 @@
+## [1.9.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.14...v1.9.0-rc.15) (2026-05-18)
+
+### Features
+
+* **notifications:** first email notification trigger ([6e97e12](https://github.com/agridata-ch/backend/commit/6e97e12dc13078a05af33e8158e0751508830265)), closes [DIGIB2-1323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1323)
+
 ## [1.9.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.13...v1.9.0-rc.14) (2026-05-18)
 
 ### Features
