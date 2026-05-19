@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * Submits emails to be sent to a recipient using the configured {@link EmailApi} and
  * records the outcome as a {@link NotificationDispatchEntity}.
  *
- * @CommentLastReviewed 2026-05-08
+ * @CommentLastReviewed 2026-05-18
  */
 @Slf4j
 @ApplicationScoped
@@ -35,6 +35,8 @@ public class NotificationSubmitEmailService {
 
   private static final String EMAIL_TEMPLATE_PATH = "notification/email-template.html";
   private static final String CONTENT_PLACEHOLDER = "{{content}}";
+  private static final String LANGUAGE_SEPARATOR =
+      "<hr style=\"margin:24px 0;border:0;border-top:1px solid #d1d5dc\">";
 
   public boolean dispatch(NotificationRecipientEntity recipient, ResolvedNotificationTextsDto resolvedNotificationTexts) {
 
@@ -76,7 +78,7 @@ public class NotificationSubmitEmailService {
   private String buildMultilingualBody(ResolvedNotificationTextsDto text) {
     String content = Stream.of(text.emailText().de(), text.emailText().fr(), text.emailText().it())
         .filter(part -> part != null && !part.isBlank())
-        .collect(Collectors.joining("\n\n--------\n\n"));
+        .collect(Collectors.joining(LANGUAGE_SEPARATOR));
     return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, content);
   }
 

@@ -39,7 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * a real database or email infrastructure. Placeholder substitution is the
  * responsibility of {@link NotificationPlaceholderService} and is tested separately.
  *
- * @CommentLastReviewed 2026-05-08
+ * @CommentLastReviewed 2026-05-18
  */
 @ExtendWith(MockitoExtension.class)
 class NotificationSubmitEmailServiceTest {
@@ -129,7 +129,7 @@ class NotificationSubmitEmailServiceTest {
   }
 
   @Test
-  void givenMultilingualEmailText_whenDispatch_thenBodyContainsAllLanguageParts() {
+  void givenMultilingualEmailText_whenDispatch_thenBodyContainsAllLanguagePartsSeparatedByHr() {
     var resolved = new ResolvedNotificationTextsDto(
         null,
         null,
@@ -142,8 +142,23 @@ class NotificationSubmitEmailServiceTest {
 
     verify(emailApi).submitEmail(
         anyString(), anyString(),
-        argThat(body -> body.contains("<p>DE text</p>") && body.contains("<p>FR text</p>") && body.contains("<p>IT text</p>"))
+        argThat(body -> body.contains("<p>DE text</p><hr") && body.contains("<p>FR text</p><hr") && body.contains("<p>IT text</p>"))
     );
+  }
+
+  @Test
+  void givenSingleLanguagePart_whenDispatch_thenBodyContainsNoSeparator() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").build(),
+        TranslationDto.builder().de("<p>DE only</p>").build(),
+        null
+    );
+
+    service.dispatch(recipient(), resolved);
+
+    verify(emailApi).submitEmail(anyString(), anyString(), argThat(body -> body.contains("<p>DE only</p>") && !body.contains("<hr")));
   }
 
   @Test
