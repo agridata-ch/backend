@@ -3,7 +3,9 @@ package ch.agridata.notification.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -61,5 +63,28 @@ class NotificationPlaceholderServiceTest {
     var result = service.extractRequiredPlaceholders(template);
 
     assertThat(result).containsExactly("name");
+  }
+
+  @Test
+  void givenValuesWithHtmlSpecialChars_whenResolve_thenEscapesEmailTextValuesButLeavesOtherChannelsUntouched() {
+    var template = NotificationTemplateEntity.builder()
+        .emailSubject(new TranslationPersistenceDto("Betreff {{title}}", null, null))
+        .emailText(new TranslationPersistenceDto(
+            "<p><strong>Antrag:</strong> {{title}} ({{consumer}})</p>", null, null))
+        .webappText(new TranslationPersistenceDto("Antrag: {{title}}", null, null))
+        .mobileText(new TranslationPersistenceDto("Antrag: {{title}}", null, null))
+        .build();
+    var batch = NotificationBatchEntity.builder()
+        .template(template)
+        .placeholders(Map.of("title", "Bio & Co <5%>", "consumer", "A \"B\" 'C'"))
+        .build();
+
+    var resolved = service.resolve(batch);
+
+    assertThat(resolved.emailText().de())
+        .isEqualTo("<p><strong>Antrag:</strong> Bio &amp; Co &lt;5%&gt; (A &quot;B&quot; &#39;C&#39;)</p>");
+    assertThat(resolved.emailSubject().de()).isEqualTo("Betreff Bio & Co <5%>");
+    assertThat(resolved.webappText().de()).isEqualTo("Antrag: Bio & Co <5%>");
+    assertThat(resolved.mobileText().de()).isEqualTo("Antrag: Bio & Co <5%>");
   }
 }

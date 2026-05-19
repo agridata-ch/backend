@@ -31,7 +31,7 @@ public class NotificationPlaceholderService {
         applyPlaceholders(template.getWebappTitle(), placeholders),
         applyPlaceholders(template.getWebappText(), placeholders),
         applyPlaceholders(template.getEmailSubject(), placeholders),
-        applyPlaceholders(template.getEmailText(), placeholders),
+        applyHtmlPlaceholders(template.getEmailText(), placeholders),
         applyPlaceholders(template.getMobileText(), placeholders)
     );
   }
@@ -41,14 +41,25 @@ public class NotificationPlaceholderService {
     return resolve(batch);
   }
 
-  public TranslationDto applyPlaceholders(TranslationPersistenceDto translations, Map<String, String> placeholders) {
+  private TranslationDto applyPlaceholders(TranslationPersistenceDto translations, Map<String, String> placeholders) {
     if (translations == null) {
       return null;
     }
     return TranslationDto.builder()
-        .de(substitute(translations.de(), placeholders))
-        .fr(substitute(translations.fr(), placeholders))
-        .it(substitute(translations.it(), placeholders))
+        .de(substitute(translations.de(), placeholders, false))
+        .fr(substitute(translations.fr(), placeholders, false))
+        .it(substitute(translations.it(), placeholders, false))
+        .build();
+  }
+
+  private TranslationDto applyHtmlPlaceholders(TranslationPersistenceDto translations, Map<String, String> placeholders) {
+    if (translations == null) {
+      return null;
+    }
+    return TranslationDto.builder()
+        .de(substitute(translations.de(), placeholders, true))
+        .fr(substitute(translations.fr(), placeholders, true))
+        .it(substitute(translations.it(), placeholders, true))
         .build();
   }
 
@@ -78,14 +89,26 @@ public class NotificationPlaceholderService {
         });
   }
 
-  private static String substitute(String text, Map<String, String> placeholders) {
+  private static String substitute(String text, Map<String, String> placeholders, boolean htmlEscapeValues) {
     if (text == null || placeholders == null || placeholders.isEmpty()) {
       return text;
     }
     String result = text;
     for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-      result = result.replace("{{" + entry.getKey() + "}}", entry.getValue());
+      String value = htmlEscapeValues ? htmlEscape(entry.getValue()) : entry.getValue();
+      result = result.replace("{{" + entry.getKey() + "}}", value);
     }
     return result;
+  }
+
+  private static String htmlEscape(String value) {
+    if (value == null) {
+      return "";
+    }
+    return value.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;")
+        .replace("'", "&#39;");
   }
 }
