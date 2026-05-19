@@ -1,3 +1,9 @@
+## [1.9.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.17...v1.9.0-rc.18) (2026-05-19)
+
+### Features
+
+* **data-products:** add paginated retrieval for data products with ([51af703](https://github.com/agridata-ch/backend/commit/51af7036d909c08e8eaf972ae7137a24326dc707)), closes [DIGIB2-1350](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1350)
+
 ## [1.9.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.16...v1.9.0-rc.17) (2026-05-19)
 
 ### Features
