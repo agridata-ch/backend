@@ -1,3 +1,13 @@
+## [1.9.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.16...v1.9.0-rc.17) (2026-05-19)
+
+### Features
+
+* **deps:** update trivy github action ([15b57a1](https://github.com/agridata-ch/backend/commit/15b57a1360e874ac8b99976a4c357b95eb9e006b))
+
+### Bug Fixes
+
+* **tests:** No longer expect dto as return from Mockito.verify() ([cf0e329](https://github.com/agridata-ch/backend/commit/cf0e329d7bb9c7481c7cd6c30b126011bee8aa5e)), closes [DIGIB2-1248](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1248)
+
 ## [1.9.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.15...v1.9.0-rc.16) (2026-05-18)
 
 ### Features
