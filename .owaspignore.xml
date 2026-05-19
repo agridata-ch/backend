@@ -37,4 +37,10 @@
     <suppress until="2026-05-31Z">
         <cve>CVE-2023-45142</cve>
     </suppress>
+
+    <!-- netty is pulled in transitively via quarkus-virtual-threads.
+     No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42582</cve>
+    </suppress>
 </suppressions>
