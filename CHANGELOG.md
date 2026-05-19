@@ -1,3 +1,9 @@
+## [1.9.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.18...v1.9.0-rc.19) (2026-05-19)
+
+### Features
+
+* **notification:** update email layout ([1d51758](https://github.com/agridata-ch/backend/commit/1d517587b83e9c689381e6062bd28cb4dbd625aa)), closes [DIGIB2-1259](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1259)
+
 ## [1.9.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.17...v1.9.0-rc.18) (2026-05-19)
 
 ### Features
