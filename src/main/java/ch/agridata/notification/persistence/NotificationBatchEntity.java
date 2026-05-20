@@ -63,4 +63,11 @@ public class NotificationBatchEntity extends AuditableEntity {
   @Enumerated(EnumType.STRING)
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private NotificationBatchStatusEnum statusCode;
+
+  @Column(name = "target_type_code", length = 50)
+  @Enumerated(EnumType.STRING)
+  private TargetTypeCodeEnum targetTypeCode;
+
+  @Column(name = "target_id")
+  private UUID targetId;
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
 import ch.agridata.notification.persistence.NotificationBatchRepository;
 import ch.agridata.notification.persistence.NotificationBatchStatusEnum;
 import ch.agridata.notification.service.NotificationBatchService;
@@ -69,6 +70,7 @@ class NotificationQueueWorkerJobTest {
 
   @Test
   void givenPendingBatch_whenObserverFires_thenEmailIsDeliveredAndBatchCompletes() throws Exception {
+    var requestId = UUID.randomUUID();
     agridataSecurityIdentity.setRunAsUserId(UUID.randomUUID());
     batchService.queueNotification(
         List.of(new RecipientRequestDto(null, RECIPIENT_EMAIL)),
@@ -79,7 +81,9 @@ class NotificationQueueWorkerJobTest {
             "dataRequestTitleFr", "Demande de test FR",
             "dataRequestTitleIt", "Richiesta di test IT",
             "dataConsumer", "Test AG"
-        )
+        ),
+        TargetTypeCodeEnum.DATA_REQUEST,
+        requestId
     );
 
     UUID batchId = (UUID) em.createNativeQuery("SELECT b.id FROM notification_batch b "

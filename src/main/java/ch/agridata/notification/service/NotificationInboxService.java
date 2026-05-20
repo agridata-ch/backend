@@ -4,6 +4,7 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.notification.dto.InboxEntryDto;
 import ch.agridata.notification.dto.MarkAsReadRequestDto;
+import ch.agridata.notification.mapper.NotificationTargetTypeMapper;
 import ch.agridata.notification.persistence.NotificationInboxEntity;
 import ch.agridata.notification.persistence.NotificationInboxRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,6 +25,7 @@ public class NotificationInboxService {
 
   private final NotificationInboxRepository inboxRepository;
   private final NotificationPlaceholderService placeholderService;
+  private final NotificationTargetTypeMapper targetTypeMapper;
 
   public PageResponseDto<InboxEntryDto> getInboxForUser(UUID userId, ResourceQueryDto query) {
     var pagedEntities = inboxRepository.findPageByUserId(userId, query);
@@ -44,14 +46,18 @@ public class NotificationInboxService {
   }
 
   private InboxEntryDto toDto(NotificationInboxEntity entity) {
-    var resolvedNotificationTexts = placeholderService.resolve(entity);
+    var batch = entity.getRecipient().getBatch();
+    var resolvedNotificationTexts = placeholderService.resolve(batch);
+
     return new InboxEntryDto(
         entity.getId(),
         resolvedNotificationTexts.webappTitle(),
         resolvedNotificationTexts.webappText(),
         entity.getUserId(),
         entity.isRead(),
-        entity.getCreatedAt()
+        entity.getCreatedAt(),
+        targetTypeMapper.toDtoEnum(batch.getTargetTypeCode()),
+        batch.getTargetId()
     );
   }
 }

@@ -4,6 +4,7 @@ import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.notification.api.NotificationApi;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
 import ch.agridata.user.api.UserApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
@@ -42,7 +43,8 @@ public class NotificationService {
         .stream()
         .map(admin -> new RecipientRequestDto(admin.userId(), admin.email()))
         .toList();
-    api.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, placeholders);
+    api.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, placeholders, TargetTypeCodeEnum.DATA_REQUEST,
+        request.getId());
   }
 
   private String buildDataRequestAdminUrl(UUID id) {
