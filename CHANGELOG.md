@@ -1,3 +1,9 @@
+## [1.9.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.20...v1.9.0-rc.21) (2026-05-20)
+
+### Features
+
+* **product:** remove unnecessary data product ([027b4b4](https://github.com/agridata-ch/backend/commit/027b4b4fdde54aebede94c04f56220c7339416df)), closes [DIGIB2-1400](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1400)
+
 ## [1.9.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.19...v1.9.0-rc.20) (2026-05-20)
 
 ### Features
