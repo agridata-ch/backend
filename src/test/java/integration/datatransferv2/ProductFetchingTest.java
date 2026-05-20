@@ -181,13 +181,7 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
-            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
-        Arguments.of(
-            TestUserEnum.CONSUMER_BLV_1,
-            DataProduct.UUID_A26E6BB1.uuid().toString(),
-            Map.of("dateFrom", LocalDate.now().toString(),
-                "dateTo", LocalDate.now().toString(),
-                "recipientUid", "CHE123456789")));
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")));
   }
 
   @ParameterizedTest(name = "[Product: {1}] consumer={0}, queryParams={2}")

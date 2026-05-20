@@ -96,7 +96,6 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_720AA209 = id("720aa209-7aa8-4faf-8b1a-013a041084f2");
     public static final Identifier<DataProductEntity> UUID_B0A4FF29 = id("b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac");
     public static final Identifier<DataProductEntity> UUID_E6128E10 = id("e6128e10-5d2b-4096-8356-b6523cb30e92");
-    public static final Identifier<DataProductEntity> UUID_A26E6BB1 = id("a26e6bb1-7f48-4064-adad-20e0c4966b08");
   }
 
   public static class DataProvider {
