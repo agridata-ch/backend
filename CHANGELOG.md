@@ -1,3 +1,9 @@
+## [1.9.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.19...v1.9.0-rc.20) (2026-05-20)
+
+### Features
+
+* **product:** update identitas data products ([b5f055f](https://github.com/agridata-ch/backend/commit/b5f055fa54f921832e68db02e55eb7a9c23835d0)), closes [DIGIB2-1400](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1400)
+
 ## [1.9.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.18...v1.9.0-rc.19) (2026-05-19)
 
 ### Features
