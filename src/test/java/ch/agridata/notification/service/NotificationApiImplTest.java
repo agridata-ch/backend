@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,9 +33,11 @@ class NotificationApiImplTest {
     var recipients = List.of(new RecipientRequestDto(UUID.randomUUID(), null));
     var eventTypeCode = EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW;
     var placeholders = Map.of("requestTitle", "Test");
+    var targetTypeCode = TargetTypeCodeEnum.DATA_REQUEST;
+    var targetId = UUID.randomUUID();
 
-    service.queueNotification(recipients, eventTypeCode, placeholders);
+    service.queueNotification(recipients, eventTypeCode, placeholders, targetTypeCode, targetId);
 
-    verify(batchService).queueNotification(recipients, eventTypeCode, placeholders);
+    verify(batchService).queueNotification(recipients, eventTypeCode, placeholders, targetTypeCode, targetId);
   }
 }

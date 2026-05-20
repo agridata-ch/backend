@@ -10,7 +10,9 @@ import java.util.UUID;
  * @CommentLastReviewed 2026-05-08
  */
 public record InboxEntryDto(
-    UUID id, TranslationDto title, TranslationDto text, UUID userId, boolean isRead, LocalDateTime createdAt
+    UUID id, TranslationDto title, TranslationDto text, UUID userId, boolean isRead, LocalDateTime createdAt,
+    TargetTypeCodeEnum targetType,
+    UUID targetId
 ) {
 
 }

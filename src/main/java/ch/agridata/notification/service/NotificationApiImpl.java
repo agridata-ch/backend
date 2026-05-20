@@ -3,9 +3,12 @@ package ch.agridata.notification.service;
 import ch.agridata.notification.api.NotificationApi;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
+import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,8 +29,10 @@ public class NotificationApiImpl implements NotificationApi {
   public void queueNotification(
       List<RecipientRequestDto> recipients,
       EventTypeCodeEnum eventTypeCode,
-      Map<String, String> placeholders
+      Map<String, String> placeholders,
+      @Nullable TargetTypeCodeEnum targetTypeCode,
+      @Nullable UUID targetId
   ) {
-    batchService.queueNotification(recipients, eventTypeCode, placeholders);
+    batchService.queueNotification(recipients, eventTypeCode, placeholders, targetTypeCode, targetId);
   }
 }

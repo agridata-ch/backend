@@ -243,9 +243,10 @@ VALUES ('a0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'EXAMPLE_NO
 -- ===============================================
 -- notification_batch
 -- ===============================================
-INSERT INTO notification_batch (id, archived, created_at, modified_at, template_id, placeholders, status_code)
-VALUES ('b0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000001', '{"example": "-Platzhalter 1 ausgefüllt-"}', 'COMPLETE'),
-       ('b0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000002', '{"example": "-Platzhalter 2 ausgefüllt-"}', 'COMPLETE');
+INSERT INTO notification_batch (id, archived, created_at, modified_at, template_id, placeholders, status_code, target_type_code, target_id)
+VALUES ('b0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000001', '{"example": "-Platzhalter 1 ausgefüllt-"}', 'COMPLETE', null, null),
+       ('b0000000-1111-2222-3333-000000000002', false, NOW(), NOW(), 'a0000000-1111-2222-3333-000000000002', '{"example": "-Platzhalter 2 ausgefüllt-"}', 'COMPLETE', null, null),
+       ('b0000000-1111-2222-3333-000000000003', false, NOW(), NOW(), '42b33361-5b85-46b3-b048-052e26f1ad43', '{"dataConsumer": "INTERNATIONAL CERTIFICATION BIO SUISSE AG", "dataRequestUrl": "http://localhost:4200/admin/dd70eef0-16be-4ae1-a8bd-fe0becdc8f03", "dataRequestTitleDe": "Basisdaten für Zertifizierung Bio Suisse", "dataRequestTitleFr": "Données de base pour la certification Bio Suisse", "dataRequestTitleIt": "Dati di base per la certificazione Bio Suisse"}', 'COMPLETE', 'DATA_REQUEST', '3da3a459-d3c2-48af-b8d0-02bc95146468');
 
 -- ===============================================
 -- notification_recipient
@@ -278,7 +279,8 @@ VALUES ('c0000000-1111-2222-3333-000000000001', false, NOW(), NOW(), 'b0000000-1
        ('c0000000-1111-2222-3333-000000000025', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '1298de0e-610b-5243-b503-eaa49abc825c', 'test-date@agridata.local'),
        ('c0000000-1111-2222-3333-000000000026', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', 'test-date@agridata.local'),
        ('c0000000-1111-2222-3333-000000000027', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', 'test-date@agridata.local'),
-       ('c0000000-1111-2222-3333-000000000028', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '0f56fb6d-f217-5ebb-aabc-c88117732e21', 'test-date@agridata.local');
+       ('c0000000-1111-2222-3333-000000000028', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000002', '0f56fb6d-f217-5ebb-aabc-c88117732e21', 'test-date@agridata.local'),
+       ('c0000000-1111-2222-3333-000000000029', false, NOW(), NOW(), 'b0000000-1111-2222-3333-000000000003', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', 'test-date@agridata.local');
 
 -- ===============================================
 -- notification_inbox
@@ -311,7 +313,8 @@ VALUES ('d0000000-1111-2222-3333-000000000001', false, NOW() + interval '01 micr
        ('d0000000-1111-2222-3333-000000000025', false, NOW() + interval '25 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000025', '1298de0e-610b-5243-b503-eaa49abc825c', true),
        ('d0000000-1111-2222-3333-000000000026', false, NOW() + interval '26 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000026', 'c961d6d8-fc8f-51f8-8940-ff75a90cfc89', true),
        ('d0000000-1111-2222-3333-000000000027', false, NOW() + interval '27 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000027', '50e3e41c-3f5f-5c50-887a-99a86d5e9038', true),
-       ('d0000000-1111-2222-3333-000000000028', false, NOW() + interval '28 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000028', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true);
+       ('d0000000-1111-2222-3333-000000000028', false, NOW() + interval '28 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000028', '0f56fb6d-f217-5ebb-aabc-c88117732e21', true),
+       ('d0000000-1111-2222-3333-000000000029', false, NOW() + interval '29 microseconds', NOW(), 'c0000000-1111-2222-3333-000000000029', 'd92e4c08-039f-532c-927f-aeabbc1a04f1', true);
 
 -- ===============================================
 -- notification_dispatch
