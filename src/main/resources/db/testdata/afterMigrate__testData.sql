@@ -162,13 +162,13 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     ('725e502d-ff8d-4d61-b1db-d9987f5b09ab', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', '0b42afb7-3683-4065-9cb3-396995a5be97'),
     ('d932c3f7-d960-4a96-a6ed-70086820115e', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'd10b898f-9796-4993-9654-8f092b97989d'),
     ('78f60b85-2f81-4fbe-b653-e43c61579809', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', '59115547-cfd5-428a-9863-6cd1b2200013'),
-    ('8aaac0b7-48e6-45ab-b0fa-e9b0b8ab5415', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'ec5b9f05-0b8d-4833-9447-d7338fe1dc78'),
     ('48b52599-9b59-4726-b8c1-d0bc6c7e4d4f', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', '88dcf0f9-8502-4596-b035-45c5d548d262'),
     ('68ea7668-7bfa-45d7-a46f-09ae0e5a05fb', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', '54decb00-cecd-4c64-b368-8ab999130ac4'),
     ('30f1b9b6-f5ee-4656-9cb2-e9d93fbdb7e4', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'd156f252-c8c0-49de-8541-149c35aada6c'),
     ('aed997b0-47ff-4267-af1d-62f12b3b0b68', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', '720aa209-7aa8-4faf-8b1a-013a041084f2'),
     ('fe897edc-8bef-45b4-ae30-d55a225ba9f6', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac'),
-    ('c348790a-4f9a-4769-9713-fbf20c181be0', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'e6128e10-5d2b-4096-8356-b6523cb30e92');
+    ('c348790a-4f9a-4769-9713-fbf20c181be0', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'e6128e10-5d2b-4096-8356-b6523cb30e92'),
+    ('65e85d95-2ef6-48e2-adbb-1366cc2dc689', false,  NOW(),  NOW(), 'dc7dbc72-084c-451f-aaf9-7db7561d157d', 'a26e6bb1-7f48-4064-adad-20e0c4966b08');
 
     -- ===============================================
     -- users
