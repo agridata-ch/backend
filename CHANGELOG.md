@@ -1,3 +1,9 @@
+## [1.9.0-rc.22](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.21...v1.9.0-rc.22) (2026-05-21)
+
+### Bug Fixes
+
+* **owasp:** suppress CVE-2026-42154 until next quarkus release ([964bd5c](https://github.com/agridata-ch/backend/commit/964bd5ce6d1b72875789e0b4e57003c94c821408))
+
 ## [1.9.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.20...v1.9.0-rc.21) (2026-05-20)
 
 ### Features
