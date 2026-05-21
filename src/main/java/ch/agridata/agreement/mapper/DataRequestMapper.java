@@ -77,6 +77,8 @@ public interface DataRequestMapper {
   @Mapping(target = "dataConsumerLegalName", ignore = true)
   @Mapping(target = "validRedirectUriRegex", ignore = true)
   @Mapping(target = "dataSourceSystemId", ignore = true)
+  @Mapping(target = "consumerSignatureType", ignore = true)
+  @Mapping(target = "providerSignatureType", ignore = true)
   // This will be handled in the AfterMapping method
   @Mapping(target = "dataProducts", ignore = true)
   @Mapping(target = "id", ignore = true)

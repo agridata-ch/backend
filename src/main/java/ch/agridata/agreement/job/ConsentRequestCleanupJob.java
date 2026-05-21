@@ -1,6 +1,7 @@
 package ch.agridata.agreement.job;
 
 import ch.agridata.agreement.service.ConsentRequestCleanupService;
+import ch.agridata.common.exceptions.DatabaseConnectionException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,11 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ConsentRequestCleanupJob {
-  // Generated from the first 16 hex characters of: echo -n "ConsentRequestCleanupJob" | sha256sum
+  // Randomly generated long value for the advisory lock key
   public static final long LOCK_KEY = 7182194963550522386L;
   // Dedicated technical user ID for this scheduled job (traceability/auditing).
   // The corresponding user entry must exist in the users table.
-  public static final UUID USER_ID_SCHEDULED_JOB = UUID.fromString("3899f61d-c517-40da-a4a6-f2b062cc0f20");
+  public static final UUID USER_ID_SCHEDULED_CLEANUP_JOB = UUID.fromString("3899f61d-c517-40da-a4a6-f2b062cc0f20");
 
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataSource dataSource;
@@ -54,7 +55,7 @@ public class ConsentRequestCleanupJob {
   @Scheduled(cron = "0 15 2 * * ?")
   @ActivateRequestContext
   public void run() {
-    agridataSecurityIdentity.setRunAsUserId(USER_ID_SCHEDULED_JOB);
+    agridataSecurityIdentity.setRunAsUserId(USER_ID_SCHEDULED_CLEANUP_JOB);
     long startedAt = System.nanoTime();
     log.info("consent request cleanup job started.");
 
@@ -70,7 +71,7 @@ public class ConsentRequestCleanupJob {
     } catch (SQLException e) {
       long duration = (System.nanoTime() - startedAt) / 1_000_000;
       log.error("consent request cleanup job failed after {} ms due to SQL error.", duration, e);
-      throw new RuntimeException(e);
+      throw new DatabaseConnectionException("ConsentRequestCleanupJob cannot create databased connection", e);
     }
   }
 

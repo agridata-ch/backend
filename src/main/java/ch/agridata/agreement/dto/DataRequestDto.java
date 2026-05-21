@@ -162,8 +162,17 @@ public record DataRequestDto(
     @Schema(
         description = "Id of current contract revision"
     )
-    UUID currentContractRevisionId
+    UUID currentContractRevisionId,
 
+    @Schema(
+        description = "Signature type for consumer"
+    )
+    SignatureTypeEnum consumerSignatureType,
+
+    @Schema(
+        description = "Signature type for provider"
+    )
+    SignatureTypeEnum providerSignatureType
 ) {
 
 }

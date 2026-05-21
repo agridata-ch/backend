@@ -34,4 +34,8 @@ public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
   public Optional<UserEntity> findByAgateLoginId(String agateLoginId) {
     return find("agateLoginId", agateLoginId).firstResultOptional();
   }
+
+  public List<UserEntity> findAllByRoleAtLastLogin(String role) {
+    return find("function('jsonb_exists', rolesAtLastLogin, :role) = true", Map.of("role", role)).list();
+  }
 }

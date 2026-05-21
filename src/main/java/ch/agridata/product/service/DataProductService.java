@@ -1,5 +1,8 @@
 package ch.agridata.product.service;
 
+import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
@@ -7,30 +10,64 @@ import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.mapper.DataProductEntityMapper;
 import ch.agridata.product.mapper.DataSourceSystemEntityMapper;
 import ch.agridata.product.persistence.DataProductRepository;
+import ch.agridata.product.persistence.DataProviderEntity;
+import ch.agridata.product.persistence.DataProviderRepository;
 import ch.agridata.product.persistence.DataSourceSystemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Implements product-related operations. It exposes queries for all products, resolves products by ID, and retrieves provider
  * configurations, enforcing error handling for missing products.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-05-12
  */
 
 @ApplicationScoped
 @RequiredArgsConstructor
 public class DataProductService implements DataProductApi {
   private final DataProductRepository dataProductRepository;
+  private final DataProviderRepository dataProviderRepository;
   private final DataProductEntityMapper dataProductEntityMapper;
   private final DataSourceSystemRepository dataSourceSystemRepository;
   private final DataSourceSystemEntityMapper dataSourceSystemMapper;
 
   public List<DataProductDto> getDataProducts() {
     return dataProductRepository.findAll().stream().map(dataProductEntityMapper::toDto).toList();
+  }
+
+  public PageResponseDto<DataProductDto> getDataProductsPaged(
+      ResourceQueryDto resourceQueryDto,
+      SupportedLanguage language
+  ) {
+    var pagedEntities = dataProductRepository.findPaged(resourceQueryDto, language);
+
+    return dataProductEntityMapper.toPagedDataProductDto(pagedEntities);
+  }
+
+  public PageResponseDto<DataProductDto> getProviderDataProductsPaged(
+      ResourceQueryDto resourceQueryDto,
+      String providerUid,
+      SupportedLanguage language
+  ) {
+
+    Optional<DataProviderEntity> optionalProvider = dataProviderRepository.findByUidOptional(providerUid);
+
+    if (optionalProvider.isEmpty()) {
+      throw new NotFoundException(providerUid);
+    }
+
+    var pagedEntities = dataProductRepository.findPagedByProviderId(optionalProvider.get().getId(), resourceQueryDto, language);
+
+    return dataProductEntityMapper.toPagedDataProductDto(pagedEntities);
   }
 
   @Override
@@ -61,5 +98,23 @@ public class DataProductService implements DataProductApi {
         .orElseThrow(() ->
             new NotFoundException("DataSourceSystem not found: " + dataSourceSystemId)
         );
+  }
+
+  @Override
+  public List<DataProductDto> getProductsByIds(List<UUID> productIds) {
+    if (productIds == null || productIds.isEmpty()) {
+      return List.of();
+    }
+
+    Map<UUID, DataProductDto> byId = dataProductRepository.find("id in ?1", productIds)
+        .list()
+        .stream()
+        .map(dataProductEntityMapper::toDto)
+        .collect(Collectors.toMap(DataProductDto::id, Function.identity()));
+
+    return productIds.stream()
+        .map(byId::get)
+        .filter(Objects::nonNull)
+        .toList();
   }
 }

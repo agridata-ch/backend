@@ -142,7 +142,7 @@ public class UserController {
   @Path("/producers")
   @Operation(
       operationId = "getProducers",
-      description = "Retrieves users mathing the given query parameters.")
+      description = "Retrieves users matching the given query parameters.")
   @Parameter(name = "resourceQueryDto",
       description = "Query parameters",
       schema = @Schema(implementation = ResourceQueryDto.class))

@@ -36,7 +36,7 @@ class AccessTest {
   @Test
   void testAccess_ContractRevisionController() {
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1",
-        CONSUMER_ROLE, PROVIDER_ROLE);
+        ADMIN_ROLE, CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST, ContractRevisionController.PATH + "/1/signatures/1/otp-challenges",
         CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST,
@@ -46,7 +46,7 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/seals/status",
         ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/pdf",
-        CONSUMER_ROLE);
+        ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE);
   }
 
   @Test
@@ -90,6 +90,9 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(GET, ConsentRequestController.PATH + "/" + IP_SUISSE_01_CHE102000002,
         PRODUCER_ROLE, SUPPORT_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/signature-type",
+        CONSUMER_ROLE, PROVIDER_ROLE);
   }
 
 }

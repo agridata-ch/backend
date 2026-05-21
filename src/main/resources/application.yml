@@ -1,13 +1,18 @@
 agridata:
   exception-handling:
     return-debug: true
+  agreement:
+    otp:
+      validation:
+        enabled: true
+  aws:
+    send-sms:
+      enabled: true
 bit:
   signature:
     key-bearer: "BLW-Agridata"
     profile: "BLW-Agridata-SR-hs"
 quarkus:
-  aws:
-    region: eu-central-2
   cache:
     caffeine:
       agis-api-register:
@@ -111,6 +116,21 @@ quarkus:
       key-store-type: PKCS12
       trust-store-type: PKCS12
       read-timeout: 120000
+  s3:
+    aws:
+      region: eu-central-2
+      credentials:
+        type: default
+  ses:
+    aws:
+      region: eu-central-2
+      credentials:
+        type: default
+  sns:
+    aws:
+      region: eu-central-2
+      credentials:
+        type: default
   smallrye-openapi:
     info-description: "This API provides access to the agridata.ch data exchange platform, enabling Users
     to discover, request, approve, and manage data sharing agreements.\n\n

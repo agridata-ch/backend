@@ -1,7 +1,20 @@
 agridata:
+  base-url: http://localhost:4200
+  email:
+    enabled: true
+    sender-address: support@agridata.local
+  agreement:
+    contract-bucket-name: contracts
+    otp:
+      validation:
+        enabled: false
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
+  aws:
+    devservices:
+      localstack:
+        port: 4566
   hibernate-orm:
     log:
       sql: false
@@ -54,6 +67,8 @@ quarkus:
         level: DEBUG
     level: INFO
   oidc:
+    application-type: service
+    client-id: agridata-ui
     token:
       audience: agridata-backend
   oidc-client:
@@ -71,6 +86,30 @@ quarkus:
     logging:
       body-limit: 10240
       scope: request-response
+  s3:
+    devservices:
+      buckets:
+        - contracts
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  ses:
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  sns:
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
   swagger-ui:
     oauth-client-id: agridata-ui
     oauth-client-secret: secret

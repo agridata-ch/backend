@@ -19,6 +19,7 @@ import ch.agridata.product.dto.DataSourceSystemDto;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,13 @@ class DataRequestQueryServiceTest {
   @Mock
   private DataRequestEnrichmentService dataRequestEnrichmentService;
 
+  private static final Set<DataRequestEntity.DataRequestStateEnum> PROVIDER_ACCESSIBLE_STATES = Set.of(
+      DataRequestEntity.DataRequestStateEnum.ACTIVE,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
+      DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
+  );
+
   @Test
   void givenRequestsExist_whenGetAllRequests_OfConsumer_thenReturnDtos() {
     var dataConsumer = buildEntity();
@@ -65,7 +73,7 @@ class DataRequestQueryServiceTest {
     var dataSourceSystemDto = DataSourceSystemDto.builder()
         .dataProvider(dataProviderDto)
         .build();
-    when(repository.findByInProviderWorkflowStates()).thenReturn(List.of(dataRequest));
+    when(repository.findAllByStates(PROVIDER_ACCESSIBLE_STATES)).thenReturn(List.of(dataRequest));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
         .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto));
@@ -147,7 +155,7 @@ class DataRequestQueryServiceTest {
         .dataProvider(dataProviderDto)
         .build();
 
-    when(repository.findByIdAndInProviderWorkflowStates(id)).thenReturn(Optional.of(entity));
+    when(repository.findByIdAndStates(id, PROVIDER_ACCESSIBLE_STATES)).thenReturn(Optional.of(entity));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
         .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto));
@@ -161,7 +169,7 @@ class DataRequestQueryServiceTest {
   void givenInvalidId_whenGetDataRequestForCurrentProvider_thenThrowNotFound() {
     UUID id = UUID.randomUUID();
 
-    when(repository.findByIdAndInProviderWorkflowStates(id)).thenReturn(Optional.empty());
+    when(repository.findByIdAndStates(id, PROVIDER_ACCESSIBLE_STATES)).thenReturn(Optional.empty());
 
     assertThrows(NotFoundException.class, () -> service.getDataRequestForCurrentProvider(id));
   }

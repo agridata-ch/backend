@@ -1,11 +1,13 @@
 package ch.agridata.user.service;
 
+import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.mapper.UserMapper;
@@ -16,13 +18,14 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Service responsible for updating user information in the database based on the currently authenticated identity.
  *
- * @CommentLastReviewed 2025-08-27
+ * @CommentLastReviewed 2026-05-06
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -75,5 +78,12 @@ public class UserService {
   public void updateUserPreferences(@Valid UserPreferencesDto userPreferences) {
     var user = userRepository.findById(identity.getUserId());
     user.setUserPreferences(userMapper.toUserPreferenceEntity(userPreferences));
+  }
+
+  public List<AdminUserDto> getAdminUsers() {
+    return userRepository.findAllByRoleAtLastLogin(ADMIN_ROLE)
+        .stream()
+        .map(user -> new AdminUserDto(user.getId(), user.getEmail()))
+        .toList();
   }
 }

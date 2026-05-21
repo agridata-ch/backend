@@ -1,0 +1,48 @@
+      <mj-section
+        css-class="header-section"
+        background-color="#FFFFFF"
+        border-radius="6px"
+        border="1px solid #D1D5DC"
+        padding="0"
+      >
+        <mj-column>
+          <mj-text
+            css-class="header-text"
+            font-size="36px"
+            font-weight="bold"
+            color="#263645"
+            padding="24px 40px"
+          >
+            Nuova richiesta da parte di
+          </mj-text>
+
+          <mj-text
+            css-class="header-text"
+            font-size="36px"
+            font-weight="bold"
+            color="#263645"
+            padding="0 40px 24px 40px"
+          >
+            {{ dataConsumer }}
+          </mj-text>
+          <mj-text
+            css-class="header-text"
+            font-size="18px"
+            color="#263645"
+            padding="0 40px 24px 40px"
+          >
+            Una nuova richiesta è stata inviata per la verifica. La preghiamo di controllarla nel portale amministrativo.
+          </mj-text>
+          <mj-text font-size="16px" font-weight="bold" padding="0 40px 4px 40px">Nome della richiesta:</mj-text>
+          <mj-text font-size="16px" padding="0 40px 24px 40px">{{ dataRequestTitleIt }}</mj-text>
+          <mj-button
+            href="{{dataRequestUrl}}"
+            background-color="#3366CC"
+            color="#FFFFFF"
+            border-radius="6px"
+            padding="20px"
+          >
+            Apri la richiesta
+          </mj-button>
+        </mj-column>
+      </mj-section>

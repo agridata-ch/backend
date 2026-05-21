@@ -8,6 +8,10 @@ import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
+import ch.agridata.common.exceptions.OtpExpiredException;
+import ch.agridata.common.exceptions.OtpInvalidException;
+import ch.agridata.common.exceptions.OtpLockedException;
+import ch.agridata.common.exceptions.OtpResendCooldownException;
 import ch.agridata.common.exceptions.UidMissingException;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -29,7 +33,7 @@ import org.slf4j.MDC;
 /**
  * Handles exceptions throughout the application and returns appropriate HTTP responses with detailed messages.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-05-08
  */
 
 @ApplicationScoped
@@ -101,6 +105,42 @@ public class ExceptionHandler {
     return Response.status(Status.FORBIDDEN)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("Consent not granted", ex.getMessage(), ExceptionEnum.CONSENT_NOT_GRANTED))
+        .build();
+  }
+
+  @ServerExceptionMapper(OtpInvalidException.class)
+  public Response handleOtpInvalidException(OtpInvalidException ex) {
+    log.warn("OtpInvalidException: {}", ex.getMessage());
+    return Response.status(Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("OTP invalid", ex.getMessage(), ExceptionEnum.OTP_INVALID))
+        .build();
+  }
+
+  @ServerExceptionMapper(OtpLockedException.class)
+  public Response handleOtpLockedException(OtpLockedException ex) {
+    log.warn("OtpLockedException: {}", ex.getMessage());
+    return Response.status(Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("OTP locked", ex.getMessage(), ExceptionEnum.OTP_LOCKED))
+        .build();
+  }
+
+  @ServerExceptionMapper(OtpExpiredException.class)
+  public Response handleOtpExpiredException(OtpExpiredException ex) {
+    log.warn("OtpExpiredException: {}", ex.getMessage());
+    return Response.status(Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("OTP expired", ex.getMessage(), ExceptionEnum.OTP_EXPIRED))
+        .build();
+  }
+
+  @ServerExceptionMapper(OtpResendCooldownException.class)
+  public Response handleOtpResendCooldownException(OtpResendCooldownException ex) {
+    log.warn("OtpResendCooldownException: retryAfterSeconds={}", ex.getRetryAfterSeconds());
+    return Response.status(Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("OTP resend cooldown active", ex.getMessage(), ExceptionEnum.OTP_RESEND_COOLDOWN))
         .build();
   }
 

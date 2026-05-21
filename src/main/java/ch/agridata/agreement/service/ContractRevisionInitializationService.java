@@ -3,13 +3,17 @@ package ch.agridata.agreement.service;
 import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
+import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.product.api.DataProductApi;
+import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,6 +30,7 @@ public class ContractRevisionInitializationService {
   private final ContractRevisionMapper contractRevisionMapper;
   private final DataProductApi dataproductApi;
   private final UidRegisterServiceApi uidRegisterServiceApi;
+  private final ContractRevisionPdfService contractRevisionPdfService;
 
   @Transactional
   public ContractRevisionEntity createAndAssignInitialRevision(DataRequestEntity dataRequest) {
@@ -33,7 +38,13 @@ public class ContractRevisionInitializationService {
       throw new IllegalStateException("Data request already has a contract revision");
     }
 
+    List<UUID> productIds = dataRequest.getDataProducts()
+        .stream()
+        .map(DataRequestDataProductEntity::getDataProductId)
+        .toList();
+
     DataSourceSystemDto dataSourceSystem = dataproductApi.getDataSourceSystem(dataRequest.getDataSourceSystemId());
+    List<DataProductDto> dataProductDtos = dataproductApi.getProductsByIds(productIds);
     var uid = dataSourceSystem.dataProvider().uid();
     var uidWithoutPrefix = new BigInteger(uid.replace("CHE", ""));
     var dataProvider = uidRegisterServiceApi.getByUid(uidWithoutPrefix);
@@ -41,9 +52,11 @@ public class ContractRevisionInitializationService {
     ContractRevisionEntity revision =
         contractRevisionMapper.toInitialEntity(
             dataRequest,
-            dataProvider
+            dataProvider,
+            dataSourceSystem,
+            dataProductDtos
         );
-
+    contractRevisionPdfService.generateAndUploadPdf(revision);
     contractRevisionRepository.persist(revision);
     dataRequest.setCurrentContractRevisionId(revision.getId());
 

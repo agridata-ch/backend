@@ -130,6 +130,16 @@ public class DataRequestEntity extends AuditableEntity {
   @Column(name = "current_contract_revision_id")
   private UUID currentContractRevisionId;
 
+  @NotNull
+  @Column(name = "consumer_signature_type")
+  @Enumerated(EnumType.STRING)
+  private SignatureTypeEnum consumerSignatureType;
+
+  @NotNull
+  @Column(name = "provider_signature_type")
+  @Enumerated(EnumType.STRING)
+  private SignatureTypeEnum providerSignatureType;
+
   /**
    * Lists the possible states of a data request.
    *
@@ -145,5 +155,4 @@ public class DataRequestEntity extends AuditableEntity {
     TO_BE_ACTIVATED,
     ACTIVE,
   }
-
 }

@@ -1,0 +1,10 @@
+### Login as Admin (stores admin user in the user table)
+GET {{baseUrl}}/user/v1/user-info
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+  client.test("Admin login successful", function () {
+    client.assert(response.status === 200, "Expected status 200, got: " + response.status);
+  });
+%}

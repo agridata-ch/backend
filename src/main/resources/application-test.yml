@@ -1,7 +1,20 @@
 agridata:
+  base-url: https://localhost:4200
+  email:
+    enabled: true
+    sender-address: support@agridata.local
+  agreement:
+    contract-bucket-name: contracts
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
+  aws:
+    devservices:
+      localstack:
+        # Fixed port to ensure S3 and SNS devservices always bind to the same LocalStack container.
+        # Without a fixed port, each extension may start its own container on a random port, and
+        # the SNS client ends up configured with a port that gets replaced by S3's container startup.
+        port: 63000
   http:
     test-timeout: 60s
   console:
@@ -35,6 +48,30 @@ quarkus:
       url: http://localhost:8051/tvd/animal-tracing
     tvd-zo-api:
       url: http://localhost:8051/tvd/zo
+  s3:
+    devservices:
+      buckets:
+        - contracts
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  ses:
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
+  sns:
+    aws:
+      credentials:
+        type: static
+        static-provider:
+          access-key-id: local-key
+          secret-access-key: secret
   test:
     enable-callbacks-for-integration-tests: true
   wiremock:

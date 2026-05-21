@@ -1,8 +1,12 @@
 package integration.agreement;
 
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor;
+import static integration.agreement.DataRequestTestFactory.createReadyForSigningByProviderDataRequest;
 import static integration.agreement.DataRequestTestFactory.requestOtpChallengeAs;
+import static integration.agreement.DataRequestTestFactory.setSignatureType;
 import static integration.agreement.DataRequestTestFactory.signContractRevision;
 import static integration.agreement.DataRequestTestFactory.verifyOtpChallenge;
+import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
@@ -14,8 +18,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
+import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
@@ -34,6 +40,33 @@ class ContractRevisionTest {
   @BeforeEach
   void setUp() {
     flyway.migrate();
+  }
+
+  @Test
+  void givenExistingContractRevision_whenGetByIdAsAdmin_thenReturnContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID contractRevisionId = dataRequest.currentContractRevisionId();
+
+    AuthTestUtils.requestAs(ADMIN).given()
+        .when()
+        .get(ContractRevisionController.PATH + "/" + contractRevisionId)
+        .then()
+        .statusCode(200)
+        .body("id", equalTo(contractRevisionId.toString()))
+        .body("dataRequestId", equalTo(dataRequest.id().toString()));
+  }
+
+  @Test
+  void givenExistingContractRevisionInDraftState_whenGetByIdAsAdmin_thenReturn404() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID contractRevisionId = dataRequest.currentContractRevisionId();
+    DataRequestTestFactory.setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.DRAFT, CONSUMER_BIO_SUISSE);
+
+    AuthTestUtils.requestAs(ADMIN).given()
+        .when()
+        .get(ContractRevisionController.PATH + "/" + contractRevisionId)
+        .then()
+        .statusCode(404);
   }
 
   @Test
@@ -119,6 +152,7 @@ class ContractRevisionTest {
 
     var challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BLV_1)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge1.challengeId());
 
     var response = verifyOtpChallenge(
         revisionId1.toString(),
@@ -139,6 +173,7 @@ class ContractRevisionTest {
 
     var challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_02, CONSUMER_BLV_2)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge2.challengeId());
 
     verifyOtpChallenge(
         revisionId2.toString(),
@@ -154,6 +189,51 @@ class ContractRevisionTest {
         .body("consumerSignatures.last().name", equalTo(
             CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
         ));
+  }
+
+  @Test
+  void givenWrongSlotOrder_whenApplySignatureByConsumer_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    signContractRevision(dataRequest.currentContractRevisionId(), CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_02)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenWrongSlotOrder_whenApplySignatureByProvider_thenReturnBadRequest() {
+    DataRequestDto dataRequest = createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+    signContractRevision(dataRequest.currentContractRevisionId(), PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_02)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenValidRevision_whenApplyIndividualSignatureByConsumer_thenReturnUpdatedContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor(CONSUMER_BLV_1);
+    UUID revisionId1 = dataRequest.currentContractRevisionId();
+
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, CONSUMER_BLV_1);
+
+    signContractRevision(revisionId1, CONSUMER_BLV_1, SignatureSlotCodeEnum.DATA_CONSUMER_01)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("consumerSignatureType", equalTo(SignatureTypeEnum.INDIVIDUAL_SIGNATURE.name()));
+  }
+
+  @Test
+  void givenValidRevision_whenApplyIndividualSignatureByProvider_thenReturnUpdatedContractRevision() {
+    DataRequestDto dataRequest = DataRequestTestFactory.createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+
+    UUID revisionId1 = dataRequest.currentContractRevisionId();
+
+    setSignatureType(dataRequest.id(), SignatureTypeEnum.INDIVIDUAL_SIGNATURE, PROVIDER_1);
+
+    signContractRevision(revisionId1, PROVIDER_1, SignatureSlotCodeEnum.DATA_PROVIDER_01)
+        .then()
+        .statusCode(200)
+        .body("id", notNullValue())
+        .body("providerSignatureType", equalTo(SignatureTypeEnum.INDIVIDUAL_SIGNATURE.name()));
   }
 
   @Test
@@ -176,6 +256,7 @@ class ContractRevisionTest {
 
     var challenge1 = requestOtpChallengeAs(revisionId1.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_01, PROVIDER_1)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge1.challengeId());
 
     var response = verifyOtpChallenge(
         revisionId1.toString(),
@@ -196,6 +277,7 @@ class ContractRevisionTest {
 
     var challenge2 = requestOtpChallengeAs(revisionId2.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_02, PROVIDER_2)
         .as(OtpChallengeDto.class);
+    DataRequestTestFactory.prepareOtpChallengeForFixedCode(challenge2.challengeId());
 
     verifyOtpChallenge(
         revisionId2.toString(),

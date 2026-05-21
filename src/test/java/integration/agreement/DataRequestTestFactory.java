@@ -16,8 +16,10 @@ import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.arc.Arc;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestUserEnum;
@@ -153,6 +155,15 @@ public class DataRequestTestFactory {
     return toBeSignedResponse.as(DataRequestDto.class);
   }
 
+  @SneakyThrows
+  public static Response setSignatureType(UUID requestId, SignatureTypeEnum signatureType, TestUserEnum user) {
+    return AuthTestUtils.requestAs(user).given()
+        .contentType(JSON)
+        .body(MAPPER.writeValueAsString(signatureType))
+        .when()
+        .put(DataRequestController.PATH_V1 + "/" + requestId + "/signature-type");
+  }
+
   public static DataRequestDto createReadyForSigningByProviderDataRequest(TestUserEnum consumer1, TestUserEnum consumer2) {
     DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(consumer1);
     String revisionId2 =
@@ -171,15 +182,23 @@ public class DataRequestTestFactory {
     return setStatusAs(dataRequest.id().toString(), DataRequestStateEnum.TO_BE_ACTIVATED, PROVIDER_1);
   }
 
+  public static void prepareOtpChallengeForFixedCode(UUID challengeId) {
+    OtpTestHelper otpTestHelper = Arc.container().instance(OtpTestHelper.class).get();
+    otpTestHelper.overrideOtpHashForCode(challengeId, OtpTestHelper.FIXED_OTP_CODE);
+  }
+
   public static Response signContractRevision(UUID contractRevisionId, TestUserEnum user, SignatureSlotCodeEnum slot) {
     OtpChallengeDto challenge1 = requestOtpChallengeAs(contractRevisionId.toString(), slot, user)
         .as(OtpChallengeDto.class);
+
+    OtpTestHelper otpTestHelper = Arc.container().instance(OtpTestHelper.class).get();
+    otpTestHelper.overrideOtpHashForCode(challenge1.challengeId(), OtpTestHelper.FIXED_OTP_CODE);
 
     return verifyOtpChallenge(
         contractRevisionId.toString(),
         slot,
         challenge1.challengeId(),
-        "123456",
+        OtpTestHelper.FIXED_OTP_CODE,
         user
     );
   }

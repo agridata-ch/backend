@@ -1,12 +1,14 @@
 package ch.agridata.agreement.utils;
 
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
@@ -41,6 +43,14 @@ public class DataRequestTestUtils {
         .products(List.of(PRODUCT_ID));
   }
 
+  public static DataRequestDto.DataRequestDtoBuilder dataRequestDtoBuilder() {
+    return DataRequestDto.builder()
+        .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
+        .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
+        .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
+        .products(List.of(PRODUCT_ID));
+  }
+
   public static DataProductDto.DataProductDtoBuilder dataProductDtoBuilder(UUID id) {
     return DataProductDto.builder()
         .id(id)
@@ -66,6 +76,7 @@ public class DataRequestTestUtils {
   public static ContractRevisionEntity buildContractRevision() {
     DataRequestEntity dataRequest = new DataRequestEntity();
     dataRequest.setCurrentContractRevisionId(CONTRACT_REVISION_ID);
+    dataRequest.setConsumerSignatureType(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
 
     return ContractRevisionEntity.builder()
         .id(CONTRACT_REVISION_ID)

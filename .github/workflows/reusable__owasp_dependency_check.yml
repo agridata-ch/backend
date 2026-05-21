@@ -5,7 +5,7 @@ jobs:
   owasp-dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
     steps:
       - name: Checkout
         uses: actions/checkout@v6

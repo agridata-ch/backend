@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.0-rc.21</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -13,22 +13,22 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.34.3</quarkus.platform.version>
+        <quarkus.platform.version>3.35.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version> <!-- or latest -->
-        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
         <plexus-utils.version>4.0.3</plexus-utils.version>
         <lombok.version>1.18.42</lombok.version>
         <assertj.version>3.27.7</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.4.1</archunit-junit5.version>
         <wiremock.version>1.6.1</wiremock.version>
-        <guava.version>33.5.0-jre</guava.version>
+        <guava.version>33.6.0-jre</guava.version>
+        <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.39</swagger-parser.version>
-        <aws.java.sdk.version>2.42.25</aws.java.sdk.version>
         <pdfbox.version>3.0.7</pdfbox.version>
         <fop-core.version>2.11</fop-core.version>
 
@@ -36,9 +36,9 @@
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
         <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>13.3.0</checkstyle.version>
+        <checkstyle.version>13.4.2</checkstyle.version>
         <dependency-check-maven.version>12.2.0</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.21.0</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.22.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>
@@ -55,6 +55,13 @@
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-cxf-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-amazon-services-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -103,6 +110,11 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains-annotations.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger-annotations.version}</version>
@@ -122,13 +134,6 @@
                 <artifactId>swagger-parser</artifactId>
                 <version>${swagger-parser.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <type>pom</type>
-                <version>${aws.java.sdk.version}</version>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>
@@ -195,6 +200,10 @@
         <dependency>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -283,7 +292,19 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sns</artifactId>
+            <artifactId>url-connection-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-sns</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-ses</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

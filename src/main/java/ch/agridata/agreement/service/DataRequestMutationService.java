@@ -63,6 +63,8 @@ public class DataRequestMutationService {
         .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
         .dataConsumerLegalName(uidRegisterCompany.legalName())
         .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
+        .consumerSignatureType(ch.agridata.agreement.persistence.SignatureTypeEnum.COLLECTIVE_SIGNATURE)
+        .providerSignatureType(ch.agridata.agreement.persistence.SignatureTypeEnum.COLLECTIVE_SIGNATURE)
         .build();
     return updateEntityWithDto(dataRequestDto, dataRequestEntity);
   }

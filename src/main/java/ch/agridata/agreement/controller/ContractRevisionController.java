@@ -17,7 +17,6 @@ import ch.agridata.agreement.service.ContractRevisionQueryService;
 import ch.agridata.agreement.service.ContractRevisionSealService;
 import ch.agridata.agreement.service.ContractRevisionSignatureService;
 import ch.agridata.common.openapi.ApiSubset;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
@@ -58,7 +57,6 @@ public class ContractRevisionController {
   private final ContractRevisionOtpChallengeService contractRevisionOtpChallengeService;
   private final ContractRevisionSignatureService contractRevisionSignatureService;
   private final ContractRevisionSealService contractRevisionSealService;
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ContractRevisionPdfService contractRevisionPdfService;
 
   @GET
@@ -70,12 +68,9 @@ public class ContractRevisionController {
           + "or provider that owns the associated datarequest."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, CONSUMER_ROLE, PROVIDER_ROLE})
   public ContractRevisionDto getContractRevision(@PathParam("id") UUID id) {
-    if (agridataSecurityIdentity.isProvider()) {
-      return contractRevisionQueryService.getContractRevisionOfCurrentProvider(id);
-    }
-    return contractRevisionQueryService.getContractRevisionOfCurrentConsumer(id);
+    return contractRevisionQueryService.getDtoWithAccessCheck(id);
   }
 
   @POST
@@ -194,11 +189,11 @@ public class ContractRevisionController {
       operationId = "getContractRevisionPdf",
       description = "Returns the pdf of the contract revision"
   )
-  @RolesAllowed({CONSUMER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
   public Response getContractRevisionPdf(
       @PathParam("id") UUID id
   ) {
-    byte[] pdf = contractRevisionPdfService.generatePdf(id);
+    byte[] pdf = contractRevisionPdfService.getPdf(id);
     return Response.ok(pdf)
         .header("Content-Disposition", String.format("attachment; filename=\"contract-revision-%s.pdf\"", id))
         .build();

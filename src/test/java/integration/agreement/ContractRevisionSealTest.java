@@ -1,10 +1,16 @@
 package integration.agreement;
 
+import static integration.agreement.DataRequestTestFactory.createReadyForActivatingDataRequest;
 import static integration.testutils.TestUserEnum.ADMIN;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
+import static integration.testutils.TestUserEnum.PROVIDER_1;
+import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.agreement.controller.ContractRevisionController;
+import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.SealAttemptStateEnum;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import integration.testutils.AuthTestUtils;
@@ -33,7 +39,8 @@ class ContractRevisionSealTest {
 
   @Test
   void givenExistingContractRevision_whenSeal_thenReturn202() {
-    UUID revisionId = DataRequestTestFactory.createContractRevisionAndReturnId();
+    UUID revisionId = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class).currentContractRevisionId();
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
@@ -61,7 +68,8 @@ class ContractRevisionSealTest {
             .withBody("{\"status\":\"OK\",\"logId\":\"test\",\"signState\":\"SIGN_RUNNING\"}")
             .withFixedDelay(5_000)));
 
-    UUID revisionId = DataRequestTestFactory.createContractRevisionAndReturnId();
+    UUID revisionId = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class).currentContractRevisionId();
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
@@ -78,13 +86,16 @@ class ContractRevisionSealTest {
   }
 
   @Test
-  void givenNoSealStarted_whenGetStatus_thenReturn404() {
+  void givenNoSealStarted_whenGetStatus_thenReturnNotStarted() {
     UUID revisionId = DataRequestTestFactory.createContractRevisionAndReturnId();
 
-    AuthTestUtils.requestAs(ADMIN)
+    SealAttemptStateEnum status = AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
         .when().get(SEAL_STATUS_PATH)
-        .then().statusCode(404);
+        .then().statusCode(200)
+        .extract().as(SealAttemptStateEnum.class);
+
+    assertThat(status).isEqualTo(SealAttemptStateEnum.NOT_STARTED);
   }
 
   @Test
@@ -101,7 +112,8 @@ class ContractRevisionSealTest {
         .willReturn(WireMock.aResponse()
             .withStatus(500)));
 
-    UUID revisionId = DataRequestTestFactory.createContractRevisionAndReturnId();
+    UUID revisionId = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class).currentContractRevisionId();
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
@@ -121,7 +133,8 @@ class ContractRevisionSealTest {
 
   @Test
   void givenSealStarted_whenGetStatusWithLongPolling_thenReturnCompleted() {
-    UUID revisionId = DataRequestTestFactory.createContractRevisionAndReturnId();
+    UUID revisionId = createReadyForActivatingDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2, PROVIDER_1, PROVIDER_2)
+        .then().extract().as(DataRequestDto.class).currentContractRevisionId();
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)

@@ -90,7 +90,6 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_0B42AFB7 = id("0b42afb7-3683-4065-9cb3-396995a5be97");
     public static final Identifier<DataProductEntity> UUID_D10B898F = id("d10b898f-9796-4993-9654-8f092b97989d");
     public static final Identifier<DataProductEntity> UUID_59115547 = id("59115547-cfd5-428a-9863-6cd1b2200013");
-    public static final Identifier<DataProductEntity> UUID_EC5B9F05 = id("ec5b9f05-0b8d-4833-9447-d7338fe1dc78");
     public static final Identifier<DataProductEntity> UUID_88DCF0F9 = id("88dcf0f9-8502-4596-b035-45c5d548d262");
     public static final Identifier<DataProductEntity> UUID_54DECB00 = id("54decb00-cecd-4c64-b368-8ab999130ac4");
     public static final Identifier<DataProductEntity> UUID_D156F252 = id("d156f252-c8c0-49de-8541-149c35aada6c");

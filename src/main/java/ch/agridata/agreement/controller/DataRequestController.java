@@ -14,10 +14,12 @@ import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
+import ch.agridata.agreement.service.DataRequestSignatureTypeMutationService;
 import ch.agridata.agreement.service.DataRequestStateService;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
@@ -79,6 +81,7 @@ public class DataRequestController {
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
   private final AgridataSecurityIdentity identity;
+  private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
 
   @GET
   @ApiSubset({WEB_APP, DATA_CONSUMER, DATA_PROVIDER})
@@ -310,6 +313,27 @@ public class DataRequestController {
       @RestForm("logo") FileUpload logo
   ) {
     dataRequestLogoService.updateDataRequestLogo(requestId, logo);
+  }
+
+  @PUT
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/signature-type")
+  @Operation(
+      operationId = "setSignatureType",
+      description = "Sets the type of signature (individual or collective) for the current role."
+          + " Available to the consumer and provider of a data request."
+  )
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  public DataRequestDto updateSignatureType(
+      @PathParam("id") UUID requestId,
+      @Valid SignatureTypeEnum signatureRule
+  ) {
+    if (identity.isConsumer()) {
+      return dataRequestSignatureTypeMutationService.updateSignatureTypeAsConsumer(requestId, signatureRule);
+    }
+    return dataRequestSignatureTypeMutationService.updateSignatureTypeAsProvider(requestId, signatureRule);
   }
 
 }

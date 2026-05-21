@@ -5,24 +5,18 @@ import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionEntity.SealAttemptState;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
+import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.bit.api.BitSignatureApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 /**
@@ -40,18 +34,20 @@ public class ContractRevisionSealService {
 
   private final BitSignatureApi bitSignatureApi;
   private final ContractRevisionRepository contractRevisionRepository;
+  private final ContractRevisionQueryService contractRevisionQueryService;
   private final ContractRevisionMapper contractRevisionMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ManagedExecutor managedExecutor;
+  private final ContractRevisionStorageService contractRevisionStorageService;
+  private final AuditingService auditingService;
 
   public SealAttemptStateEnum getSealState(UUID contractRevisionId, boolean longPolling) {
     long deadline = System.currentTimeMillis() + 10_000;
     while (true) {
-      SealAttemptStateEnum state = QuarkusTransaction.requiringNew().call(() ->
-          contractRevisionRepository.findByIdOptional(contractRevisionId)
-              .map(ContractRevisionEntity::getSealState)
-              .map(contractRevisionMapper::toSealAttemptStateEnum)
-              .orElseThrow(NotFoundException::new));
+      SealAttemptStateEnum state = QuarkusTransaction.requiringNew().call(() -> {
+        var contract = contractRevisionQueryService.getWithAccessCheck(contractRevisionId);
+        return contractRevisionMapper.toSealAttemptStateEnum(contract.getSealState());
+      });
       if (!longPolling
           || state != SealAttemptStateEnum.IN_PROGRESS
           || System.currentTimeMillis() >= deadline) {
@@ -73,6 +69,10 @@ public class ContractRevisionSealService {
           .orElseThrow(NotFoundException::new);
       if (isInProgress(entity)) {
         throw new IllegalStateException("seal process is already running for contractRevisionId=" + contractRevisionId);
+      }
+      if (entity.getDataRequest().getStateCode() != DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED) {
+        throw new IllegalStateException(
+            "seal process cannot be started for data request in state=" + entity.getDataRequest().getStateCode());
       }
       entity.setSealState(SealAttemptState.IN_PROGRESS);
       entity.setSealStartedAt(LocalDateTime.now());
@@ -110,11 +110,13 @@ public class ContractRevisionSealService {
 
   private void performSeal(UUID contractRevisionId, String adminGlobalId) {
     try {
-      byte[] pdf = createDummyPdf(contractRevisionId); // TODO: Replace the stub with the actual contract revision PDF.
-      bitSignatureApi.sign(pdf, adminGlobalId); // TODO: Store the sealed contract revision PDF.
+      byte[] unsealedPdf = contractRevisionStorageService.download(contractRevisionId);
+      byte[] sealedPdf = bitSignatureApi.sign(unsealedPdf, adminGlobalId);
+      contractRevisionStorageService.upload(contractRevisionId, sealedPdf);
       updateSealState(contractRevisionId, SealAttemptState.COMPLETED);
+      auditingService.logContractPdfElectronicallySigned(contractRevisionId);
     } catch (Exception e) {
-      log.error("BIT seal failed for contractRevisionId={}: {}", contractRevisionId, e.getMessage());
+      log.error("BIT seal failed for contractRevisionId={}: {}", contractRevisionId, e.getMessage(), e);
       updateSealState(contractRevisionId, SealAttemptState.FAILED);
     }
   }
@@ -126,24 +128,5 @@ public class ContractRevisionSealService {
         entity.setSealState(state);
       }
     });
-  }
-
-  private byte[] createDummyPdf(UUID contractRevisionId) {
-    try (var doc = new PDDocument();
-         var baos = new ByteArrayOutputStream()) {
-      var page = new PDPage();
-      doc.addPage(page);
-      try (var cs = new PDPageContentStream(doc, page)) {
-        cs.beginText();
-        cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12f);
-        cs.newLineAtOffset(100f, 700f);
-        cs.showText("Dummy PDF for Contract Revision " + contractRevisionId);
-        cs.endText();
-      }
-      doc.save(baos);
-      return baos.toByteArray();
-    } catch (IOException e) {
-      throw new IllegalStateException("Failed to create dummy PDF", e);
-    }
   }
 }

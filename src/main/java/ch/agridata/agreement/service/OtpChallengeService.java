@@ -3,10 +3,13 @@ package ch.agridata.agreement.service;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.OtpChallengeEntity;
 import ch.agridata.agreement.persistence.OtpChallengeRepository;
-import ch.agridata.common.exceptions.ExternalWebServiceException;
+import ch.agridata.aws.api.SmsApi;
+import ch.agridata.common.exceptions.OtpExpiredException;
+import ch.agridata.common.exceptions.OtpInvalidException;
+import ch.agridata.common.exceptions.OtpLockedException;
+import ch.agridata.common.exceptions.OtpResendCooldownException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,39 +18,38 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
-import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.PublishRequest;
-import software.amazon.awssdk.services.sns.model.PublishResponse;
-import software.amazon.awssdk.services.sns.model.SnsException;
 
 /**
  * Manages OTP challenge generation and verification.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-05-08
  */
 
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class OtpChallengeService {
+
+  static final String VALIDATION_ENABLED_PROPERTY = "agridata.agreement.otp.validation.enabled";
+
   private static final Duration OTP_TTL = Duration.ofMinutes(15);
   private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(30);
-  private static final int MAX_ATTEMPTS = 1;
-  private static final List<String> ENABLED_PROFILES = List.of("develop", "testing", "integration", "production");
+  private static final int MAX_ATTEMPTS = 3;
 
-  private final SnsClient snsClient;
+  private final SmsApi smsApi;
   private final OtpChallengeRepository otpChallengeRepository;
+  private final OtpChallengeAttemptRecorder attemptRecorder;
   private final Clock clock;
   private final Random random = new SecureRandom();
 
-  @ConfigProperty(name = "quarkus.profile")
-  String activeProfile;
+  @ConfigProperty(name = VALIDATION_ENABLED_PROPERTY, defaultValue = "true")
+  boolean validationEnabled;
 
   @Transactional
   public OtpChallengeEntity createChallenge(
@@ -57,15 +59,19 @@ public class OtpChallengeService {
       String phoneNumber
   ) {
     LocalDateTime now = LocalDateTime.now(clock);
-    LocalDateTime cooldownThreshold = now.minus(RESEND_COOLDOWN);
 
-    boolean existsRecentChallenge = otpChallengeRepository.existsRecentChallenge(
-        userId, contractRevisionId, toEntitySignatureSlotEnum(signatureSlotCode), cooldownThreshold
-    );
+    if (validationEnabled) {
+      LocalDateTime cooldownThreshold = now.minus(RESEND_COOLDOWN);
+      boolean existsRecentChallenge = otpChallengeRepository.existsRecentChallenge(
+          userId, contractRevisionId, toEntitySignatureSlotEnum(signatureSlotCode), cooldownThreshold
+      );
 
-    if (existsRecentChallenge) {
-      throw new ValidationException("OTP was sent too recently. Please wait " + RESEND_COOLDOWN.toSeconds()
-          + " seconds before requesting another code.");
+      if (existsRecentChallenge) {
+        throw new OtpResendCooldownException(RESEND_COOLDOWN.toSeconds());
+      }
+    } else {
+      log.warn("OTP resend cooldown check skipped because {}=false (userId={}, contractRevisionId={}, slot={})",
+          VALIDATION_ENABLED_PROPERTY, userId, contractRevisionId, signatureSlotCode);
     }
 
     String otpCode = generateOtp();
@@ -91,25 +97,7 @@ public class OtpChallengeService {
     if (phoneNumber == null || phoneNumber.isBlank()) {
       throw new IllegalArgumentException("Phone number is required.");
     }
-    if (!ENABLED_PROFILES.contains(activeProfile)) {
-      log.info("SIMULATED: Sending OTP to {}: {}", phoneNumber, otpCode);
-      return;
-    }
-
-    try {
-      PublishRequest publishRequest = PublishRequest.builder()
-          .phoneNumber(phoneNumber)
-          .message("Sicherheitscode / Code Sécuritaire / Codice di sicurezza: " + otpCode)
-          .build();
-
-      PublishResponse response = snsClient.publish(publishRequest);
-      log.info("OTP Request accepted for {}. MessageID: {}",
-          phoneNumber, response.messageId());
-
-    } catch (SnsException e) {
-      log.error("Failed to send OTP via AWS SNS to {}: {}", phoneNumber, e.awsErrorDetails().errorMessage());
-      throw new ExternalWebServiceException("Service temporarily unavailable. Please try again later.", e);
-    }
+    smsApi.sendSms(phoneNumber, "Sicherheitscode / Code Sécuritaire / Codice di sicurezza: " + otpCode);
   }
 
   public OtpChallengeEntity.SignatureSlotCodeEnum toEntitySignatureSlotEnum(SignatureSlotCodeEnum signatureSlotCodeEnum) {
@@ -125,21 +113,42 @@ public class OtpChallengeService {
       String otpCode
   ) {
     LocalDateTime now = LocalDateTime.now(clock);
-    OtpChallengeEntity entity = otpChallengeRepository.findActiveById(challengeId, now)
-        .orElseThrow(() -> new ValidationException("Invalid or expired OTP code."));
+    Optional<OtpChallengeEntity> maybeEntity = otpChallengeRepository.findByIdOptional(challengeId);
+    if (maybeEntity.isEmpty()) {
+      throw new OtpInvalidException("Invalid OTP challenge.");
+    }
+    OtpChallengeEntity entity = maybeEntity.get();
 
     if (!entity.getUserId().equals(expectedUserId)
         || !entity.getContractRevisionId().equals(expectedContractRevisionId)
         || !entity.getSignatureSlotCode().equals(toEntitySignatureSlotEnum(expectedSignatureSlotCode))) {
-      throw new ValidationException("Invalid OTP challenge.");
+      throw new OtpInvalidException("Invalid OTP challenge.");
     }
 
-    entity.setAttemptCount(entity.getAttemptCount() + 1);
-    if (entity.getAttemptCount() > entity.getMaxAttempts()) {
-      throw new ValidationException("Too many attempts. Please request a new code.");
+    if (!validationEnabled) {
+      log.warn("OTP validation skipped because {}=false (challengeId={})", VALIDATION_ENABLED_PROPERTY, challengeId);
+      entity.setConsumedAt(now);
+      return;
     }
 
-    // TODO: Check if the OTP code is correct.
+    if (entity.getConsumedAt() != null) {
+      throw new OtpInvalidException("OTP challenge has already been consumed.");
+    }
+    if (!entity.getExpiresAt().isAfter(now)) {
+      throw new OtpExpiredException("OTP challenge has expired.");
+    }
+    if (entity.getAttemptCount() >= entity.getMaxAttempts()) {
+      throw new OtpLockedException("OTP challenge is locked after too many failed attempts.");
+    }
+
+    attemptRecorder.incrementAttemptCount(challengeId);
+
+    if (!hashOtp(otpCode).equals(entity.getOtpHash())) {
+      if (entity.getAttemptCount() + 1 >= entity.getMaxAttempts()) {
+        throw new OtpLockedException("OTP challenge is locked after too many failed attempts.");
+      }
+      throw new OtpInvalidException("Invalid OTP code.");
+    }
 
     entity.setConsumedAt(now);
   }

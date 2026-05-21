@@ -1,3 +1,141 @@
+## [1.9.0-rc.21](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.20...v1.9.0-rc.21) (2026-05-20)
+
+### Features
+
+* **product:** remove unnecessary data product ([027b4b4](https://github.com/agridata-ch/backend/commit/027b4b4fdde54aebede94c04f56220c7339416df)), closes [DIGIB2-1400](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1400)
+
+## [1.9.0-rc.20](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.19...v1.9.0-rc.20) (2026-05-20)
+
+### Features
+
+* **product:** update identitas data products ([b5f055f](https://github.com/agridata-ch/backend/commit/b5f055fa54f921832e68db02e55eb7a9c23835d0)), closes [DIGIB2-1400](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1400)
+
+## [1.9.0-rc.19](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.18...v1.9.0-rc.19) (2026-05-19)
+
+### Features
+
+* **notification:** update email layout ([1d51758](https://github.com/agridata-ch/backend/commit/1d517587b83e9c689381e6062bd28cb4dbd625aa)), closes [DIGIB2-1259](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1259)
+
+## [1.9.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.17...v1.9.0-rc.18) (2026-05-19)
+
+### Features
+
+* **data-products:** add paginated retrieval for data products with ([51af703](https://github.com/agridata-ch/backend/commit/51af7036d909c08e8eaf972ae7137a24326dc707)), closes [DIGIB2-1350](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1350)
+
+## [1.9.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.16...v1.9.0-rc.17) (2026-05-19)
+
+### Features
+
+* **deps:** update trivy github action ([15b57a1](https://github.com/agridata-ch/backend/commit/15b57a1360e874ac8b99976a4c357b95eb9e006b))
+
+### Bug Fixes
+
+* **tests:** No longer expect dto as return from Mockito.verify() ([cf0e329](https://github.com/agridata-ch/backend/commit/cf0e329d7bb9c7481c7cd6c30b126011bee8aa5e)), closes [DIGIB2-1248](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1248)
+
+## [1.9.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.15...v1.9.0-rc.16) (2026-05-18)
+
+### Features
+
+* **notification:** trigger notification job ([919ce6d](https://github.com/agridata-ch/backend/commit/919ce6d8c0ce1f88823626a05a7266307764a025)), closes [DIGIB2-1363](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1363)
+
+## [1.9.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.14...v1.9.0-rc.15) (2026-05-18)
+
+### Features
+
+* **notifications:** first email notification trigger ([6e97e12](https://github.com/agridata-ch/backend/commit/6e97e12dc13078a05af33e8158e0751508830265)), closes [DIGIB2-1323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1323)
+
+## [1.9.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.13...v1.9.0-rc.14) (2026-05-18)
+
+### Features
+
+* **deps:** update dependencies ([3e6159b](https://github.com/agridata-ch/backend/commit/3e6159b2373f438b6570cdbae0c625409c36e61b))
+
+## [1.9.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.12...v1.9.0-rc.13) (2026-05-12)
+
+### Features
+
+* **agreement:** add sms otp validation ([4fb37b2](https://github.com/agridata-ch/backend/commit/4fb37b2d1d9fb39bf085c14c7213a04a141e741c)), closes [DIGIB2-1285](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1285)
+
+## [1.9.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.11...v1.9.0-rc.12) (2026-05-12)
+
+### Features
+
+* **notifications:** first email notification trigger ([7c95b1c](https://github.com/agridata-ch/backend/commit/7c95b1c8cffa5f6f5396d7d18ba19f340fc37cbd)), closes [DIGIB2-1259](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1259)
+
+## [1.9.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.10...v1.9.0-rc.11) (2026-05-11)
+
+### Features
+
+* **auditing:** enhance auditing for data request and contract revision states ([e70614e](https://github.com/agridata-ch/backend/commit/e70614e3a1d6e06601ec4955d2d0d3bb2fdbec2e)), closes [DIGIB2-322](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-322)
+
+## [1.9.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.9...v1.9.0-rc.10) (2026-05-11)
+
+### Features
+
+* **notifications:** web notification text ([a8bf8ba](https://github.com/agridata-ch/backend/commit/a8bf8ba774d030e26a663c18c354daaeed6a59a2)), closes [DIGIB2-323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-323)
+
+## [1.9.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.8...v1.9.0-rc.9) (2026-05-11)
+
+### Features
+
+* **notifications:** create web notification ([0c5fd2a](https://github.com/agridata-ch/backend/commit/0c5fd2ad78459401bdf31ce5c6c5d06dc193fc21)), closes [DIGIB2-323](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-323)
+* **notifications:** send email proof of concept ([bee81dd](https://github.com/agridata-ch/backend/commit/bee81dd1f4131e9f05d504e6b1fb51e9272465e2)), closes [DIGIB2-1324](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1324)
+
+### Bug Fixes
+
+* **cicd:** increase owasp timeout ([f5bb9d2](https://github.com/agridata-ch/backend/commit/f5bb9d2aeb6df9076a548d67d02af989a364b2c3))
+
+## [1.9.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.7...v1.9.0-rc.8) (2026-05-05)
+
+### Features
+
+* **agreement:** set signature type before generating and uploading pdf ([d437747](https://github.com/agridata-ch/backend/commit/d43774710ff8cfff9eabcbc2cd440eea68d00b66)), closes [DIGIB2-1300](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1300)
+
+## [1.9.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.6...v1.9.0-rc.7) (2026-05-04)
+
+### Features
+
+* **vertrag_franz:** fix typo ([f9ce6dd](https://github.com/agridata-ch/backend/commit/f9ce6dd0e62fb3d87aa74fec44670270377458eb)), closes [DIGIB2-361](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-361)
+
+## [1.9.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.5...v1.9.0-rc.6) (2026-05-04)
+
+### Features
+
+* **vertragsvorlage_franz:** add french contract ([9b1b2a8](https://github.com/agridata-ch/backend/commit/9b1b2a81298f92f4aa9f3c5b62bfdf5d56a33e40)), closes [DIGIB2-316](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-316)
+
+## [1.9.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.4...v1.9.0-rc.5) (2026-05-04)
+
+### Features
+
+* **agreement:** store and retrieve contract PDFs in S3 bucket ([f313743](https://github.com/agridata-ch/backend/commit/f31374352be6cc8d0c1aec96e2f79d396a0d3cdb)), closes [DIGIB2-1300](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1300)
+* **deps:** update quarkus version ([bd0ab19](https://github.com/agridata-ch/backend/commit/bd0ab19c1ac5c9f03e4c44abd4f3fa922d145c10))
+
+## [1.9.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.3...v1.9.0-rc.4) (2026-05-01)
+
+### Features
+
+* **agreement:** Allow consumer and provider to choose between individual and collective signature ([24b742c](https://github.com/agridata-ch/backend/commit/24b742c716364a9e1fab7034edd19b45d1a04dfe)), closes [DIGIB2-1286](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1286)
+* **notifications:** create notification database entities ([0fdbf94](https://github.com/agridata-ch/backend/commit/0fdbf94f92dac556838e46e64055755c9ecbf072)), closes [DIGIB2-1322](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1322)
+
+## [1.9.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.2...v1.9.0-rc.3) (2026-04-27)
+
+### Features
+
+* **deps:** Give admin access to contractRevision GET-endpoint ([48c0965](https://github.com/agridata-ch/backend/commit/48c0965ada30031344a3f8031cbea7a74d34102e)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+
+## [1.9.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.9.0-rc.1...v1.9.0-rc.2) (2026-04-24)
+
+### Features
+
+* **contract:** Give provider and admin access to contract revision PDF endpoint. ([db9627f](https://github.com/agridata-ch/backend/commit/db9627f1ea1b55694babe9eb2252f005ca2f470a)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+* **deps:** Update quarkus to 3.34.6 ([f8b53d0](https://github.com/agridata-ch/backend/commit/f8b53d00116a311a93b877954c4deb6789860f82)), closes [DIGIB2-1203](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1203)
+
+## [1.9.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.8.0...v1.9.0-rc.1) (2026-04-22)
+
+### Features
+
+* **aws:** add quarkus amazon services for s3 and sns ([5e41606](https://github.com/agridata-ch/backend/commit/5e41606fe7547f10760d8e881e0e62017e78f760)), closes [DIGIB2-1301](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1301)
+
 ## [1.8.0](https://github.com/agridata-ch/backend/compare/v1.7.0...v1.8.0) (2026-04-22)
 
 ### Features

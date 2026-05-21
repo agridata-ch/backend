@@ -1,16 +1,32 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_CONSUMER_CHOSEN;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_PROVIDER_CHOSEN;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_FIRST_PROVIDER_SLOT_SIGNED;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_INDIVIDUAL_SIGNATURE_FOR_CONSUMER_CHOSEN;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_INDIVIDUAL_SIGNATURE_FOR_PROVIDER_CHOSEN;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_PDF_ELECTRONICALLY_SIGNED;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_SECOND_CONSUMER_SLOT_SIGNED;
+import static ch.agridata.auditing.api.ActionEnum.CONTRACT_SECOND_PROVIDER_SLOT_SIGNED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_ACTIVATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_APPROVED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
+import static ch.agridata.auditing.api.EntityTypeEnum.CONTRACT_REVISION;
 import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 
+import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.auditing.api.EntityTypeEnum;
@@ -72,4 +88,47 @@ public class AuditingService {
     );
   }
 
+  public void logContractRevisionSigned(UUID contractRevisionId, SignatureSlotCodeEnum signatureSlotCodeEnum) {
+    ActionEnum action = switch (signatureSlotCodeEnum) {
+      case DATA_CONSUMER_01 -> CONTRACT_FIRST_CONSUMER_SLOT_SIGNED;
+      case DATA_CONSUMER_02 -> CONTRACT_SECOND_CONSUMER_SLOT_SIGNED;
+      case DATA_PROVIDER_01 -> CONTRACT_FIRST_PROVIDER_SLOT_SIGNED;
+      case DATA_PROVIDER_02 -> CONTRACT_SECOND_PROVIDER_SLOT_SIGNED;
+    };
+
+    api.logUserAction(action, CONTRACT_REVISION, contractRevisionId);
+  }
+
+  public void logSignatureTypeChosen(
+      UUID dataRequestId,
+      SignatureTypeEnum signatureType,
+      DataRequestEntity.DataRequestStateEnum requiredState
+  ) {
+
+    boolean isConsumer = requiredState == TO_BE_SIGNED_BY_CONSUMER;
+
+    ActionEnum action = switch (signatureType) {
+      case INDIVIDUAL_SIGNATURE -> isConsumer
+          ? CONTRACT_INDIVIDUAL_SIGNATURE_FOR_CONSUMER_CHOSEN
+          : CONTRACT_INDIVIDUAL_SIGNATURE_FOR_PROVIDER_CHOSEN;
+
+      case COLLECTIVE_SIGNATURE -> isConsumer
+          ? CONTRACT_COLLECTIVE_SIGNATURE_FOR_CONSUMER_CHOSEN
+          : CONTRACT_COLLECTIVE_SIGNATURE_FOR_PROVIDER_CHOSEN;
+    };
+
+    api.logUserAction(action, DATA_REQUEST, dataRequestId);
+  }
+
+  public void logDataRequestReleasedByConsumer(UUID dataRequestId) {
+    api.logUserAction(DATA_REQUEST_RELEASED_BY_CONSUMER, DATA_REQUEST, dataRequestId);
+  }
+
+  public void logDataRequestReleasedByProvider(UUID dataRequestId) {
+    api.logUserAction(DATA_REQUEST_RELEASED_BY_PROVIDER, DATA_REQUEST, dataRequestId);
+  }
+
+  public void logContractPdfElectronicallySigned(UUID contractRevisionId) {
+    api.logUserAction(CONTRACT_PDF_ELECTRONICALLY_SIGNED, CONTRACT_REVISION, contractRevisionId);
+  }
 }

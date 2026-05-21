@@ -5,14 +5,42 @@
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
 
-    <!-- CVE-2026-39883: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
-         Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-04-24Z">
+    <!-- neethi is pulled in transitively via quarkus-cxf -> cxf-rt-ws-policy.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42402</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42403</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42404</cve>
+    </suppress>
+
+    <!-- opentelemetry-semconv is pulled in transitively via quarkus-opentelemetry.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
         <cve>CVE-2026-39883</cve>
     </suppress>
-    <!-- CVE-2026-29181: opentelemetry-semconv:1.37.0 is pulled in transitively via quarkus-scheduler → opentelemetry-instrumentation-api.
-         Should be resolved once Quarkus updates its OpenTelemetry instrumentation dependency. -->
-    <suppress until="2026-04-24Z">
+    <suppress until="2026-05-31Z">
         <cve>CVE-2026-29181</cve>
+    </suppress>
+
+    <!-- simpleclient (Prometheus) is pulled in transitively via quarkus-micrometer.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2023-47108</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2023-43810</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2023-45142</cve>
+    </suppress>
+
+    <!-- (Netty HTTP/3 QPACK) allows memory exhaustion via crafted requests.
+         Fixed in 4.2.13. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42582</cve>
     </suppress>
 </suppressions>

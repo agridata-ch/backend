@@ -8,6 +8,7 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.mapper.ContractRevisionMapper;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -35,6 +36,8 @@ public class ContractRevisionSignatureService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataRequestStateService dataRequestStateService;
   private final ContractRevisionQueryService contractRevisionQueryService;
+  private final ContractRevisionPdfService contractRevisionPdfService;
+  private final AuditingService auditingService;
 
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   @Transactional
@@ -67,6 +70,7 @@ public class ContractRevisionSignatureService {
     verifyContractRevisionIsCurrent(contractRevisionId, revisionToSign);
     verifySlotNotAlreadySigned(revisionToSign, signatureSlotCode);
     verifyUserHasNotSignedAlready(revisionToSign, agridataSecurityIdentity.getUserId());
+    verifySignatureSlotOrder(revisionToSign, signatureSlotCode);
 
     otpChallengeService.verifyAndConsume(
         verificationId,
@@ -90,9 +94,17 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
+    var dataRequest = revisionToSign.getDataRequest();
+
+    if (signatureSlotCode == SignatureSlotCodeEnum.DATA_CONSUMER_01) {
+      newRevision.setConsumerSignatureType(dataRequest.getConsumerSignatureType());
+    }
+
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
 
-    var dataRequest = revisionToSign.getDataRequest();
+    auditingService.logContractRevisionSigned(contractRevisionId, signatureSlotCode);
+
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 
     if (hasAllRequiredConsumerSignatures(newRevision)) {
@@ -115,6 +127,7 @@ public class ContractRevisionSignatureService {
     verifyContractRevisionIsCurrent(contractRevisionId, revisionToSign);
     verifySlotNotAlreadySigned(revisionToSign, signatureSlotCode);
     verifyUserHasNotSignedAlready(revisionToSign, agridataSecurityIdentity.getUserId());
+    verifySignatureSlotOrder(revisionToSign, signatureSlotCode);
 
     otpChallengeService.verifyAndConsume(
         verificationId,
@@ -138,9 +151,17 @@ public class ContractRevisionSignatureService {
         LocalDateTime.now()
     );
 
+    var dataRequest = revisionToSign.getDataRequest();
+
+    if (signatureSlotCode == SignatureSlotCodeEnum.DATA_PROVIDER_01) {
+      newRevision.setProviderSignatureType(dataRequest.getProviderSignatureType());
+    }
+
+    contractRevisionPdfService.generateAndUploadPdf(newRevision);
     contractRevisionRepository.persist(newRevision);
 
-    var dataRequest = revisionToSign.getDataRequest();
+    auditingService.logContractRevisionSigned(contractRevisionId, signatureSlotCode);
+
     dataRequest.setCurrentContractRevisionId(newRevision.getId());
 
     if (hasAllRequiredProviderSignatures(newRevision)) {
@@ -157,11 +178,17 @@ public class ContractRevisionSignatureService {
   }
 
   private static boolean hasAllRequiredConsumerSignatures(ContractRevisionEntity revision) {
-    return revision.getConsumerSignatureUserId1() != null && revision.getConsumerSignatureUserId2() != null;
+    return (revision.getConsumerSignatureType() == SignatureTypeEnum.INDIVIDUAL_SIGNATURE && revision.getConsumerSignatureUserId1() != null)
+        ||
+        (revision.getConsumerSignatureType() == SignatureTypeEnum.COLLECTIVE_SIGNATURE && revision.getConsumerSignatureUserId1() != null
+            && revision.getConsumerSignatureUserId2() != null);
   }
 
   private static boolean hasAllRequiredProviderSignatures(ContractRevisionEntity revision) {
-    return revision.getProviderSignatureUserId1() != null && revision.getProviderSignatureUserId2() != null;
+    return (revision.getProviderSignatureType() == SignatureTypeEnum.INDIVIDUAL_SIGNATURE && revision.getProviderSignatureUserId1() != null)
+        ||
+        (revision.getProviderSignatureType() == SignatureTypeEnum.COLLECTIVE_SIGNATURE && revision.getProviderSignatureUserId1() != null
+            && revision.getProviderSignatureUserId2() != null);
   }
 
   private static void verifyContractRevisionIsCurrent(UUID contractRevisionId, ContractRevisionEntity revisionToSign) {
@@ -177,6 +204,18 @@ public class ContractRevisionSignatureService {
         || Objects.equals(currentRevision.getProviderSignatureUserId1(), userId)
         || Objects.equals(currentRevision.getProviderSignatureUserId2(), userId)) {
       throw new ValidationException("User has already signed this contract");
+    }
+  }
+
+  private void verifySignatureSlotOrder(ContractRevisionEntity revision, SignatureSlotCodeEnum signatureSlotCode) {
+    boolean slotIsValid = switch (signatureSlotCode) {
+      case SignatureSlotCodeEnum.DATA_CONSUMER_02 -> revision.getConsumerSignatureUserId1() != null;
+      case SignatureSlotCodeEnum.DATA_PROVIDER_02 -> revision.getProviderSignatureUserId1() != null;
+      default -> true;
+    };
+
+    if (!slotIsValid) {
+      throw new ValidationException("Must sign first signature slot before signing the second one");
     }
   }
 
