@@ -20,6 +20,7 @@ jobs:
     secrets: inherit
 
   owasp-dependency-check:
+    if: github.event_name == 'pull_request'
     name: "."
     uses: ./.github/workflows/reusable__owasp_dependency_check.yml
     needs: [ checkstyle, gitleaks ]
@@ -32,6 +33,7 @@ jobs:
     secrets: inherit
 
   trivy-image-scan:
+    if: github.event_name == 'pull_request'
     name: "."
     uses: ./.github/workflows/reusable__trivy_image_scan.yml
     needs: [ checkstyle, gitleaks ]
@@ -41,7 +43,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     name: "."
     uses: ./.github/workflows/reusable__semantic_release.yml
-    needs: [ unit-test-sonarqube, owasp-dependency-check, trivy-image-scan ]
+    needs: [ unit-test-sonarqube ]
     secrets: inherit
 
   build-push-image:

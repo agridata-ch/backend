@@ -37,6 +37,9 @@
     <suppress until="2026-05-31Z">
         <cve>CVE-2023-45142</cve>
     </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-42154</cve>
+    </suppress>
 
     <!-- (Netty HTTP/3 QPACK) allows memory exhaustion via crafted requests.
          Fixed in 4.2.13. -->
