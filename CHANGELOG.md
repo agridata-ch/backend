@@ -1,3 +1,9 @@
+## [1.10.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.9.0...v1.10.0-rc.1) (2026-05-22)
+
+### Features
+
+* **notification:** Add type and id of the affected entity to notification items ([697eabe](https://github.com/agridata-ch/backend/commit/697eabe2f91b0a4c5a2f45440103991a87f4b125)), closes [DIGIB2-1399](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1399)
+
 ## [1.9.0](https://github.com/agridata-ch/backend/compare/v1.8.0...v1.9.0) (2026-05-21)
 
 ### Features
