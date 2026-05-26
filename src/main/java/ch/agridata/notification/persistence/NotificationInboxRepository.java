@@ -2,10 +2,10 @@ package ch.agridata.notification.persistence;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.quarkus.panache.common.Sort;
+import ch.agridata.common.persistence.BaseSearchRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -14,16 +14,10 @@ import java.util.UUID;
  * @CommentLastReviewed 2026-05-06
  */
 @ApplicationScoped
-public class NotificationInboxRepository implements PanacheRepositoryBase<NotificationInboxEntity, UUID> {
-
-  public List<NotificationInboxEntity> findByUserId(UUID userId) {
-    return list("userId = ?1 ORDER BY createdAt DESC", userId);
-  }
+public class NotificationInboxRepository extends BaseSearchRepository<NotificationInboxEntity, UUID> {
 
   public PageResponseDto<NotificationInboxEntity> findPageByUserId(UUID userId, ResourceQueryDto query) {
-    var paged = find("userId = ?1", Sort.descending("createdAt"), userId)
-        .page(query.page(), query.size());
-    return new PageResponseDto<>(paged.list(), paged.count(), paged.pageCount(), query.page(), query.size());
+    return findPage(query, "userId = :userId", Map.of("userId", userId), List.of(), List.of());
   }
 
   public boolean existsByRecipientId(UUID recipientId) {

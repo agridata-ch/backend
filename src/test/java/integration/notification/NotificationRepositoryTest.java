@@ -94,30 +94,6 @@ class NotificationRepositoryTest {
     assertThat(exists).isFalse();
   }
 
-  // ── NotificationInboxRepository.findByUserId ─────────────────────────────
-
-  @Test
-  void givenInboxEntries_whenFindByUserId_thenReturnsEntriesForUser() {
-    UUID r1 = persistFreshRecipient();
-    UUID r2 = persistFreshRecipient();
-    QuarkusTransaction.requiringNew().run(() -> {
-      entityManager.persist(NotificationInboxEntity.builder()
-          .recipient(entityManager.find(NotificationRecipientEntity.class, r1))
-          .userId(TEST_USER_ID)
-          .isRead(false)
-          .build());
-      entityManager.persist(NotificationInboxEntity.builder()
-          .recipient(entityManager.find(NotificationRecipientEntity.class, r2))
-          .userId(TEST_USER_ID)
-          .isRead(false)
-          .build());
-    });
-
-    List<NotificationInboxEntity> result = QuarkusTransaction.requiringNew().call(() -> inboxRepository.findByUserId(TEST_USER_ID));
-
-    assertThat(result).hasSizeGreaterThanOrEqualTo(2).allMatch(e -> e.getUserId().equals(TEST_USER_ID));
-  }
-
   // ── NotificationInboxRepository.markAsRead ───────────────────────────────
 
   @Test
