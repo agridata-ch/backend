@@ -96,6 +96,24 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_720AA209 = id("720aa209-7aa8-4faf-8b1a-013a041084f2");
     public static final Identifier<DataProductEntity> UUID_B0A4FF29 = id("b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac");
     public static final Identifier<DataProductEntity> UUID_E6128E10 = id("e6128e10-5d2b-4096-8356-b6523cb30e92");
+    // Acontrol
+    public static final Identifier<DataProductEntity> UUID_30229210 = id("30229210-155a-4910-861a-b8e359975142");
+    public static final Identifier<DataProductEntity> UUID_96787125 = id("96787125-3de0-4b5f-b9c7-8f1e5b3db516");
+    public static final Identifier<DataProductEntity> UUID_DF72EB69 = id("df72eb69-fa78-4b52-8649-7068940019fe");
+    public static final Identifier<DataProductEntity> UUID_905170B2 = id("905170b2-1866-41f2-a8dd-57ba67a1f7bc");
+    public static final Identifier<DataProductEntity> UUID_3D3CB41C = id("3d3cb41c-6d79-4781-9e48-637692d91427");
+    public static final Identifier<DataProductEntity> UUID_75DB774F = id("75db774f-8c06-4bd5-a7d3-316cc3814206");
+    public static final Identifier<DataProductEntity> UUID_1CA1904A = id("1ca1904a-4d0d-471a-b411-f4b5f2329c3b");
+    public static final Identifier<DataProductEntity> UUID_1F05FEF2 = id("1f05fef2-e4a9-42cf-9dd6-c0ee73c9b0e8");
+    public static final Identifier<DataProductEntity> UUID_B993F539 = id("b993f539-4036-4b43-b61e-c029e79c866b");
+    public static final Identifier<DataProductEntity> UUID_C009A1F9 = id("c009a1f9-7c16-4a47-b79a-9c9224ac55d2");
+    public static final Identifier<DataProductEntity> UUID_9F3A2E49 = id("9f3a2e49-7196-41b7-a3da-0a83b3f5e386");
+    public static final Identifier<DataProductEntity> UUID_AF225782 = id("af225782-bd52-4470-a093-2c387dd47ea0");
+    public static final Identifier<DataProductEntity> UUID_54019A06 = id("54019a06-59ac-4421-8d1f-84d4255f3a94");
+    public static final Identifier<DataProductEntity> UUID_8791159F = id("8791159f-f3fa-4c4b-8583-d5207081c262");
+    public static final Identifier<DataProductEntity> UUID_340D517D = id("340d517d-a5d4-418f-9396-6225f418afb2");
+    public static final Identifier<DataProductEntity> UUID_168AEC4A = id("168aec4a-8aa8-4a36-b255-59f33e9147f6");
+    public static final Identifier<DataProductEntity> UUID_91682CE4 = id("91682ce4-33a4-463b-9f85-2e6991100d6f");
   }
 
   public static class DataProvider {

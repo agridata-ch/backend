@@ -38,7 +38,7 @@ class ConsentRequestAggregationTest {
     AuthTestUtils.requestAs(PRODUCER_A)
         .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
         .then().statusCode(200)
-        .body("size()", equalTo(5))
+        .body("size()", equalTo(6))
         .extract().as(new TypeRef<>() {
         });
   }

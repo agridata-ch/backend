@@ -109,6 +109,10 @@ quarkus:
       grant:
         type: CLIENT
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
+    acontrol-api:
+      grant:
+        type: CLIENT
+      refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
     agis-api:
       key-store-type: PKCS12
@@ -116,6 +120,8 @@ quarkus:
       key-store-type: PKCS12
       trust-store-type: PKCS12
       read-timeout: 120000
+    acontrol-api:
+      key-store-type: PKCS12
   s3:
     aws:
       region: eu-central-2

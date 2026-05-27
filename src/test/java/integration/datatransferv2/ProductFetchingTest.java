@@ -181,7 +181,77 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
-            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")));
+            Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
+        // Acontrol Data Products
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_30229210.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_96787125.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_DF72EB69.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_905170B2.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_3D3CB41C.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_75DB774F.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_1CA1904A.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_1F05FEF2.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_B993F539.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_C009A1F9.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_9F3A2E49.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_AF225782.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_54019A06.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_8791159F.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_340D517D.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_168AEC4A.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_91682CE4.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0"))
+    );
   }
 
   @ParameterizedTest(name = "[Product: {1}] consumer={0}, queryParams={2}")
