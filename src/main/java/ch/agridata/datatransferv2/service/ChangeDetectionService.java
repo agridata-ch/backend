@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * Resolves producer IDs for which either a new consent was granted or data has changed at the upstream provider since a given timestamp.
  * The result is the union of producer IDs with new consents and producer IDs with upstream data changes that also have a valid consent.
  *
- * @CommentLastReviewed 2026-03-04
+ * @CommentLastReviewed 2026-06-01
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -53,7 +53,8 @@ public class ChangeDetectionService {
     return switch (FlowEnum.valueOf(config.flowCode())) {
       case UID_BASED_PRE_VALIDATION,
            UID_BASED_POST_VALIDATION -> getUidResult(config, since);
-      case BUR_BASED_POST_VALIDATION,
+      case BUR_BASED_PRE_VALIDATION,
+           BUR_BASED_POST_VALIDATION,
            UNBOUND_POST_VALIDATION -> throw new IllegalArgumentException("Change detection is not supported for product=" + productId);
     };
 

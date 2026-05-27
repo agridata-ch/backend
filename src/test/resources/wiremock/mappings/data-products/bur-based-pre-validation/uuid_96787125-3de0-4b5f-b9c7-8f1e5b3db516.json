@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/acontrol/api/inspections/search",
+    "bodyPatterns": [
+      {
+        "matches": "\\{\"unitIdentifiers\":\\[\\{\"unitIdentifier\":\"[^\"]+\",\"type\":\"BurId\"}],\"inspectionDomainIds\":\\[\"01\\.2\"],\"pageOffset\":[0-9]+,\"pageSize\":[0-9]+}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "96787125-3de0-4b5f-b9c7-8f1e5b3db516"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

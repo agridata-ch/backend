@@ -41,7 +41,7 @@ class ConsentRequestCleanupJobTest {
         .getResultList();
 
     assertThat(rows)
-        .hasSize(5)
+        .hasSize(6)
         .allSatisfy(row -> {
           assertThat(row[0]).isInstanceOf(UUID.class);
           assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination));
@@ -58,7 +58,8 @@ class ConsentRequestCleanupJobTest {
         auditLogTestUtils.getLatestAuditLogEntry(1),
         auditLogTestUtils.getLatestAuditLogEntry(2),
         auditLogTestUtils.getLatestAuditLogEntry(3),
-        auditLogTestUtils.getLatestAuditLogEntry(4)
+        auditLogTestUtils.getLatestAuditLogEntry(4),
+        auditLogTestUtils.getLatestAuditLogEntry(5)
     );
 
     assertThat(latestLogs)
@@ -70,7 +71,7 @@ class ConsentRequestCleanupJobTest {
         .toList())
         .containsExactlyInAnyOrderElementsOf(affectedIds);
 
-    assertThat(auditLogTestUtils.getLatestAuditLogEntry(5)).isNull();
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry(6)).isNull();
   }
 
   private void assertTerminationAuditEntry(AuditLogEntity log) {
