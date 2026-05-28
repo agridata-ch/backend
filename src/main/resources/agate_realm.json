@@ -2979,6 +2979,45 @@
       "totp": false
     },
     {
+      "username": "consumer-provider",
+      "attributes": {
+        "loginid": [
+          "consumer-provider"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ],
+        "uid": "CHE146680598"
+      },
+      "createdTimestamp": 1704813979950,
+      "credentials": [
+        {
+          "createdDate": 1707310960638,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "multi.role@blw.admin.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Test",
+      "groups": [
+      ],
+      "lastName": "MultiRoleConsumerProvider",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger",
+        "agridata.ch.Agridata_Datenanbieter"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
       "username": "admin",
       "attributes": {
         "loginid": [

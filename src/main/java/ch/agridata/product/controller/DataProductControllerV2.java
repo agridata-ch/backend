@@ -11,12 +11,15 @@ import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.actingrole.ActingRoleHolder;
+import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.service.DataProductService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -50,6 +53,7 @@ public class DataProductControllerV2 {
   public static final String PATH = "/api/products/v2";
   private final DataProductService dataProductService;
   private final AgridataSecurityIdentity identity;
+  private final ActingRoleHolder actingRoleHolder;
 
   @GET
   @ApiSubset({WEB_APP, MOBILE_APP})
@@ -62,6 +66,7 @@ public class DataProductControllerV2 {
       schema = @Schema(implementation = ResourceQueryDto.class))
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public PageResponseDto<DataProductDto> getDataProductsPaginated(
       @BeanParam @Valid ResourceQueryDto resourceQueryDto,
       @Context HttpHeaders headers
@@ -73,11 +78,11 @@ public class DataProductControllerV2 {
         .map(SupportedLanguage::from)
         .orElse(SupportedLanguage.DE);
 
-    if (identity.isAdmin()) {
-      return dataProductService.getDataProductsPaged(resourceQueryDto, language);
-    }
-
-    return dataProductService.getProviderDataProductsPaged(resourceQueryDto, identity.getUidOrElseThrow(), language);
+    return switch (actingRoleHolder.getRole()) {
+      case ADMIN -> dataProductService.getDataProductsPaged(resourceQueryDto, language);
+      case PROVIDER -> dataProductService.getProviderDataProductsPaged(resourceQueryDto, identity.getUidOrElseThrow(), language);
+      default -> throw new ForbiddenException();
+    };
   }
 }
 

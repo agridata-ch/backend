@@ -50,11 +50,10 @@ class ContractRevisionQueryServiceTest {
         .build();
     ContractRevisionDto expectedDto = ContractRevisionDto.builder().id(REVISION_ID).build();
 
-    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(entity));
     when(contractRevisionMapper.toDto(entity)).thenReturn(expectedDto);
 
-    ContractRevisionDto result = service.getDtoWithAccessCheck(REVISION_ID);
+    ContractRevisionDto result = service.getDtoAsAdmin(REVISION_ID);
 
     assertThat(result).isSameAs(expectedDto);
     verify(contractRevisionMapper).toDto(entity);
@@ -62,10 +61,9 @@ class ContractRevisionQueryServiceTest {
 
   @Test
   void givenMissingContractRevision_whenGetDtoWithAccessCheck_thenThrowNotFoundException() {
-    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.getDtoWithAccessCheck(REVISION_ID))
+    assertThatThrownBy(() -> service.getAsAdmin(REVISION_ID))
         .isInstanceOf(NotFoundException.class);
 
     verifyNoInteractions(contractRevisionMapper);
@@ -78,20 +76,18 @@ class ContractRevisionQueryServiceTest {
         .dataRequest(DataRequestEntity.builder().stateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE).build())
         .build();
 
-    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.ofNullable(entity));
 
-    var result = service.getWithAccessCheck(REVISION_ID);
+    var result = service.getAsAdmin(REVISION_ID);
     assertThat(result.getId()).isEqualTo(REVISION_ID);
     verifyNoInteractions(dataRequestQueryService);
   }
 
   @Test
   void givenMissingContractRevision_whenGetContractRevisionAsAdmin_thenThrowNotFound() {
-    when(agridataSecurityIdentity.isAdmin()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.getWithAccessCheck(REVISION_ID))
+    assertThatThrownBy(() -> service.getAsAdmin(REVISION_ID))
         .isInstanceOf(NotFoundException.class)
         .hasMessageContaining(REVISION_ID.toString());
     verifyNoInteractions(dataRequestQueryService);
@@ -103,7 +99,7 @@ class ContractRevisionQueryServiceTest {
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID)).thenReturn(Optional.of(entity));
 
-    var result = service.getWithAccessCheck(REVISION_ID);
+    var result = service.getAsConsumer(REVISION_ID);
 
     assertThat(result.getId()).isEqualTo(REVISION_ID);
     verifyNoInteractions(dataRequestQueryService);
@@ -114,7 +110,7 @@ class ContractRevisionQueryServiceTest {
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(contractRevisionRepository.findByIdAndDataConsumerUid(REVISION_ID, USER_UID)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.getWithAccessCheck(REVISION_ID))
+    assertThatThrownBy(() -> service.getAsConsumer(REVISION_ID))
         .isInstanceOf(NotFoundException.class)
         .hasMessageContaining(REVISION_ID.toString());
 
@@ -128,11 +124,10 @@ class ContractRevisionQueryServiceTest {
         .id(REVISION_ID)
         .dataRequest(dataRequestEntity)
         .build();
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(contractRevisionEntity));
     when(dataRequestQueryService.isAssignedToCurrentProvider(dataRequestEntity)).thenReturn(true);
 
-    var result = service.getWithAccessCheck(REVISION_ID);
+    var result = service.getAsProvider(REVISION_ID);
 
     assertThat(result.getId()).isEqualTo(REVISION_ID);
 
@@ -146,11 +141,10 @@ class ContractRevisionQueryServiceTest {
         .id(REVISION_ID)
         .dataRequest(dataRequestEntity)
         .build();
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(contractRevisionEntity));
     when(dataRequestQueryService.isAssignedToCurrentProvider(dataRequestEntity)).thenReturn(false);
 
-    assertThatThrownBy(() -> service.getWithAccessCheck(REVISION_ID))
+    assertThatThrownBy(() -> service.getAsProvider(REVISION_ID))
         .isInstanceOf(NotFoundException.class)
         .hasMessageContaining(REVISION_ID.toString());
 
@@ -159,10 +153,9 @@ class ContractRevisionQueryServiceTest {
 
   @Test
   void givenMissingContractRevision_whenGetContractRevisionAsProvider_thenThrowNotFoundException() {
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.getWithAccessCheck(REVISION_ID))
+    assertThatThrownBy(() -> service.getAsProvider(REVISION_ID))
         .isInstanceOf(NotFoundException.class)
         .hasMessageContaining(REVISION_ID.toString());
 
