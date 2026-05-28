@@ -79,7 +79,7 @@ class ContractRevisionSignatureServiceTest {
     when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
     when(contractRevisionMapper.toDto(nextRevision)).thenReturn(ContractRevisionDto.builder().build());
 
-    ContractRevisionDto result = signatureService.signContractRevision(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
+    ContractRevisionDto result = signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
 
     verify(otpChallengeService).verifyAndConsume(VERIFICATION_ID, USER_ID, CONTRACT_REVISION_ID, signatureSlotCode, OTP_CODE);
     verify(contractRevisionRepository).persist(nextRevision);
@@ -114,7 +114,7 @@ class ContractRevisionSignatureServiceTest {
     when(contractRevisionMapper.toNextRevisionEntity(existingRevision)).thenReturn(nextRevision);
     when(contractRevisionMapper.toDto(nextRevision)).thenReturn(ContractRevisionDto.builder().build());
 
-    ContractRevisionDto result = signatureService.signContractRevision(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
+    ContractRevisionDto result = signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, signatureSlotCode, VERIFICATION_ID, OTP_CODE);
 
     verify(auditingService)
         .logContractRevisionSigned(CONTRACT_REVISION_ID, signatureSlotCode);
@@ -135,7 +135,7 @@ class ContractRevisionSignatureServiceTest {
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("no longer current");
@@ -151,7 +151,7 @@ class ContractRevisionSignatureServiceTest {
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("already signed");
@@ -166,7 +166,7 @@ class ContractRevisionSignatureServiceTest {
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_02, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Must sign first signature slot before signing the second one");
@@ -177,13 +177,12 @@ class ContractRevisionSignatureServiceTest {
   @Test
   void givenWrongSigningOrder_whenSignContractRevisionAsProvider_thenThrowValidationException() {
     setupSecurityContext();
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision)).thenReturn(true);
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_02, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsProvider(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_02, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Must sign first signature slot before signing the second one");
@@ -199,7 +198,7 @@ class ContractRevisionSignatureServiceTest {
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessageContaining("Signature already exists for this slot");
@@ -214,7 +213,7 @@ class ContractRevisionSignatureServiceTest {
         .thenReturn(Optional.of(existingRevision));
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessage("Invalid consumer signature slot id");
@@ -226,14 +225,13 @@ class ContractRevisionSignatureServiceTest {
   void givenInvalidSlotId_whenSignContractRevisionByProvider_thenThrowValidationException() {
     setupSecurityContext();
 
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision))
         .thenReturn(true);
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+        () -> signatureService.signContractRevisionAsProvider(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(ValidationException.class)
         .hasMessage("Invalid provider signature slot id");
@@ -245,14 +243,13 @@ class ContractRevisionSignatureServiceTest {
   void givenRevisionNotAssignedToCurrentProvider_whenSignContractRevision_thenThrowNotFoundException() {
     setupSecurityContext();
 
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
         .thenReturn(Optional.of(existingRevision));
     when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision))
         .thenReturn(false);
 
     assertThatThrownBy(
-        () -> signatureService.signContractRevision(CONTRACT_REVISION_ID,
+        () -> signatureService.signContractRevisionAsProvider(CONTRACT_REVISION_ID,
             SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
             OTP_CODE))
         .isInstanceOf(NotFoundException.class)

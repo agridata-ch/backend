@@ -45,7 +45,7 @@ public class ContractRevisionSealService {
     long deadline = System.currentTimeMillis() + 10_000;
     while (true) {
       SealAttemptStateEnum state = QuarkusTransaction.requiringNew().call(() -> {
-        var contract = contractRevisionQueryService.getWithAccessCheck(contractRevisionId);
+        var contract = contractRevisionQueryService.getAsAdmin(contractRevisionId);
         return contractRevisionMapper.toSealAttemptStateEnum(contract.getSealState());
       });
       if (!longPolling

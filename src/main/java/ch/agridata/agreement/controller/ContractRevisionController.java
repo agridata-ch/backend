@@ -17,11 +17,14 @@ import ch.agridata.agreement.service.ContractRevisionQueryService;
 import ch.agridata.agreement.service.ContractRevisionSealService;
 import ch.agridata.agreement.service.ContractRevisionSignatureService;
 import ch.agridata.common.openapi.ApiSubset;
+import ch.agridata.common.security.actingrole.ActingRoleHolder;
+import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -58,6 +61,7 @@ public class ContractRevisionController {
   private final ContractRevisionSignatureService contractRevisionSignatureService;
   private final ContractRevisionSealService contractRevisionSealService;
   private final ContractRevisionPdfService contractRevisionPdfService;
+  private final ActingRoleHolder actingRoleHolder;
 
   @GET
   @ApiSubset({WEB_APP})
@@ -69,8 +73,14 @@ public class ContractRevisionController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({ADMIN_ROLE, CONSUMER_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public ContractRevisionDto getContractRevision(@PathParam("id") UUID id) {
-    return contractRevisionQueryService.getDtoWithAccessCheck(id);
+    return switch (actingRoleHolder.getRole()) {
+      case ADMIN -> contractRevisionQueryService.getDtoAsAdmin(id);
+      case PROVIDER -> contractRevisionQueryService.getDtoAsProvider(id);
+      case CONSUMER -> contractRevisionQueryService.getDtoAsConsumer(id);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @POST
@@ -82,6 +92,7 @@ public class ContractRevisionController {
       description = "Initiates a challenge for a specific signature slot of a specific contract revision."
   )
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public OtpChallengeDto initiateSignatureChallenge(
       @Parameter(
           description = "ID of the contract revision",
@@ -96,10 +107,11 @@ public class ContractRevisionController {
       )
       @PathParam("slotCode") SignatureSlotCodeEnum slotCode
   ) {
-    return contractRevisionOtpChallengeService.createOtpChallenge(
-        id,
-        slotCode
-    );
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(id, slotCode);
+      case PROVIDER -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(id, slotCode);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @POST
@@ -112,6 +124,7 @@ public class ContractRevisionController {
       description = "Verifies the otp and adds a signature to a specific signature slot."
   )
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public ContractRevisionDto verifySignature(
       @Parameter(
           description = "ID of the contract revision",
@@ -137,12 +150,11 @@ public class ContractRevisionController {
       )
       @Valid VerifyOtpRequestDto request
   ) {
-    return contractRevisionSignatureService.signContractRevision(
-        id,
-        slotCode,
-        challengeId,
-        request.otpCode()
-    );
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> contractRevisionSignatureService.signContractRevisionAsConsumer(id, slotCode, challengeId, request.otpCode());
+      case PROVIDER -> contractRevisionSignatureService.signContractRevisionAsProvider(id, slotCode, challengeId, request.otpCode());
+      default -> throw new ForbiddenException();
+    };
   }
 
   @POST
@@ -190,10 +202,16 @@ public class ContractRevisionController {
       description = "Returns the pdf of the contract revision"
   )
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
+  @EnableActingRoleHolder
   public Response getContractRevisionPdf(
       @PathParam("id") UUID id
   ) {
-    byte[] pdf = contractRevisionPdfService.getPdf(id);
+    byte[] pdf = switch (actingRoleHolder.getRole()) {
+      case ADMIN -> contractRevisionPdfService.getPdfAsAdmin(id);
+      case PROVIDER -> contractRevisionPdfService.getPdfAsProvider(id);
+      case CONSUMER -> contractRevisionPdfService.getPdfAsConsumer(id);
+      default -> throw new ForbiddenException();
+    };
     return Response.ok(pdf)
         .header("Content-Disposition", String.format("attachment; filename=\"contract-revision-%s.pdf\"", id))
         .build();

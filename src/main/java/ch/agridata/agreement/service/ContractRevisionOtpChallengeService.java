@@ -27,19 +27,27 @@ public class ContractRevisionOtpChallengeService {
   private final ContractRevisionRepository contractRevisionRepository;
   private final ContractRevisionQueryService contractRevisionQueryService;
 
-  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
-  public OtpChallengeDto createOtpChallenge(
+  @RolesAllowed({CONSUMER_ROLE})
+  public OtpChallengeDto createOtpChallengeAsConsumer(
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode
   ) {
-    if (agridataSecurityIdentity.isProvider()) {
-      verifyIsAssignedToCurrentProvider(contractRevisionId);
-      verifyProviderSlot(signatureSlotCode);
-    } else {
-      verifyConsumerOwnership(contractRevisionId);
-      verifyConsumerSlot(signatureSlotCode);
-    }
+    verifyConsumerOwnership(contractRevisionId);
+    verifyConsumerSlot(signatureSlotCode);
+    return buildOtpChallenge(contractRevisionId, signatureSlotCode);
+  }
 
+  @RolesAllowed({PROVIDER_ROLE})
+  public OtpChallengeDto createOtpChallengeAsProvider(
+      UUID contractRevisionId,
+      SignatureSlotCodeEnum signatureSlotCode
+  ) {
+    verifyIsAssignedToCurrentProvider(contractRevisionId);
+    verifyProviderSlot(signatureSlotCode);
+    return buildOtpChallenge(contractRevisionId, signatureSlotCode);
+  }
+
+  private OtpChallengeDto buildOtpChallenge(UUID contractRevisionId, SignatureSlotCodeEnum signatureSlotCode) {
     var challenge = otpChallengeService.createChallenge(
         agridataSecurityIdentity.getUserId(),
         contractRevisionId,
