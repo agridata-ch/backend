@@ -37,13 +37,19 @@
     <suppress until="2026-05-31Z">
         <cve>CVE-2023-45142</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
-        <cve>CVE-2026-42154</cve>
-    </suppress>
 
     <!-- (Netty HTTP/3 QPACK) allows memory exhaustion via crafted requests.
          Fixed in 4.2.13. -->
     <suppress until="2026-05-31Z">
         <cve>CVE-2026-42582</cve>
+    </suppress>
+
+    <!-- cxf-core is pulled in transitively via quarkus-cxf.
+         No fix available yet; expected to be resolved with the next Quarkus release. -->
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-44417</cve>
+    </suppress>
+    <suppress until="2026-05-31Z">
+        <cve>CVE-2026-44930</cve>
     </suppress>
 </suppressions>
