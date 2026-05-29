@@ -1,3 +1,9 @@
+## [1.10.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.2...v1.10.0-rc.3) (2026-05-29)
+
+### Features
+
+* **datatransfer:** improvements in exception response and header handling ([3b74ac9](https://github.com/agridata-ch/backend/commit/3b74ac97ce7edd6ddf8cfc3fdeb86eb408a9fda3))
+
 ## [1.10.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.1...v1.10.0-rc.2) (2026-05-28)
 
 ### Features
