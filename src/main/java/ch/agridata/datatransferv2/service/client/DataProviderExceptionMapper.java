@@ -1,6 +1,6 @@
 package ch.agridata.datatransferv2.service.client;
 
-import ch.agridata.common.exceptions.DataTransferFailedException;
+import ch.agridata.common.exceptions.DataProviderException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
@@ -22,6 +22,6 @@ public class DataProviderExceptionMapper implements ResponseExceptionMapper<Runt
       log.warn("Failed to read error response body", e);
     }
 
-    return new DataTransferFailedException(response.getStatus(), body);
+    return new DataProviderException(response.getStatus(), body);
   }
 }

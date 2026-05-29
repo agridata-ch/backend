@@ -5,20 +5,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import ch.agridata.common.dto.DataProviderExceptionDto;
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
+import ch.agridata.common.exceptions.DataProviderException;
+import ch.agridata.common.exceptions.DataTransferFailedException;
+import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
 import ch.agridata.common.exceptions.OtpLockedException;
 import ch.agridata.common.exceptions.OtpResendCooldownException;
+import ch.agridata.common.exceptions.UidMissingException;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
+import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -216,6 +226,151 @@ class ExceptionHandlerTest {
     assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
     assertThat(dto.message()).isEqualTo("OTP resend cooldown active");
     assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_RESEND_COOLDOWN);
+  }
+
+  @ParameterizedTest(name = "handleValidationException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleValidationException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    ValidationException ex = new ValidationException("validation failed");
+
+    Response response = exceptionHandler.handleValidationException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.GENERIC);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "validation failed" : null);
+  }
+
+  @ParameterizedTest(name = "handleMismatchedInputException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleMismatchedInputException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    MismatchedInputException ex = MismatchedInputException.from((JsonParser) null, String.class, "bad input");
+
+    Response response = exceptionHandler.handleValidationException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.GENERIC);
+    assertThat(dto.debugMessage()).isEqualTo(debug ? ex.getMessage() : null);
+  }
+
+  @ParameterizedTest(name = "handleIllegalArgumentException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleIllegalArgumentException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    IllegalArgumentException ex = new IllegalArgumentException("bad arg");
+
+    Response response = exceptionHandler.handleIllegalArgumentException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.GENERIC);
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "bad arg" : null);
+  }
+
+  @ParameterizedTest(name = "handleIllegalStateException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleIllegalStateException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    IllegalStateException ex = new IllegalStateException("bad state");
+
+    Response response = exceptionHandler.handleIllegalStateException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.GENERIC);
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "bad state" : null);
+  }
+
+  @ParameterizedTest(name = "handleUidMissingException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleUidMissingException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    UidMissingException ex = new UidMissingException("uid missing for producer");
+
+    Response response = exceptionHandler.handleUidMissingException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.UID_MISSING);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "uid missing for producer" : null);
+  }
+
+  @ParameterizedTest(name = "handleDataTransferFailedException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  @SuppressWarnings("deprecation")
+  void handleDataTransferFailedException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    DataTransferFailedException ex = new DataTransferFailedException(503, "upstream down");
+
+    Response response = exceptionHandler.handleDataTransferFailedException(ex);
+    ExternalServiceExceptionDto dto = (ExternalServiceExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
+    assertThat(dto.message()).isEqualTo("upstream down");
+    assertThat(dto.status()).isEqualTo(503);
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXTERNAL_SERVICE_ERROR);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "upstream down" : null);
+  }
+
+  @ParameterizedTest(name = "handleExternalWebServiceException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleExternalWebServiceException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    ExternalWebServiceException ex = new ExternalWebServiceException("agis unreachable");
+
+    Response response = exceptionHandler.handleExternalWebServiceException(ex);
+    ExternalServiceExceptionDto dto = (ExternalServiceExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
+    assertThat(dto.message()).isEqualTo("External service failed");
+    assertThat(dto.status()).isZero();
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXTERNAL_SERVICE_ERROR);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "agis unreachable" : null);
+  }
+
+  @ParameterizedTest(name = "handleOptimisticLockException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleOptimisticLockException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    OptimisticLockException ex = new OptimisticLockException("row was updated");
+
+    Response response = exceptionHandler.handleOptimisticLockException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.CONFLICT.getStatusCode());
+    assertThat(dto.message()).isEqualTo("The object has been updated by another user. Please refresh the page.");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.GENERIC);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "row was updated" : null);
+  }
+
+  @Test
+  void handleDataProviderException() {
+    DataProviderException ex = new DataProviderException(418, "I'm a teapot");
+
+    Response response = exceptionHandler.handleDataProviderException(ex);
+    DataProviderExceptionDto dto = (DataProviderExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo(ex.getMessage());
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.exceptionType()).isEqualTo(ExceptionEnum.DATA_PROVIDER_ERROR);
+    assertThat(dto.dataProviderHttpStatus()).isEqualTo(418);
+    assertThat(dto.dataProviderMessage()).isEqualTo("I'm a teapot");
   }
 
   private ConstraintViolation<?> mockConstraintViolation(String path, String message) {

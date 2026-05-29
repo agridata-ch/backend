@@ -14,5 +14,6 @@ public enum ExceptionEnum {
   OTP_LOCKED,
   OTP_EXPIRED,
   OTP_RESEND_COOLDOWN,
+  DATA_PROVIDER_ERROR,
   MAINTENANCE // Used by the AWS load balancer to indicate that the service is temporarily unavailable due to maintenance
 }

@@ -31,6 +31,24 @@ class ResolveConsumerUidFromResponseHeaderTaskTest {
   }
 
   @Test
+  void givenConsumerUidInLowercaseHeader_whenApply_thenConsumerUidIsResolved() {
+    var context = createContext(Map.of("agridata-consumer-uid", CONSUMER_UID));
+
+    var result = task.apply(context);
+
+    assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
+  }
+
+  @Test
+  void givenConsumerUidInMixedCaseHeader_whenApply_thenConsumerUidIsResolved() {
+    var context = createContext(Map.of("Agridata-Consumer-Uid", CONSUMER_UID));
+
+    var result = task.apply(context);
+
+    assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
+  }
+
+  @Test
   void givenNoConsumerUidInResponseHeader_whenApply_thenExternalWebServiceExceptionIsThrown() {
     var context = createContext(Map.of());
 
