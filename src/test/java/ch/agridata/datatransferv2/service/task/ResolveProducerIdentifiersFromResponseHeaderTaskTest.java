@@ -115,6 +115,30 @@ class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
   }
 
   @Test
+  void givenHeadersInLowercase_whenApply_thenBothProducerIdentifiersResolved() {
+    var context = createContext(Map.of(
+        UID_HEADER.toLowerCase(), "[\"" + UID_1 + "\"]",
+        BUR_HEADER.toLowerCase(), "[\"" + BUR_1 + "\"]"));
+
+    var result = task.apply(context);
+
+    assertThat(result.getProducerUids()).containsExactly(UID_1);
+    assertThat(result.getProducerBurs()).containsExactly(BUR_1);
+  }
+
+  @Test
+  void givenHeadersInMixedCase_whenApply_thenBothProducerIdentifiersResolved() {
+    var context = createContext(Map.of(
+        "Agridata-Response-Producer-Uids", "[\"" + UID_1 + "\"]",
+        "Agridata-Response-Producer-Burs", "[\"" + BUR_1 + "\"]"));
+
+    var result = task.apply(context);
+
+    assertThat(result.getProducerUids()).containsExactly(UID_1);
+    assertThat(result.getProducerBurs()).containsExactly(BUR_1);
+  }
+
+  @Test
   void givenInvalidJsonInBursHeader_whenApply_thenExternalWebServiceExceptionThrown() {
     var context = createContext(Map.of(BUR_HEADER, "not-valid-json"));
 

@@ -2,10 +2,12 @@ package ch.agridata.common;
 
 import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIELD;
 
+import ch.agridata.common.dto.DataProviderExceptionDto;
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
+import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
@@ -179,6 +181,13 @@ public class ExceptionHandler {
         .build();
   }
 
+  /**
+   * Handler kept for the deprecated {@link DataTransferFailedException}; remove together with the exception once all callers have
+   * migrated to {@link ch.agridata.common.exceptions.DataProviderException}.
+   *
+   * @deprecated Use {@link #handleDataProviderException(DataProviderException)} instead.
+   */
+  @Deprecated(since = "1.10.0")
   @ServerExceptionMapper(DataTransferFailedException.class)
   public Response handleDataTransferFailedException(DataTransferFailedException ex) {
     log.error("DataTransferFailedException: {}", ex.getMessage(), ex);
@@ -221,6 +230,21 @@ public class ExceptionHandler {
             ex.getMessage()
         ))
         .build();
+  }
+
+  @ServerExceptionMapper(DataProviderException.class)
+  public Response handleDataProviderException(DataProviderException ex) {
+    log.error("DataProviderException: upstream status={} providerMessage={}",
+        ex.getDataProviderHttpStatus(), ex.getDataProviderMessage(), ex);
+    return Response.status(Status.BAD_GATEWAY)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(new DataProviderExceptionDto(
+            ex.getMessage(),
+            MDC.get(REQUEST_ID_MDC_FIELD),
+            ExceptionEnum.DATA_PROVIDER_ERROR,
+            ex.getDataProviderHttpStatus(),
+            ex.getDataProviderMessage()
+        )).build();
   }
 
   private ExceptionDto createResponse(String message, String debugMessage) {
