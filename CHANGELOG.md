@@ -1,3 +1,9 @@
+## [1.10.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.4...v1.10.0-rc.5) (2026-06-01)
+
+### Bug Fixes
+
+* **cicd:** improve caching in github actions ([7043128](https://github.com/agridata-ch/backend/commit/7043128a86fdcc8ac127f7a80b5a97a166c29605))
+
 ## [1.10.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.3...v1.10.0-rc.4) (2026-06-01)
 
 ### Features
