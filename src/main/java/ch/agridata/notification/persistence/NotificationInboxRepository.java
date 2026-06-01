@@ -30,7 +30,7 @@ public class NotificationInboxRepository implements PanacheRepositoryBase<Notifi
     return find("recipient.id", recipientId).count() > 0;
   }
 
-  public int markAsRead(UUID userId, List<UUID> inboxIds) {
-    return update("isRead = true WHERE userId = ?1 AND id IN ?2", userId, inboxIds);
+  public int markReadStatus(UUID userId, List<UUID> inboxIds, boolean isRead) {
+    return update("isRead = ?1 WHERE userId = ?2 AND id IN ?3", isRead, userId, inboxIds);
   }
 }

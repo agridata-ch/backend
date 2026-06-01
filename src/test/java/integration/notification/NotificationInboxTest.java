@@ -31,7 +31,8 @@ class NotificationInboxTest {
         .then()
         .statusCode(200)
         .extract()
-        .as(new TypeRef<PageResponseDto<InboxEntryDto>>() {});
+        .as(new TypeRef<PageResponseDto<InboxEntryDto>>() {
+        });
 
     assertThat(result).isNotNull();
     assertThat(result.items()).isNotNull();
@@ -49,6 +50,17 @@ class NotificationInboxTest {
   }
 
   @Test
+  void givenAuthenticatedProducer_whenMarkAsUnread_thenReturns204or200() {
+    int status = AuthTestUtils.requestAs(PRODUCER_A).contentType(MediaType.APPLICATION_JSON).body("""
+        {
+          "inboxIds": ["d0000000-0000-0000-0000-000000000001"]
+        }
+        """).when().put(NotificationController.PATH + "/inbox/mark-as-unread").getStatusCode();
+
+    assertThat(status).isIn(200, 204);
+  }
+
+  @Test
   void givenNoToken_whenGetInbox_thenUnauthorized() {
     RestAssured.given().when().get(NotificationController.PATH + "/inbox").then().statusCode(401);
   }
@@ -60,5 +72,14 @@ class NotificationInboxTest {
           "inboxIds": ["d0000000-0000-0000-0000-000000000001"]
         }
         """).when().put(NotificationController.PATH + "/inbox/mark-as-read").then().statusCode(401);
+  }
+
+  @Test
+  void givenNoToken_whenMarkAsUnread_thenUnauthorized() {
+    RestAssured.given().contentType(MediaType.APPLICATION_JSON).body("""
+        {
+          "inboxIds": ["d0000000-0000-0000-0000-000000000001"]
+        }
+        """).when().put(NotificationController.PATH + "/inbox/mark-as-unread").then().statusCode(401);
   }
 }
