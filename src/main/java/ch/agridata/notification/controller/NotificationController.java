@@ -69,6 +69,19 @@ public class NotificationController {
   @Produces(MediaType.APPLICATION_JSON)
   @Authenticated
   public void markAsRead(@NotNull @Valid MarkAsReadRequestDto request) {
-    inboxService.markAsRead(identity.getUserId(), request);
+    inboxService.markReadStatus(identity.getUserId(), request, true);
+  }
+
+  @PUT
+  @Path("/inbox/mark-as-unread")
+  @ApiSubset({WEB_APP, MOBILE_APP})
+  @Operation(
+      operationId = "markInboxAsUnread", description = "Marks one or multiple inbox entries as unread for the currently authenticated user."
+  )
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Authenticated
+  public void markAsUnread(@NotNull @Valid MarkAsReadRequestDto request) {
+    inboxService.markReadStatus(identity.getUserId(), request, false);
   }
 }

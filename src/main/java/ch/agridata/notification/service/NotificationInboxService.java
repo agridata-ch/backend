@@ -40,9 +40,13 @@ public class NotificationInboxService {
   }
 
   @Transactional
-  public void markAsRead(UUID userId, MarkAsReadRequestDto request) {
-    int updated = inboxRepository.markAsRead(userId, request.inboxIds());
-    log.info("Marked {} inbox entries as read for user {}", updated, userId);
+  public void markReadStatus(UUID userId, MarkAsReadRequestDto request, boolean isRead) {
+    int updated = inboxRepository.markReadStatus(userId, request.inboxIds(), isRead);
+    if (isRead) {
+      log.info("Marked {} inbox entries as read for user {}", updated, userId);
+    } else {
+      log.info("Marked {} inbox entries as unread for user {}", updated, userId);
+    }
   }
 
   private InboxEntryDto toDto(NotificationInboxEntity entity) {
