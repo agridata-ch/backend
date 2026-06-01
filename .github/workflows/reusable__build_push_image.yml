@@ -44,9 +44,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ needs.checkstyle.outputs.cache-date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-${{ needs.checkstyle.outputs.cache-date }}
             ${{ runner.os }}-maven-
 
       - name: Maven package

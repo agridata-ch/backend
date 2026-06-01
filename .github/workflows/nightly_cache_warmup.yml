@@ -1,0 +1,70 @@
+name: Nightly Cache Warmup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 02:00 UTC, runs against the default branch (develop)
+  workflow_dispatch:
+
+jobs:
+  warm-maven-cache:
+    name: Warm Maven cache (deps + OWASP NVD DB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'corretto'
+
+      - name: Restore previous cache (warm start)
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Populate Maven dependencies and plugins
+        run: mvn -B verify -DskipTests -DskipITs -T 1C
+
+      - name: Update OWASP NVD database
+        run: |
+          mvn -B org.owasp:dependency-check-maven:update-only \
+            -DnvdApiKey=${{ secrets.API_KEY_NATIONAL_VULNERABILITY_DATABASE }}
+
+      - name: Save Maven cache
+        uses: actions/cache/save@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ github.run_id }}
+
+  warm-trivy-cache:
+    name: Warm Trivy vulnerability DB cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Setup oras
+        uses: oras-project/setup-oras@v1
+
+      - name: Download and extract the vulnerability DB
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
+          oras pull ghcr.io/aquasecurity/trivy-db:2
+          tar -xzf db.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/db
+          rm db.tar.gz
+
+      - name: Download and extract the Java DB
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
+          oras pull ghcr.io/aquasecurity/trivy-java-db:1
+          tar -xzf javadb.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/java-db
+          rm javadb.tar.gz
+
+      - name: Save Trivy cache
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ github.workspace }}/.cache/trivy
+          key: cache-trivy-${{ github.run_id }}
