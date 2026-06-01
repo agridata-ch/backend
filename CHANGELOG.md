@@ -1,3 +1,13 @@
+## [1.10.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.3...v1.10.0-rc.4) (2026-06-01)
+
+### Features
+
+* **acontrol-products:** add Acontrol system and register its data products ([557b2aa](https://github.com/agridata-ch/backend/commit/557b2aa3d9ba2736879699053b6544c4804e8008)), closes [DIGIB2-1392](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1392)
+
+### Bug Fixes
+
+* **deps:** suppress owasp findings because there is no fix yet ([eebf9ce](https://github.com/agridata-ch/backend/commit/eebf9cee89aa33254224768265b7813362c3e4b2))
+
 ## [1.10.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.2...v1.10.0-rc.3) (2026-05-29)
 
 ### Features
