@@ -1,3 +1,9 @@
+## [1.10.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.7...v1.10.0-rc.8) (2026-06-02)
+
+### Features
+
+* **notification:** Add endpoint for marking notifications as unread. ([7fa45db](https://github.com/agridata-ch/backend/commit/7fa45dbdc888652bba967027fe5439aefdd49f19)), closes [DIGIB2-315](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-315)
+
 ## [1.10.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.6...v1.10.0-rc.7) (2026-06-02)
 
 ### Features
