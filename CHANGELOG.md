@@ -1,3 +1,9 @@
+## [1.10.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.8...v1.10.0-rc.9) (2026-06-02)
+
+### Features
+
+* **notification:** Allow sorting of notification inbox entries. ([83d4aeb](https://github.com/agridata-ch/backend/commit/83d4aeb2298da16748266732f43ec095674931a4)), closes [DIGIB2-315](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-315)
+
 ## [1.10.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.7...v1.10.0-rc.8) (2026-06-02)
 
 ### Features
