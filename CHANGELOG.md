@@ -1,3 +1,9 @@
+## [1.10.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.6...v1.10.0-rc.7) (2026-06-02)
+
+### Features
+
+* **audit:** audit system-set collective signature ([77bc765](https://github.com/agridata-ch/backend/commit/77bc7655d62eed80aef0011f80fe2409c012e492)), closes [DIGIB2-1413](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1413)
+
 ## [1.10.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.5...v1.10.0-rc.6) (2026-06-02)
 
 ### Features
