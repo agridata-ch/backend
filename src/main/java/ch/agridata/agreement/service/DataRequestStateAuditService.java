@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Handles audit logging for data request state transitions.
  *
- * @CommentLastReviewed 2026-04-01
+ * @CommentLastReviewed 2026-06-02
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -34,6 +34,7 @@ public class DataRequestStateAuditService {
       auditingService.logDataRequestRejected(entity.getId());
     } else if (oldStateCode == IN_REVIEW && newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
       auditingService.logDataRequestApproved(entity.getId());
+      auditingService.logCollectiveSignatureSet(entity.getId());
     } else if (oldStateCode == TO_BE_ACTIVATED && newStateCode == ACTIVE) {
       auditingService.logDataRequestActivated(entity.getId());
     }
