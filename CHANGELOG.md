@@ -1,3 +1,9 @@
+## [1.10.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.5...v1.10.0-rc.6) (2026-06-02)
+
+### Features
+
+* **permission:** allow multiple roles per user ([cc1aaac](https://github.com/agridata-ch/backend/commit/cc1aaac9bf84fac57487080f875146f69c48d4ef)), closes [DIGIB2-1214](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1214)
+
 ## [1.10.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.4...v1.10.0-rc.5) (2026-06-01)
 
 ### Bug Fixes
