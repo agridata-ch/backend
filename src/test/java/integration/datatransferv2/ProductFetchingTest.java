@@ -182,22 +182,23 @@ class ProductFetchingTest {
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
-        // Acontrol Data Products
+        // BLV Acontrol Data Products
         Arguments.of(
-            TestUserEnum.CONSUMER_BLV_1,
-            DataProduct.UUID_30229210.uuid().toString(),
-            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
-        Arguments.of(
-            TestUserEnum.CONSUMER_BLV_1,
+            TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_96787125.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
         Arguments.of(
-            TestUserEnum.CONSUMER_BLV_1,
+            TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_DF72EB69.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
         Arguments.of(
-            TestUserEnum.CONSUMER_BLV_1,
+            TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_905170B2.uuid().toString(),
+            Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
+        // BLW Acontrol Data Products
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_30229210.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "pageSize", "5", "pageOffset", "0")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
