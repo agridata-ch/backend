@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import ch.agridata.datatransferv2.controller.DataTransferController;
 import ch.agridata.product.persistence.DataProductEntity;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers.Bur;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,8 +37,6 @@ class UnboundPostValidationFlowTest {
   private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = "CHE403244345";
 
   private static final Identifier<DataProductEntity> PRODUCT_UNBOUND_POST_VALIDATION = DataProduct.UUID_6319423C;
-
-  private final ObjectMapper objectMapper;
 
   WireMock wireMock;
 
@@ -149,14 +145,13 @@ class UnboundPostValidationFlowTest {
     wireMock.verifyThat(1, WireMock.getRequestedFor(WireMock.urlEqualTo(expectedUrl)));
   }
 
-  @SneakyThrows
   void mockResponseHeaders(List<String> uids, List<String> burs) {
     var baseResponse = WireMock.aResponse().withStatus(200);
     if (uids != null) {
-      baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-UIDS", objectMapper.writeValueAsString(uids));
+      baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-UIDS", String.join(",", uids));
     }
     if (burs != null) {
-      baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-BURS", objectMapper.writeValueAsString(burs));
+      baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-BURS", String.join(",", burs));
     }
 
     // When the consumer UID is already known (present in request header), no CONSUMER-UID response header is needed.

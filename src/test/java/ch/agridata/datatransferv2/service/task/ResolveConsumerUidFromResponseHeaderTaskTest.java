@@ -10,20 +10,28 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ResolveConsumerUidFromResponseHeaderTaskTest {
 
+  private static final String CONSUMER_UID_HEADER = "AGRIDATA-CONSUMER-UID";
   private static final String CONSUMER_UID = "CHE123456789";
 
   @InjectMocks
   ResolveConsumerUidFromResponseHeaderTask task;
 
-  @Test
-  void givenConsumerUidInResponseHeader_whenApply_thenConsumerUidIsResolved() {
-    var context = createContext(Map.of("AGRIDATA-CONSUMER-UID", CONSUMER_UID));
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "AGRIDATA-CONSUMER-UID",
+      "agridata-consumer-uid",
+      "Agridata-Consumer-Uid"
+  })
+  void givenHeaderNameInVariousCases_whenApply_thenConsumerUidIsResolved(String headerName) {
+    var context = createContext(Map.of(headerName, CONSUMER_UID));
 
     var result = task.apply(context);
 
@@ -31,21 +39,23 @@ class ResolveConsumerUidFromResponseHeaderTaskTest {
   }
 
   @Test
-  void givenConsumerUidInLowercaseHeader_whenApply_thenConsumerUidIsResolved() {
-    var context = createContext(Map.of("agridata-consumer-uid", CONSUMER_UID));
+  void givenValueWithSurroundingWhitespace_whenApply_thenTrimmedConsumerUidIsResolved() {
+    var context = createContext(Map.of(CONSUMER_UID_HEADER, "  " + CONSUMER_UID + "  "));
 
     var result = task.apply(context);
 
     assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
   }
 
-  @Test
-  void givenConsumerUidInMixedCaseHeader_whenApply_thenConsumerUidIsResolved() {
-    var context = createContext(Map.of("Agridata-Consumer-Uid", CONSUMER_UID));
+  @ParameterizedTest
+  @ValueSource(strings = {"", "   "})
+  void givenAbsentOrBlankHeader_whenApply_thenExternalWebServiceExceptionThrown(String headerValue) {
+    var context = createContext(Map.of(CONSUMER_UID_HEADER, headerValue));
 
-    var result = task.apply(context);
-
-    assertThat(result.getConsumerUid()).isEqualTo(CONSUMER_UID);
+    assertThatThrownBy(() -> task.apply(context))
+        .isInstanceOf(ExternalWebServiceException.class)
+        .hasMessageContaining(CONSUMER_UID_HEADER)
+        .hasMessageContaining("absent in provider response");
   }
 
   @Test
@@ -54,8 +64,25 @@ class ResolveConsumerUidFromResponseHeaderTaskTest {
 
     assertThatThrownBy(() -> task.apply(context))
         .isInstanceOf(ExternalWebServiceException.class)
-        .hasMessageContaining("AGRIDATA-CONSUMER-UID")
+        .hasMessageContaining(CONSUMER_UID_HEADER)
         .hasMessageContaining("absent in provider response");
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "CHE-123456789",
+      "CHE 123456789",
+      "\"CHE123456789\"",
+      "CHE123456789,CHE987654321",
+      "CHE123456789;extra"
+  })
+  void givenNonAlphanumericConsumerUid_whenApply_thenExternalWebServiceExceptionThrown(String invalidValue) {
+    var context = createContext(Map.of(CONSUMER_UID_HEADER, invalidValue));
+
+    assertThatThrownBy(() -> task.apply(context))
+        .isInstanceOf(ExternalWebServiceException.class)
+        .hasMessageContaining(CONSUMER_UID_HEADER)
+        .hasMessageContaining("alphanumeric");
   }
 
   private AgridataContext createContext(Map<String, String> responseHeaders) {
