@@ -41,7 +41,7 @@ public class NotificationService {
 
     List<RecipientRequestDto> recipients = userApi.getAdminUsers()
         .stream()
-        .map(admin -> new RecipientRequestDto(admin.userId(), admin.email()))
+        .map(admin -> new RecipientRequestDto(admin.userId(), admin.email(), admin.language()))
         .toList();
     api.queueNotification(
         recipients,

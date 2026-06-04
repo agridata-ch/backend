@@ -2,6 +2,7 @@ package integration.notification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
@@ -73,7 +74,7 @@ class NotificationQueueWorkerJobTest {
     var requestId = UUID.randomUUID();
     agridataSecurityIdentity.setRunAsUserId(UUID.randomUUID());
     batchService.queueNotification(
-        List.of(new RecipientRequestDto(null, RECIPIENT_EMAIL)),
+        List.of(new RecipientRequestDto(null, RECIPIENT_EMAIL, SupportedLanguage.DE)),
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
         Map.of(
             "dataRequestUrl", "/admin/" + UUID.randomUUID(),
@@ -108,11 +109,13 @@ class NotificationQueueWorkerJobTest {
   }
 
   private void awaitBatchComplete(UUID batchId) {
-    awaitUntil(() -> {
-      em.clear();
-      var batch = batchRepository.findById(batchId);
-      return batch != null && batch.getStatusCode() == NotificationBatchStatusEnum.COMPLETE;
-    }, Duration.ofSeconds(10));
+    awaitUntil(
+        () -> {
+          em.clear();
+          var batch = batchRepository.findById(batchId);
+          return batch != null && batch.getStatusCode() == NotificationBatchStatusEnum.COMPLETE;
+        }, Duration.ofSeconds(4)
+    );
 
     var batch = batchRepository.findById(batchId);
     assertThat(batch.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.COMPLETE);

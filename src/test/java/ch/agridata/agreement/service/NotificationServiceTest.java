@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.notification.api.NotificationApi;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
@@ -60,8 +61,8 @@ class NotificationServiceTest {
 
   @Test
   void givenMultipleAdmins_whenQueueDataRequestInReview_thenQueuesNotificationForEachAdminWithAllPlaceholders() {
-    var admin1 = new AdminUserDto(UUID.randomUUID(), "admin1@example.com");
-    var admin2 = new AdminUserDto(UUID.randomUUID(), null);
+    var admin1 = new AdminUserDto(UUID.randomUUID(), "admin1@example.com", SupportedLanguage.DE);
+    var admin2 = new AdminUserDto(UUID.randomUUID(), null, null);
     when(userApi.getAdminUsers()).thenReturn(List.of(admin1, admin2));
 
     var id = UUID.randomUUID();
@@ -82,6 +83,8 @@ class NotificationServiceTest {
         .containsExactly(admin1.userId(), admin2.userId());
     assertThat(recipientCaptor.getValue()).extracting(RecipientRequestDto::email)
         .containsExactly("admin1@example.com", null);
+    assertThat(recipientCaptor.getValue()).extracting(RecipientRequestDto::language)
+        .containsExactly(SupportedLanguage.DE, null);
 
     assertThat(placeholderCaptor.getValue())
         .containsEntry("dataRequestTitleDe", "Titel DE")

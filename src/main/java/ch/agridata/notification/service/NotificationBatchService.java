@@ -75,6 +75,7 @@ public class NotificationBatchService {
           .batch(batch)
           .userId(recipientDto.userId())
           .email(recipientDto.email())
+          .language(recipientDto.language())
           .build();
       recipientRepository.persist(recipient);
     }
