@@ -9,6 +9,9 @@ public enum SupportedLanguage {
   DE, FR, IT;
 
   public static SupportedLanguage from(String value) {
+    if (value == null) {
+      return SupportedLanguage.DE;
+    }
     return switch (value.toLowerCase()) {
       case "fr" -> FR;
       case "it" -> IT;

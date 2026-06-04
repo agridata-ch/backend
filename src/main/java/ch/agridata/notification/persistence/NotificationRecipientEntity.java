@@ -1,8 +1,11 @@
 package ch.agridata.notification.persistence;
 
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
@@ -53,4 +56,8 @@ public class NotificationRecipientEntity extends AuditableEntity {
 
   @Column(name = "email")
   private String email;
+
+  @Column(name = "language", length = 2)
+  @Enumerated(EnumType.STRING)
+  private SupportedLanguage language;
 }

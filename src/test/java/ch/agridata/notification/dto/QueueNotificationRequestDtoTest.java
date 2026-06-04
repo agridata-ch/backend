@@ -36,7 +36,7 @@ class QueueNotificationRequestDtoTest {
     validatorFactory.close();
   }
 
-  private static final RecipientRequestDto VALID_RECIPIENT = new RecipientRequestDto(UUID.randomUUID(), null);
+  private static final RecipientRequestDto VALID_RECIPIENT = new RecipientRequestDto(UUID.randomUUID(), null, null);
 
   // ── valid ────────────────────────────────────────────────────────────────
 
@@ -69,7 +69,7 @@ class QueueNotificationRequestDtoTest {
 
   @Test
   void givenInvalidRecipientInList_whenValidate_thenCascadedViolation() {
-    var invalid = new RecipientRequestDto(null, null); // both null → @AssertTrue on isValid() fails
+    var invalid = new RecipientRequestDto(null, null, null); // both null → @AssertTrue on isValid() fails
     var dto = new QueueNotificationRequestDto(List.of(invalid), EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, null);
 
     Set<ConstraintViolation<QueueNotificationRequestDto>> violations = validator.validate(dto);

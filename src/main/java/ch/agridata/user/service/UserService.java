@@ -85,7 +85,7 @@ public class UserService {
   public List<AdminUserDto> getAdminUsers() {
     return userRepository.findAllByRoleAtLastLogin(ADMIN_ROLE)
         .stream()
-        .map(user -> new AdminUserDto(user.getId(), user.getEmail()))
+        .map(user -> new AdminUserDto(user.getId(), user.getEmail(), user.getLanguage()))
         .toList();
   }
 }

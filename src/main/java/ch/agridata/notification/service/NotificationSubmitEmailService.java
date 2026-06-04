@@ -1,6 +1,8 @@
 package ch.agridata.notification.service;
 
 import ch.agridata.aws.api.EmailApi;
+import ch.agridata.common.dto.SupportedLanguage;
+import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationChannelCodeEnum;
 import ch.agridata.notification.persistence.NotificationDispatchEntity;
@@ -12,8 +14,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,8 +35,6 @@ public class NotificationSubmitEmailService {
 
   private static final String EMAIL_TEMPLATE_PATH = "notification/email-template.html";
   private static final String CONTENT_PLACEHOLDER = "{{content}}";
-  private static final String LANGUAGE_SEPARATOR =
-      "<hr style=\"margin:24px 0;border:0;border-top:1px solid #d1d5dc\">";
 
   public boolean dispatch(NotificationRecipientEntity recipient, ResolvedNotificationTextsDto resolvedNotificationTexts) {
 
@@ -45,8 +43,9 @@ public class NotificationSubmitEmailService {
       return true;
     }
 
-    String subject = resolvedNotificationTexts.emailSubject().de();
-    String body = buildMultilingualBody(resolvedNotificationTexts);
+    SupportedLanguage language = recipient.getLanguage();
+    String subject = selectTranslation(resolvedNotificationTexts.emailSubject(), language);
+    String body = buildLanguageBody(resolvedNotificationTexts, language);
 
     try {
       emailApi.submitEmail(recipient.getEmail(), subject, body);
@@ -75,11 +74,25 @@ public class NotificationSubmitEmailService {
     dispatchRepository.persist(notificationDispatchEntity);
   }
 
-  private String buildMultilingualBody(ResolvedNotificationTextsDto text) {
-    String content = Stream.of(text.emailText().de(), text.emailText().fr(), text.emailText().it())
-        .filter(part -> part != null && !part.isBlank())
-        .collect(Collectors.joining(LANGUAGE_SEPARATOR));
-    return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, content);
+  private String buildLanguageBody(ResolvedNotificationTextsDto text, SupportedLanguage language) {
+    String part = selectTranslation(text.emailText(), language);
+    return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, part != null ? part : "");
+  }
+
+  /**
+   * Picks the translation for the given language. Falls back to the German text when the
+   * language-specific translation is null or blank.
+   */
+  private String selectTranslation(TranslationDto translation, SupportedLanguage language) {
+    if (language == null) {
+      return translation.de();
+    }
+    String text = switch (language) {
+      case FR -> translation.fr();
+      case IT -> translation.it();
+      default -> translation.de();
+    };
+    return (text != null && !text.isBlank()) ? text : translation.de();
   }
 
   @PostConstruct
