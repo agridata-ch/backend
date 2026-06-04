@@ -6,6 +6,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.UserInfoDto;
@@ -56,6 +57,7 @@ public class UserService {
 
     user.setRolesAtLastLogin(identity.getRoles());
     user.setLastLoginDate(LocalDateTime.now());
+    user.setLanguage(SupportedLanguage.from(userInfo.getString("locale")));
 
     var address = userInfo.getObject("address");
     if (address != null) {

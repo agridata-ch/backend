@@ -2686,6 +2686,9 @@
         "loginid": [
           "20154600"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Testfallgasse 9"
         ],
@@ -2736,6 +2739,9 @@
         "loginid": [
           "900000"
         ],
+        "locale": [
+          "de"
+        ],
         "uid": "CHE110013660"
       },
       "createdTimestamp": 1704813979950,
@@ -2770,6 +2776,9 @@
       "attributes": {
         "loginid": [
           "3477588"
+        ],
+        "locale": [
+          "de"
         ],
         "phoneNumber": [
           "+41 12 345 67 89"
@@ -2809,6 +2818,9 @@
         "loginid": [
           "3477589"
         ],
+        "locale": [
+          "fr"
+        ],
         "phoneNumber": [
           "+41 12 345 67 89"
         ],
@@ -2846,6 +2858,9 @@
       "attributes": {
         "loginid": [
           "3477590"
+        ],
+        "locale": [
+          "it"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -2879,6 +2894,9 @@
       "attributes": {
         "loginid": [
           "3477553"
+        ],
+        "locale": [
+          "de"
         ],
         "street": [
           "Nullnummerweg 55"
@@ -2932,6 +2950,9 @@
         "loginid": [
           "3477586"
         ],
+        "locale": [
+          "fr"
+        ],
         "street": [
           "Nullnummerweg 55"
         ],
@@ -2984,6 +3005,9 @@
         "loginid": [
           "consumer-provider"
         ],
+        "locale": [
+          "it"
+        ],
         "phoneNumber": [
           "+41 12 345 67 89"
         ],
@@ -3022,6 +3046,9 @@
       "attributes": {
         "loginid": [
           "3477554"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3056,6 +3083,9 @@
       "attributes": {
         "loginid": [
           "3477555"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3090,6 +3120,9 @@
       "attributes": {
         "loginid": [
           "000000"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3126,6 +3159,9 @@
         ],
         "loginid": [
           "3477580"
+        ],
+        "locale": [
+          "de"
         ],
         "street": [
           "Beispielgasse 42"
@@ -3179,6 +3215,9 @@
         "loginid": [
           "3477581"
         ],
+        "locale": [
+          "fr"
+        ],
         "street": [
           "Hauptstrasse 2"
         ],
@@ -3230,6 +3269,9 @@
         ],
         "loginid": [
           "3477582"
+        ],
+        "locale": [
+          "it"
         ],
         "street": [
           "Hauptstrasse 138"
@@ -3283,6 +3325,9 @@
         "loginid": [
           "3477583"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Musterweg 1"
         ],
@@ -3335,6 +3380,9 @@
         "loginid": [
           "3477584"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Beispielallee 9"
         ],
@@ -3383,6 +3431,9 @@
       "attributes": {
         "loginid": [
           "3477585"
+        ],
+        "locale": [
+          "de"
         ],
         "street": [
           "Kirchgasse 5"
@@ -3434,6 +3485,9 @@
         ],
         "loginid": [
           "producer-agis-tvd-unavailable"
+        ],
+        "locale": [
+          "de"
         ],
         "street": [
           "Producergasse 1"
@@ -3487,6 +3541,9 @@
         "loginid": [
           "producer-agis-no-uid-tvd-unavailable"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Producergasse 3"
         ],
@@ -3539,6 +3596,9 @@
         "loginid": [
           "producer-agis-unavailable-tvd-no-uid"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Procergasse 4"
         ],
@@ -3590,6 +3650,9 @@
         ],
         "loginid": [
           "producer-both-no-uid"
+        ],
+        "locale": [
+          "de"
         ],
         "street": [
           "Producergasse 2"

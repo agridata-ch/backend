@@ -1,8 +1,11 @@
 package ch.agridata.user.persistence;
 
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -84,6 +87,10 @@ public class UserEntity extends AuditableEntity {
   @Column(name = "user_preferences")
   @JdbcTypeCode(SqlTypes.JSON)
   private UserEntityPreferencesDto userPreferences;
+
+  @Column(name = "language", length = 2)
+  @Enumerated(EnumType.STRING)
+  private SupportedLanguage language;
 
   @Column(name = "roles_at_last_login")
   @JdbcTypeCode(SqlTypes.JSON)

@@ -1,0 +1,3 @@
+ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(2);
+
+ALTER TABLE notification_recipient ADD COLUMN IF NOT EXISTS language VARCHAR(2);
