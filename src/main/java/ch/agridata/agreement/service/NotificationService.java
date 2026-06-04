@@ -43,8 +43,13 @@ public class NotificationService {
         .stream()
         .map(admin -> new RecipientRequestDto(admin.userId(), admin.email()))
         .toList();
-    api.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, placeholders, TargetTypeCodeEnum.DATA_REQUEST,
-        request.getId());
+    api.queueNotification(
+        recipients,
+        EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
+        placeholders,
+        TargetTypeCodeEnum.DATA_REQUEST,
+        request.getId()
+    );
   }
 
   private String buildDataRequestAdminUrl(UUID id) {
