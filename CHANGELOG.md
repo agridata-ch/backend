@@ -1,3 +1,9 @@
+## [1.10.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.9...v1.10.0-rc.10) (2026-06-04)
+
+### Features
+
+* **product:** Add BLV as provider ([b331fe6](https://github.com/agridata-ch/backend/commit/b331fe63bb55e4f002485c9d1569f77e40d2c1c4)), closes [DIGIB2-1427](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1427)
+
 ## [1.10.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.8...v1.10.0-rc.9) (2026-06-02)
 
 ### Features
