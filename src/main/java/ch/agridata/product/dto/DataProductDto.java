@@ -35,6 +35,31 @@ public record DataProductDto(
     DataSourceSystemDto dataSourceSystem,
 
     @Schema(
+        description = "Rest client used to fetch the data product"
+    )
+    RestClientDto restClient,
+
+    @Schema(
+        description = "Template for the path where the data product is fetched from"
+    )
+    String restClientPathTemplate,
+
+    @Schema(
+        description = "Template of the request body for fetching the data product"
+    )
+    String restClientRequestTemplate,
+
+    @Schema(
+        description = "Http-Method used to fetch the data product"
+    )
+    RestClientMethodCodeEnum restClientMethodCode,
+
+    @Schema(
+        description = "Code of the flow used to fetch the data product"
+    )
+    FlowCodeEnum flowCode,
+
+    @Schema(
         description = "How this product is categorized",
         examples = {"R01"}
     )
@@ -49,7 +74,21 @@ public record DataProductDto(
         description = "Timestamp indicating when the product was marked as deprecated.",
         examples = {"2026-03-06T00:00:00"}
     )
-    LocalDateTime deprecatedSince
+    LocalDateTime deprecatedSince,
+
+    @Schema(
+        description = "State of the data product",
+        implementation = DataProductStateEnum.class,
+        examples = {"DRAFT"}
+    )
+    @NotNull
+    DataProductStateEnum stateCode,
+
+    @Schema(
+        description = "Template for the path for retrieving updates to the data product",
+        examples = "v1/animal-updates/{{uid}}?since={{LAST_CHANGED_SINCE}}"
+    )
+    String restClientChangeDetectionPathTemplate
 )
 
     implements Serializable {

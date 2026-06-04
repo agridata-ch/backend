@@ -76,7 +76,7 @@ class ContractRevisionInitializationServiceTest {
     )).thenReturn(revision);
     when(dataProductApi.getDataSourceSystem(DATA_SOURCE_SYSTEM_ID)).thenReturn(dataSourceSystem);
     when(uidRegisterServiceApi.getByUid(BigInteger.valueOf(123456789))).thenReturn(dataProviderUidResult);
-    when(dataProductApi.getProductsByIds(anyList())).thenReturn(dataProductDtos);
+    when(dataProductApi.getActiveProductsByIds(anyList())).thenReturn(dataProductDtos);
 
 
     ContractRevisionEntity result = contractRevisionInitializationService.createAndAssignInitialRevision(dataRequest);

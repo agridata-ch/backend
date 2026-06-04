@@ -419,6 +419,7 @@
                                 </systemProperties>
                                 <arguments>
                                     <argument>ch.agridata.agreement.dto.DataRequestUpdateDto</argument>
+                                    <argument>ch.agridata.product.dto.DataProductUpdateDto</argument>
                                 </arguments>
                             </configuration>
                         </execution>

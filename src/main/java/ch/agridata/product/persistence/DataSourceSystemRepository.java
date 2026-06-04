@@ -2,6 +2,7 @@ package ch.agridata.product.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -11,4 +12,13 @@ import java.util.UUID;
  */
 @ApplicationScoped
 public class DataSourceSystemRepository implements PanacheRepositoryBase<DataSourceSystemEntity, UUID> {
+
+  public Optional<DataSourceSystemEntity> findByIdAndProviderUidOptional(UUID dataSourceSystemId, String dataProviderUid) {
+    return find("""
+        select dss
+        from DataSourceSystemEntity dss
+        join dss.dataProvider dp
+        WHERE dss.id = ?1 AND dp.uid = ?2
+        """, dataSourceSystemId, dataProviderUid).firstResultOptional();
+  }
 }

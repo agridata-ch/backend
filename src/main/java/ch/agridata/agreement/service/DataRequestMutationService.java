@@ -162,7 +162,7 @@ public class DataRequestMutationService {
       throw new ValidationException("Cannot process request: all products must share the same data source system");
     }
 
-    var dataSourceSystemId = dataProductApi.getDataSourceSystemId(products.getFirst().id());
+    var dataSourceSystemId = dataProductApi.getDataSourceSystemIdOfActiveProduct(products.getFirst().id());
     entity.setDataSourceSystemId(dataSourceSystemId);
   }
 
@@ -175,7 +175,7 @@ public class DataRequestMutationService {
 
   private DataProductDto getProductOrThrowValidation(UUID id) {
     try {
-      return dataProductApi.getProductById(id);
+      return dataProductApi.getActiveProductById(id);
     } catch (NotFoundException e) {
       throw new ValidationException("Cannot process request: data product " + id + " not found", e);
     }
