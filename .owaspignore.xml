@@ -121,6 +121,38 @@
         <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
         <cve>CVE-2026-50634</cve>
     </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-49875</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50627</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50628</cve>
+    </suppress>
+
+
+    <!--
+        quarkus-cxf-axiom-api-stub (transitive via quarkus-cxf)
+
+        None of them are relevant to us because we use cxf as a SOAP client only
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-49875</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50627</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-16 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50628</cve>
+    </suppress>
+
 
     <!--
         Netty HTTP/3 QPACK (memory exhaustion via crafted requests)

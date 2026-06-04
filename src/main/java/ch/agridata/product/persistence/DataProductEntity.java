@@ -4,6 +4,8 @@ import ch.agridata.common.persistence.AuditableEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -11,6 +13,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -47,8 +50,8 @@ public class DataProductEntity extends AuditableEntity {
   @GeneratedValue
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "data_source_system_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "data_source_system_id")
   private DataSourceSystemEntity dataSourceSystem;
 
   @JdbcTypeCode(SqlTypes.JSON)
@@ -58,6 +61,10 @@ public class DataProductEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "description")
   private TranslationPersistenceDto description;
+
+  @ManyToOne()
+  @JoinColumn(name = "rest_client_id")
+  private RestClientEntity restClient;
 
   @Column(name = "rest_client_identifier_code", length = 50)
   private String restClientIdentifierCode;
@@ -79,6 +86,15 @@ public class DataProductEntity extends AuditableEntity {
 
   @Column(name = "rest_client_change_detection_path_template", length = 1000)
   private String restClientChangeDetectionPathTemplate;
+
+  @NotNull
+  @Column(name = "state_code")
+  @Enumerated(EnumType.STRING)
+  private DataProductStateEnum stateCode;
+
+  @Column(name = "data_provider_uid", length = 20)
+  private String dataProviderUid;
+
 }
 
 

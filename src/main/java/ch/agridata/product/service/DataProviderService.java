@@ -1,9 +1,12 @@
 package ch.agridata.product.service;
 
+import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProviderDto;
-import ch.agridata.product.mapper.DataProductEntityMapper;
-import ch.agridata.product.mapper.DataProviderEntityMapper;
+import ch.agridata.product.dto.RestClientDto;
+import ch.agridata.product.mapper.DataProductMapper;
+import ch.agridata.product.mapper.DataProviderMapper;
+import ch.agridata.product.mapper.RestClientMapper;
 import ch.agridata.product.persistence.DataProductRepository;
 import ch.agridata.product.persistence.DataProviderRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,26 +27,36 @@ import lombok.RequiredArgsConstructor;
 public class DataProviderService {
   private final DataProviderRepository dataProviderRepository;
   private final DataProductRepository dataProductRepository;
-
-  private final DataProviderEntityMapper dataProviderEntityMapper;
-  private final DataProductEntityMapper dataProductEntityMapper;
+  private final DataProviderMapper dataProviderMapper;
+  private final DataProductMapper dataProductMapper;
+  private final RestClientMapper restClientMapper;
+  private final AgridataSecurityIdentity agridataSecurityIdentity;
 
   public List<DataProviderDto> getDataProviders() {
-    return dataProviderRepository.findAll().stream().map(dataProviderEntityMapper::toDto).toList();
+    return dataProviderRepository.findAll().stream().map(dataProviderMapper::toDto).toList();
   }
 
   public DataProviderDto getDataProviderById(UUID providerId) {
     return dataProviderRepository.findByIdOptional(providerId)
-        .map(dataProviderEntityMapper::toDto)
+        .map(dataProviderMapper::toDto)
         .orElseThrow(
             () -> new NotFoundException(providerId.toString()));
   }
 
-  public List<DataProductDto> getDataProductsByProviderId(UUID providerId) {
-    if (dataProviderRepository.findByIdOptional(providerId).isEmpty()) {
-      throw new NotFoundException(providerId.toString());
-    }
+  public List<DataProductDto> getActiveDataProductsByProviderId(UUID providerId) {
+    var provider = dataProviderRepository.findByIdOptional(providerId)
+        .orElseThrow(() -> new NotFoundException(providerId.toString()));
 
-    return dataProductRepository.listByProviderId(providerId).stream().map(dataProductEntityMapper::toDto).toList();
+    return dataProductRepository.listActiveByProviderUid(provider.getUid()).stream().map(dataProductMapper::toDto).toList();
+  }
+
+  public List<RestClientDto> getRestClientsByDataProviderIdAsAdmin(UUID providerId) {
+    return dataProviderRepository.findByIdOptional(providerId).orElseThrow(() -> new NotFoundException(providerId.toString()))
+        .getRestClients().stream().map(restClientMapper::toDto).toList();
+  }
+
+  public List<RestClientDto> getRestClientsByDataProviderIdAsProvider(UUID providerId) {
+    return dataProviderRepository.findByIdAndProviderUidOptional(providerId, agridataSecurityIdentity.getUidOrElseThrow())
+        .orElseThrow(() -> new NotFoundException(providerId.toString())).getRestClients().stream().map(restClientMapper::toDto).toList();
   }
 }

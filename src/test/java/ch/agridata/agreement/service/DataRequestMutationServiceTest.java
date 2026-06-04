@@ -70,7 +70,7 @@ class DataRequestMutationServiceTest {
     )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
-    when(dataProductApi.getProductById(PRODUCT_ID))
+    when(dataProductApi.getActiveProductById(PRODUCT_ID))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).build());
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class))).thenReturn(expectedDto);
 
@@ -95,7 +95,7 @@ class DataRequestMutationServiceTest {
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
-    when(dataProductApi.getProductById(updateProductId))
+    when(dataProductApi.getActiveProductById(updateProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(updateProductId).build());
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class))).thenReturn(expectedDto);
 
@@ -120,7 +120,7 @@ class DataRequestMutationServiceTest {
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
-    when(dataProductApi.getProductById(PRODUCT_ID))
+    when(dataProductApi.getActiveProductById(PRODUCT_ID))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
             .dataSourceSystemCode("AGIS").build());
     when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(expectedDto);
@@ -143,7 +143,7 @@ class DataRequestMutationServiceTest {
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
-    when(dataProductApi.getProductById(updateProductId))
+    when(dataProductApi.getActiveProductById(updateProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(updateProductId).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
             .dataSourceSystemCode("AGIS").build());
 
@@ -167,7 +167,7 @@ class DataRequestMutationServiceTest {
     )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
-    when(dataProductApi.getProductById(deprecatedProductId))
+    when(dataProductApi.getActiveProductById(deprecatedProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(deprecatedProductId).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
             .dataSourceSystemCode("AGIS").build());
 
@@ -193,9 +193,9 @@ class DataRequestMutationServiceTest {
     )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
-    when(dataProductApi.getProductById(agisProductId))
+    when(dataProductApi.getActiveProductById(agisProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(agisProductId).dataSourceSystemCode("AGIS").build());
-    when(dataProductApi.getProductById(tvdProductId))
+    when(dataProductApi.getActiveProductById(tvdProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(tvdProductId).dataSourceSystemCode("TVD").build());
 
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
@@ -219,7 +219,7 @@ class DataRequestMutationServiceTest {
     )).thenReturn(0L);
     when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
-    when(dataProductApi.getProductById(inexistentProductId))
+    when(dataProductApi.getActiveProductById(inexistentProductId))
         .thenThrow(new NotFoundException(inexistentProductId.toString()));
 
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(dataRequestUpdateDto))
@@ -238,7 +238,7 @@ class DataRequestMutationServiceTest {
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
-    when(dataProductApi.getProductById(inexistentProductId))
+    when(dataProductApi.getActiveProductById(inexistentProductId))
         .thenThrow(new NotFoundException(inexistentProductId.toString()));
 
     assertThatThrownBy(() -> dataRequestMutationService.updateDataRequestDetails(id, dataRequestUpdateDto))

@@ -44,7 +44,7 @@ public class ContractRevisionInitializationService {
         .toList();
 
     DataSourceSystemDto dataSourceSystem = dataproductApi.getDataSourceSystem(dataRequest.getDataSourceSystemId());
-    List<DataProductDto> dataProductDtos = dataproductApi.getProductsByIds(productIds);
+    List<DataProductDto> dataProductDtos = dataproductApi.getActiveProductsByIds(productIds);
     var uid = dataSourceSystem.dataProvider().uid();
     var uidWithoutPrefix = new BigInteger(uid.replace("CHE", ""));
     var dataProvider = uidRegisterServiceApi.getByUid(uidWithoutPrefix);

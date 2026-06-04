@@ -118,7 +118,9 @@ public class TestDataIdentifiers {
   }
 
   public static class DataProvider {
+    public static final Identifier<DataProviderEntity> UUID_61404B83 = id("61404b83-078e-4b4f-a6d6-2aa3990f429c");
     public static final Identifier<DataProviderEntity> UUID_E37B148B = id("e37b148b-9a0f-4c2e-80c5-fe9c9416b640");
+    public static final Identifier<DataProviderEntity> UUID_3BBC6006 = id("3bbc6006-1697-4a5f-8cba-2d34fbc278db");
   }
 
   @Getter
@@ -159,5 +161,12 @@ public class TestDataIdentifiers {
     public String getCode() {
       return code;
     }
+  }
+
+  public static class RestClient {
+    public static final Identifier<RestClient> UUID_1C438FA1 = id("1c438fa1-1112-4ee9-b1af-2d96acf385f0");
+    public static final Identifier<RestClient> UUID_CADF12A3 = id("cadf12a3-af55-4919-8d30-6849ab6c13ba");
+    public static final Identifier<RestClient> UUID_B1398C9D = id("b1398c9d-c28d-4e7e-b5f0-f5d615a6471c");
+    public static final Identifier<RestClient> UUID_5D3A4A87 = id("5d3a4a87-63fc-4428-8044-313d222efe1d");
   }
 }
