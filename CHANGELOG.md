@@ -1,3 +1,9 @@
+## [1.10.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.11...v1.10.0-rc.12) (2026-06-08)
+
+### Bug Fixes
+
+* **deps:** improve pom ([629deed](https://github.com/agridata-ch/backend/commit/629deed72d0054b7afd1087500ab34ac27e30ba4))
+
 ## [1.10.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.10...v1.10.0-rc.11) (2026-06-08)
 
 ### Features
