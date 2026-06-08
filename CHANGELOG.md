@@ -1,3 +1,9 @@
+## [1.10.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.10...v1.10.0-rc.11) (2026-06-08)
+
+### Features
+
+* **notifications:** Add CLAUDE.md, improve README.md and http notification tests ([72c155c](https://github.com/agridata-ch/backend/commit/72c155cf25574be081ac77f781fa99a6a184d3d2)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+
 ## [1.10.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.9...v1.10.0-rc.10) (2026-06-04)
 
 ### Features
