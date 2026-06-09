@@ -10,13 +10,54 @@ Content-Type: application/json
   })
 %}
 
-### Locally load consumer into user cache (if not already loaded)
+### Locally load consumer 1 into user cache (if not already loaded)
 GET {{baseUrl}}/user/v1/user-info
 Authorization: Bearer {{$auth.token("consumer-blv-1")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load consumer user", function () {
+  client.test("Load consumer 1 user", function () {
+    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    client.assert(response.body !== null, "Expected Response results to contain products")
+    client.global.set("consumerUid", response.body.uid)
+  })
+%}
+
+### Locally load consumer 2 into user cache (if not already loaded)
+GET {{baseUrl}}/user/v1/user-info
+Authorization: Bearer {{$auth.token("consumer-blv-2")}}
+Content-Type: application/json
+
+> {%
+  client.test("Load consumer 2 user", function () {
+    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    client.assert(response.body !== null, "Expected Response results to contain products")
+    client.global.set("consumerUid", response.body.uid)
+  })
+%}
+
+
+### Locally load provider 1 into user cache (if not already loaded)
+GET {{baseUrl}}/user/v1/user-info
+Authorization: Bearer {{$auth.token("provider-1")}}
+Content-Type: application/json
+
+> {%
+  client.test("Load provider 1 user", function () {
+    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+    client.assert(response.body !== null, "Expected Response results to contain products")
+    client.global.set("consumerUid", response.body.uid)
+  })
+%}
+
+
+### Locally load provider 2 into user cache (if not already loaded)
+GET {{baseUrl}}/user/v1/user-info
+Authorization: Bearer {{$auth.token("provider-2")}}
+Content-Type: application/json
+
+> {%
+  client.test("Load provider 2 user", function () {
     client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
     client.assert(response.body !== null, "Expected Response results to contain products")
     client.global.set("consumerUid", response.body.uid)

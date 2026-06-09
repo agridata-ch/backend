@@ -34,12 +34,17 @@ public class UserApiImpl implements UserApi {
   }
 
   @Override
-  public List<UserNotificationInfoDto> getAdminUsers() {
+  public List<UserNotificationInfoDto> getAdminsNotificationInfos() {
     return userService.getAdminUsers();
   }
 
   @Override
-  public List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid) {
+  public List<UserNotificationInfoDto> getProvidersNotificationInfoByUid(@NonNull String uid) {
     return userService.getProviderUsers(uid);
+  }
+
+  @Override
+  public List<UserNotificationInfoDto> getConsumersNotificationInfoByUid(@NonNull String uid) {
+    return userService.getConsumerUsers(uid);
   }
 }

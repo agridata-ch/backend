@@ -2,6 +2,9 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -77,5 +80,27 @@ class DataRequestStateEventDispatcherTest {
 
     verify(auditingService).logDataRequestWithdrawn(entity.getId());
     verifyNoInteractions(notificationService);
+  }
+
+  @Test
+  void givenToBeActivatedToActive_whenDispatchAdmin_thenLogActivatedAndQueueNotification() {
+    var entity = entity();
+
+    service.dispatchAdminStatusTransition(entity, TO_BE_ACTIVATED, ACTIVE);
+
+    verify(auditingService).logDataRequestActivated(entity.getId());
+    verify(notificationService).queueDataRequestActivated(entity);
+  }
+
+  // ── dispatchProviderStatusTransition ─────────────────────────────────────
+
+  @Test
+  void givenToBeReleasedByProviderToToBeActivated_whenDispatchProvider_thenLogReleasedAndQueueNotification() {
+    var entity = entity();
+
+    service.dispatchProviderStatusTransition(entity, TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED);
+
+    verify(auditingService).logDataRequestReleasedByProvider(entity.getId());
+    verify(notificationService).queueDataRequestReadyForActivation(entity);
   }
 }
