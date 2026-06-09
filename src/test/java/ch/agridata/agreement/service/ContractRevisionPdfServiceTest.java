@@ -60,24 +60,24 @@ class ContractRevisionPdfServiceTest {
   @Test
   void getPdf_Success() {
     ContractRevisionEntity entity = ContractRevisionEntity.builder().id(REVISION_ID).build();
-    byte[] expectedPdf = new byte[]{37, 80, 68, 70}; // %PDF
+    byte[] expectedPdf = new byte[] {37, 80, 68, 70}; // %PDF
 
-    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID)).thenReturn(entity);
+    when(contractRevisionQueryService.getAsConsumer(REVISION_ID)).thenReturn(entity);
     when(contractRevisionStorageService.download(REVISION_ID)).thenReturn(expectedPdf);
 
-    byte[] result = contractRevisionPdfService.getPdf(REVISION_ID);
+    byte[] result = contractRevisionPdfService.getPdfAsConsumer(REVISION_ID);
 
     assertThat(result).isEqualTo(expectedPdf);
-    verify(contractRevisionQueryService).getWithAccessCheck(REVISION_ID);
+    verify(contractRevisionQueryService).getAsConsumer(REVISION_ID);
     verify(contractRevisionStorageService).download(REVISION_ID);
   }
 
   @Test
   void getPdf_NotFound_ThrowsException() {
-    when(contractRevisionQueryService.getWithAccessCheck(REVISION_ID))
+    when(contractRevisionQueryService.getAsConsumer(REVISION_ID))
         .thenThrow(new NotFoundException(REVISION_ID.toString()));
 
-    assertThatThrownBy(() -> contractRevisionPdfService.getPdf(REVISION_ID))
+    assertThatThrownBy(() -> contractRevisionPdfService.getPdfAsConsumer(REVISION_ID))
         .isInstanceOf(NotFoundException.class);
   }
 

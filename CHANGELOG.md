@@ -1,3 +1,79 @@
+## [1.10.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.11...v1.10.0-rc.12) (2026-06-08)
+
+### Bug Fixes
+
+* **deps:** improve pom ([629deed](https://github.com/agridata-ch/backend/commit/629deed72d0054b7afd1087500ab34ac27e30ba4))
+
+## [1.10.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.10...v1.10.0-rc.11) (2026-06-08)
+
+### Features
+
+* **notifications:** Add CLAUDE.md, improve README.md and http notification tests ([72c155c](https://github.com/agridata-ch/backend/commit/72c155cf25574be081ac77f781fa99a6a184d3d2)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+
+## [1.10.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.9...v1.10.0-rc.10) (2026-06-04)
+
+### Features
+
+* **product:** Add BLV as provider ([b331fe6](https://github.com/agridata-ch/backend/commit/b331fe63bb55e4f002485c9d1569f77e40d2c1c4)), closes [DIGIB2-1427](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1427)
+
+## [1.10.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.8...v1.10.0-rc.9) (2026-06-02)
+
+### Features
+
+* **notification:** Allow sorting of notification inbox entries. ([83d4aeb](https://github.com/agridata-ch/backend/commit/83d4aeb2298da16748266732f43ec095674931a4)), closes [DIGIB2-315](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-315)
+
+## [1.10.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.7...v1.10.0-rc.8) (2026-06-02)
+
+### Features
+
+* **notification:** Add endpoint for marking notifications as unread. ([7fa45db](https://github.com/agridata-ch/backend/commit/7fa45dbdc888652bba967027fe5439aefdd49f19)), closes [DIGIB2-315](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-315)
+
+## [1.10.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.6...v1.10.0-rc.7) (2026-06-02)
+
+### Features
+
+* **audit:** audit system-set collective signature ([77bc765](https://github.com/agridata-ch/backend/commit/77bc7655d62eed80aef0011f80fe2409c012e492)), closes [DIGIB2-1413](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1413)
+
+## [1.10.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.5...v1.10.0-rc.6) (2026-06-02)
+
+### Features
+
+* **permission:** allow multiple roles per user ([cc1aaac](https://github.com/agridata-ch/backend/commit/cc1aaac9bf84fac57487080f875146f69c48d4ef)), closes [DIGIB2-1214](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1214)
+
+## [1.10.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.4...v1.10.0-rc.5) (2026-06-01)
+
+### Bug Fixes
+
+* **cicd:** improve caching in github actions ([7043128](https://github.com/agridata-ch/backend/commit/7043128a86fdcc8ac127f7a80b5a97a166c29605))
+
+## [1.10.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.3...v1.10.0-rc.4) (2026-06-01)
+
+### Features
+
+* **acontrol-products:** add Acontrol system and register its data products ([557b2aa](https://github.com/agridata-ch/backend/commit/557b2aa3d9ba2736879699053b6544c4804e8008)), closes [DIGIB2-1392](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1392)
+
+### Bug Fixes
+
+* **deps:** suppress owasp findings because there is no fix yet ([eebf9ce](https://github.com/agridata-ch/backend/commit/eebf9cee89aa33254224768265b7813362c3e4b2))
+
+## [1.10.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.2...v1.10.0-rc.3) (2026-05-29)
+
+### Features
+
+* **datatransfer:** improvements in exception response and header handling ([3b74ac9](https://github.com/agridata-ch/backend/commit/3b74ac97ce7edd6ddf8cfc3fdeb86eb408a9fda3))
+
+## [1.10.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.10.0-rc.1...v1.10.0-rc.2) (2026-05-28)
+
+### Features
+
+* **deps:** update quarkus ([c4c775b](https://github.com/agridata-ch/backend/commit/c4c775b07aad8a760b05c6c2fb4ceb4b14df09f1))
+
+## [1.10.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.9.0...v1.10.0-rc.1) (2026-05-22)
+
+### Features
+
+* **notification:** Add type and id of the affected entity to notification items ([697eabe](https://github.com/agridata-ch/backend/commit/697eabe2f91b0a4c5a2f45440103991a87f4b125)), closes [DIGIB2-1399](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1399)
+
 ## [1.9.0](https://github.com/agridata-ch/backend/compare/v1.8.0...v1.9.0) (2026-05-21)
 
 ### Features

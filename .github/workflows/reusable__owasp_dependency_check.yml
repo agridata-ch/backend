@@ -18,31 +18,16 @@ jobs:
           java-version: '25'
           distribution: 'corretto'
 
-      - name: Get Date for OWASP Cache
-        id: get-cache-date
-        run: |
-          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Restore Maven Cache
         uses: actions/cache/restore@v5
         with:
           path: ~/.m2/repository
-          # Using date in cache key as OWASP database may change, without the pom changing
-          key: ${{ runner.os }}-owasp-${{ steps.get-cache-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-owasp-${{ steps.get-cache-date.outputs.date }}
-            ${{ runner.os }}-owasp-
+            ${{ runner.os }}-maven-
 
       - name: Run OWASP Dependency Check
         run: |
           mvn org.owasp:dependency-check-maven:check \
             -DossindexAnalyzerEnabled=false \
-            -DnvdApiKey=${{ secrets.API_KEY_NATIONAL_VULNERABILITY_DATABASE }} 
-
-      - name: Save Maven Cache
-        uses: actions/cache/save@v5
-        if: always()
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-owasp-${{ steps.get-cache-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+            -DnvdApiKey=${{ secrets.API_KEY_NATIONAL_VULNERABILITY_DATABASE }}

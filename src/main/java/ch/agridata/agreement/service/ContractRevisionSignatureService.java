@@ -39,21 +39,9 @@ public class ContractRevisionSignatureService {
   private final ContractRevisionPdfService contractRevisionPdfService;
   private final AuditingService auditingService;
 
-  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @RolesAllowed({CONSUMER_ROLE})
   @Transactional
-  public ContractRevisionDto signContractRevision(
-      UUID contractRevisionId,
-      SignatureSlotCodeEnum signatureSlotCode,
-      UUID verificationId,
-      String otpCode
-  ) {
-    if (agridataSecurityIdentity.isProvider()) {
-      return signContractRevisionAsProvider(contractRevisionId, signatureSlotCode, verificationId, otpCode);
-    }
-    return signContractRevisionAsConsumer(contractRevisionId, signatureSlotCode, verificationId, otpCode);
-  }
-
-  private ContractRevisionDto signContractRevisionAsConsumer(
+  public ContractRevisionDto signContractRevisionAsConsumer(
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode,
       UUID verificationId,
@@ -114,7 +102,9 @@ public class ContractRevisionSignatureService {
     return contractRevisionMapper.toDto(newRevision);
   }
 
-  private ContractRevisionDto signContractRevisionAsProvider(
+  @RolesAllowed({PROVIDER_ROLE})
+  @Transactional
+  public ContractRevisionDto signContractRevisionAsProvider(
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode,
       UUID verificationId,

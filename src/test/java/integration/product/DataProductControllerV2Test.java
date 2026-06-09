@@ -104,7 +104,7 @@ class DataProductControllerV2Test {
         .then()
         .statusCode(200)
         .body("items.size()", greaterThan(0))
-        .body("items[0].name.de", equalTo("Anmeldungsdaten für die Direktzahlungsarten, den ÖLN und die Kontrollstellen"));
+        .body("items[0].name.de", equalTo("01 Lebensmittelsicherheit (Pflanzliche Primärproduktion)"));
   }
 
   @Test
@@ -130,7 +130,7 @@ class DataProductControllerV2Test {
         .get(DataProductControllerV2.PATH)
         .then()
         .statusCode(200)
-        .body("items[0].name.it", equalTo("Animali da reddito estivati"));
+        .body("items[0].name.it", equalTo("01 Sicurezza alimentare (produzione primaria animale)"));
   }
 
   @Test

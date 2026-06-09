@@ -39,6 +39,8 @@ quarkus:
   oidc-client:
     agis-api:
       token-path: http://localhost:8051/agate/token
+    acontrol-api:
+      token-path: http://localhost:8051/agate/token
   rest-client:
     agis-api:
       url: http://localhost:8051/agis
@@ -48,6 +50,8 @@ quarkus:
       url: http://localhost:8051/tvd/animal-tracing
     tvd-zo-api:
       url: http://localhost:8051/tvd/zo
+    acontrol-api:
+      url: http://localhost:8051/acontrol
   s3:
     devservices:
       buckets:

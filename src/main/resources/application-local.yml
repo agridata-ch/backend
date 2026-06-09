@@ -74,6 +74,8 @@ quarkus:
   oidc-client:
     agis-api:
       token-path: http://localhost:8050/agate/token
+    acontrol-api:
+      token-path: http://localhost:8050/agate/token
   rest-client:
     agis-api:
       url: http://localhost:8050/agis
@@ -83,6 +85,8 @@ quarkus:
       url: http://localhost:8050/tvd/animal-tracing
     tvd-zo-api:
       url: http://localhost:8050/tvd/zo
+    acontrol-api:
+      url: http://localhost:8050/acontrol
     logging:
       body-limit: 10240
       scope: request-response

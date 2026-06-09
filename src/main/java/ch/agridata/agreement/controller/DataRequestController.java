@@ -24,7 +24,8 @@ import ch.agridata.agreement.service.DataRequestStateService;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
-import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.actingrole.ActingRoleHolder;
+import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -33,6 +34,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -80,7 +82,7 @@ public class DataRequestController {
   private final DataRequestMutationService dataRequestMutationService;
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
-  private final AgridataSecurityIdentity identity;
+  private final ActingRoleHolder actingRoleHolder;
   private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
 
   @GET
@@ -93,13 +95,14 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public List<DataRequestDto> getDataRequests() {
-    if (identity.isAdmin()) {
-      return dataRequestQueryService.getAllNonDraftDataRequests();
-    } else if (identity.isProvider()) {
-      return dataRequestQueryService.getRelevantDataRequestsForCurrentProvider();
-    }
-    return dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> dataRequestQueryService.getAllDataRequestsOfCurrentConsumer();
+      case PROVIDER -> dataRequestQueryService.getRelevantDataRequestsForCurrentProvider();
+      case ADMIN -> dataRequestQueryService.getAllNonDraftDataRequests();
+      default -> throw new ForbiddenException();
+    };
   }
 
   @GET
@@ -112,13 +115,14 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public DataRequestDto getDataRequest(@PathParam("id") UUID requestId) {
-    if (identity.isAdmin()) {
-      return dataRequestQueryService.getNonDraftDataRequest(requestId);
-    } else if (identity.isProvider()) {
-      return dataRequestQueryService.getDataRequestForCurrentProvider(requestId);
-    }
-    return dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> dataRequestQueryService.getDataRequestOfCurrentConsumer(requestId);
+      case PROVIDER -> dataRequestQueryService.getDataRequestForCurrentProvider(requestId);
+      case ADMIN -> dataRequestQueryService.getNonDraftDataRequest(requestId);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @GET
@@ -193,6 +197,7 @@ public class DataRequestController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
   public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndKtIdPv2(
       @Parameter(
           description = "The UUID of the data request",
@@ -205,10 +210,11 @@ public class DataRequestController {
       )
       @PathParam("kt-id-p") String ktIdP
   ) {
-    if (identity.isAdmin()) {
-      return consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
-    }
-    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null);
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null);
+      case ADMIN -> consentRequestQueryService.getConsentRequestsOfDataRequestAndProducer(dataRequestId, ktIdP, null);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @POST
@@ -268,17 +274,17 @@ public class DataRequestController {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
   public DataRequestDto setDataRequestStatus(
       @PathParam("id") UUID requestId,
       @Valid DataRequestStateEnum stateCode
   ) {
-    if (identity.isAdmin()) {
-      return dataRequestStateService.setStateAsAdmin(requestId, stateCode);
-    } else if (identity.isProvider()) {
-      return dataRequestStateService.setStateAsProvider(requestId, stateCode);
-    }
-    return dataRequestStateService.setStateAsConsumer(requestId, stateCode);
-
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> dataRequestStateService.setStateAsConsumer(requestId, stateCode);
+      case PROVIDER -> dataRequestStateService.setStateAsProvider(requestId, stateCode);
+      case ADMIN -> dataRequestStateService.setStateAsAdmin(requestId, stateCode);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @PUT
@@ -326,14 +332,16 @@ public class DataRequestController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
   public DataRequestDto updateSignatureType(
       @PathParam("id") UUID requestId,
       @Valid SignatureTypeEnum signatureRule
   ) {
-    if (identity.isConsumer()) {
-      return dataRequestSignatureTypeMutationService.updateSignatureTypeAsConsumer(requestId, signatureRule);
-    }
-    return dataRequestSignatureTypeMutationService.updateSignatureTypeAsProvider(requestId, signatureRule);
+    return switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> dataRequestSignatureTypeMutationService.updateSignatureTypeAsConsumer(requestId, signatureRule);
+      case PROVIDER -> dataRequestSignatureTypeMutationService.updateSignatureTypeAsProvider(requestId, signatureRule);
+      default -> throw new ForbiddenException();
+    };
   }
 
 }

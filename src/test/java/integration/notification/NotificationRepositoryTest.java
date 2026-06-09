@@ -23,6 +23,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Integration tests for {@link NotificationInboxRepository} and {@link NotificationDispatchRepository}.
@@ -94,67 +96,45 @@ class NotificationRepositoryTest {
     assertThat(exists).isFalse();
   }
 
-  // ── NotificationInboxRepository.findByUserId ─────────────────────────────
-
-  @Test
-  void givenInboxEntries_whenFindByUserId_thenReturnsEntriesForUser() {
-    UUID r1 = persistFreshRecipient();
-    UUID r2 = persistFreshRecipient();
-    QuarkusTransaction.requiringNew().run(() -> {
-      entityManager.persist(NotificationInboxEntity.builder()
-          .recipient(entityManager.find(NotificationRecipientEntity.class, r1))
-          .userId(TEST_USER_ID)
-          .isRead(false)
-          .build());
-      entityManager.persist(NotificationInboxEntity.builder()
-          .recipient(entityManager.find(NotificationRecipientEntity.class, r2))
-          .userId(TEST_USER_ID)
-          .isRead(false)
-          .build());
-    });
-
-    List<NotificationInboxEntity> result = QuarkusTransaction.requiringNew().call(() -> inboxRepository.findByUserId(TEST_USER_ID));
-
-    assertThat(result).hasSizeGreaterThanOrEqualTo(2).allMatch(e -> e.getUserId().equals(TEST_USER_ID));
-  }
-
   // ── NotificationInboxRepository.markAsRead ───────────────────────────────
 
-  @Test
-  void givenUnreadInboxEntry_whenMarkAsRead_thenUpdatesCountAndSetsReadFlag() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void givenUnreadInboxEntry_whenMarkReadStatus_thenUpdatesCountAndSetsReadFlag(boolean markAsRead) {
     UUID recipientId = persistFreshRecipient();
     UUID inboxId = QuarkusTransaction.requiringNew().call(() -> {
       var inbox = NotificationInboxEntity.builder()
           .recipient(entityManager.find(NotificationRecipientEntity.class, recipientId))
           .userId(TEST_USER_ID)
-          .isRead(false)
+          .isRead(!markAsRead)
           .build();
       entityManager.persist(inbox);
       return inbox.getId();
     });
 
-    int updated = QuarkusTransaction.requiringNew().call(() -> inboxRepository.markAsRead(TEST_USER_ID, List.of(inboxId)));
+    int updated = QuarkusTransaction.requiringNew().call(() -> inboxRepository.markReadStatus(TEST_USER_ID, List.of(inboxId), markAsRead));
 
     assertThat(updated).isEqualTo(1);
     boolean isRead = QuarkusTransaction.requiringNew().call(() -> entityManager.find(NotificationInboxEntity.class, inboxId).isRead());
-    assertThat(isRead).isTrue();
+    assertThat(isRead).isEqualTo(markAsRead);
   }
 
-  @Test
-  void givenInboxEntryOfDifferentUser_whenMarkAsRead_thenUpdatesNothing() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void givenInboxEntryOfDifferentUser_whenMarkAsRead_thenUpdatesNothing(boolean markAsRead) {
     UUID recipientId = persistFreshRecipient();
     UUID otherUserId = UUID.randomUUID();
     UUID inboxId = QuarkusTransaction.requiringNew().call(() -> {
       var inbox = NotificationInboxEntity.builder()
           .recipient(entityManager.find(NotificationRecipientEntity.class, recipientId))
           .userId(TEST_USER_ID)
-          .isRead(false)
+          .isRead(!markAsRead)
           .build();
       entityManager.persist(inbox);
       return inbox.getId();
     });
 
-    int updated = QuarkusTransaction.requiringNew().call(() -> inboxRepository.markAsRead(otherUserId, List.of(inboxId)));
+    int updated = QuarkusTransaction.requiringNew().call(() -> inboxRepository.markReadStatus(otherUserId, List.of(inboxId), markAsRead));
 
     assertThat(updated).isZero();
   }

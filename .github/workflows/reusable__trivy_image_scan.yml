@@ -22,9 +22,8 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ needs.checkstyle.outputs.cache-date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-${{ needs.checkstyle.outputs.cache-date }}
             ${{ runner.os }}-maven-
 
       - name: Maven package
@@ -33,6 +32,13 @@ jobs:
       - name: Build Docker image
         run: docker build -t agridata-backend:trivy .
 
+      - name: Restore Trivy DB Cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ github.workspace }}/.cache/trivy
+          key: cache-trivy-never-match-${{ github.run_id }}
+          restore-keys: cache-trivy-
+
       - name: Run Trivy image scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -40,3 +46,7 @@ jobs:
           format: table
           exit-code: 1
           severity: CRITICAL,HIGH
+          cache: 'false'
+        env:
+          TRIVY_SKIP_DB_UPDATE: true
+          TRIVY_SKIP_JAVA_DB_UPDATE: true

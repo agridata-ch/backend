@@ -23,7 +23,9 @@ import org.jboss.logging.MDC;
  * @CommentLastReviewed 2025-12-31
  */
 @Provider
-@Priority(Priorities.AUTHENTICATION)
+// Should run after ActingRoleResolutionFilter: the acting-role decision is based on the
+// authenticated user's token roles, not on the impersonated user.
+@Priority(Priorities.AUTHORIZATION + 200)
 public class ImpersonationHeaderFilter implements ContainerRequestFilter, ContainerResponseFilter {
   public static final String IMPERSONATION_HEADER = "X-Impersonated-AgateLoginId";
   private static final String IMPERSONATION_MDC_FIELD = "userId";

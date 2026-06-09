@@ -2,6 +2,8 @@ package ch.agridata.notification.service;
 
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
+import ch.agridata.notification.mapper.NotificationTargetTypeMapper;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationBatchRepository;
 import ch.agridata.notification.persistence.NotificationBatchStatusEnum;
@@ -9,12 +11,14 @@ import ch.agridata.notification.persistence.NotificationRecipientEntity;
 import ch.agridata.notification.persistence.NotificationRecipientRepository;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import ch.agridata.notification.persistence.NotificationTemplateRepository;
+import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +40,7 @@ public class NotificationBatchService {
   private final NotificationRecipientRepository recipientRepository;
   private final NotificationPlaceholderService placeholderService;
   private final Event<NotificationBatchQueuedEvent> batchQueuedEvent;
+  private final NotificationTargetTypeMapper targetTypeMapper;
 
   /**
    * Creates a PENDING batch and individual recipient rows for the given event type and recipients.
@@ -47,7 +52,9 @@ public class NotificationBatchService {
   public void queueNotification(
       List<RecipientRequestDto> recipients,
       EventTypeCodeEnum eventTypeCode,
-      Map<String, String> placeholders
+      Map<String, String> placeholders,
+      @Nullable TargetTypeCodeEnum targetTypeCode,
+      @Nullable UUID targetId
   ) {
     var template = templateRepository.findLatestByEventTypeCode(eventTypeCode.name())
         .orElseThrow(() -> new NotFoundException("No template found for event type: " + eventTypeCode));
@@ -58,6 +65,8 @@ public class NotificationBatchService {
         .template(template)
         .placeholders(placeholders)
         .statusCode(NotificationBatchStatusEnum.PENDING)
+        .targetTypeCode(targetTypeMapper.toEntityEnum(targetTypeCode))
+        .targetId(targetId)
         .build();
     batchRepository.persist(batch);
 

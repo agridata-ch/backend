@@ -13,6 +13,8 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.actingrole.ActingRoleHolder;
+import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.dto.UserInfoDto;
@@ -25,6 +27,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -62,6 +65,7 @@ public class UserController {
   public static final String PATH = "/api/user/v1";
 
   private final AgridataSecurityIdentity identity;
+  private final ActingRoleHolder actingRoleHolder;
   private final UidAuthorizationService uidAuthorizationService;
   private final BurAuthorizationService burAuthorizationService;
   private final UserService userService;
@@ -75,6 +79,7 @@ public class UserController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
   public List<UidDto> getAuthorizedUids(
       @Parameter(
           description = "The kt-id-p identifier of the producer (only relevant for admin users)",
@@ -86,12 +91,13 @@ public class UserController {
           example = "1234567"
       )
       @QueryParam("agate-login-id") String agateLoginId) {
-    if (identity.isAdmin()) {
-      return uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
-    }
-    return uidAuthorizationService.getAuthorizedUids(
-        identity.getKtIdpOrImpersonatedKtIdP(),
-        identity.getAgateLoginIdOrImpersonatedAgateLoginId());
+    return switch (actingRoleHolder.getRole()) {
+      case ADMIN -> uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
+      case PRODUCER, SUPPORT -> uidAuthorizationService.getAuthorizedUids(
+          identity.getKtIdpOrImpersonatedKtIdP(),
+          identity.getAgateLoginIdOrImpersonatedAgateLoginId());
+      default -> throw new ForbiddenException();
+    };
   }
 
   @GET

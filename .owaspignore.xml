@@ -5,45 +5,92 @@
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
 
-    <!-- neethi is pulled in transitively via quarkus-cxf -> cxf-rt-ws-policy.
-         No fix available yet; expected to be resolved with the next Quarkus release. -->
-    <suppress until="2026-05-31Z">
+    <!--
+        Apache Neethi (transitive via quarkus-cxf -> cxf-rt-ws-policy)
+        No fix released yet; expected with the next Quarkus / Quarkus-CXF release.
+
+        Neethi parses WS-Policy XML. The vulnerabilities are reachable only when the
+        framework processes attacker-controlled policy documents on the server side.
+        We use CXF exclusively as a SOAP CLIENT against the trusted UID-Register
+        (no @WebService / JaxWsServerFactoryBean), so no untrusted policy XML reaches us.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-04 | affected: NO (no SOAP server endpoints exposed) -->
         <cve>CVE-2026-42402</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-04 | affected: NO (no SOAP server endpoints exposed) -->
         <cve>CVE-2026-42403</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-04 | affected: NO (no SOAP server endpoints exposed) -->
         <cve>CVE-2026-42404</cve>
     </suppress>
 
-    <!-- opentelemetry-semconv is pulled in transitively via quarkus-opentelemetry.
-         No fix available yet; expected to be resolved with the next Quarkus release. -->
-    <suppress until="2026-05-31Z">
+    <!--
+        opentelemetry-semconv (transitive)
+        No fix released yet; expected with the next Quarkus release.
+
+        opentelemetry-semconv is a pure constants/attribute-name library without runtime
+        logic. Additionally, the project does not declare quarkus-opentelemetry, so no
+        OTel exporter or instrumentation pipeline is active.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-39883</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-29181</cve>
     </suppress>
 
-    <!-- simpleclient (Prometheus) is pulled in transitively via quarkus-micrometer.
-         No fix available yet; expected to be resolved with the next Quarkus release. -->
-    <suppress until="2026-05-31Z">
+    <!--
+        Prometheus simpleclient (transitive via quarkus-micrometer-registry-prometheus)
+        No fix released yet; expected with the next Quarkus release.
+
+        We expose metrics only via the pull-based /q/metrics endpoint (Micrometer
+        Prometheus registry). No Pushgateway, no exemplar/OTel-bridge features are
+        configured. The vulnerable code paths in simpleclient are not reachable.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-06 | affected: NO (pull-only metrics, no pushgateway/exemplars) -->
         <cve>CVE-2023-47108</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-06 | affected: NO (pull-only metrics, no pushgateway/exemplars) -->
         <cve>CVE-2023-43810</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-06 | affected: NO (pull-only metrics, no pushgateway/exemplars) -->
         <cve>CVE-2023-45142</cve>
     </suppress>
-    <suppress until="2026-05-31Z">
-        <cve>CVE-2026-42154</cve>
+
+    <!--
+        Netty HTTP/3 QPACK (memory exhaustion via crafted requests)
+        Fixed in netty 4.2.13; Quarkus has not bumped yet.
+
+        HTTP/3 is not enabled (quarkus.http.http3.* unset, no QUIC listener configured).
+        The vulnerable QPACK decoder is never instantiated.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-18 | affected: NO (HTTP/3 not enabled) -->
+        <cve>CVE-2026-42582</cve>
     </suppress>
 
-    <!-- (Netty HTTP/3 QPACK) allows memory exhaustion via crafted requests.
-         Fixed in 4.2.13. -->
-    <suppress until="2026-05-31Z">
-        <cve>CVE-2026-42582</cve>
+    <!--
+        cxf-core (transitive via quarkus-cxf)
+        No fix released yet; expected with the next Quarkus / Quarkus-CXF release.
+
+        Both CVEs target server-side processing of untrusted SOAP messages in CXF.
+        We use CXF only as a SOAP CLIENT against the trusted UID-Register endpoint,
+        so attacker-controlled SOAP payloads cannot reach the vulnerable code paths.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-28 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-44417</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-05-28 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-44930</cve>
     </suppress>
 </suppressions>

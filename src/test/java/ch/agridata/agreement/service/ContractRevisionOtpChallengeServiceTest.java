@@ -68,7 +68,7 @@ class ContractRevisionOtpChallengeServiceTest {
         .thenReturn(challengeEntity);
     when(otpChallengeService.getResendCooldown()).thenReturn(Duration.ofSeconds(30));
 
-    OtpChallengeDto result = contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID, slotCode);
+    OtpChallengeDto result = contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, slotCode);
 
     assertThat(result).isNotNull();
     assertThat(result.challengeId()).isEqualTo(challengeEntity.getId());
@@ -84,7 +84,7 @@ class ContractRevisionOtpChallengeServiceTest {
         .thenReturn(Optional.empty());
 
     assertThatThrownBy(
-        () -> contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01))
+        () -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01))
         .isInstanceOf(NotFoundException.class)
         .hasMessage(CONTRACT_REVISION_ID.toString());
   }
@@ -96,7 +96,7 @@ class ContractRevisionOtpChallengeServiceTest {
     when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
 
-    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID, signatureSlotCode))
+    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, signatureSlotCode))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Invalid consumer signature slot id");
   }
@@ -104,11 +104,10 @@ class ContractRevisionOtpChallengeServiceTest {
   @ParameterizedTest
   @EnumSource(value = SignatureSlotCodeEnum.class, names = {"DATA_CONSUMER_01", "DATA_CONSUMER_02"})
   void givenInvalidSlotIdByProvider_whenCreateOtpChallenge_thenThrowIllegalArgumentException(SignatureSlotCodeEnum signatureSlotCode) {
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionQueryService.isAssignedToCurrentProvider(CONTRACT_REVISION_ID))
         .thenReturn(true);
 
-    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID,
+    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(CONTRACT_REVISION_ID,
         signatureSlotCode))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Invalid provider signature slot id");
@@ -116,11 +115,10 @@ class ContractRevisionOtpChallengeServiceTest {
 
   @Test
   void givenContractNotAssignedToCurrentProvider_whenCreateOptChallenge_thenThrowValidationException() {
-    when(agridataSecurityIdentity.isProvider()).thenReturn(true);
     when(contractRevisionQueryService.isAssignedToCurrentProvider(CONTRACT_REVISION_ID))
         .thenReturn(false);
 
-    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID,
+    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(CONTRACT_REVISION_ID,
         SignatureSlotCodeEnum.DATA_PROVIDER_01))
         .isInstanceOf(NotFoundException.class)
         .hasMessageContaining(CONTRACT_REVISION_ID.toString());
@@ -143,7 +141,7 @@ class ContractRevisionOtpChallengeServiceTest {
     when(otpChallengeService.getResendCooldown()).thenReturn(Duration.ZERO);
 
     OtpChallengeDto result =
-        contractRevisionOtpChallengeService.createOtpChallenge(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01);
+        contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01);
 
     assertThat(result.maskedPhoneNumber()).isEqualTo("****");
   }

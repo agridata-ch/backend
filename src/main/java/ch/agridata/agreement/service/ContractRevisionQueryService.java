@@ -30,10 +30,40 @@ public class ContractRevisionQueryService {
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataRequestQueryService dataRequestQueryService;
 
-  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
-  public ContractRevisionDto getDtoWithAccessCheck(UUID id) {
-    var contract = getWithAccessCheck(id);
-    return contractRevisionMapper.toDto(contract);
+  @RolesAllowed(ADMIN_ROLE)
+  public ContractRevisionEntity getAsAdmin(UUID id) {
+    return contractRevisionRepository.findByIdOptional(id)
+        .filter(contractRevision -> contractRevision.getDataRequest().getStateCode() != DataRequestEntity.DataRequestStateEnum.DRAFT)
+        .orElseThrow(() -> new NotFoundException(id.toString()));
+  }
+
+  @RolesAllowed(ADMIN_ROLE)
+  public ContractRevisionDto getDtoAsAdmin(UUID id) {
+    return contractRevisionMapper.toDto(getAsAdmin(id));
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public ContractRevisionEntity getAsProvider(UUID id) {
+    return contractRevisionRepository.findByIdOptional(id)
+        .filter(this::isAssignedToCurrentProvider)
+        .orElseThrow(() -> new NotFoundException(id.toString()));
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public ContractRevisionDto getDtoAsProvider(UUID id) {
+    return contractRevisionMapper.toDto(getAsProvider(id));
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
+  public ContractRevisionEntity getAsConsumer(UUID id) {
+    return contractRevisionRepository
+        .findByIdAndDataConsumerUid(id, agridataSecurityIdentity.getUidOrElseThrow())
+        .orElseThrow(() -> new NotFoundException(id.toString()));
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
+  public ContractRevisionDto getDtoAsConsumer(UUID id) {
+    return contractRevisionMapper.toDto(getAsConsumer(id));
   }
 
   @RolesAllowed(PROVIDER_ROLE)
@@ -46,25 +76,6 @@ public class ContractRevisionQueryService {
     return contractRevisionRepository.findByIdOptional(contractRevisionId)
         .map(this::isAssignedToCurrentProvider)
         .orElse(false);
-  }
-
-  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
-  public ContractRevisionEntity getWithAccessCheck(UUID id) {
-    if (agridataSecurityIdentity.isAdmin()) {
-      return contractRevisionRepository.findByIdOptional(id)
-          .filter(contractRevision -> contractRevision.getDataRequest().getStateCode() != DataRequestEntity.DataRequestStateEnum.DRAFT)
-          .orElseThrow(() -> new NotFoundException(id.toString()));
-    }
-
-    if (agridataSecurityIdentity.isProvider()) {
-      return contractRevisionRepository.findByIdOptional(id)
-          .filter(this::isAssignedToCurrentProvider)
-          .orElseThrow(() -> new NotFoundException(id.toString()));
-    }
-
-    return contractRevisionRepository
-        .findByIdAndDataConsumerUid(id, agridataSecurityIdentity.getUidOrElseThrow())
-        .orElseThrow(() -> new NotFoundException(id.toString()));
   }
 
 }

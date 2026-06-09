@@ -10,6 +10,7 @@ import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.notification.api.NotificationApi;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.AdminUserDto;
 import java.util.List;
@@ -71,7 +72,9 @@ class NotificationServiceTest {
     verify(api).queueNotification(
         recipientCaptor.capture(),
         eq(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW),
-        placeholderCaptor.capture()
+        placeholderCaptor.capture(),
+        eq(TargetTypeCodeEnum.DATA_REQUEST),
+        eq(id)
     );
 
     assertThat(recipientCaptor.getValue()).hasSize(2)
@@ -91,14 +94,18 @@ class NotificationServiceTest {
   @Test
   void givenNoAdmins_whenQueueDataRequestInReview_thenQueuesNotificationWithEmptyRecipients() {
     when(userApi.getAdminUsers()).thenReturn(List.of());
+    var requestId = UUID.randomUUID();
 
-    service.queueDataRequestInReview(entityWithId(UUID.randomUUID()));
+    service.queueDataRequestInReview(entityWithId(requestId));
 
     @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> placeholderCaptor = ArgumentCaptor.forClass(Map.class);
     verify(api).queueNotification(
         eq(List.of()),
         eq(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW),
-        placeholderCaptor.capture()
+        placeholderCaptor.capture(),
+        eq(TargetTypeCodeEnum.DATA_REQUEST),
+        eq(requestId)
+
     );
     assertThat(placeholderCaptor.getValue())
         .containsEntry("dataRequestTitleDe", "Titel DE")

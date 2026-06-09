@@ -15,6 +15,8 @@ import static ch.agridata.auditing.api.ActionEnum.CONTRACT_SECOND_CONSUMER_SLOT_
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_SECOND_PROVIDER_SLOT_SIGNED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_ACTIVATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_APPROVED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
@@ -38,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Manages auditing concerns for requests. It records actions to ensure traceability.
  *
- * @CommentLastReviewed 2026-01-22
+ * @CommentLastReviewed 2026-06-01
  */
 
 @ApplicationScoped
@@ -97,6 +99,22 @@ public class AuditingService {
     };
 
     api.logUserAction(action, CONTRACT_REVISION, contractRevisionId);
+  }
+
+  public void logCollectiveSignatureSet(UUID dataRequestId) {
+    api.logSystemAction(
+        DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER,
+        DATA_REQUEST,
+        dataRequestId,
+        SystemActorEnum.DATA_REQUEST_STATE_TRANSITION
+    );
+
+    api.logSystemAction(
+        DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER,
+        DATA_REQUEST,
+        dataRequestId,
+        SystemActorEnum.DATA_REQUEST_STATE_TRANSITION
+    );
   }
 
   public void logSignatureTypeChosen(

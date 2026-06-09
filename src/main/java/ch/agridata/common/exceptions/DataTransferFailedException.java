@@ -3,10 +3,14 @@ package ch.agridata.common.exceptions;
 import lombok.Getter;
 
 /**
- * Signals that a data transfer process has failed. It encapsulates error information for consistent reporting.
+ * This exception is deprecated.
  *
- * @CommentLastReviewed 2025-08-25
+ * <p>Signals that a data transfer process has failed. It encapsulates error information for consistent reporting.
+ *
+ * @CommentLastReviewed 2026-05-29
+ * @deprecated Replaced by {@link ch.agridata.common.exceptions.DataProviderException}
  */
+@Deprecated(since = "1.10.0")
 @Getter
 public class DataTransferFailedException extends RuntimeException {
 

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * {@code AGRIDATA-RESPONSE-PRODUCER-BURS} and sets them on the context for downstream validation.
  * At least one of the two headers must be non-empty.
  *
- * @CommentLastReviewed 2026-02-27
+ * @CommentLastReviewed 2026-05-29
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -33,8 +34,8 @@ public class ResolveProducerIdentifiersFromResponseHeaderTask implements UnaryOp
   @Override
   public AgridataContext apply(final AgridataContext context) {
 
-    String uidsHeaderValue = Optional.ofNullable(context.getResponseHeaders().get(AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER)).orElse("[]");
-    String bursHeaderValue = Optional.ofNullable(context.getResponseHeaders().get(AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER)).orElse("[]");
+    String uidsHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER).orElse("[]");
+    String bursHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER).orElse("[]");
 
     List<String> producerUids = parseHeader(uidsHeaderValue, "producer UIDs");
     context.setProducerUids(producerUids);
@@ -59,5 +60,12 @@ public class ResolveProducerIdentifiersFromResponseHeaderTask implements UnaryOp
     } catch (JsonProcessingException e) {
       throw new ExternalWebServiceException("Failed to parse " + description + " from response header", e);
     }
+  }
+
+  private static Optional<String> findHeaderValue(final Map<String, String> headers, final String headerName) {
+    return headers.entrySet().stream()
+        .filter(e -> headerName.equalsIgnoreCase(e.getKey()))
+        .map(Map.Entry::getValue)
+        .findFirst();
   }
 }

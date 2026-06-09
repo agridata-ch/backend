@@ -49,11 +49,25 @@ public class ContractRevisionPdfService {
     transformerFactory.setURIResolver(classpathResolver());
   }
 
-  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
-  public byte[] getPdf(UUID contractRevisionId) {
-    ContractRevisionEntity entity = contractRevisionQueryService.getWithAccessCheck(contractRevisionId);
+  @RolesAllowed(ADMIN_ROLE)
+  public byte[] getPdfAsAdmin(UUID contractRevisionId) {
+    ContractRevisionEntity contractRevision = contractRevisionQueryService.getAsAdmin(contractRevisionId);
 
-    return contractRevisionStorageService.download(entity.getId());
+    return contractRevisionStorageService.download(contractRevision.getId());
+  }
+
+  @RolesAllowed(PROVIDER_ROLE)
+  public byte[] getPdfAsProvider(UUID contractRevisionId) {
+    ContractRevisionEntity contractRevision = contractRevisionQueryService.getAsProvider(contractRevisionId);
+
+    return contractRevisionStorageService.download(contractRevision.getId());
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
+  public byte[] getPdfAsConsumer(UUID contractRevisionId) {
+    ContractRevisionEntity contractRevision = contractRevisionQueryService.getAsConsumer(contractRevisionId);
+
+    return contractRevisionStorageService.download(contractRevision.getId());
   }
 
   public void generateAndUploadPdf(ContractRevisionEntity contractRevisionEntity) {

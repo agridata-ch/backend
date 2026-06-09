@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.notification.dto.EventTypeCodeEnum;
 import ch.agridata.notification.dto.RecipientRequestDto;
+import ch.agridata.notification.dto.TargetTypeCodeEnum;
+import ch.agridata.notification.mapper.NotificationTargetTypeMapperImpl;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationBatchRepository;
 import ch.agridata.notification.persistence.NotificationBatchStatusEnum;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -60,6 +63,9 @@ class NotificationBatchServiceTest {
   @Mock
   private Event<NotificationBatchQueuedEvent> batchQueuedEvent;
 
+  @Spy
+  private NotificationTargetTypeMapperImpl targetTypeMapper;
+
   @Test
   void givenUserAndEmailRecipients_whenQueueNotification_thenPersistsBatchAndRecipients() {
     var template = NotificationTemplateEntity.builder()
@@ -68,11 +74,13 @@ class NotificationBatchServiceTest {
         .build();
     var recipients = List.of(new RecipientRequestDto(UUID.randomUUID(), null), new RecipientRequestDto(null, "user@example.com"));
     var placeholders = Map.of("requestTitle", "Test");
+    var targetId = UUID.randomUUID();
+    var targetTypeCode = TargetTypeCodeEnum.DATA_REQUEST;
 
     when(templateRepository.findLatestByEventTypeCode(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())).thenReturn(Optional.of(
         template));
 
-    service.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, placeholders);
+    service.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, placeholders, targetTypeCode, targetId);
 
     var batchCaptor = ArgumentCaptor.forClass(NotificationBatchEntity.class);
     verify(batchRepository).persist(batchCaptor.capture());
@@ -80,6 +88,8 @@ class NotificationBatchServiceTest {
     assertThat(batch.getStatusCode()).isEqualTo(NotificationBatchStatusEnum.PENDING);
     assertThat(batch.getPlaceholders()).isEqualTo(placeholders);
     assertThat(batch.getTemplate()).isEqualTo(template);
+    assertThat(batch.getTargetTypeCode().name()).isEqualTo(targetTypeCode.name());
+    assertThat(batch.getTargetId()).isEqualTo(targetId);
 
     var recipientCaptor = ArgumentCaptor.forClass(NotificationRecipientEntity.class);
     verify(recipientRepository, times(2)).persist(recipientCaptor.capture());
@@ -101,7 +111,8 @@ class NotificationBatchServiceTest {
     when(templateRepository.findLatestByEventTypeCode(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())).thenReturn(Optional.of(
         template));
 
-    service.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, Map.of());
+    service.queueNotification(recipients, EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, Map.of(), TargetTypeCodeEnum.DATA_REQUEST,
+        UUID.randomUUID());
 
     var captor = ArgumentCaptor.forClass(NotificationBatchEntity.class);
     verify(batchRepository).persist(captor.capture());
@@ -113,11 +124,15 @@ class NotificationBatchServiceTest {
     when(templateRepository.findLatestByEventTypeCode(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())).thenReturn(Optional.empty());
     var recipientList = List.of(new RecipientRequestDto(UUID.randomUUID(), null));
     Map<String, String> emptyMap = Collections.emptyMap();
+    var targetTypeCode = TargetTypeCodeEnum.DATA_REQUEST;
+    var targetId = UUID.randomUUID();
 
     assertThatThrownBy(() -> service.queueNotification(
         recipientList,
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
-        emptyMap
+        emptyMap,
+        targetTypeCode,
+        targetId
     )).isInstanceOf(NotFoundException.class);
 
     verify(batchRepository, never()).persist(any(NotificationBatchEntity.class));
@@ -139,7 +154,9 @@ class NotificationBatchServiceTest {
     assertThatThrownBy(() -> service.queueNotification(
         List.of(new RecipientRequestDto(UUID.randomUUID(), null)),
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
-        Map.of("dataRequestTitleDe", "Mein Antrag")  // dataConsumer missing
+        Map.of("dataRequestTitleDe", "Mein Antrag"),  // dataConsumer missing
+        TargetTypeCodeEnum.DATA_REQUEST,
+        UUID.randomUUID()
     ))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("dataConsumer");
@@ -161,7 +178,9 @@ class NotificationBatchServiceTest {
     service.queueNotification(
         List.of(new RecipientRequestDto(UUID.randomUUID(), null)),
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
-        Map.of("dataRequestTitleDe", "Mein Antrag", "dataConsumer", "Bio Suisse")
+        Map.of("dataRequestTitleDe", "Mein Antrag", "dataConsumer", "Bio Suisse"),
+        TargetTypeCodeEnum.DATA_REQUEST,
+        UUID.randomUUID()
     );
 
     verify(batchRepository).persist(any(NotificationBatchEntity.class));
@@ -181,7 +200,9 @@ class NotificationBatchServiceTest {
     service.queueNotification(
         List.of(new RecipientRequestDto(UUID.randomUUID(), null)),
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
-        Map.of()
+        Map.of(),
+        TargetTypeCodeEnum.DATA_REQUEST,
+        UUID.randomUUID()
     );
 
     verify(batchRepository).persist(any(NotificationBatchEntity.class));

@@ -4,7 +4,6 @@ import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
-import ch.agridata.notification.persistence.NotificationInboxEntity;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.LinkedHashSet;
@@ -34,11 +33,6 @@ public class NotificationPlaceholderService {
         applyHtmlPlaceholders(template.getEmailText(), placeholders),
         applyPlaceholders(template.getMobileText(), placeholders)
     );
-  }
-
-  public ResolvedNotificationTextsDto resolve(NotificationInboxEntity inbox) {
-    var batch = inbox.getRecipient().getBatch();
-    return resolve(batch);
   }
 
   private TranslationDto applyPlaceholders(TranslationPersistenceDto translations, Map<String, String> placeholders) {

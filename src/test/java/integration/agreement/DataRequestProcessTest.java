@@ -300,11 +300,15 @@ class DataRequestProcessTest {
         "Step 14: Consumer 2 signed contract");
     verifyAuditEntry(7, EntityTypeEnum.CONTRACT_REVISION, revisionId1, ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED,
         "Step 13: Consumer 1 signed contract");
-    verifyAuditEntry(8, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_APPROVED,
+    verifyAuditEntry(8, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER,
+        "Step 10: Admin approved data request, collective signature set for provider");
+    verifyAuditEntry(9, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER,
+        "Step 10: Admin approved data request, collective signature set for consumer");
+    verifyAuditEntry(10, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_APPROVED,
         "Step 10: Admin approved data request (TO_BE_SIGNED_BY_CONSUMER)");
-    verifyAuditEntry(9, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_SUBMITTED,
+    verifyAuditEntry(11, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_SUBMITTED,
         "Step 6: Consumer submitted data request (IN_REVIEW)");
-    verifyAuditEntry(10, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_REJECTED,
+    verifyAuditEntry(12, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_REJECTED,
         "Step 4: Consumer attempted to submit with invalid data");
   }
 

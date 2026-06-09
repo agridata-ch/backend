@@ -68,7 +68,7 @@ class DataRequestTest {
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(2));
+        .body("size()", equalTo(3));
   }
 
   @Test
@@ -77,7 +77,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(6));
+        .body("size()", equalTo(8));
   }
 
   @Test
@@ -86,7 +86,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER_1).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(4));
+        .body("size()", equalTo(5));
   }
 
   @Test
