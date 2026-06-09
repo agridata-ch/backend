@@ -1,3 +1,10 @@
+## [1.11.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.10.0...v1.11.0-rc.1) (2026-06-09)
+
+### Features
+
+* **notifications:** Add email language to notifications ([7433581](https://github.com/agridata-ch/backend/commit/7433581324cdc3ef50a179676d7d923f0050dcef)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+* **notifications:** Add language to saved user information ([703b053](https://github.com/agridata-ch/backend/commit/703b053a940e07ca41e455acf8641f02c38441e0)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+
 ## [1.10.0](https://github.com/agridata-ch/backend/compare/v1.9.0...v1.10.0) (2026-06-09)
 
 ### Features
