@@ -78,7 +78,11 @@ class DataRequestProcessTest {
         .extract().as(new TypeRef<>() {
         });
 
-    UUID productId = products.getFirst().id();
+    UUID productId = products.stream()
+        .filter(p -> p.dataSourceSystemCode().equals("AGIS"))
+        .findFirst()
+        .orElseThrow()
+        .id();
 
     // Step 1: Create draft
     String dataRequestId = createDataRequestAs(CONSUMER_BLV_1).then()
@@ -172,9 +176,11 @@ class DataRequestProcessTest {
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId1.toString()))
-        .body("consumerSignatures.last().name", equalTo(
-            CONSUMER_BLV_1.getGivenName() + " " + CONSUMER_BLV_1.getFamilyName()
-        ))
+        .body(
+            "consumerSignatures.last().name", equalTo(
+                CONSUMER_BLV_1.getGivenName() + " " + CONSUMER_BLV_1.getFamilyName()
+            )
+        )
         .body("consumerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
@@ -184,9 +190,11 @@ class DataRequestProcessTest {
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId2.toString()))
-        .body("consumerSignatures.last().name", equalTo(
-            CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
-        ))
+        .body(
+            "consumerSignatures.last().name", equalTo(
+                CONSUMER_BLV_2.getGivenName() + " " + CONSUMER_BLV_2.getFamilyName()
+            )
+        )
         .extract().as(ContractRevisionDto.class).id();
 
     // Step 15: As Consumer set status to toBeSignedByProvider
@@ -196,28 +204,36 @@ class DataRequestProcessTest {
         .body("stateCode", equalTo(DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER.name()));
 
     // Step 16: As Provider 1 sign Contract
-    var revisionId4 = signContractRevision(revisionId3, PROVIDER_1,
-        SignatureSlotCodeEnum.DATA_PROVIDER_01)
+    var revisionId4 = signContractRevision(
+        revisionId3, PROVIDER_1,
+        SignatureSlotCodeEnum.DATA_PROVIDER_01
+    )
         .then()
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId3.toString()))
-        .body("providerSignatures.last().name", equalTo(
-            PROVIDER_1.getGivenName() + " " + PROVIDER_1.getFamilyName()
-        ))
+        .body(
+            "providerSignatures.last().name", equalTo(
+                PROVIDER_1.getGivenName() + " " + PROVIDER_1.getFamilyName()
+            )
+        )
         .body("providerSignatureType", equalTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE.toString()))
         .extract().as(ContractRevisionDto.class).id();
 
     // Step 17: As Provider 2 sign Contract — captures the final revision ID for sealing
-    UUID revisionId5 = signContractRevision(revisionId4, PROVIDER_2,
-        SignatureSlotCodeEnum.DATA_PROVIDER_02)
+    UUID revisionId5 = signContractRevision(
+        revisionId4, PROVIDER_2,
+        SignatureSlotCodeEnum.DATA_PROVIDER_02
+    )
         .then()
         .statusCode(200)
         .body("id", notNullValue())
         .body("id", org.hamcrest.Matchers.not(revisionId4.toString()))
-        .body("providerSignatures.last().name", equalTo(
-            PROVIDER_2.getGivenName() + " " + PROVIDER_2.getFamilyName()
-        ))
+        .body(
+            "providerSignatures.last().name", equalTo(
+                PROVIDER_2.getGivenName() + " " + PROVIDER_2.getFamilyName()
+            )
+        )
         .extract().as(ContractRevisionDto.class).id();
 
     // Step 18: As Provider set status to toBeActivated
@@ -284,36 +300,64 @@ class DataRequestProcessTest {
         .containsExactlyInAnyOrderElementsOf(PRODUCER_B.getCompanyUids().stream().map(Uid::name).toList());
 
     // Verify the last 11 audit log entries
-    verifyAuditEntry(0, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_ACTIVATED,
-        "Step 23: As Admin set status to active");
-    verifyAuditEntry(1, EntityTypeEnum.CONTRACT_REVISION, revisionId5, ActionEnum.CONTRACT_PDF_ELECTRONICALLY_SIGNED,
-        "Step 20/21: Contract PDF electronically signed (seal)");
-    verifyAuditEntry(2, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER,
-        "Step 18: As Provider set status to toBeActivated");
-    verifyAuditEntry(3, EntityTypeEnum.CONTRACT_REVISION, revisionId4, ActionEnum.CONTRACT_SECOND_PROVIDER_SLOT_SIGNED,
-        "Step 17: Provider 2 signed contract");
-    verifyAuditEntry(4, EntityTypeEnum.CONTRACT_REVISION, revisionId3, ActionEnum.CONTRACT_FIRST_PROVIDER_SLOT_SIGNED,
-        "Step 16: Provider 1 signed contract");
-    verifyAuditEntry(5, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER,
-        "Step 15: Consumer set status to toBeSignedByProvider");
-    verifyAuditEntry(6, EntityTypeEnum.CONTRACT_REVISION, revisionId2, ActionEnum.CONTRACT_SECOND_CONSUMER_SLOT_SIGNED,
-        "Step 14: Consumer 2 signed contract");
-    verifyAuditEntry(7, EntityTypeEnum.CONTRACT_REVISION, revisionId1, ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED,
-        "Step 13: Consumer 1 signed contract");
-    verifyAuditEntry(8, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER,
-        "Step 10: Admin approved data request, collective signature set for provider");
-    verifyAuditEntry(9, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER,
-        "Step 10: Admin approved data request, collective signature set for consumer");
-    verifyAuditEntry(10, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_APPROVED,
-        "Step 10: Admin approved data request (TO_BE_SIGNED_BY_CONSUMER)");
-    verifyAuditEntry(11, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_SUBMITTED,
-        "Step 6: Consumer submitted data request (IN_REVIEW)");
-    verifyAuditEntry(12, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_REJECTED,
-        "Step 4: Consumer attempted to submit with invalid data");
+    verifyAuditEntry(
+        0, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_ACTIVATED,
+        "Step 23: As Admin set status to active"
+    );
+    verifyAuditEntry(
+        1, EntityTypeEnum.CONTRACT_REVISION, revisionId5, ActionEnum.CONTRACT_PDF_ELECTRONICALLY_SIGNED,
+        "Step 20/21: Contract PDF electronically signed (seal)"
+    );
+    verifyAuditEntry(
+        2, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER,
+        "Step 18: As Provider set status to toBeActivated"
+    );
+    verifyAuditEntry(
+        3, EntityTypeEnum.CONTRACT_REVISION, revisionId4, ActionEnum.CONTRACT_SECOND_PROVIDER_SLOT_SIGNED,
+        "Step 17: Provider 2 signed contract"
+    );
+    verifyAuditEntry(
+        4, EntityTypeEnum.CONTRACT_REVISION, revisionId3, ActionEnum.CONTRACT_FIRST_PROVIDER_SLOT_SIGNED,
+        "Step 16: Provider 1 signed contract"
+    );
+    verifyAuditEntry(
+        5, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER,
+        "Step 15: Consumer set status to toBeSignedByProvider"
+    );
+    verifyAuditEntry(
+        6, EntityTypeEnum.CONTRACT_REVISION, revisionId2, ActionEnum.CONTRACT_SECOND_CONSUMER_SLOT_SIGNED,
+        "Step 14: Consumer 2 signed contract"
+    );
+    verifyAuditEntry(
+        7, EntityTypeEnum.CONTRACT_REVISION, revisionId1, ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED,
+        "Step 13: Consumer 1 signed contract"
+    );
+    verifyAuditEntry(
+        8, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER,
+        "Step 10: Admin approved data request, collective signature set for provider"
+    );
+    verifyAuditEntry(
+        9, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER,
+        "Step 10: Admin approved data request, collective signature set for consumer"
+    );
+    verifyAuditEntry(
+        10, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_APPROVED,
+        "Step 10: Admin approved data request (TO_BE_SIGNED_BY_CONSUMER)"
+    );
+    verifyAuditEntry(
+        11, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_SUBMITTED,
+        "Step 6: Consumer submitted data request (IN_REVIEW)"
+    );
+    verifyAuditEntry(
+        12, EntityTypeEnum.DATA_REQUEST, dataRequestId, ActionEnum.DATA_REQUEST_REJECTED,
+        "Step 4: Consumer attempted to submit with invalid data"
+    );
   }
 
-  private void verifyAuditEntry(int offset, EntityTypeEnum expectedEntityType, Object expectedEntityId, ActionEnum expectedAction,
-                                String stepDescription) {
+  private void verifyAuditEntry(
+      int offset, EntityTypeEnum expectedEntityType, Object expectedEntityId, ActionEnum expectedAction,
+      String stepDescription
+  ) {
     assertThat(auditLogTestUtils.getLatestAuditLogEntry(offset))
         .as(stepDescription)
         .satisfies(log -> {

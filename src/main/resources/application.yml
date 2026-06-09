@@ -8,6 +8,10 @@ agridata:
   aws:
     send-sms:
       enabled: true
+  notifications:
+    frontend-url-paths:
+      admin-path: "/admin/{id}"
+      provider-path: "/provider/{id}"
 bit:
   signature:
     key-bearer: "BLW-Agridata"

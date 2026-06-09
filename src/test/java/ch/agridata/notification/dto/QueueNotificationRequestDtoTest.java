@@ -69,7 +69,7 @@ class QueueNotificationRequestDtoTest {
 
   @Test
   void givenInvalidRecipientInList_whenValidate_thenCascadedViolation() {
-    var invalid = new RecipientRequestDto(null, null, null); // both null → @AssertTrue on isValid() fails
+    var invalid = new RecipientRequestDto(null, null, null); // both userId and email null → @AssertTrue on isValid() fails
     var dto = new QueueNotificationRequestDto(List.of(invalid), EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW, null);
 
     Set<ConstraintViolation<QueueNotificationRequestDto>> violations = validator.validate(dto);

@@ -181,8 +181,10 @@ class NotificationSubmitEmailServiceTest {
 
     service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail(anyString(), anyString(),
-        argThat(body -> body.contains("<p>DE only</p>") && !body.contains("null")));
+    verify(emailApi).submitEmail(
+        anyString(), anyString(),
+        argThat(body -> body.contains("<p>DE only</p>") && !body.contains("null"))
+    );
   }
 
   @Test
@@ -197,9 +199,11 @@ class NotificationSubmitEmailServiceTest {
 
     service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail(anyString(), anyString(),
+    verify(emailApi).submitEmail(
+        anyString(), anyString(),
         argThat(body -> body.contains("<p>DE only</p>")
-            && body.indexOf("<p>DE only</p>") == body.lastIndexOf("<p>DE only</p>")));
+            && body.indexOf("<p>DE only</p>") == body.lastIndexOf("<p>DE only</p>"))
+    );
   }
 
   @Test
@@ -322,5 +326,19 @@ class NotificationSubmitEmailServiceTest {
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Failed to load email template")
         .hasCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  void givenValidEmailTemplate_whenLoadEmailTemplate_thenTemplateSuccessfullyLoadedAsUtf8String() {
+    service.loadEmailTemplate();
+
+    // Verify that the template was loaded successfully by dispatching an email
+    var recipient = recipient();
+    var resolved = resolvedWith("Test Subject", "<p>Template loaded successfully</p>");
+
+    var result = service.dispatch(recipient, resolved);
+
+    assertThat(result).isTrue();
+    verify(emailApi).submitEmail(anyString(), anyString(), argThat(body -> body.contains("Template loaded successfully")));
   }
 }

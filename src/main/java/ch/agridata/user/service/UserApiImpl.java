@@ -1,9 +1,9 @@
 package ch.agridata.user.service;
 
 import ch.agridata.user.api.UserApi;
-import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
+import ch.agridata.user.dto.UserNotificationInfoDto;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
@@ -34,7 +34,12 @@ public class UserApiImpl implements UserApi {
   }
 
   @Override
-  public List<AdminUserDto> getAdminUsers() {
+  public List<UserNotificationInfoDto> getAdminUsers() {
     return userService.getAdminUsers();
+  }
+
+  @Override
+  public List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid) {
+    return userService.getProviderUsers(uid);
   }
 }

@@ -14,18 +14,18 @@ import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Handles audit logging for data request state transitions.
+ * Handles audit logging and triggers notifications for data request state transitions.
  *
  * @CommentLastReviewed 2026-06-08
  */
 @ApplicationScoped
 @RequiredArgsConstructor
-public class DataRequestStateAuditService {
+public class DataRequestStateEventDispatcher {
 
   private final AuditingService auditingService;
   private final NotificationService notificationService;
 
-  public void auditAdminStatusTransition(
+  public void dispatchAdminStatusTransition(
       DataRequestEntity entity,
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode
@@ -40,7 +40,7 @@ public class DataRequestStateAuditService {
     }
   }
 
-  public void auditConsumerStatusTransition(
+  public void dispatchConsumerStatusTransition(
       DataRequestEntity entity,
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode
@@ -52,10 +52,11 @@ public class DataRequestStateAuditService {
       notificationService.queueDataRequestInReview(entity);
     } else if (oldStateCode == TO_BE_RELEASED_BY_CONSUMER && newStateCode == TO_BE_SIGNED_BY_PROVIDER) {
       auditingService.logDataRequestReleasedByConsumer(entity.getId());
+      notificationService.queueDataRequestReadyForProviderSigning(entity);
     }
   }
 
-  public void auditProviderStatusTransition(
+  public void dispatchProviderStatusTransition(
       DataRequestEntity entity,
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode

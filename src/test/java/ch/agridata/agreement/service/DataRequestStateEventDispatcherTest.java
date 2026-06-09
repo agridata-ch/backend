@@ -15,15 +15,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Unit tests for {@link DataRequestStateAuditService}.
+ * Unit tests for {@link DataRequestStateEventDispatcher}.
  *
  * @CommentLastReviewed 2026-05-11
  */
 @ExtendWith(MockitoExtension.class)
-class DataRequestStateAuditServiceTest {
+class DataRequestStateEventDispatcherTest {
 
   @InjectMocks
-  private DataRequestStateAuditService service;
+  private DataRequestStateEventDispatcher service;
 
   @Mock
   private AuditingService auditingService;
@@ -41,7 +41,7 @@ class DataRequestStateAuditServiceTest {
   void givenInReviewToDraft_whenAuditAdmin_thenLogRejected() {
     var entity = entity();
 
-    service.auditAdminStatusTransition(entity, IN_REVIEW, DRAFT);
+    service.dispatchAdminStatusTransition(entity, IN_REVIEW, DRAFT);
 
     verify(auditingService).logDataRequestRejected(entity.getId());
     verifyNoInteractions(notificationService);
@@ -51,7 +51,7 @@ class DataRequestStateAuditServiceTest {
   void givenInReviewToToBeSignedByConsumer_whenAuditAdmin_thenLogApproved() {
     var entity = entity();
 
-    service.auditAdminStatusTransition(entity, IN_REVIEW, TO_BE_SIGNED_BY_CONSUMER);
+    service.dispatchAdminStatusTransition(entity, IN_REVIEW, TO_BE_SIGNED_BY_CONSUMER);
 
     verify(auditingService).logDataRequestApproved(entity.getId());
     verifyNoInteractions(notificationService);
@@ -63,7 +63,7 @@ class DataRequestStateAuditServiceTest {
   void givenDraftToInReview_whenAuditConsumer_thenLogSubmittedAndQueueNotification() {
     var entity = entity();
 
-    service.auditConsumerStatusTransition(entity, DRAFT, IN_REVIEW);
+    service.dispatchConsumerStatusTransition(entity, DRAFT, IN_REVIEW);
 
     verify(auditingService).logDataRequestSubmitted(entity.getId());
     verify(notificationService).queueDataRequestInReview(entity);
@@ -73,7 +73,7 @@ class DataRequestStateAuditServiceTest {
   void givenInReviewToDraft_whenAuditConsumer_thenLogWithdrawnAndNoNotification() {
     var entity = entity();
 
-    service.auditConsumerStatusTransition(entity, IN_REVIEW, DRAFT);
+    service.dispatchConsumerStatusTransition(entity, IN_REVIEW, DRAFT);
 
     verify(auditingService).logDataRequestWithdrawn(entity.getId());
     verifyNoInteractions(notificationService);

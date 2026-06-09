@@ -181,6 +181,7 @@ class NotificationBatchServiceTest {
     verify(batchRepository, never()).persist(any(NotificationBatchEntity.class));
   }
 
+
   @Test
   void givenAllRequiredPlaceholdersPresent_whenQueueNotification_thenPersistsBatch() {
     var template = NotificationTemplateEntity.builder()
@@ -224,4 +225,33 @@ class NotificationBatchServiceTest {
 
     verify(batchRepository).persist(any(NotificationBatchEntity.class));
   }
+
+  @Test
+  void givenMultipleRecipients_whenQueueNotification_thenPersistsAllRecipients() {
+    var template = NotificationTemplateEntity.builder()
+        .id(UUID.randomUUID())
+        .eventTypeCode(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
+        .build();
+    when(templateRepository.findLatestByEventTypeCode(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name()))
+        .thenReturn(Optional.of(template));
+    when(placeholderService.extractRequiredPlaceholders(template)).thenReturn(Set.of());
+
+    var recipients = List.of(
+        new RecipientRequestDto(UUID.randomUUID(), null, null),
+        new RecipientRequestDto(null, "user@example.com", SupportedLanguage.DE)
+    );
+
+    service.queueNotification(
+        recipients,
+        EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW,
+        Map.of(),
+        TargetTypeCodeEnum.DATA_REQUEST,
+        UUID.randomUUID()
+    );
+
+    var recipientCaptor = ArgumentCaptor.forClass(NotificationRecipientEntity.class);
+    verify(recipientRepository, times(2)).persist(recipientCaptor.capture());
+    assertThat(recipientCaptor.getAllValues()).hasSize(2);
+  }
+
 }

@@ -38,4 +38,11 @@ public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
   public List<UserEntity> findAllByRoleAtLastLogin(String role) {
     return find("function('jsonb_exists', rolesAtLastLogin, :role) = true", Map.of("role", role)).list();
   }
+
+  public List<UserEntity> findAllByRoleAtLastLoginAndUid(String role, String uid) {
+    return find(
+        "function('jsonb_exists', rolesAtLastLogin, :role) = true and uid = :uid",
+        Map.of("role", role, "uid", uid)
+    ).list();
+  }
 }
