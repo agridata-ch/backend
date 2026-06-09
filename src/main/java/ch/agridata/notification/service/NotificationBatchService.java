@@ -81,6 +81,13 @@ public class NotificationBatchService {
     }
 
     log.info("Queued notification batch for event type '{}' with {} recipient(s).", eventTypeCode, recipients.size());
+    if (recipients.isEmpty()) {
+      log.error(
+          "No recipients provided for notification batch of event type '{}'. Batch ID: {}. Likely the associated users could not be found.",
+          eventTypeCode,
+          batch.getId()
+      );
+    }
 
     batchQueuedEvent.fire(new NotificationBatchQueuedEvent());
   }

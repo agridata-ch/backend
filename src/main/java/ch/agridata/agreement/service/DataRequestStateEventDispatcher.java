@@ -37,6 +37,7 @@ public class DataRequestStateEventDispatcher {
       auditingService.logCollectiveSignatureSet(entity.getId());
     } else if (oldStateCode == TO_BE_ACTIVATED && newStateCode == ACTIVE) {
       auditingService.logDataRequestActivated(entity.getId());
+      notificationService.queueDataRequestActivated(entity);
     }
   }
 
@@ -63,6 +64,7 @@ public class DataRequestStateEventDispatcher {
   ) {
     if (oldStateCode == TO_BE_RELEASED_BY_PROVIDER && newStateCode == TO_BE_ACTIVATED) {
       auditingService.logDataRequestReleasedByProvider(entity.getId());
+      notificationService.queueDataRequestReadyForActivation(entity);
     }
   }
 

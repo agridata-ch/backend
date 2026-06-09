@@ -1,6 +1,7 @@
 package ch.agridata.user.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
@@ -93,6 +94,13 @@ public class UserService {
 
   public List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid) {
     return userRepository.findAllByRoleAtLastLoginAndUid(PROVIDER_ROLE, uid)
+        .stream()
+        .map(user -> new UserNotificationInfoDto(user.getId(), user.getEmail(), user.getLanguage()))
+        .toList();
+  }
+
+  public List<UserNotificationInfoDto> getConsumerUsers(@NonNull String uid) {
+    return userRepository.findAllByRoleAtLastLoginAndUid(CONSUMER_ROLE, uid)
         .stream()
         .map(user -> new UserNotificationInfoDto(user.getId(), user.getEmail(), user.getLanguage()))
         .toList();

@@ -18,7 +18,9 @@ public interface UserApi {
 
   List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId);
 
-  List<UserNotificationInfoDto> getAdminUsers();
+  List<UserNotificationInfoDto> getAdminsNotificationInfos();
 
-  List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid);
+  List<UserNotificationInfoDto> getProvidersNotificationInfoByUid(@NonNull String uid);
+
+  List<UserNotificationInfoDto> getConsumersNotificationInfoByUid(@NonNull String uid);
 }

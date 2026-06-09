@@ -12,6 +12,7 @@ agridata:
     frontend-url-paths:
       admin-path: "/admin/{id}"
       provider-path: "/provider/{id}"
+      consumer-path: "/consumer/{id}"
 bit:
   signature:
     key-bearer: "BLW-Agridata"
