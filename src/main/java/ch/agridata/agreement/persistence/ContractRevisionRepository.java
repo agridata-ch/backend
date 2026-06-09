@@ -34,4 +34,8 @@ public class ContractRevisionRepository implements PanacheRepositoryBase<Contrac
         )
     ).firstResultOptional();
   }
+
+  public void deleteByDataRequestId(UUID dataRequestId) {
+    update("archived = true where dataRequest.id = ?1", dataRequestId);
+  }
 }
