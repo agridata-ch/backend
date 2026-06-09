@@ -16,6 +16,7 @@ import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.validation.Validator;
@@ -50,6 +51,8 @@ class DataRequestStateServiceTest {
   private DataRequestEnrichmentService dataRequestEnrichmentService;
   @Mock
   private ContractRevisionInitializationService contractRevisionInitializationService;
+  @Mock
+  private ContractRevisionMutationService contractRevisionMutationService;
 
   @Test
   void givenSubmittedRequest_whenSetStateToInReview_thenThrowIllegalStateAsAdminException() {
@@ -131,6 +134,32 @@ class DataRequestStateServiceTest {
     verify(dataRequestStateAuditService).auditConsumerStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
+    verify(contractRevisionMutationService).archiveAllForDataRequest(entity.getId());
+    assertThat(dataRequestEntityCaptor.getValue().getConsumerSignatureType()).isEqualTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
+    assertThat(dataRequestEntityCaptor.getValue().getProviderSignatureType()).isEqualTo(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
+    assertThat(result).isEqualTo(expectedDto);
+  }
+
+  @Test
+  void givenToBeActivatedRequest_whenSetStateAsConsumerToDraft_thenReturnDtoAndLogWithdrawal() {
+    var id = UUID.randomUUID();
+
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED);
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.DRAFT);
+
+    DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
+    assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
+    verify(contractRevisionMutationService).archiveAllForDataRequest(entity.getId());
+    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+        entity,
+        DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
         DataRequestEntity.DataRequestStateEnum.DRAFT
     );
     assertThat(result).isEqualTo(expectedDto);

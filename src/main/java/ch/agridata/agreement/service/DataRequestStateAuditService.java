@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Handles audit logging for data request state transitions.
  *
- * @CommentLastReviewed 2026-06-02
+ * @CommentLastReviewed 2026-06-08
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class DataRequestStateAuditService {
       DataRequestEntity.DataRequestStateEnum oldStateCode,
       DataRequestEntity.DataRequestStateEnum newStateCode
   ) {
-    if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
+    if (isWithdrawableState(oldStateCode) && newStateCode == DRAFT) {
       auditingService.logDataRequestWithdrawn(entity.getId());
     } else if (oldStateCode == DRAFT && newStateCode == IN_REVIEW) {
       auditingService.logDataRequestSubmitted(entity.getId());
@@ -64,4 +64,14 @@ public class DataRequestStateAuditService {
       auditingService.logDataRequestReleasedByProvider(entity.getId());
     }
   }
+
+  private boolean isWithdrawableState(DataRequestEntity.DataRequestStateEnum state) {
+    return state == IN_REVIEW
+        || state == TO_BE_SIGNED_BY_CONSUMER
+        || state == TO_BE_RELEASED_BY_CONSUMER
+        || state == TO_BE_SIGNED_BY_PROVIDER
+        || state == TO_BE_RELEASED_BY_PROVIDER
+        || state == TO_BE_ACTIVATED;
+  }
+
 }
