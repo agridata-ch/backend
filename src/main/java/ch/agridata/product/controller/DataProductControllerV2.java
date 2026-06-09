@@ -22,11 +22,13 @@ import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import java.util.Locale;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -60,7 +62,7 @@ public class DataProductControllerV2 {
   @Operation(
       operationId = "getDataProductsPaginated",
       description = "Retrieves a paginated list of all available data products. Accessible to users with the "
-          + "producer, and admin. Supports pagination.")
+          + "provider, and admin. Supports pagination.")
   @Parameter(name = "resourceQueryDto",
       description = "Query parameters",
       schema = @Schema(implementation = ResourceQueryDto.class))
@@ -83,6 +85,20 @@ public class DataProductControllerV2 {
       case PROVIDER -> dataProductService.getProviderDataProductsPaged(resourceQueryDto, identity.getUidOrElseThrow(), language);
       default -> throw new ForbiddenException();
     };
+  }
+
+  @GET
+  @Path("{id}")
+  @ApiSubset({WEB_APP})
+  @Operation(
+      operationId = "getDataProduct",
+      description = "Retrieves a single data product. Accessible to users with the provider and admin role"
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE})
+  @EnableActingRoleHolder
+  public DataProductDto getDataProduct(@PathParam("id") UUID dataProductId) {
+    return dataProductService.getProductById(dataProductId);
   }
 }
 
