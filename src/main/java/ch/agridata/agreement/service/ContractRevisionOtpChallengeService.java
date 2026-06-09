@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Handles OTP challenges for contract revision signatures. It generates challenges and manages their expiration.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed: 2026-06-09
  */
 
 @ApplicationScoped
@@ -52,7 +52,7 @@ public class ContractRevisionOtpChallengeService {
         agridataSecurityIdentity.getUserId(),
         contractRevisionId,
         signatureSlotCode,
-        agridataSecurityIdentity.getPhoneNumberOrElseThrow()
+        agridataSecurityIdentity.getMobileNumberOrElseThrow()
     );
 
     return new OtpChallengeDto(

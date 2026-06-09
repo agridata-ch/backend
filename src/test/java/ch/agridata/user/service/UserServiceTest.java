@@ -58,7 +58,8 @@ class UserServiceTest {
     when(userInfo.getString("email")).thenReturn("user@example.com");
     when(userInfo.getString("given_name")).thenReturn("Hans");
     when(userInfo.getString("family_name")).thenReturn("Muster");
-    when(userInfo.getString("phone_number")).thenReturn("+41791234567");
+    when(userInfo.getString("phone_number")).thenReturn("+41331234567");
+    when(userInfo.getString("mobile_number")).thenReturn("+41791234567");
     when(userInfo.getString("locale")).thenReturn(locale);
     when(identity.getRoles()).thenReturn(Set.of("ROLE_CONSUMER"));
     when(userMapper.toUserInfoDto(any())).thenReturn(null);
@@ -79,7 +80,7 @@ class UserServiceTest {
     assertThat(user.getEmail()).isEqualTo("user@example.com");
     assertThat(user.getGivenName()).isEqualTo("Hans");
     assertThat(user.getFamilyName()).isEqualTo("Muster");
-    assertThat(user.getPhoneNumber()).isEqualTo("+41791234567");
+    assertThat(user.getPhoneNumber()).isEqualTo("+41331234567");
     assertThat(user.getRolesAtLastLogin()).isEqualTo(Set.of("ROLE_CONSUMER"));
     assertThat(user.getLastLoginDate()).isNotNull();
     assertThat(user.getLanguage()).isEqualTo(SupportedLanguage.DE);

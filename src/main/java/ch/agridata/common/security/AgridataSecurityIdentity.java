@@ -20,7 +20,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 /**
  * Provides access to user-related security claims. It extracts identifiers, email, and UID from security tokens and ensures validity.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-06-09
  */
 
 @RequestScoped
@@ -34,6 +34,7 @@ public class AgridataSecurityIdentity {
   private static final String ACCESS_TOKEN_CLAIM_UID = "uid";
   private static final String ACCESS_TOKEN_CLAIM_KT_ID_P = "KT_ID_P";
   private static final String ACCESS_TOKEN_CLAIM_PHONE_NUMBER = "phone_number";
+  private static final String ACCESS_TOKEN_CLAIM_MOBILE_NUMBER = "mobile_number";
 
   private final SecurityIdentity securityIdentity;
 
@@ -124,13 +125,13 @@ public class AgridataSecurityIdentity {
     return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID));
   }
 
-  public String getPhoneNumberOrElseThrow() {
-    return getPhoneNumber().orElseThrow(
-        () -> new IllegalStateException("User with agateLoginId " + getAgateLoginId() + " has no phone number assigned"));
+  public String getMobileNumberOrElseThrow() {
+    return getMobileNumber().orElseThrow(
+        () -> new IllegalStateException("User with agateLoginId " + getAgateLoginId() + " has no mobile number assigned"));
   }
 
-  public Optional<String> getPhoneNumber() {
-    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_PHONE_NUMBER));
+  public Optional<String> getMobileNumber() {
+    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_MOBILE_NUMBER));
   }
 
   public UserInfo getUserInfoOrElseThrow() {

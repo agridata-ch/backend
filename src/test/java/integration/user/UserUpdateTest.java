@@ -87,7 +87,7 @@ class UserUpdateTest {
             .givenName("Lea")
             .familyName("Consumer")
             .email("lea.consumer@blw.admin.ch")
-            .phoneNumber("+4179123456789")
+            .phoneNumber("+4133123456789")
             .addressStreet("Testfallgasse 9")
             .addressLocality("Thun")
             .addressPostalCode("3600")

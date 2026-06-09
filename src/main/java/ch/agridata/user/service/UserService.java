@@ -54,6 +54,7 @@ public class UserService {
     user.setGivenName(userInfo.getString("given_name"));
     user.setFamilyName(userInfo.getString("family_name"));
     user.setPhoneNumber(userInfo.getString("phone_number"));
+    user.setMobileNumber(userInfo.getString("mobile_number"));
 
     user.setRolesAtLastLogin(identity.getRoles());
     user.setLastLoginDate(LocalDateTime.now());
