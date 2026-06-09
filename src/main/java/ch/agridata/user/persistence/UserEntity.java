@@ -25,7 +25,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Represents a persisted user in the system. It includes identifiers, login details, email, and optional metadata.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-06-10
  */
 
 @Entity
@@ -68,6 +68,9 @@ public class UserEntity extends AuditableEntity {
 
   @Column(name = "phone_number", length = 50)
   private String phoneNumber;
+
+  @Column(name = "mobile_number", length = 50)
+  private String mobileNumber;
 
   @Column(name = "address_street", length = 500)
   private String addressStreet;
