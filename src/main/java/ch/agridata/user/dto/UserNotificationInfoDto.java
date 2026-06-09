@@ -8,5 +8,5 @@ import java.util.UUID;
  *
  * @CommentLastReviewed 2026-06-03
  */
-public record AdminUserDto(UUID userId, String email, SupportedLanguage language) {
+public record UserNotificationInfoDto(UUID userId, String email, SupportedLanguage language) {
 }

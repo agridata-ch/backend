@@ -75,7 +75,7 @@ public class DataRequestStateService {
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Validator validator;
-  private final DataRequestStateAuditService dataRequestStateAuditService;
+  private final DataRequestStateEventDispatcher dataRequestStateEventDispatcher;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
   private final ContractRevisionInitializationService contractRevisionInitializationService;
   private final ContractRevisionMutationService contractRevisionMutationService;
@@ -92,7 +92,7 @@ public class DataRequestStateService {
     }
 
     var dto = setStateTo(entity, newStateCode, Actor.CONSUMER);
-    dataRequestStateAuditService.auditConsumerStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchConsumerStatusTransition(entity, oldStateCode, newStateCode);
 
     return dto;
   }
@@ -105,7 +105,7 @@ public class DataRequestStateService {
     var newStateCode = toEntityState(state);
 
     var dto = setStateTo(entity, newStateCode, Actor.PROVIDER);
-    dataRequestStateAuditService.auditProviderStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchProviderStatusTransition(entity, oldStateCode, newStateCode);
     return dto;
   }
 
@@ -117,7 +117,7 @@ public class DataRequestStateService {
     var newStateCode = toEntityState(state);
 
     var dto = setStateTo(entity, newStateCode, Actor.ADMIN);
-    dataRequestStateAuditService.auditAdminStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchAdminStatusTransition(entity, oldStateCode, newStateCode);
     return dto;
   }
 

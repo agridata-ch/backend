@@ -90,7 +90,9 @@ public class NotificationBatchService {
       Map<String, String> placeholders,
       NotificationTemplateEntity template
   ) {
-    var missing = placeholderService.extractRequiredPlaceholders(template).stream()
+    var requiredPlaceholders = placeholderService.extractRequiredPlaceholders(template);
+
+    var missing = requiredPlaceholders.stream()
         .filter(key -> !placeholders.containsKey(key))
         .toList();
     if (!missing.isEmpty()) {

@@ -39,7 +39,9 @@ class DataRequestNotificationTest {
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE).then().statusCode(200);
 
     var batches = notificationBatchRepository.findAll().list();
-    assertThat(batches).anyMatch(b -> b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
+    assertThat(batches).anyMatch(b -> b.getTemplate()
+        .getEventTypeCode()
+        .equals(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
         && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
   }
 }

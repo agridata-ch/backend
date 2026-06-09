@@ -42,7 +42,7 @@ class DataRequestStateServiceTest {
   @Mock
   private AgridataSecurityIdentity agridataSecurityIdentity;
   @Mock
-  private DataRequestStateAuditService dataRequestStateAuditService;
+  private DataRequestStateEventDispatcher dataRequestStateEventDispatcher;
   @Mock
   private Validator validator;
   @Captor
@@ -83,7 +83,7 @@ class DataRequestStateServiceTest {
 
     verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
-    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchConsumerStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.DRAFT,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW
@@ -109,7 +109,7 @@ class DataRequestStateServiceTest {
 
     verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchAdminStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.DRAFT
@@ -131,7 +131,7 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
-    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchConsumerStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.DRAFT
@@ -157,7 +157,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.DRAFT);
     verify(contractRevisionMutationService).archiveAllForDataRequest(entity.getId());
-    verify(dataRequestStateAuditService).auditConsumerStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchConsumerStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
         DataRequestEntity.DataRequestStateEnum.DRAFT
@@ -178,7 +178,7 @@ class DataRequestStateServiceTest {
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue()
         .getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchAdminStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.IN_REVIEW,
         DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER
@@ -217,7 +217,7 @@ class DataRequestStateServiceTest {
     assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER)).isInstanceOf(
         IllegalStateException.class).hasMessageContaining("TO_BE_SIGNED_BY_PROVIDER");
 
-    verifyNoInteractions(dataRequestStateAuditService);
+    verifyNoInteractions(dataRequestStateEventDispatcher);
   }
 
   @Test
@@ -234,7 +234,7 @@ class DataRequestStateServiceTest {
         DataRequestStateEnum.ACTIVE
     )).isInstanceOf(IllegalStateException.class);
 
-    verifyNoInteractions(dataRequestStateAuditService);
+    verifyNoInteractions(dataRequestStateEventDispatcher);
   }
 
   @Test
@@ -249,7 +249,7 @@ class DataRequestStateServiceTest {
 
     DataRequestDto expectedDto = verify(dataRequestEnrichmentService).toEnrichedDto(dataRequestEntityCaptor.capture());
     assertThat(dataRequestEntityCaptor.getValue().getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
-    verify(dataRequestStateAuditService).auditAdminStatusTransition(
+    verify(dataRequestStateEventDispatcher).dispatchAdminStatusTransition(
         entity,
         DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
         DataRequestEntity.DataRequestStateEnum.ACTIVE
@@ -269,7 +269,7 @@ class DataRequestStateServiceTest {
         IllegalStateException.class,
         () -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER)
     );
-    verifyNoInteractions(dataRequestStateAuditService);
+    verifyNoInteractions(dataRequestStateEventDispatcher);
   }
 
   @Test
@@ -286,6 +286,6 @@ class DataRequestStateServiceTest {
 
     assertThrows(RuntimeException.class, () -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.IN_REVIEW));
 
-    verifyNoInteractions(dataRequestStateAuditService);
+    verifyNoInteractions(dataRequestStateEventDispatcher);
   }
 }

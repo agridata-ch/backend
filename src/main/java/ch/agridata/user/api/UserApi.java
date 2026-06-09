@@ -1,8 +1,8 @@
 package ch.agridata.user.api;
 
-import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
+import ch.agridata.user.dto.UserNotificationInfoDto;
 import jakarta.annotation.Nullable;
 import java.util.List;
 import lombok.NonNull;
@@ -18,5 +18,7 @@ public interface UserApi {
 
   List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId);
 
-  List<AdminUserDto> getAdminUsers();
+  List<UserNotificationInfoDto> getAdminUsers();
+
+  List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid);
 }

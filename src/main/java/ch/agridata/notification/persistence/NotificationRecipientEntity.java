@@ -28,11 +28,13 @@ import org.hibernate.annotations.SQLRestriction;
  * @CommentLastReviewed 2026-04-22
  */
 @Entity
-@Table(name = "notification_recipient",
+@Table(
+    name = "notification_recipient",
     indexes = {
         @Index(name = "idx_notification_recipient_batch_id", columnList = "batch_id"),
         @Index(name = "idx_notification_recipient_user_id", columnList = "user_id"),
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE notification_recipient SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
@@ -60,4 +62,5 @@ public class NotificationRecipientEntity extends AuditableEntity {
   @Column(name = "language", length = 2)
   @Enumerated(EnumType.STRING)
   private SupportedLanguage language;
+
 }
