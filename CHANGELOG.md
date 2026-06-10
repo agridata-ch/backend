@@ -1,3 +1,9 @@
+## [1.11.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.1...v1.11.0-rc.2) (2026-06-10)
+
+### Features
+
+* **data-request:** enhance withdrawal logging for data request state transitions ([ee8f51e](https://github.com/agridata-ch/backend/commit/ee8f51e5dd89ff7211c8226458d2d63cae57e1a8)), closes [DIGIB2-1416](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1416)
+
 ## [1.11.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.10.0...v1.11.0-rc.1) (2026-06-09)
 
 ### Features
