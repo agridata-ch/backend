@@ -1,3 +1,9 @@
+## [1.11.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.2...v1.11.0-rc.3) (2026-06-11)
+
+### Bug Fixes
+
+* **deps:** fix CVE-2026-45447 ([3b484e9](https://github.com/agridata-ch/backend/commit/3b484e97ef608d5374df6a1a596ef1ecf61139b6))
+
 ## [1.11.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.1...v1.11.0-rc.2) (2026-06-10)
 
 ### Features
