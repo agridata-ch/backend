@@ -1,3 +1,9 @@
+## [1.11.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.4...v1.11.0-rc.5) (2026-06-15)
+
+### Bug Fixes
+
+* **deps:** upgrade quarkus to 3.36.2, edit ignored CVEs ([735be7d](https://github.com/agridata-ch/backend/commit/735be7dfe7fd4f050d6942f5ac1f8c7407cefcbc))
+
 ## [1.11.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.3...v1.11.0-rc.4) (2026-06-15)
 
 ### Features
