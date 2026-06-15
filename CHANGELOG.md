@@ -1,3 +1,9 @@
+## [1.11.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.3...v1.11.0-rc.4) (2026-06-15)
+
+### Features
+
+* **user-attributes:** update phone number references to mobile number ([082920a](https://github.com/agridata-ch/backend/commit/082920aa7227e85d505fe1dab765fae5e5c8d1d8)), closes [DIGIB2-1411](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1411)
+
 ## [1.11.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.2...v1.11.0-rc.3) (2026-06-11)
 
 ### Bug Fixes
