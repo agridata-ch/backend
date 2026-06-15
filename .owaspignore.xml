@@ -43,6 +43,10 @@
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-29181</cve>
     </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (constants-only lib, OTel not enabled) -->
+        <cve>CVE-2026-39882</cve>
+    </suppress>
 
     <!--
         Prometheus simpleclient (transitive via quarkus-micrometer-registry-prometheus)
@@ -66,18 +70,6 @@
     </suppress>
 
     <!--
-        Netty HTTP/3 QPACK (memory exhaustion via crafted requests)
-        Fixed in netty 4.2.13; Quarkus has not bumped yet.
-
-        HTTP/3 is not enabled (quarkus.http.http3.* unset, no QUIC listener configured).
-        The vulnerable QPACK decoder is never instantiated.
-    -->
-    <suppress until="2026-06-30Z">
-        <!-- started: 2026-05-18 | affected: NO (HTTP/3 not enabled) -->
-        <cve>CVE-2026-42582</cve>
-    </suppress>
-
-    <!--
         cxf-core (transitive via quarkus-cxf)
         No fix released yet; expected with the next Quarkus / Quarkus-CXF release.
 
@@ -92,5 +84,69 @@
     <suppress until="2026-06-30Z">
         <!-- started: 2026-05-28 | affected: NO (SOAP client only, no untrusted inbound) -->
         <cve>CVE-2026-44930</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50631</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50632</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50633</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50645</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-44618</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50623</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50629</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50630</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (SOAP client only, no untrusted inbound) -->
+        <cve>CVE-2026-50634</cve>
+    </suppress>
+
+    <!--
+        Netty HTTP/3 QPACK (memory exhaustion via crafted requests)
+        Fixed in netty 4.2.13; Quarkus has not bumped yet.
+
+        HTTP/3 is not enabled (quarkus.http.http3.* unset, no QUIC listener configured).
+        The vulnerable QPACK decoder is never instantiated.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (HTTP/3 not enabled) -->
+        <cve>CVE-2026-42582</cve>
+    </suppress>
+
+    <!--
+        PDFBox (transitive via pdfbox dependency)
+        No fix released yet for pdfbox 3.0.x.
+
+        PDFBox is used exclusively for generating PDF documents from trusted internal data
+        (FOP-rendered reports). No untrusted PDF documents are parsed at runtime.
+    -->
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (PDF generation only, no untrusted PDF parsing) -->
+        <cve>CVE-2026-23907</cve>
+    </suppress>
+    <suppress until="2026-06-30Z">
+        <!-- started: 2026-06-15 | affected: NO (PDF generation only, no untrusted PDF parsing) -->
+        <cve>CVE-2026-33929</cve>
     </suppress>
 </suppressions>
