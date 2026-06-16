@@ -1,3 +1,9 @@
+## [1.11.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.7...v1.11.0-rc.8) (2026-06-16)
+
+### Features
+
+* **notifications:** Add notification data request triggers 9: activation and 11: active ([26751ee](https://github.com/agridata-ch/backend/commit/26751ee38c77e660e7bc8a67b89174f85e8526a6)), closes [DIGIB2-314](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-314)
+
 ## [1.11.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.6...v1.11.0-rc.7) (2026-06-16)
 
 ### Features
