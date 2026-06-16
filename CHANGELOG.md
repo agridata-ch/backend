@@ -1,3 +1,9 @@
+## [1.11.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.5...v1.11.0-rc.6) (2026-06-16)
+
+### Features
+
+* **product:** Allow providers to add new data products. ([c66c671](https://github.com/agridata-ch/backend/commit/c66c67186c3da279be0256143c091fd14e51b776)), closes [DIGIB2-1351](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1351)
+
 ## [1.11.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.4...v1.11.0-rc.5) (2026-06-15)
 
 ### Bug Fixes
