@@ -1,3 +1,9 @@
+## [1.11.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.8...v1.11.0-rc.9) (2026-06-16)
+
+### Bug Fixes
+
+* **pipeline:** fix pipeline ([a291dda](https://github.com/agridata-ch/backend/commit/a291dda016a8bcd8e0820359a3b2972ce5720d0f))
+
 ## [1.11.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.7...v1.11.0-rc.8) (2026-06-16)
 
 ### Features
