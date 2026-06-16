@@ -33,16 +33,6 @@ quarkus:
     name: agridata.ch
   banner:
     path: banner.txt
-  cxf:
-    client:
-      uid:
-        client-endpoint-url: https://www.uid-wse-a.admin.ch/V5.0/PublicServices.svc
-        service-interface: ch.admin.uid.xmlns.uid_wse.IPublicServices
-        wsdl: classpath:wsdl/uid-register.wsdl
-    codegen:
-      wsdl2java:
-        uid:
-          includes: wsdl/uid-register.wsdl
   datasource:
     db-kind: postgresql
     jdbc:
@@ -120,6 +110,8 @@ quarkus:
         type: CLIENT
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
+    uid-register:
+      url: https://www.uid-wse.admin.ch/V5.0/PublicServices.svc
     agis-api:
       key-store-type: PKCS12
     bit-signature-api:

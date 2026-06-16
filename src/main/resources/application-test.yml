@@ -19,11 +19,6 @@ quarkus:
     test-timeout: 60s
   console:
     color: true
-  cxf:
-    client:
-      uid:
-        http-conduit-factory: URLConnectionHTTPConduitFactory
-        client-endpoint-url: http://localhost:8051/uid-register/findByUid
   flyway:
     locations:
       - classpath:db/migration
@@ -42,6 +37,8 @@ quarkus:
     acontrol-api:
       token-path: http://localhost:8051/agate/token
   rest-client:
+    uid-register:
+      url: http://localhost:8051/uid-register/findByUid
     agis-api:
       url: http://localhost:8051/agis
     bit-signature-api:

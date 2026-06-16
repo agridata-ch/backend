@@ -26,8 +26,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      # autoUpdate=false: rely on the nightly cached NVD database and never call
       - name: Run OWASP Dependency Check
         run: |
           mvn org.owasp:dependency-check-maven:check \
             -DossindexAnalyzerEnabled=false \
+            -DautoUpdate=false \
             -DnvdApiKey=${{ secrets.API_KEY_NATIONAL_VULNERABILITY_DATABASE }}

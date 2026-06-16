@@ -4,23 +4,24 @@ import static ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType.CHE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.admin.uid.xmlns.uid_wse.ArrayOfOrganisationType;
-import ch.admin.uid.xmlns.uid_wse.IPublicServices;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDBusinessFaultFaultFaultMessage;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDInfrastructureFaultFaultFaultMessage;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDSecurityFaultFaultFaultMessage;
+import ch.admin.uid.xmlns.uid_wse.GetByUID;
+import ch.admin.uid.xmlns.uid_wse.GetByUIDResponse;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import ch.ech.xmlns.ech_0097._5.OrganisationIdentificationType;
 import ch.ech.xmlns.ech_0097._5.UidStructureType;
 import ch.ech.xmlns.ech_0098._5.OrganisationAddressType;
 import ch.ech.xmlns.ech_0098._5.OrganisationType;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -46,17 +47,29 @@ class UidRegisterServiceTest {
   @InjectMocks
   UidRegisterService uidRegisterService;
   @Mock
-  IPublicServices port;
+  UidRegisterSoapClient soapClient;
+  @Mock
+  SoapEnvelopeSupport soapEnvelopeSupport;
   @Mock
   AgridataSecurityIdentity agridataSecurityIdentity;
+  @Mock
+  UidRegisterServiceApi uidRegisterServiceApi;
 
   // Test data providers
-  private static Stream<Arguments> webServiceExceptions() {
-    return Stream.of(
-        Arguments.of(mock(IPublicServicesGetByUIDBusinessFaultFaultFaultMessage.class)),
-        Arguments.of(mock(IPublicServicesGetByUIDInfrastructureFaultFaultFaultMessage.class)),
-        Arguments.of(mock(IPublicServicesGetByUIDSecurityFaultFaultFaultMessage.class))
-    );
+  private static GetByUIDResponse asResponse(ArrayOfOrganisationType result) {
+    GetByUIDResponse response = new GetByUIDResponse();
+    response.setGetByUIDResult(result);
+    return response;
+  }
+
+  private void stubSoapCallReturning(ArrayOfOrganisationType result) {
+    when(soapClient.getByUid(any())).thenReturn(mock(Response.class));
+    when(soapEnvelopeSupport.unwrapBody(any(), eq(GetByUIDResponse.class))).thenReturn(asResponse(result));
+  }
+
+  private void stubSoapCallThrowing(RuntimeException exception) {
+    when(soapClient.getByUid(any())).thenReturn(mock(Response.class));
+    when(soapEnvelopeSupport.unwrapBody(any(), eq(GetByUIDResponse.class))).thenThrow(exception);
   }
 
   private static Stream<Arguments> invalidResponses() {
@@ -108,10 +121,9 @@ class UidRegisterServiceTest {
   }
 
   @Test
-  void givenValidUidWithCompleteDataWhenGetByUidThenReturnFullOrganisationDto() throws Exception {
+  void givenValidUidWithCompleteDataWhenGetByUidThenReturnFullOrganisationDto() {
     // Given
-    ArrayOfOrganisationType response = createCompleteResponse();
-    when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
+    stubSoapCallReturning(createCompleteResponse());
 
     // When
     UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
@@ -132,9 +144,9 @@ class UidRegisterServiceTest {
               });
         });
 
-    ArgumentCaptor<UidStructureType> captor = ArgumentCaptor.forClass(UidStructureType.class);
-    verify(port).getByUID(captor.capture());
-    assertThat(captor.getValue())
+    ArgumentCaptor<GetByUID> captor = ArgumentCaptor.forClass(GetByUID.class);
+    verify(soapEnvelopeSupport).wrap(captor.capture());
+    assertThat(captor.getValue().getUid())
         .satisfies(uid -> {
           assertThat(uid.getUidOrganisationId()).isEqualTo(TEST_UID);
           assertThat(uid.getUidOrganisationIdCategorie()).isEqualTo(CHE);
@@ -142,10 +154,9 @@ class UidRegisterServiceTest {
   }
 
   @Test
-  void givenValidUidWithoutAddressWhenGetByUidThenReturnOrganisationDtoWithoutAddress() throws Exception {
+  void givenValidUidWithoutAddressWhenGetByUidThenReturnOrganisationDtoWithoutAddress() {
     // Given
-    ArrayOfOrganisationType response = createResponseWithoutAddress();
-    when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
+    stubSoapCallReturning(createResponseWithoutAddress());
 
     // When
     UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
@@ -155,10 +166,9 @@ class UidRegisterServiceTest {
   }
 
   @Test
-  void givenValidUidWithPartialStreetDataWhenGetByUidThenConcatenateOnlyAvailableStreetParts() throws Exception {
+  void givenValidUidWithPartialStreetDataWhenGetByUidThenConcatenateOnlyAvailableStreetParts() {
     // Given
-    ArrayOfOrganisationType response = createResponseWithPartialStreet();
-    when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
+    stubSoapCallReturning(createResponseWithPartialStreet());
 
     // When
     UidRegisterOrganisationDto result = uidRegisterService.getByUid(TEST_UID);
@@ -168,35 +178,35 @@ class UidRegisterServiceTest {
   }
 
   @Test
-  void givenUserHasNoUidWhenGetByUidOfCurrentUserThenThrowUidMissingException() throws Exception {
-    // Given
-    when(port.getByUID(any(UidStructureType.class))).thenThrow(new NotFoundException("No UID found for current user."));
+  void givenUserHasNoUidWhenGetByUidOfCurrentUserThenThrowUidMissingException() {
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn("CHE101708094");
+    when(uidRegisterServiceApi.getByUid(new BigInteger("101708094")))
+        .thenThrow(new NotFoundException("No UID found for current user."));
 
     // When & Then
     assertThatThrownBy(() -> uidRegisterService.getByUidOfCurrentUser())
         .isInstanceOf(NotFoundException.class)
         .hasMessage("No UID found for current user.");
+    verify(uidRegisterServiceApi).getByUid(new BigInteger("101708094"));
   }
 
-  @ParameterizedTest
-  @MethodSource("webServiceExceptions")
-  void givenWebServiceExceptionWhenGetByUidThenThrowExternalWebServiceException(Exception exception) throws Exception {
+  @Test
+  void givenSoapFaultWhenGetByUidThenThrowExternalWebServiceException() {
     // Given
-    when(port.getByUID(any(UidStructureType.class))).thenThrow(exception);
+    SoapFaultException fault = new SoapFaultException("Upstream rejected the request");
+    stubSoapCallThrowing(fault);
 
     // When & Then
     assertThatThrownBy(() -> uidRegisterService.getByUid(TEST_UID))
         .isInstanceOf(ExternalWebServiceException.class)
-        .hasCause(exception);
+        .hasCause(fault);
   }
 
   @ParameterizedTest
   @MethodSource("invalidResponses")
-  void givenInvalidResponseWhenGetByUidThenThrowNotFoundException(ArrayOfOrganisationType response, String expectedMessage)
-      throws Exception {
+  void givenInvalidResponseWhenGetByUidThenThrowNotFoundException(ArrayOfOrganisationType response, String expectedMessage) {
     // Given
-    when(port.getByUID(any(UidStructureType.class))).thenReturn(response);
+    stubSoapCallReturning(response);
 
     // When & Then
     assertThatThrownBy(() -> uidRegisterService.getByUid(TEST_UID))
