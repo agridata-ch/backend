@@ -1,3 +1,9 @@
+## [1.11.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.6...v1.11.0-rc.7) (2026-06-16)
+
+### Features
+
+* **notifications:** Add notification trigger 7, ready for provider signing ([3e29018](https://github.com/agridata-ch/backend/commit/3e29018655ecbc02d8cf9554184128c79508e2c4)), closes [DIGIB2-314](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-314)
+
 ## [1.11.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.5...v1.11.0-rc.6) (2026-06-16)
 
 ### Features
