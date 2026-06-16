@@ -33,6 +33,8 @@ jobs:
       - name: Update OWASP NVD database
         run: |
           mvn -B org.owasp:dependency-check-maven:update-only \
+            -DnvdApiDelay=8000 \
+            -DnvdMaxRetryCount=50 \
             -DnvdApiKey=${{ secrets.API_KEY_NATIONAL_VULNERABILITY_DATABASE }}
 
       - name: Save Maven cache

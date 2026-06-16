@@ -21,11 +21,6 @@ quarkus:
       format-sql: true
   console:
     color: true
-  cxf:
-    client:
-      uid:
-        http-conduit-factory: URLConnectionHTTPConduitFactory
-        client-endpoint-url: http://localhost:8050/uid-register/findByUid
   datasource:
     devservices:
       db-name: agridata
@@ -77,6 +72,8 @@ quarkus:
     acontrol-api:
       token-path: http://localhost:8050/agate/token
   rest-client:
+    uid-register:
+      url: http://localhost:8050/uid-register/findByUid
     agis-api:
       url: http://localhost:8050/agis
     bit-signature-api:

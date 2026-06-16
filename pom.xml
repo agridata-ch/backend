@@ -52,13 +52,6 @@
             </dependency>
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>quarkus-cxf-bom</artifactId>
-                <version>${quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-amazon-services-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
@@ -233,10 +226,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.cxf</groupId>
-            <artifactId>quarkus-cxf</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -537,6 +526,18 @@
                                     <source>
                                         ${project.build.directory}/generated-sources/openapi/agis-register-api/src/gen/java
                                     </source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>add-wsdl2java-generated</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>src/main/generated/wsdl</source>
                                 </sources>
                             </configuration>
                         </execution>
