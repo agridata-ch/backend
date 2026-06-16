@@ -5,7 +5,7 @@ jobs:
   unit-test-sonarqube:
     name: Unit Tests and SonarQube
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v6
