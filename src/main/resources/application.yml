@@ -99,6 +99,7 @@ quarkus:
       json:
         enabled: true
         pretty-print: false
+        exception-output-type: formatted
       format: >-
         %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %s [%c] (%t) requestId: %X{requestId}, userId: %X{agateUserId},  api: %X{api}%e%n
   oidc:
