@@ -23,7 +23,6 @@ public interface UserMapper {
 
   PageResponseDto<UserInfoDto> toPagedUserInfoDto(PageResponseDto<UserEntity> pagedProducerEntities);
 
-
   UserPreferencesDto toUserPreferencesDto(UserEntityPreferencesDto userEntityPreferences);
 
   UserEntityPreferencesDto toUserPreferenceEntity(UserPreferencesDto dto);

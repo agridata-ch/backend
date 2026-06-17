@@ -58,10 +58,16 @@ public record UserInfoDto(
     String email,
 
     @Schema(
-        description = "Phone number of the user",
-        examples = {"+41791234567"}
+        description = "Landline number of the user",
+        examples = {"+41331234567"}
     )
     String phoneNumber,
+
+    @Schema(
+        description = "Mobile number of the user",
+        examples = {"+41791234567"}
+    )
+    String mobileNumber,
 
     @Schema(
         description = "Street name and house number of the user's residence.",
