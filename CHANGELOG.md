@@ -1,3 +1,9 @@
+## [1.11.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.9...v1.11.0-rc.10) (2026-06-17)
+
+### Features
+
+* **user:** include mobile number for users ([c228dab](https://github.com/agridata-ch/backend/commit/c228dab58b0a931eafdfa56e0fad6f739866f242)), closes [DIGIB2-1465](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1465)
+
 ## [1.11.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.8...v1.11.0-rc.9) (2026-06-16)
 
 ### Bug Fixes
