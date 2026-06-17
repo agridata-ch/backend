@@ -10,7 +10,7 @@ import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
 import static integration.agreement.DataRequestTestFactory.createReadyForActivatingDataRequest;
 import static integration.agreement.DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor;
 import static integration.agreement.DataRequestTestFactory.createReadyForSigningByProviderDataRequest;
-import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
+import static integration.agreement.DataRequestTestFactory.getDataRequestDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setSignatureType;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
@@ -29,11 +29,10 @@ import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 import ch.agridata.agreement.controller.DataRequestController;
+import ch.agridata.agreement.dto.DataRequestAdvantageDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
@@ -51,6 +50,8 @@ import integration.testutils.TestDataIdentifiers.DataRequest;
 import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -212,6 +213,18 @@ class DataRequestTest {
             .map(DataRequestDataProductEntity::getDataProductId)
             .toList())
         .targetGroup(expectedDataRequest.getTargetGroup())
+        .advantages(List.of(
+            DataRequestAdvantageDto.builder()
+                .de(expectedDataRequest.getAdvantages().getFirst().de())
+                .fr(expectedDataRequest.getAdvantages().getFirst().fr())
+                .it(expectedDataRequest.getAdvantages().getFirst().it())
+                .build(),
+            DataRequestAdvantageDto.builder()
+                .de(expectedDataRequest.getAdvantages().get(1).de())
+                .fr(expectedDataRequest.getAdvantages().get(1).fr())
+                .it(expectedDataRequest.getAdvantages().get(1).it())
+                .build()
+        ))
         .build());
   }
 
@@ -359,6 +372,34 @@ class DataRequestTest {
   }
 
   @Test
+  void givenTooManyAdvantages_whenSubmit_thenReturnBadRequest() {
+    List<DataRequestAdvantageDto> advantages = Collections.nCopies(6, new DataRequestAdvantageDto("Test DE", "Test FR", "Test IT"));
+    DataRequestUpdateDto invalidDto = getDataRequestDtoBuilder()
+            .advantages(advantages).build();
+    String id = createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
+            .statusCode(201).extract().path("id");
+
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE)
+            .then()
+            .statusCode(400)
+            .body(containsString("advantages: size must be between"));
+  }
+
+  @Test
+  void givenAdvantagesWithTooFewLetters_whenSubmit_thenReturnBadRequest() {
+    List<DataRequestAdvantageDto> advantages = Collections.nCopies(5, new DataRequestAdvantageDto("Test DE", "Tes", "Test IT"));
+    DataRequestUpdateDto invalidDto = getDataRequestDtoBuilder()
+            .advantages(advantages).build();
+    String id = createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
+            .statusCode(201).extract().path("id");
+
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE)
+            .then()
+            .statusCode(400)
+            .body(containsString("advantages[0].fr"));
+  }
+
+  @Test
   void givenAdminUpdatesValidRedirectUriRegexWithInvalidPattern_thenBadRequest() {
     updateValidRedirectUriRegex(DataRequest.BIO_SUISSE_01.toString(), "(", ADMIN)
         .then()
@@ -385,7 +426,7 @@ class DataRequestTest {
   void givenValidSubmitFields_whenSubmit_thenReturnUpdatedRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
-    updateDataRequest(id, getDataRequestDto().build())
+    updateDataRequest(id, getDataRequestDtoBuilder().build())
         .then()
         .statusCode(200);
 
@@ -405,7 +446,7 @@ class DataRequestTest {
   void givenValidDraftAndAdmin_whenSubmitStateChange_thenReturnBadRequest() {
     String id = createDataRequest().then()
         .statusCode(201).extract().path("id");
-    updateDataRequest(id, getDataRequestDto().build())
+    updateDataRequest(id, getDataRequestDtoBuilder().build())
         .then()
         .statusCode(200);
 
