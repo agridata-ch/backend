@@ -172,7 +172,13 @@ public record DataRequestDto(
     @Schema(
         description = "Signature type for provider"
     )
-    SignatureTypeEnum providerSignatureType
+    SignatureTypeEnum providerSignatureType,
+
+    @Schema(
+        description = "A list of advantages to the producer for sharing their data"
+    )
+    @NotNull
+    List<DataRequestAdvantageDto> advantages
 ) {
 
 }

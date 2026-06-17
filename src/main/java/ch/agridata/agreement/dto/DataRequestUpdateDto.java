@@ -120,7 +120,15 @@ public record DataRequestUpdateDto(
     )
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @NotEmpty(groups = ValidationSchemaGenerator.Submit.class)
-    List<UUID> products
+    List<UUID> products,
+
+    @Schema(
+        description = "A list of advantages to the producer for sharing their data"
+    )
+    @Size(max = 5, groups = ValidationSchemaGenerator.Submit.class)
+    @NotNull
+    @Valid
+    List<DataRequestAdvantageDto> advantages
 ) {
 
 

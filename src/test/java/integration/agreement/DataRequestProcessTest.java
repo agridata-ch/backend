@@ -1,7 +1,7 @@
 package integration.agreement;
 
 import static integration.agreement.DataRequestTestFactory.createDataRequestAs;
-import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
+import static integration.agreement.DataRequestTestFactory.getDataRequestDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.signContractRevision;
@@ -113,7 +113,7 @@ class DataRequestProcessTest {
         .body("requestId", not(nullValue()));
 
     // Step 5: Update request with complete data
-    updateDataRequestAs(dataRequestId, getDataRequestDto().build(), CONSUMER_BLV_1)
+    updateDataRequestAs(dataRequestId, getDataRequestDtoBuilder().build(), CONSUMER_BLV_1)
         .then()
         .statusCode(200);
 
@@ -124,7 +124,7 @@ class DataRequestProcessTest {
         .body("stateCode", equalTo(DataRequestStateEnum.IN_REVIEW.name()));
 
     // Step 7: Try to update again (should fail)
-    updateDataRequestAs(dataRequestId, getDataRequestDto().build(), CONSUMER_BLV_1)
+    updateDataRequestAs(dataRequestId, getDataRequestDtoBuilder().build(), CONSUMER_BLV_1)
         .then()
         .statusCode(400);
 
