@@ -1,3 +1,9 @@
+## [1.11.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.10...v1.11.0-rc.11) (2026-06-18)
+
+### Bug Fixes
+
+* **deps:** remove cxf dependency and freeze uid wsdl ([d2230ad](https://github.com/agridata-ch/backend/commit/d2230ade4c06e3e6f6dff985412a13104d3c7be8))
+
 ## [1.11.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.9...v1.11.0-rc.10) (2026-06-17)
 
 ### Features
