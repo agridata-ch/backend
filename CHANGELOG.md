@@ -1,3 +1,9 @@
+## [1.11.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.11...v1.11.0-rc.12) (2026-06-18)
+
+### Bug Fixes
+
+* **datatransfer:** adjust format of data transfer headers ([433b535](https://github.com/agridata-ch/backend/commit/433b535aa8fca79cb4cdfecbfceb85441ffe45d4))
+
 ## [1.11.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.10...v1.11.0-rc.11) (2026-06-18)
 
 ### Bug Fixes
