@@ -1,3 +1,9 @@
+## [1.11.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.12...v1.11.0-rc.13) (2026-06-22)
+
+### Features
+
+* **common:** Allow the schema generator to correctly map size-constraints for array fields. ([123b4f0](https://github.com/agridata-ch/backend/commit/123b4f0e2ae319fe50fcbd245a7408383cac0cc8)), closes [DIGIB2-1460](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1460)
+
 ## [1.11.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.11...v1.11.0-rc.12) (2026-06-18)
 
 ### Bug Fixes
