@@ -1,3 +1,9 @@
+## [1.11.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.13...v1.11.0-rc.14) (2026-06-22)
+
+### Features
+
+* **agreement:** Allow data collectors to attach a list of incentives/benefits shown to farmers to encourage consent for a data request. ([d5324a2](https://github.com/agridata-ch/backend/commit/d5324a209ecb97a64fc3393bbc15baf8925955a1)), closes [DIGIB2-1460](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1460)
+
 ## [1.11.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.12...v1.11.0-rc.13) (2026-06-22)
 
 ### Features
