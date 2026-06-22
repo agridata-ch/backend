@@ -67,6 +67,11 @@ class ValidationSchemaGeneratorTest {
     assertEquals("boolean", active.get("type").asText());
     assertTrue(schema.get("required").toString().contains("active"));
 
+    JsonNode items = schema.at("/properties/items");
+    assertEquals("array", items.get("type").asText());
+    assertEquals(2, items.get("minItems").asInt());
+    assertEquals(5, items.get("maxItems").asInt());
+
   }
 
   @Test
