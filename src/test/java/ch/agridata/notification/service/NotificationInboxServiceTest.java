@@ -1,6 +1,9 @@
 package ch.agridata.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.common.dto.PageResponseDto;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -70,7 +74,7 @@ class NotificationInboxServiceTest {
     var textDto = TranslationDto.builder().de("Text Welt").fr("Texte Welt").it("Testo Welt").build();
     var resolved = new ResolvedNotificationTextsDto(titleDto, textDto, null, null, null);
 
-    when(inboxRepository.findPageByUserId(userId, query)).thenReturn(pagedEntities);
+    when(inboxRepository.findPageByUserId(eq(userId), any())).thenReturn(pagedEntities);
     when(placeholderService.resolve(notificationBatchEntity)).thenReturn(resolved);
 
     var result = service.getInboxForUser(userId, query);
@@ -90,11 +94,40 @@ class NotificationInboxServiceTest {
     var query = ResourceQueryDto.builder().page(0).size(20).build();
     var pagedEntities = new PageResponseDto<NotificationInboxEntity>(List.of(), 0L, 0, 0, 20);
 
-    when(inboxRepository.findPageByUserId(userId, query)).thenReturn(pagedEntities);
+    when(inboxRepository.findPageByUserId(eq(userId), any())).thenReturn(pagedEntities);
 
     var result = service.getInboxForUser(userId, query);
 
     assertThat(result.items()).isEmpty();
     assertThat(result.totalItems()).isZero();
+  }
+
+  @Test
+  void givenNoSortParams_whenGetInbox_thenDefaultsToDescendingCreatedAt() {
+    var userId = UUID.randomUUID();
+    var query = ResourceQueryDto.builder().page(0).size(20).build();
+    var emptyPage = new PageResponseDto<NotificationInboxEntity>(List.of(), 0L, 0, 0, 20);
+    when(inboxRepository.findPageByUserId(eq(userId), any())).thenReturn(emptyPage);
+
+    service.getInboxForUser(userId, query);
+
+    var captor = ArgumentCaptor.forClass(ResourceQueryDto.class);
+    verify(inboxRepository).findPageByUserId(eq(userId), captor.capture());
+    assertThat(captor.getValue().sortParams()).containsExactly("-createdAt");
+  }
+
+  @Test
+  void givenSortParamsProvided_whenGetInbox_thenSortParamsPassedThrough() {
+    var userId = UUID.randomUUID();
+    var customSort = List.of("createdAt");
+    var query = ResourceQueryDto.builder().page(0).size(20).sortParams(customSort).build();
+    var emptyPage = new PageResponseDto<NotificationInboxEntity>(List.of(), 0L, 0, 0, 20);
+    when(inboxRepository.findPageByUserId(eq(userId), any())).thenReturn(emptyPage);
+
+    service.getInboxForUser(userId, query);
+
+    var captor = ArgumentCaptor.forClass(ResourceQueryDto.class);
+    verify(inboxRepository).findPageByUserId(eq(userId), captor.capture());
+    assertThat(captor.getValue().sortParams()).isEqualTo(customSort);
   }
 }
