@@ -63,7 +63,8 @@ public class ContractRevisionSealService {
     }
   }
 
-  public void sealAsync(UUID contractRevisionId, String adminGlobalId) {
+  public void sealAsync(UUID contractRevisionId) {
+    String adminGlobalId = agridataSecurityIdentity.getAdminGlobalIdOrElseThrow();
     QuarkusTransaction.requiringNew().run(() -> {
       ContractRevisionEntity entity = contractRevisionRepository.findByIdOptional(contractRevisionId)
           .orElseThrow(NotFoundException::new);

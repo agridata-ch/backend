@@ -167,11 +167,9 @@ public class ContractRevisionController {
   )
   @RolesAllowed({ADMIN_ROLE})
   public Response sealContractRevision(
-      @PathParam("id") UUID id,
-      // TODO: Remove this parameter once adminGlobalId is available in the agate token and can be read from the AgridataSecurityIdentity
-      @QueryParam("adminGlobalId") String adminGlobalId
+      @PathParam("id") UUID id
   ) {
-    contractRevisionSealService.sealAsync(id, adminGlobalId);
+    contractRevisionSealService.sealAsync(id);
     return Response.accepted().build();
   }
 

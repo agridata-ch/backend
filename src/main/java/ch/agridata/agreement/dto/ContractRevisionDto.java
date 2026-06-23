@@ -80,6 +80,11 @@ public record ContractRevisionDto(
     @Schema(
         description = "Defines whether the provider party uses a individual or a collective signature"
     )
-    SignatureTypeEnum providerSignatureType
+    SignatureTypeEnum providerSignatureType,
+
+    @Schema(
+        description = "Defines the sealing state of the contract"
+    )
+    SealAttemptStateEnum sealState
 ) {
 }
