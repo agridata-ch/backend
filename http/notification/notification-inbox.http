@@ -1,5 +1,5 @@
 ### Get inbox for current user
-GET {{baseUrl}}/notification/v1/inbox
+GET {{baseUrl}}/notification/v1/inbox?page=0&size=20
 Authorization: Bearer {{$auth.token("admin")}}
 Content-Type: application/json
 
