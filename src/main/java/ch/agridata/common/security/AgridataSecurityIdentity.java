@@ -20,7 +20,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 /**
  * Provides access to user-related security claims. It extracts identifiers, email, and UID from security tokens and ensures validity.
  *
- * @CommentLastReviewed 2026-06-09
+ * @CommentLastReviewed 2026-06-25
  */
 
 @RequestScoped
@@ -32,6 +32,7 @@ public class AgridataSecurityIdentity {
   public static final UUID AGRIDATA_AGATE_LOGIN_NAMESPACE =
       UUID.nameUUIDFromBytes("agridata-agate-login-id".getBytes(StandardCharsets.UTF_8));
   private static final String ACCESS_TOKEN_CLAIM_UID = "uid";
+  private static final String ACCESS_TOKEN_CLAIM_ADMIN_GLOBAL_ID = "AdminGlobalId";
   private static final String ACCESS_TOKEN_CLAIM_KT_ID_P = "KT_ID_P";
   private static final String ACCESS_TOKEN_CLAIM_PHONE_NUMBER = "phone_number";
   private static final String ACCESS_TOKEN_CLAIM_MOBILE_NUMBER = "mobile_number";
@@ -123,6 +124,11 @@ public class AgridataSecurityIdentity {
 
   public Optional<String> getUid() {
     return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_UID));
+  }
+
+  public String getAdminGlobalIdOrElseThrow() {
+    return Optional.ofNullable(extractClaim(securityIdentity, ACCESS_TOKEN_CLAIM_ADMIN_GLOBAL_ID))
+        .orElseThrow(() -> new IllegalStateException("User with agateLoginId " + getAgateLoginId() + " has no AdminGlobalId claim"));
   }
 
   public String getMobileNumberOrElseThrow() {

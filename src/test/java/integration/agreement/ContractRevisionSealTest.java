@@ -33,7 +33,6 @@ class ContractRevisionSealTest {
 
   WireMock wireMock;
 
-  private static final String ADMIN_GLOBAL_ID = "test-admin-global-id";
   private static final String SEALS_PATH = ContractRevisionController.PATH + "/{id}/seals";
   private static final String SEAL_STATUS_PATH = ContractRevisionController.PATH + "/{id}/seals/status";
 
@@ -44,7 +43,6 @@ class ContractRevisionSealTest {
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
   }
@@ -53,7 +51,6 @@ class ContractRevisionSealTest {
   void givenNonExistingContractRevision_whenSeal_thenReturn404() {
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", UUID.randomUUID())
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(404);
   }
@@ -73,13 +70,11 @@ class ContractRevisionSealTest {
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(400)
         .body("debugMessage", equalTo(String.format("seal process is already running for contractRevisionId=%s", revisionId)));
@@ -117,7 +112,6 @@ class ContractRevisionSealTest {
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
 
@@ -138,7 +132,6 @@ class ContractRevisionSealTest {
 
     AuthTestUtils.requestAs(ADMIN)
         .pathParam("id", revisionId)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
 
