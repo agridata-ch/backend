@@ -1,2 +1,6 @@
-CVE-2026-42402 exp:2026-06-30
-CVE-2026-42403 exp:2026-06-30
+# Template, uncomment last line
+# dependency-name:version (transitive via dependency-name -> dependency-name)
+# Issues:
+#  - CVE-2026-XXXXX - description
+#    See: https://avd.aquasec.com/nvd/cve-2026-xxxxx
+#CVE-2026-XXXX exp:2026-06-30

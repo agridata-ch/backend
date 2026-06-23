@@ -1,14 +1,17 @@
 package ch.agridata.user.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.user.dto.AdminUserDto;
 import ch.agridata.user.dto.UserInfoDto;
+import ch.agridata.user.dto.UserNotificationInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.mapper.UserMapper;
 import ch.agridata.user.persistence.UserRepository;
@@ -53,9 +56,11 @@ public class UserService {
     user.setGivenName(userInfo.getString("given_name"));
     user.setFamilyName(userInfo.getString("family_name"));
     user.setPhoneNumber(userInfo.getString("phone_number"));
+    user.setMobileNumber(userInfo.getString("mobile_number"));
 
     user.setRolesAtLastLogin(identity.getRoles());
     user.setLastLoginDate(LocalDateTime.now());
+    user.setLanguage(SupportedLanguage.from(userInfo.getString("locale")));
 
     var address = userInfo.getObject("address");
     if (address != null) {
@@ -80,10 +85,24 @@ public class UserService {
     user.setUserPreferences(userMapper.toUserPreferenceEntity(userPreferences));
   }
 
-  public List<AdminUserDto> getAdminUsers() {
+  public List<UserNotificationInfoDto> getAdminUsers() {
     return userRepository.findAllByRoleAtLastLogin(ADMIN_ROLE)
         .stream()
-        .map(user -> new AdminUserDto(user.getId(), user.getEmail()))
+        .map(user -> new UserNotificationInfoDto(user.getId(), user.getEmail(), user.getLanguage()))
+        .toList();
+  }
+
+  public List<UserNotificationInfoDto> getProviderUsers(@NonNull String uid) {
+    return userRepository.findAllByRoleAtLastLoginAndUid(PROVIDER_ROLE, uid)
+        .stream()
+        .map(user -> new UserNotificationInfoDto(user.getId(), user.getEmail(), user.getLanguage()))
+        .toList();
+  }
+
+  public List<UserNotificationInfoDto> getConsumerUsers(@NonNull String uid) {
+    return userRepository.findAllByRoleAtLastLoginAndUid(CONSUMER_ROLE, uid)
+        .stream()
+        .map(user -> new UserNotificationInfoDto(user.getId(), user.getEmail(), user.getLanguage()))
         .toList();
   }
 }

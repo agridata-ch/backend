@@ -140,6 +140,11 @@ public class DataRequestEntity extends AuditableEntity {
   @Enumerated(EnumType.STRING)
   private SignatureTypeEnum providerSignatureType;
 
+  @NotNull
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  private List<TranslationPersistenceDto> advantages;
+
   /**
    * Lists the possible states of a data request.
    *

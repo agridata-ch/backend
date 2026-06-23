@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import ch.agridata.aws.api.EmailApi;
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
@@ -65,6 +66,10 @@ class NotificationSubmitEmailServiceTest {
 
   private static NotificationRecipientEntity recipient() {
     return NotificationRecipientEntity.builder().id(UUID.randomUUID()).email("test@example.com").build();
+  }
+
+  private static NotificationRecipientEntity recipientWithLanguage(SupportedLanguage language) {
+    return NotificationRecipientEntity.builder().id(UUID.randomUUID()).email("test@example.com").language(language).build();
   }
 
   private static ResolvedNotificationTextsDto resolvedWith(String subject, String htmlText) {
@@ -129,7 +134,7 @@ class NotificationSubmitEmailServiceTest {
   }
 
   @Test
-  void givenMultilingualEmailText_whenDispatch_thenBodyContainsAllLanguagePartsSeparatedByHr() {
+  void givenMultilingualEmailTextAndNoRecipientLanguage_whenDispatch_thenBodyContainsOnlyGermanPart() {
     var resolved = new ResolvedNotificationTextsDto(
         null,
         null,
@@ -142,7 +147,10 @@ class NotificationSubmitEmailServiceTest {
 
     verify(emailApi).submitEmail(
         anyString(), anyString(),
-        argThat(body -> body.contains("<p>DE text</p><hr") && body.contains("<p>FR text</p><hr") && body.contains("<p>IT text</p>"))
+        argThat(body -> body.contains("<p>DE text</p>")
+            && !body.contains("<p>FR text</p>")
+            && !body.contains("<p>IT text</p>")
+            && !body.contains("<hr"))
     );
   }
 
@@ -173,8 +181,10 @@ class NotificationSubmitEmailServiceTest {
 
     service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail(anyString(), anyString(),
-        argThat(body -> body.contains("<p>DE only</p>") && !body.contains("null")));
+    verify(emailApi).submitEmail(
+        anyString(), anyString(),
+        argThat(body -> body.contains("<p>DE only</p>") && !body.contains("null"))
+    );
   }
 
   @Test
@@ -189,9 +199,11 @@ class NotificationSubmitEmailServiceTest {
 
     service.dispatch(recipient(), resolved);
 
-    verify(emailApi).submitEmail(anyString(), anyString(),
+    verify(emailApi).submitEmail(
+        anyString(), anyString(),
         argThat(body -> body.contains("<p>DE only</p>")
-            && body.indexOf("<p>DE only</p>") == body.lastIndexOf("<p>DE only</p>")));
+            && body.indexOf("<p>DE only</p>") == body.lastIndexOf("<p>DE only</p>"))
+    );
   }
 
   @Test
@@ -231,6 +243,65 @@ class NotificationSubmitEmailServiceTest {
     assertThat(dispatchCaptor.getValue().getError()).hasSize(1000);
   }
 
+  // ── language-specific email ───────────────────────────────────────────────
+
+  @Test
+  void givenRecipientWithLanguageFr_whenDispatch_thenSubjectAndBodyInFrenchOnly() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").fr("Objet").it("Oggetto").build(),
+        TranslationDto.builder().de("<p>DE text</p>").fr("<p>FR text</p>").it("<p>IT text</p>").build(),
+        null
+    );
+
+    service.dispatch(recipientWithLanguage(SupportedLanguage.FR), resolved);
+
+    verify(emailApi).submitEmail(
+        anyString(),
+        eq("Objet"),
+        argThat(body -> body.contains("<p>FR text</p>") && !body.contains("<p>DE text</p>") && !body.contains("<hr"))
+    );
+  }
+
+  @Test
+  void givenRecipientWithLanguageDe_whenDispatch_thenSubjectAndBodyInGermanOnly() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").fr("Objet").it("Oggetto").build(),
+        TranslationDto.builder().de("<p>DE text</p>").fr("<p>FR text</p>").it("<p>IT text</p>").build(),
+        null
+    );
+
+    service.dispatch(recipientWithLanguage(SupportedLanguage.DE), resolved);
+
+    verify(emailApi).submitEmail(
+        anyString(),
+        eq("Betreff"),
+        argThat(body -> body.contains("<p>DE text</p>") && !body.contains("<p>FR text</p>") && !body.contains("<hr"))
+    );
+  }
+
+  @Test
+  void givenRecipientWithLanguageItButMissingItTranslation_whenDispatch_thenFallsBackToDe() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").fr("Objet").build(),
+        TranslationDto.builder().de("<p>DE text</p>").fr("<p>FR text</p>").build(),
+        null
+    );
+
+    service.dispatch(recipientWithLanguage(SupportedLanguage.IT), resolved);
+
+    verify(emailApi).submitEmail(
+        anyString(),
+        eq("Betreff"),
+        argThat(body -> body.contains("<p>DE text</p>") && !body.contains("<hr"))
+    );
+  }
+
   // ── loadEmailTemplate error handling ──────────────────────────────────────
 
   @Test
@@ -255,5 +326,19 @@ class NotificationSubmitEmailServiceTest {
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Failed to load email template")
         .hasCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  void givenValidEmailTemplate_whenLoadEmailTemplate_thenTemplateSuccessfullyLoadedAsUtf8String() {
+    service.loadEmailTemplate();
+
+    // Verify that the template was loaded successfully by dispatching an email
+    var recipient = recipient();
+    var resolved = resolvedWith("Test Subject", "<p>Template loaded successfully</p>");
+
+    var result = service.dispatch(recipient, resolved);
+
+    assertThat(result).isTrue();
+    verify(emailApi).submitEmail(anyString(), anyString(), argThat(body -> body.contains("Template loaded successfully")));
   }
 }

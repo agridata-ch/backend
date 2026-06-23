@@ -106,7 +106,8 @@ class GetUsersTest {
             producer.email(),
             producer.familyName(),
             producer.givenName(),
-            producer.phoneNumber()
+            producer.phoneNumber(),
+            producer.mobileNumber()
         ))
         .isNotEmpty()
         .allSatisfy(field -> assertThat(field).isNotBlank());

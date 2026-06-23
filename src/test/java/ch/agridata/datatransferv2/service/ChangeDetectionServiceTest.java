@@ -15,7 +15,7 @@ import ch.agridata.datatransferv2.dto.ProducerIdentifier;
 import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
 import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
-import ch.agridata.product.service.DataProductService;
+import ch.agridata.product.service.DataProductQueryService;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ class ChangeDetectionServiceTest {
   private static final String CONSUMER_AGATE_LOGIN_ID = "20154600";
 
   @Mock
-  DataProductService dataProductService;
+  DataProductQueryService dataProductQueryService;
 
   @Mock
   ConsentRequestApi consentRequestApi;
@@ -66,7 +66,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenNullChangeDetectionPathTemplate_whenGetModifiedProducers_thenThrowsIllegalArgumentException() {
     var config = configBuilder().restClientChangeDetectionPathTemplate(null).build();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
 
     assertThatThrownBy(() -> service.getModifiedProducers(PRODUCT_ID, LAST_MODIFIED_FROM))
         .isInstanceOf(IllegalArgumentException.class)
@@ -79,7 +79,7 @@ class ChangeDetectionServiceTest {
         .flowCode("BUR_BASED_POST_VALIDATION")
         .restClientChangeDetectionPathTemplate("/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}")
         .build();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
 
     assertThatThrownBy(() -> service.getModifiedProducers(PRODUCT_ID, LAST_MODIFIED_FROM))
         .isInstanceOf(IllegalArgumentException.class)
@@ -92,7 +92,7 @@ class ChangeDetectionServiceTest {
         .flowCode("UNBOUND_POST_VALIDATION")
         .restClientChangeDetectionPathTemplate("/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}")
         .build();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
 
     assertThatThrownBy(() -> service.getModifiedProducers(PRODUCT_ID, LAST_MODIFIED_FROM))
         .isInstanceOf(IllegalArgumentException.class)
@@ -102,7 +102,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenNewConsentAndNoProviderChanges_whenGetModifiedProducers_thenReturnsNewlyConsentedUids() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE111111111", "CHE222222222")) // all consents (epoch call)
         .thenReturn(List.of("CHE222222222")); // new consents
@@ -116,7 +116,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenProviderChangesWithConsent_whenGetModifiedProducers_thenReturnsChangedUids() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE111111111", "CHE333333333")) // all consents
         .thenReturn(List.of()); // no new consents
@@ -130,7 +130,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenNewConsentAndProviderChanges_whenGetModifiedProducers_thenReturnsUnionWithoutDuplicates() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE111111111", "CHE222222222")) // all consents
         .thenReturn(List.of("CHE222222222")); // new consents
@@ -145,7 +145,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenNoChanges_whenGetModifiedProducers_thenReturnsEmptyList() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE111111111"))
         .thenReturn(List.of());
@@ -162,7 +162,7 @@ class ChangeDetectionServiceTest {
         .flowCode("UID_BASED_POST_VALIDATION")
         .restClientChangeDetectionPathTemplate("/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}")
         .build();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE111111111"))
         .thenReturn(List.of("CHE111111111"));
@@ -176,7 +176,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenChangeDetectionPathTemplate_whenGetModifiedProducers_thenPathPlaceholderIsReplacedAndUrlEncoded() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(any(), any()))
         .thenReturn(List.of())
         .thenReturn(List.of());
@@ -199,7 +199,7 @@ class ChangeDetectionServiceTest {
   @Test
   void givenResultUids_whenGetModifiedProducers_thenResultIsSorted() {
     var config = uidBasedConfig();
-    when(dataProductService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
     when(consentRequestApi.getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(eq(PRODUCT_ID), any(LocalDateTime.class)))
         .thenReturn(List.of("CHE333333333", "CHE111111111", "CHE222222222"))
         .thenReturn(List.of("CHE333333333", "CHE111111111", "CHE222222222"));

@@ -11,7 +11,7 @@ import static ch.agridata.product.controller.DataProductController.PATH;
 
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDto;
-import ch.agridata.product.service.DataProductService;
+import ch.agridata.product.service.DataProductQueryService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
@@ -39,7 +39,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @RunOnVirtualThread
 public class DataProductController {
   public static final String PATH = "/api/products/v1";
-  private final DataProductService dataProductService;
+  private final DataProductQueryService dataProductQueryService;
 
   @GET
   @ApiSubset({WEB_APP, MOBILE_APP})
@@ -49,6 +49,6 @@ public class DataProductController {
           + "producer, consumer, admin, or provider role.")
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE, SUPPORT_ROLE})
   public List<DataProductDto> getDataProducts() {
-    return dataProductService.getDataProducts();
+    return dataProductQueryService.getActiveDataProducts();
   }
 }

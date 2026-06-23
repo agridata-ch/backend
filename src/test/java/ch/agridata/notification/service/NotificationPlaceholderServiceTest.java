@@ -87,4 +87,42 @@ class NotificationPlaceholderServiceTest {
     assertThat(resolved.webappText().de()).isEqualTo("Antrag: Bio & Co <5%>");
     assertThat(resolved.mobileText().de()).isEqualTo("Antrag: Bio & Co <5%>");
   }
+
+  @Test
+  void givenAllHtmlSpecialCharacters_whenResolve_thenEscapesAllCorrectly() {
+    var template = NotificationTemplateEntity.builder()
+        .emailText(new TranslationPersistenceDto("{{ampersand}} {{lessThan}} {{greaterThan}} {{quote}} {{apostrophe}}", null, null))
+        .build();
+    var batch = NotificationBatchEntity.builder()
+        .template(template)
+        .placeholders(Map.of(
+            "ampersand", "&",
+            "lessThan", "<",
+            "greaterThan", ">",
+            "quote", "\"",
+            "apostrophe", "'"
+        ))
+        .build();
+
+    var resolved = service.resolve(batch);
+
+    assertThat(resolved.emailText().de())
+        .isEqualTo("&amp; &lt; &gt; &quot; &#39;");
+  }
+
+  @Test
+  void givenPlaceholderWithHtmlContent_whenResolveEmailText_thenEscapesProperlyForHtml() {
+    var template = NotificationTemplateEntity.builder()
+        .emailText(new TranslationPersistenceDto("Value: {{html}}", null, null))
+        .build();
+    var batch = NotificationBatchEntity.builder()
+        .template(template)
+        .placeholders(Map.of("html", "<div>test</div>"))
+        .build();
+
+    var resolved = service.resolve(batch);
+
+    // htmlEscape converts HTML tags to entities
+    assertThat(resolved.emailText().de()).isEqualTo("Value: &lt;div&gt;test&lt;/div&gt;");
+  }
 }

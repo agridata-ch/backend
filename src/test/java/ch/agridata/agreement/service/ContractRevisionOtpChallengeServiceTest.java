@@ -53,7 +53,7 @@ class ContractRevisionOtpChallengeServiceTest {
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
-    when(agridataSecurityIdentity.getPhoneNumberOrElseThrow()).thenReturn(PHONE);
+    when(agridataSecurityIdentity.getMobileNumberOrElseThrow()).thenReturn(PHONE);
 
     when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
         .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
@@ -84,7 +84,8 @@ class ContractRevisionOtpChallengeServiceTest {
         .thenReturn(Optional.empty());
 
     assertThatThrownBy(
-        () -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01))
+        () -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID,
+            SignatureSlotCodeEnum.DATA_CONSUMER_01))
         .isInstanceOf(NotFoundException.class)
         .hasMessage(CONTRACT_REVISION_ID.toString());
   }
@@ -129,7 +130,7 @@ class ContractRevisionOtpChallengeServiceTest {
     String shortPhone = "123";
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
-    when(agridataSecurityIdentity.getPhoneNumberOrElseThrow()).thenReturn(shortPhone);
+    when(agridataSecurityIdentity.getMobileNumberOrElseThrow()).thenReturn(shortPhone);
     when(contractRevisionRepository.findByIdAndDataConsumerUid(any(), any()))
         .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
 

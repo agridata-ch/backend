@@ -32,6 +32,7 @@ public class TestDto {
   private Status status;
 
   @NotEmpty
+  @Size(min = 2, max = 5, groups = OnSubmit.class)
   private List<NestedDto> items;
 
   @Valid

@@ -17,6 +17,7 @@ import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import jakarta.annotation.security.RolesAllowed;
@@ -37,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
  * Manages state transitions of data requests and enforces transition rules. Handles validation and submission logic related to changing
  * request states.
  *
- * @CommentLastReviewed 2026-04-01
+ * @CommentLastReviewed 2026-06-09
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -57,6 +58,7 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_SIGNED_BY_PROVIDER, TO_BE_RELEASED_BY_PROVIDER, Set.of(Actor.SYSTEM)),
       new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
       new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED, Set.of(Actor.PROVIDER)),
+      new AllowedTransition(TO_BE_ACTIVATED, DRAFT, Set.of(Actor.CONSUMER)),
       new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN))
   );
 
@@ -66,15 +68,17 @@ public class DataRequestStateService {
 
   private record AllowedTransition(
       DataRequestEntity.DataRequestStateEnum from, DataRequestEntity.DataRequestStateEnum to, Set<Actor> allowedActors
-  ) {}
+  ) {
+  }
 
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Validator validator;
-  private final DataRequestStateAuditService dataRequestStateAuditService;
+  private final DataRequestStateEventDispatcher dataRequestStateEventDispatcher;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
   private final ContractRevisionInitializationService contractRevisionInitializationService;
+  private final ContractRevisionMutationService contractRevisionMutationService;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
@@ -88,7 +92,7 @@ public class DataRequestStateService {
     }
 
     var dto = setStateTo(entity, newStateCode, Actor.CONSUMER);
-    dataRequestStateAuditService.auditConsumerStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchConsumerStatusTransition(entity, oldStateCode, newStateCode);
 
     return dto;
   }
@@ -101,7 +105,7 @@ public class DataRequestStateService {
     var newStateCode = toEntityState(state);
 
     var dto = setStateTo(entity, newStateCode, Actor.PROVIDER);
-    dataRequestStateAuditService.auditProviderStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchProviderStatusTransition(entity, oldStateCode, newStateCode);
     return dto;
   }
 
@@ -113,7 +117,7 @@ public class DataRequestStateService {
     var newStateCode = toEntityState(state);
 
     var dto = setStateTo(entity, newStateCode, Actor.ADMIN);
-    dataRequestStateAuditService.auditAdminStatusTransition(entity, oldStateCode, newStateCode);
+    dataRequestStateEventDispatcher.dispatchAdminStatusTransition(entity, oldStateCode, newStateCode);
     return dto;
   }
 
@@ -132,6 +136,9 @@ public class DataRequestStateService {
     if (newStateCode == DRAFT) {
       entity.setSubmissionDate(null);
       entity.setCurrentContractRevisionId(null);
+      contractRevisionMutationService.archiveAllForDataRequest(entity.getId());
+      entity.setConsumerSignatureType(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
+      entity.setProviderSignatureType(SignatureTypeEnum.COLLECTIVE_SIGNATURE);
     } else if (newStateCode == IN_REVIEW) {
       entity.setSubmissionDate(LocalDateTime.now());
     } else if (newStateCode == TO_BE_SIGNED_BY_CONSUMER) {

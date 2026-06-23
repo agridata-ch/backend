@@ -1276,6 +1276,25 @@
           }
         },
         {
+          "id": "5e4ce213-6517-441f-8e07-c52022d24f1b",
+          "name": "mobile number",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "aggregate.attrs": "false",
+            "introspection.token.claim": "true",
+            "multivalued": "false",
+            "userinfo.token.claim": "true",
+            "user.attribute": "mobileNumber",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "mobile_number",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "b5eaf7ca-0009-493d-8216-de54cfe3175a",
           "name": "KT_ID_P",
           "protocol": "openid-connect",
@@ -2686,6 +2705,9 @@
         "loginid": [
           "20154600"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Testfallgasse 9"
         ],
@@ -2699,6 +2721,9 @@
           "CH"
         ],
         "phoneNumber": [
+          "+4133123456789"
+        ],
+        "mobileNumber": [
           "+4179123456789"
         ],
         "uid": "CHE101708094"
@@ -2736,6 +2761,9 @@
         "loginid": [
           "900000"
         ],
+        "locale": [
+          "de"
+        ],
         "uid": "CHE110013660"
       },
       "createdTimestamp": 1704813979950,
@@ -2771,8 +2799,14 @@
         "loginid": [
           "3477588"
         ],
+        "locale": [
+          "de"
+        ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ],
         "uid": "CHE403244345"
       },
@@ -2809,8 +2843,14 @@
         "loginid": [
           "3477589"
         ],
+        "locale": [
+          "fr"
+        ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ],
         "uid": "CHE403244345"
       },
@@ -2846,6 +2886,9 @@
       "attributes": {
         "loginid": [
           "3477590"
+        ],
+        "locale": [
+          "it"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -2880,6 +2923,9 @@
         "loginid": [
           "3477553"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Nullnummerweg 55"
         ],
@@ -2893,7 +2939,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+4179123456789"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ],
         "uid": [
           "CHE146680598"
@@ -2932,6 +2981,9 @@
         "loginid": [
           "3477586"
         ],
+        "locale": [
+          "fr"
+        ],
         "street": [
           "Nullnummerweg 55"
         ],
@@ -2945,7 +2997,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+4179123456789"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ],
         "uid": [
           "CHE146680598"
@@ -2984,8 +3039,14 @@
         "loginid": [
           "consumer-provider"
         ],
+        "locale": [
+          "it"
+        ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ],
         "uid": "CHE146680598"
       },
@@ -3022,6 +3083,9 @@
       "attributes": {
         "loginid": [
           "3477554"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3056,6 +3120,9 @@
       "attributes": {
         "loginid": [
           "3477555"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3090,6 +3157,9 @@
       "attributes": {
         "loginid": [
           "000000"
+        ],
+        "locale": [
+          "de"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3127,6 +3197,9 @@
         "loginid": [
           "3477580"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Beispielgasse 42"
         ],
@@ -3140,7 +3213,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3179,6 +3255,9 @@
         "loginid": [
           "3477581"
         ],
+        "locale": [
+          "fr"
+        ],
         "street": [
           "Hauptstrasse 2"
         ],
@@ -3192,7 +3271,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3231,6 +3313,9 @@
         "loginid": [
           "3477582"
         ],
+        "locale": [
+          "it"
+        ],
         "street": [
           "Hauptstrasse 138"
         ],
@@ -3244,7 +3329,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3283,6 +3371,9 @@
         "loginid": [
           "3477583"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Musterweg 1"
         ],
@@ -3296,7 +3387,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3335,6 +3429,9 @@
         "loginid": [
           "3477584"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Beispielallee 9"
         ],
@@ -3348,7 +3445,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3384,6 +3484,9 @@
         "loginid": [
           "3477585"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Kirchgasse 5"
         ],
@@ -3397,7 +3500,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3435,6 +3541,9 @@
         "loginid": [
           "producer-agis-tvd-unavailable"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Producergasse 1"
         ],
@@ -3448,7 +3557,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3487,6 +3599,9 @@
         "loginid": [
           "producer-agis-no-uid-tvd-unavailable"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Producergasse 3"
         ],
@@ -3500,7 +3615,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3539,6 +3657,9 @@
         "loginid": [
           "producer-agis-unavailable-tvd-no-uid"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Procergasse 4"
         ],
@@ -3552,7 +3673,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3591,6 +3715,9 @@
         "loginid": [
           "producer-both-no-uid"
         ],
+        "locale": [
+          "de"
+        ],
         "street": [
           "Producergasse 2"
         ],
@@ -3604,7 +3731,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 12 345 67 89"
+          "+41 33 123 45 67"
+        ],
+        "mobileNumber": [
+          "+41 79 123 45 67"
         ]
       },
       "createdTimestamp": 1753048800000,

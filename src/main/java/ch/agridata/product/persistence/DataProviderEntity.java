@@ -7,7 +7,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,4 +62,13 @@ public class DataProviderEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
   private TranslationPersistenceDto name;
+
+  @Builder.Default
+  @ManyToMany
+  @JoinTable(
+      name = "data_provider_rest_client",
+      joinColumns = @JoinColumn(name = "data_provider_id"),
+      inverseJoinColumns = @JoinColumn(name = "rest_client_id")
+  )
+  private Set<RestClientEntity> restClients = new HashSet<>();
 }

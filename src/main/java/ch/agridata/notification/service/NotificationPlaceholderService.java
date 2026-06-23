@@ -6,11 +6,9 @@ import ch.agridata.notification.dto.ResolvedNotificationTextsDto;
 import ch.agridata.notification.persistence.NotificationBatchEntity;
 import ch.agridata.notification.persistence.NotificationTemplateEntity;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -21,7 +19,8 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class NotificationPlaceholderService {
 
-  private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*(\\w+)\\s*}}");
+  private static final String PLACEHOLDER_OPEN = "{{";
+  private static final String PLACEHOLDER_CLOSE = "}}";
 
   public ResolvedNotificationTextsDto resolve(NotificationBatchEntity batch) {
     var template = batch.getTemplate();
@@ -60,10 +59,9 @@ public class NotificationPlaceholderService {
   /**
    * Collects all placeholder names referenced via {@code {{name}}} in the template's
    * {@code emailSubject}, {@code emailText}, {@code webappText} and {@code mobileText}.
-   * Insertion order is preserved (de → fr → it per field, fields in the listed order).
    */
   public Set<String> extractRequiredPlaceholders(NotificationTemplateEntity template) {
-    Set<String> names = new LinkedHashSet<>();
+    Set<String> names = new HashSet<>();
     Stream.of(template.getEmailSubject(), template.getEmailText(), template.getWebappText(), template.getMobileText())
         .forEach(translation -> collectPlaceholderNames(translation, names));
     return names;
@@ -75,12 +73,25 @@ public class NotificationPlaceholderService {
     }
     Stream.of(translation.de(), translation.fr(), translation.it())
         .filter(text -> text != null && !text.isBlank())
-        .forEach(text -> {
-          Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
-          while (matcher.find()) {
-            sink.add(matcher.group(1));
-          }
-        });
+        .forEach(text -> extractPlaceholderNames(text, sink));
+  }
+
+  /**
+   * Optimized extraction using string operations (indexOf, substring) instead of regex.
+   * Finds all {{placeholderName}} patterns and adds extracted names to sink.
+   */
+  private static void extractPlaceholderNames(String text, Set<String> sink) {
+    int index = 0;
+    while ((index = text.indexOf(PLACEHOLDER_OPEN, index)) != -1) {
+      int endIndex = text.indexOf(PLACEHOLDER_CLOSE, index + 2);
+      if (endIndex != -1) {
+        String placeholder = text.substring(index + 2, endIndex).trim();
+        sink.add(placeholder);
+        index = endIndex + 2;
+      } else {
+        break;
+      }
+    }
   }
 
   private static String substitute(String text, Map<String, String> placeholders, boolean htmlEscapeValues) {

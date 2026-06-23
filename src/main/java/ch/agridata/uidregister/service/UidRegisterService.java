@@ -2,10 +2,8 @@ package ch.agridata.uidregister.service;
 
 
 import ch.admin.uid.xmlns.uid_wse.ArrayOfOrganisationType;
-import ch.admin.uid.xmlns.uid_wse.IPublicServices;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDBusinessFaultFaultFaultMessage;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDInfrastructureFaultFaultFaultMessage;
-import ch.admin.uid.xmlns.uid_wse.IPublicServicesGetByUIDSecurityFaultFaultFaultMessage;
+import ch.admin.uid.xmlns.uid_wse.GetByUID;
+import ch.admin.uid.xmlns.uid_wse.GetByUIDResponse;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.uidregister.api.UidRegisterServiceApi;
@@ -14,13 +12,11 @@ import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import ch.ech.xmlns.ech_0097._5.UidOrganisationIdCategorieType;
 import ch.ech.xmlns.ech_0097._5.UidStructureType;
 import ch.ech.xmlns.ech_0098._5.OrganisationType;
-import io.quarkiverse.cxf.annotation.CXFClient;
 import io.quarkus.cache.CacheResult;
-import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.List;
@@ -30,7 +26,7 @@ import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.cxf.frontend.ClientProxy;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * Implements the UidRegisterServiceApi. It retrieves organizations by UID, extracts structured address details, and integrates with user
@@ -47,19 +43,20 @@ public class UidRegisterService implements UidRegisterServiceApi {
   private static final QName SWISS_ZIP_CODE_QNAME = new QName("http://www.ech.ch/xmlns/eCH-0098/5", "swissZipCode");
 
   private final AgridataSecurityIdentity agridataSecurityIdentity;
-  private IPublicServices port;
+  private final UidRegisterSoapClient soapClient;
+  private final SoapEnvelopeSupport soapEnvelopeSupport;
+  private final UidRegisterServiceApi uidRegisterServiceApi;
 
   @Inject
   public UidRegisterService(
       AgridataSecurityIdentity agridataSecurityIdentity,
-      @CXFClient("uid") IPublicServices port) {
+      @RestClient UidRegisterSoapClient soapClient,
+      SoapEnvelopeSupport soapEnvelopeSupport,
+      UidRegisterServiceApi uidRegisterServiceApi) {
     this.agridataSecurityIdentity = agridataSecurityIdentity;
-    this.port = port;
-  }
-
-  void onStart(@Observes StartupEvent ev) {
-    // Eagerly initialize the CXF client proxy at startup to avoid cold start latency on the first request
-    ClientProxy.getClient(port).getRequestContext();
+    this.soapClient = soapClient;
+    this.soapEnvelopeSupport = soapEnvelopeSupport;
+    this.uidRegisterServiceApi = uidRegisterServiceApi;
   }
 
   /**
@@ -97,7 +94,10 @@ public class UidRegisterService implements UidRegisterServiceApi {
   public UidRegisterOrganisationDto getByUidOfCurrentUser() {
     String uid = agridataSecurityIdentity.getUidOrElseThrow();
     BigInteger uidWithoutPrefix = new BigInteger(uid.replace(UidOrganisationIdCategorieType.CHE.name(), ""));
-    return getByUid(uidWithoutPrefix);
+
+    // Self-reference resolved to the CDI proxy of this bean. A plain self-invocation
+    // would bypass the interceptor and never consult cache.
+    return uidRegisterServiceApi.getByUid(uidWithoutPrefix);
   }
 
   private UidRegisterOrganisationDto toUidOrganisationDto(ArrayOfOrganisationType result) {
@@ -144,11 +144,18 @@ public class UidRegisterService implements UidRegisterServiceApi {
     UidStructureType uidStructureType = new UidStructureType();
     uidStructureType.setUidOrganisationId(id);
     uidStructureType.setUidOrganisationIdCategorie(UidOrganisationIdCategorieType.CHE);
+
+    GetByUID request = new GetByUID();
+    request.setUid(uidStructureType);
+
     try {
-      return toUidOrganisationDto(port.getByUID(uidStructureType));
-    } catch (IPublicServicesGetByUIDBusinessFaultFaultFaultMessage
-             | IPublicServicesGetByUIDInfrastructureFaultFaultFaultMessage
-             | IPublicServicesGetByUIDSecurityFaultFaultFaultMessage e) {
+      String responseXml;
+      try (Response response = soapClient.getByUid(soapEnvelopeSupport.wrap(request))) {
+        responseXml = response.readEntity(String.class);
+      }
+      GetByUIDResponse getByUidResponse = soapEnvelopeSupport.unwrapBody(responseXml, GetByUIDResponse.class);
+      return toUidOrganisationDto(getByUidResponse.getGetByUIDResult());
+    } catch (SoapFaultException | IllegalStateException e) {
       throw new ExternalWebServiceException("Uid lookup failed for UID: CHE" + id + " error: " + e.getMessage(), e);
     }
   }

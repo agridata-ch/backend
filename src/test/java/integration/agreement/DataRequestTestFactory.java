@@ -8,6 +8,7 @@ import static io.restassured.http.ContentType.JSON;
 import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.ContractRevisionDto;
+import ch.agridata.agreement.dto.DataRequestAdvantageDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
@@ -19,10 +20,10 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.dto.VerifyOtpRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.arc.Arc;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestUserEnum;
+import io.quarkus.arc.Arc;
 import io.restassured.response.Response;
 import java.io.File;
 import java.nio.file.Files;
@@ -34,6 +35,10 @@ public class DataRequestTestFactory {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   public static DataRequestUpdateDto.DataRequestUpdateDtoBuilder getPartialDataRequestUpdateDtoBuilder() {
+    var advantages = List.of(new DataRequestAdvantageDto[] {
+        new DataRequestAdvantageDto("Vermeiden von Mehreingaben", "Éviter les saisies multiples", "Evitare inserimenti multipli"),
+        new DataRequestAdvantageDto("Komfortable Erneuerung der Mitgliedschaft", "Renouvellement pratique de l'adhésion",
+            "Comodo rinnovo dell'iscrizione")});
     return DataRequestUpdateDto.builder()
         .description(DataRequestDescriptionDto.builder().de("Beschreibung lang genug").build())
         .purpose(new DataRequestPurposeDto("Zweck lang genug", "But assez long",
@@ -44,10 +49,11 @@ public class DataRequestTestFactory {
         .dataConsumerZip("3008")
         .dataConsumerStreet("Musterstrasse 1")
         .contactPhoneNumber("+41 79 123 45 67")
-        .contactEmailAddress("email@test.com");
+        .contactEmailAddress("email@test.com")
+        .advantages(advantages);
   }
 
-  public static DataRequestUpdateDto.DataRequestUpdateDtoBuilder getDataRequestDto() {
+  public static DataRequestUpdateDto.DataRequestUpdateDtoBuilder getDataRequestDtoBuilder() {
     return getPartialDataRequestUpdateDtoBuilder()
         .title(new DataRequestTitleDto("Anfrage Titel", "Titre demande", "Titolo richiesta"))
         .targetGroup("Test Zielgruppe")
@@ -147,7 +153,7 @@ public class DataRequestTestFactory {
   }
 
   public static DataRequestDto createReadyForSigningByConsumerDataRequestFor(TestUserEnum consumer) {
-    Response createResponse = createDataRequestAs(getDataRequestDto().build(), consumer);
+    Response createResponse = createDataRequestAs(getDataRequestDtoBuilder().build(), consumer);
     DataRequestDto created = createResponse.as(DataRequestDto.class);
     String requestId = created.id().toString();
     setStatusAs(requestId, DataRequestStateEnum.IN_REVIEW, consumer);

@@ -1,7 +1,7 @@
 package integration.agreement;
 
 import static integration.agreement.DataRequestTestFactory.createDataRequest;
-import static integration.agreement.DataRequestTestFactory.getDataRequestDto;
+import static integration.agreement.DataRequestTestFactory.getDataRequestDtoBuilder;
 import static integration.agreement.DataRequestTestFactory.setStatusAs;
 import static integration.agreement.DataRequestTestFactory.updateDataRequest;
 import static integration.testutils.TestUserEnum.ADMIN;
@@ -34,12 +34,14 @@ class DataRequestNotificationTest {
     AuthTestUtils.requestAs(ADMIN).when().get("/api/user/v1/user-info");
 
     String id = createDataRequest().then().statusCode(201).extract().path("id");
-    updateDataRequest(id, getDataRequestDto().build()).then().statusCode(200);
+    updateDataRequest(id, getDataRequestDtoBuilder().build()).then().statusCode(200);
 
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE).then().statusCode(200);
 
     var batches = notificationBatchRepository.findAll().list();
-    assertThat(batches).anyMatch(b -> b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
+    assertThat(batches).anyMatch(b -> b.getTemplate()
+        .getEventTypeCode()
+        .equals(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
         && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
   }
 }

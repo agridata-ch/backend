@@ -13,13 +13,13 @@ import java.util.UUID;
  * @CommentLastReviewed 2025-02-09
  */
 public interface DataProductApi {
-  DataProductDto getProductById(UUID productId);
+  DataProductDto getActiveProductById(UUID productId);
 
   DataProductProviderConfigurationDto getProviderConfigurationById(UUID productId);
 
-  UUID getDataSourceSystemId(UUID productId);
+  UUID getDataSourceSystemIdOfActiveProduct(UUID productId);
 
   DataSourceSystemDto getDataSourceSystem(UUID dataSourceSystemId);
 
-  List<DataProductDto> getProductsByIds(List<UUID> productIds);
+  List<DataProductDto> getActiveProductsByIds(List<UUID> productIds);
 }

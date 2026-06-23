@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.10.0</version>
+    <version>1.11.0-rc.14</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -13,7 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.36.0</quarkus.platform.version>
+        <quarkus.platform.version>3.36.2</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
@@ -46,13 +46,6 @@
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
-                <version>${quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>quarkus-cxf-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -235,10 +228,6 @@
             <artifactId>quarkus-rest-client-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.cxf</groupId>
-            <artifactId>quarkus-cxf</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-virtual-threads</artifactId>
         </dependency>
@@ -419,6 +408,7 @@
                                 </systemProperties>
                                 <arguments>
                                     <argument>ch.agridata.agreement.dto.DataRequestUpdateDto</argument>
+                                    <argument>ch.agridata.product.dto.DataProductUpdateDto</argument>
                                 </arguments>
                             </configuration>
                         </execution>
@@ -536,6 +526,18 @@
                                     <source>
                                         ${project.build.directory}/generated-sources/openapi/agis-register-api/src/gen/java
                                     </source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>add-wsdl2java-generated</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>src/main/generated/wsdl</source>
                                 </sources>
                             </configuration>
                         </execution>

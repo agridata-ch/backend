@@ -30,7 +30,7 @@ class NotificationApiImplTest {
 
   @Test
   void givenValidRequest_whenQueueNotification_thenDelegatesToBatchService() {
-    var recipients = List.of(new RecipientRequestDto(UUID.randomUUID(), null));
+    var recipients = List.of(new RecipientRequestDto(UUID.randomUUID(), null, null));
     var eventTypeCode = EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW;
     var placeholders = Map.of("requestTitle", "Test");
     var targetTypeCode = TargetTypeCodeEnum.DATA_REQUEST;

@@ -75,11 +75,19 @@ public class NotificationBatchService {
           .batch(batch)
           .userId(recipientDto.userId())
           .email(recipientDto.email())
+          .language(recipientDto.language())
           .build();
       recipientRepository.persist(recipient);
     }
 
     log.info("Queued notification batch for event type '{}' with {} recipient(s).", eventTypeCode, recipients.size());
+    if (recipients.isEmpty()) {
+      log.error(
+          "No recipients provided for notification batch of event type '{}'. Batch ID: {}. Likely the associated users could not be found.",
+          eventTypeCode,
+          batch.getId()
+      );
+    }
 
     batchQueuedEvent.fire(new NotificationBatchQueuedEvent());
   }
@@ -89,7 +97,9 @@ public class NotificationBatchService {
       Map<String, String> placeholders,
       NotificationTemplateEntity template
   ) {
-    var missing = placeholderService.extractRequiredPlaceholders(template).stream()
+    var requiredPlaceholders = placeholderService.extractRequiredPlaceholders(template);
+
+    var missing = requiredPlaceholders.stream()
         .filter(key -> !placeholders.containsKey(key))
         .toList();
     if (!missing.isEmpty()) {

@@ -35,6 +35,7 @@ public class ValidationSchemaGenerator {
   private static final String JSON_TYPE_STRING = "string";
   private static final String PROPERTIES = "properties";
   private static final String REQUIRED = "required";
+  private static final String ARRAY_TYPE = "array";
   private final Validator validator;
   private final ObjectMapper objectMapper;
 
@@ -157,7 +158,7 @@ public class ValidationSchemaGenerator {
                                       Set<String> visited, BeanDescriptor beanDescriptor,
                                       String path) {
     String fieldName = field.getName();
-    fieldSchema.put("type", "array");
+    fieldSchema.put("type", ARRAY_TYPE);
 
     Type genericType = field.getGenericType();
     if (genericType instanceof ParameterizedType parameterizedType) {
@@ -274,11 +275,11 @@ public class ValidationSchemaGenerator {
     }
 
     if (merged.getMinLength() != null) {
-      fieldSchema.put("minLength", merged.getMinLength());
+      fieldSchema.put(fieldSchema.get("type").asText().equals(ARRAY_TYPE) ? "minItems" : "minLength", merged.getMinLength());
     }
 
     if (merged.getMaxLength() != null) {
-      fieldSchema.put("maxLength", merged.getMaxLength());
+      fieldSchema.put(fieldSchema.get("type").asText().equals(ARRAY_TYPE) ? "maxItems" : "maxLength", merged.getMaxLength());
     }
 
     if (merged.getMinimum() != null) {

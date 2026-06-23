@@ -1,3 +1,88 @@
+## [1.11.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.13...v1.11.0-rc.14) (2026-06-22)
+
+### Features
+
+* **agreement:** Allow data collectors to attach a list of incentives/benefits shown to farmers to encourage consent for a data request. ([d5324a2](https://github.com/agridata-ch/backend/commit/d5324a209ecb97a64fc3393bbc15baf8925955a1)), closes [DIGIB2-1460](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1460)
+
+## [1.11.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.12...v1.11.0-rc.13) (2026-06-22)
+
+### Features
+
+* **common:** Allow the schema generator to correctly map size-constraints for array fields. ([123b4f0](https://github.com/agridata-ch/backend/commit/123b4f0e2ae319fe50fcbd245a7408383cac0cc8)), closes [DIGIB2-1460](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1460)
+
+## [1.11.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.11...v1.11.0-rc.12) (2026-06-18)
+
+### Bug Fixes
+
+* **datatransfer:** adjust format of data transfer headers ([433b535](https://github.com/agridata-ch/backend/commit/433b535aa8fca79cb4cdfecbfceb85441ffe45d4))
+
+## [1.11.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.10...v1.11.0-rc.11) (2026-06-18)
+
+### Bug Fixes
+
+* **deps:** remove cxf dependency and freeze uid wsdl ([d2230ad](https://github.com/agridata-ch/backend/commit/d2230ade4c06e3e6f6dff985412a13104d3c7be8))
+
+## [1.11.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.9...v1.11.0-rc.10) (2026-06-17)
+
+### Features
+
+* **user:** include mobile number for users ([c228dab](https://github.com/agridata-ch/backend/commit/c228dab58b0a931eafdfa56e0fad6f739866f242)), closes [DIGIB2-1465](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1465)
+
+## [1.11.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.8...v1.11.0-rc.9) (2026-06-16)
+
+### Bug Fixes
+
+* **pipeline:** fix pipeline ([a291dda](https://github.com/agridata-ch/backend/commit/a291dda016a8bcd8e0820359a3b2972ce5720d0f))
+
+## [1.11.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.7...v1.11.0-rc.8) (2026-06-16)
+
+### Features
+
+* **notifications:** Add notification data request triggers 9: activation and 11: active ([26751ee](https://github.com/agridata-ch/backend/commit/26751ee38c77e660e7bc8a67b89174f85e8526a6)), closes [DIGIB2-314](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-314)
+
+## [1.11.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.6...v1.11.0-rc.7) (2026-06-16)
+
+### Features
+
+* **notifications:** Add notification trigger 7, ready for provider signing ([3e29018](https://github.com/agridata-ch/backend/commit/3e29018655ecbc02d8cf9554184128c79508e2c4)), closes [DIGIB2-314](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-314)
+
+## [1.11.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.5...v1.11.0-rc.6) (2026-06-16)
+
+### Features
+
+* **product:** Allow providers to add new data products. ([c66c671](https://github.com/agridata-ch/backend/commit/c66c67186c3da279be0256143c091fd14e51b776)), closes [DIGIB2-1351](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1351)
+
+## [1.11.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.4...v1.11.0-rc.5) (2026-06-15)
+
+### Bug Fixes
+
+* **deps:** upgrade quarkus to 3.36.2, edit ignored CVEs ([735be7d](https://github.com/agridata-ch/backend/commit/735be7dfe7fd4f050d6942f5ac1f8c7407cefcbc))
+
+## [1.11.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.3...v1.11.0-rc.4) (2026-06-15)
+
+### Features
+
+* **user-attributes:** update phone number references to mobile number ([082920a](https://github.com/agridata-ch/backend/commit/082920aa7227e85d505fe1dab765fae5e5c8d1d8)), closes [DIGIB2-1411](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1411)
+
+## [1.11.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.2...v1.11.0-rc.3) (2026-06-11)
+
+### Bug Fixes
+
+* **deps:** fix CVE-2026-45447 ([3b484e9](https://github.com/agridata-ch/backend/commit/3b484e97ef608d5374df6a1a596ef1ecf61139b6))
+
+## [1.11.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.11.0-rc.1...v1.11.0-rc.2) (2026-06-10)
+
+### Features
+
+* **data-request:** enhance withdrawal logging for data request state transitions ([ee8f51e](https://github.com/agridata-ch/backend/commit/ee8f51e5dd89ff7211c8226458d2d63cae57e1a8)), closes [DIGIB2-1416](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1416)
+
+## [1.11.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.10.0...v1.11.0-rc.1) (2026-06-09)
+
+### Features
+
+* **notifications:** Add email language to notifications ([7433581](https://github.com/agridata-ch/backend/commit/7433581324cdc3ef50a179676d7d923f0050dcef)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+* **notifications:** Add language to saved user information ([703b053](https://github.com/agridata-ch/backend/commit/703b053a940e07ca41e455acf8641f02c38441e0)), closes [DIGIB2-1398](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1398)
+
 ## [1.10.0](https://github.com/agridata-ch/backend/compare/v1.9.0...v1.10.0) (2026-06-09)
 
 ### Features

@@ -1,8 +1,11 @@
 package ch.agridata.user.persistence;
 
+import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.persistence.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -22,7 +25,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Represents a persisted user in the system. It includes identifiers, login details, email, and optional metadata.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-06-10
  */
 
 @Entity
@@ -66,6 +69,9 @@ public class UserEntity extends AuditableEntity {
   @Column(name = "phone_number", length = 50)
   private String phoneNumber;
 
+  @Column(name = "mobile_number", length = 50)
+  private String mobileNumber;
+
   @Column(name = "address_street", length = 500)
   private String addressStreet;
 
@@ -84,6 +90,10 @@ public class UserEntity extends AuditableEntity {
   @Column(name = "user_preferences")
   @JdbcTypeCode(SqlTypes.JSON)
   private UserEntityPreferencesDto userPreferences;
+
+  @Column(name = "language", length = 2)
+  @Enumerated(EnumType.STRING)
+  private SupportedLanguage language;
 
   @Column(name = "roles_at_last_login")
   @JdbcTypeCode(SqlTypes.JSON)

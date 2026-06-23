@@ -15,4 +15,8 @@ public class DataProviderRepository implements PanacheRepositoryBase<DataProvide
   public Optional<DataProviderEntity> findByUidOptional(String uid) {
     return find("uid", uid).firstResultOptional();
   }
+
+  public Optional<DataProviderEntity> findByIdAndProviderUidOptional(UUID id, String uid) {
+    return find("id = ?1 and uid = ?2", id, uid).firstResultOptional();
+  }
 }
