@@ -76,7 +76,14 @@ Content-Type: application/json
   },
   "description": {
     "de": "test data request description"
-  }
+  },
+  "advantages": [
+    {
+      "de": "test advantage",
+      "fr": "test advantage",
+      "it": "test advantage"
+    }
+  ]
 }
 
 > {%
@@ -134,7 +141,14 @@ Content-Type: application/json
   "dataConsumerCountry": "CH",
   "contactEmailAddress": "test@biosuisse.ch",
   "contactPhoneNumber": "+41 61 555 55 55",
-  "targetGroup": "Bio Suisse Mitglieder"
+  "targetGroup": "Bio Suisse Mitglieder",
+  "advantages": [
+    {
+      "de": "test advantage",
+      "fr": "test advantage",
+      "it": "test advantage"
+    }
+  ]
 }
 
 > {%
@@ -143,7 +157,7 @@ Content-Type: application/json
   })
 %}
 
-### Set data request to in review
+### Set data request to IN_REVIEW
 PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
 Authorization: Bearer {{$auth.token("consumer-blv-1")}}
 Content-Type: application/json
@@ -152,6 +166,32 @@ Content-Type: application/json
 
 > {%
   client.test("Set data request to IN_REVIEW", function () {
+    client.assert(response.status === 200, "Expected 200, got: " + response.status)
+  })
+%}
+
+### Set data request back to DRAFT after reviewing
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"DRAFT"
+
+> {%
+  client.test("Set data request back to DRAFT", function () {
+    client.assert(response.status === 200, "Expected 200, got: " + response.status)
+  })
+%}
+
+### Set data request to IN_REVIEW again
+PUT {{baseUrl}}/agreement/v1/data-requests/{{dataRequestId}}/status
+Authorization: Bearer {{$auth.token("consumer-blv-1")}}
+Content-Type: application/json
+
+"IN_REVIEW"
+
+> {%
+  client.test("Set data request to IN_REVIEW again", function () {
     client.assert(response.status === 200, "Expected 200, got: " + response.status)
   })
 %}

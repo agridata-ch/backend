@@ -29,10 +29,10 @@ public class NotificationService {
   @ConfigProperty(name = "agridata.notifications.frontend-url-paths.admin-path", defaultValue = "/admin/{id}")
   String dataRequestAdminPath;
 
-  @ConfigProperty(name = "agridata.notifications.frontend-url-paths.provider-path", defaultValue = "/provider/{id}")
+  @ConfigProperty(name = "agridata.notifications.frontend-url-paths.provider-path", defaultValue = "/data-requests-provider/{id}")
   String dataRequestProviderPath;
 
-  @ConfigProperty(name = "agridata.notifications.frontend-url-paths.consumer-path", defaultValue = "/consumer/{id}")
+  @ConfigProperty(name = "agridata.notifications.frontend-url-paths.consumer-path", defaultValue = "/data-requests/{id}")
   String dataRequestConsumerPath;
 
   @ConfigProperty(name = "agridata.base-url")
@@ -94,6 +94,32 @@ public class NotificationService {
         adminRecipients,
         EventTypeCodeEnum.DATA_REQUEST_READY_FOR_ACTIVATION,
         adminPlaceholders,
+        TargetTypeCodeEnum.DATA_REQUEST,
+        request.getId()
+    );
+  }
+
+  public void queueDataRequestChangesNeeded(DataRequestEntity request) {
+    Map<String, String> placeholders = buildDataRequestPlaceholders(request, buildDataRequestUrl(dataRequestConsumerPath, request.getId()));
+    List<RecipientRequestDto> recipients = buildRecipients(userApi.getConsumersNotificationInfoByUid(request.getDataConsumerUid()));
+
+    notificationApi.queueNotification(
+        recipients,
+        EventTypeCodeEnum.DATA_REQUEST_CHANGES_NEEDED,
+        placeholders,
+        TargetTypeCodeEnum.DATA_REQUEST,
+        request.getId()
+    );
+  }
+
+  public void queueDataRequestApproved(DataRequestEntity request) {
+    Map<String, String> placeholders = buildDataRequestPlaceholders(request, buildDataRequestUrl(dataRequestConsumerPath, request.getId()));
+    List<RecipientRequestDto> recipients = buildRecipients(userApi.getConsumersNotificationInfoByUid(request.getDataConsumerUid()));
+
+    notificationApi.queueNotification(
+        recipients,
+        EventTypeCodeEnum.DATA_REQUEST_APPROVED,
+        placeholders,
         TargetTypeCodeEnum.DATA_REQUEST,
         request.getId()
     );
