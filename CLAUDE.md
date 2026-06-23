@@ -1,6 +1,6 @@
 # CLAUDE.md – agridata.ch Backend
 
-Quarkus 3.36.0 + Java 25 backend for the agridata.ch agricultural data-exchange platform. Uses PostgreSQL (Flyway + Hibernate ORM Panache),
+Quarkus + Java 25 backend for the agridata.ch agricultural data-exchange platform. Uses PostgreSQL (Flyway + Hibernate ORM Panache),
 Keycloak OIDC, MapStruct, Lombok, WireMock, and ArchUnit.
 
 ---
@@ -30,9 +30,7 @@ Register git hooks after cloning: `git config --local core.hooksPath hooks && ch
 
 ## Module Structure
 
-All business code lives under `ch.agridata.<module>`. Modules: `agreement`, `user`, `auditing`, `agis`, `aws`, `bit`, `common`,
-`datatransfer`,
-`datatransferv2`, `notification`, `product`, `testdata`, `uidregister`, `tvd`.
+All business code lives under `ch.agridata.<module>` (e.g. `agreement`, `datatransferv2`, `notification`, `common`).
 
 Each module follows a strict layered layout enforced by ArchUnit (`ModuleArchitectureTest`):
 
@@ -46,10 +44,9 @@ controller  →  service  →  persistence
 
 **Cross-module rules (violations fail CI):**
 
-- Only `service` layers may call another module's `api` or `service`.
-- DTOs may be referenced from `service`, `dto`, `controller`, `mapper` layers.
-- Only whitelisted `common` sub-packages may be imported by other modules: `common.persistence`, `common.api`, `common.dto`, `common.utils`,
-  `common.security`, `common.exceptions`, `common.filters`, `common.openapi`.
+- Is enforced by `ModuleArchitectureTest`
+    - Only `service` layers may call another module's `api` or `service`.
+    - DTOs may be referenced from `service`, `dto`, `controller`, `mapper` layers.
 
 ---
 
@@ -64,30 +61,20 @@ controller  →  service  →  persistence
 
 ### Controllers
 
-- All controllers annotated `@RunOnVirtualThread`.
+- Business controllers are annotated `@RunOnVirtualThread`
 - Every endpoint method with `@Operation` **must** carry `@ApiSubset({…})` (enforced by `ApiSubsetArchitectureTest`).  
   Available subset constants: `WEB_APP`, `MOBILE_APP`, `DATA_CONSUMER`, `DATA_PROVIDER` (see `ApiSubsetConstants`).
 
 ### Javadoc
 
-- Every class must have a Javadoc comment ending with `@CommentLastReviewed <date>`, that secures comments from being copied. Does not need
-  to be consistently updated.   
-  Example: `* @CommentLastReviewed 2026-02-16`
+- Every class must have a Javadoc comment ending with `@CommentLastReviewed <date>` (e.g. `2026-02-16`).
 
-### Roles
+### Roles & Identity
 
-Defined in `AuthenticationUtil`:
-
-| Constant        | Keycloak Role                        |
-|-----------------|--------------------------------------|
-| `PRODUCER_ROLE` | `agridata.ch.Agridata_Einwilliger`   |
-| `CONSUMER_ROLE` | `agridata.ch.Agridata_Datenbezueger` |
-| `PROVIDER_ROLE` | `agridata.ch.Agridata_Datenanbieter` |
-| `ADMIN_ROLE`    | `agridata.ch.Agridata_Admin`         |
-| `SUPPORT_ROLE`  | `agridata.ch.Agridata_Support`       |
-
-User identity comes from the Agate `loginid` JWT claim, converted to a UUID v3 via `AgridataSecurityIdentity.getUserId()`. Support users can
-impersonate via the `X-Impersonated-AgateLoginId` request header.
+- Role constants (`PRODUCER_ROLE`, `CONSUMER_ROLE`, `PROVIDER_ROLE`, `ADMIN_ROLE`, `SUPPORT_ROLE`) map to Keycloak
+  `agridata.ch.Agridata_*` roles in `AuthenticationUtil`.
+- User identity comes from the Agate `loginid` JWT claim, converted to a UUID v3 via `AgridataSecurityIdentity.getUserId()`.
+  Support users impersonate via the `X-Impersonated-AgateLoginId` request header.
 
 ### Flyway Migrations
 
@@ -120,34 +107,38 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 
 ## Data Transfer Flow (v2)
 
-`datatransferv2` uses a pipeline pattern. Each flow implements `Flowable` and calls `AgridataFlow.run(context, tasksBefore, tasksAfter)`.
-Tasks are `UnaryOperator<AgridataContext>` beans composed into lists. The four flows are:
-
-- `UidBasedPreValidationFlow` – consent checked before upstream call
-- `BurBasedPreValidationFlow` – BUR-based consent checked before upstream call
-- `BurBasedPostValidationFlow` – BUR-based consent checked after response header
-- `UidBasedPostValidationFlow` – UID resolved from response header
-- `UnboundPostValidationFlow` – no producer identity constraint before call
+- `datatransferv2` uses a pipeline pattern. Each flow implements `Flowable` and calls `AgridataFlow.run(context, tasksBefore, tasksAfter)`.
+- Tasks are `UnaryOperator<AgridataContext>` beans composed into lists.
+- The five flows: `UidBasedPreValidationFlow`, `BurBasedPreValidationFlow`, `BurBasedPostValidationFlow`, `UidBasedPostValidationFlow`,
+  `UnboundPostValidationFlow`(pre/post = consent checked before/after the upstream call; UID/BUR = how producer identity is resolved).
 
 ---
 
 ## External Integrations
 
-| System             | Protocol                                                | Config key                                       |
-|--------------------|---------------------------------------------------------|--------------------------------------------------|
-| AGIS Register API  | REST (OpenAPI-generated DTOs in `ch.agridata.agis.dto`) | `quarkus.rest-client.agis-api.url`               |
-| UID Register       | SOAP/CXF (`uid-register.wsdl`)                          | `quarkus.cxf.client.uid`                         |
-| TVD Animal Tracing | REST (OIDC client)                                      | `quarkus.rest-client.tvd-animal-tracing-api.url` |
-| BIT Signature API  | REST (mTLS PKCS12)                                      | `quarkus.rest-client.bit-signature-api.url`      |
-| AControl API       | REST (mTLS PKCS12)                                      | `quarkus.rest-client.acontrol-api.url`           |
-| Data Providers     | REST (`DataProviderRestClient`)                         | Per-product configuration                        |
-
-WireMock stubs for all external calls live in `src/test/resources/wiremock/`.
+- Most external systems (AGIS, UID Register, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST clients
+  configured under `quarkus.rest-client.*` in `application.yml`. Only UID Register uses REST client to access a SOAP-API.
+    - BIT and AControl use mTLS (PKCS12).
+    - AGIS DTOs are OpenAPI-generated in `ch.agridata.agis.dto`.
+    - WireMock stubs for all external calls live in `src/test/resources/wiremock/`.
 
 ---
 
-## Java Code style
+## Code Style
 
-- Strive for simplicity and clean code, not cleverness. Always prefer readability to brevity.
 - Use `var` for local variables with obvious types, otherwise explicit types.
-- Use a single empty new-line at the end of all files, never 2.
+- End every file with a single trailing newline, never two.
+- Run single tests (`mvn test -Dtest=ClassName`) rather than the whole suite while iterating.
+
+---
+
+## Working Conventions
+
+- Think before coding
+    - Don't assume, ask instead
+    - Don't hide confusion
+    - Surface tradeoffs
+- Strive for simplicity and clean code
+    - Prefer readability over cleverness
+- Write the minimum code that solves the task and matches surrounding style.
+    - Keep changes surgical: edit only what the task requires.
