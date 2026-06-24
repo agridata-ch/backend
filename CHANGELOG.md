@@ -1,3 +1,10 @@
+## [1.11.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.11.0...v1.11.1-rc.1) (2026-06-24)
+
+### Bug Fixes
+
+* **ai:** Cleanup CLAUDE.md context ([1190a08](https://github.com/agridata-ch/backend/commit/1190a0837883d25987f06f94ca76ae7b8912f3e2))
+* **notifications:** Add default descending sort to inbox entries ([f39a47a](https://github.com/agridata-ch/backend/commit/f39a47aca68d88acfdabd9d70d10bd990f4e8361)), closes [DIGIB2-1468](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1468)
+
 ## [1.11.0](https://github.com/agridata-ch/backend/compare/v1.10.0...v1.11.0) (2026-06-23)
 
 ### Features
