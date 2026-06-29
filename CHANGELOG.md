@@ -1,3 +1,9 @@
+## [1.12.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.11.1-rc.1...v1.12.0-rc.1) (2026-06-29)
+
+### Features
+
+* **contract:** include seal state in dto and read adminglobalid from token ([050ca88](https://github.com/agridata-ch/backend/commit/050ca88b69dc659f23b9dbf1682ce50452fdf8ef)), closes [DIGIB2-311](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-311)
+
 ## [1.11.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.11.0...v1.11.1-rc.1) (2026-06-24)
 
 ### Bug Fixes
