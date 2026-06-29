@@ -1332,7 +1332,7 @@
         },
         {
           "id": "c7f1d2a4-3b6e-4d9a-8f12-2a4c6e8b1d33",
-          "name": "AdminGlobalId",
+          "name": "adminGlobalID",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "consentRequired": false,
@@ -1341,11 +1341,11 @@
             "introspection.token.claim": "true",
             "multivalued": "false",
             "userinfo.token.claim": "true",
-            "user.attribute": "AdminGlobalId",
+            "user.attribute": "adminGlobalID",
             "id.token.claim": "true",
             "lightweight.claim": "false",
             "access.token.claim": "true",
-            "claim.name": "AdminGlobalId",
+            "claim.name": "adminGlobalID",
             "jsonType.label": "String"
           }
         }
@@ -3106,7 +3106,7 @@
         "locale": [
           "de"
         ],
-        "AdminGlobalId": [
+        "adminGlobalID": [
           "p-1234567"
         ]
       },
