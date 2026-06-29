@@ -1,3 +1,9 @@
+## [1.12.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.2...v1.12.0-rc.3) (2026-06-29)
+
+### Bug Fixes
+
+* **contract:** rename adminGlobalID claim to match agate configuration ([d7d9445](https://github.com/agridata-ch/backend/commit/d7d94457102a79d82600b5c80bcddb6825647410)), closes [DIGIB2-311](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-311)
+
 ## [1.12.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.1...v1.12.0-rc.2) (2026-06-29)
 
 ### Bug Fixes
