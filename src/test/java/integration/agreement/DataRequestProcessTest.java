@@ -253,7 +253,7 @@ class DataRequestProcessTest {
     // Step 20: As Admin initiate the seal process
     requestAs(ADMIN)
         .pathParam("id", revisionId5)
-        .queryParam("adminGlobalId", ADMIN_GLOBAL_ID)
+        .queryParam("adminGlobalID", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
 
