@@ -1,3 +1,9 @@
+## [1.12.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.1...v1.12.0-rc.2) (2026-06-29)
+
+### Bug Fixes
+
+* **deps:** update quarkus ([b56b8c8](https://github.com/agridata-ch/backend/commit/b56b8c89880e8fe68c6802b73a0b768f50983f98))
+
 ## [1.12.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.11.1-rc.1...v1.12.0-rc.1) (2026-06-29)
 
 ### Features
