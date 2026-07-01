@@ -1,3 +1,9 @@
+## [1.12.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.3...v1.12.0-rc.4) (2026-07-01)
+
+### Features
+
+* **notifications:** Add notification data request triggers approve and rejected ([a11d940](https://github.com/agridata-ch/backend/commit/a11d9400bcc38ebca3d501427380f67c60afdd76)), closes [DIGIB2-548](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-548)
+
 ## [1.12.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.2...v1.12.0-rc.3) (2026-06-29)
 
 ### Bug Fixes
