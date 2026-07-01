@@ -9,6 +9,7 @@ import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.product.persistence.DataProductEntity;
 import ch.agridata.product.persistence.DataProviderEntity;
+import ch.agridata.product.persistence.DataSourceSystemEntity;
 import ch.agridata.user.dto.LegalFormEnum;
 import java.util.UUID;
 import lombok.Getter;
@@ -121,6 +122,14 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProviderEntity> UUID_61404B83 = id("61404b83-078e-4b4f-a6d6-2aa3990f429c");
     public static final Identifier<DataProviderEntity> UUID_E37B148B = id("e37b148b-9a0f-4c2e-80c5-fe9c9416b640");
     public static final Identifier<DataProviderEntity> UUID_3BBC6006 = id("3bbc6006-1697-4a5f-8cba-2d34fbc278db");
+  }
+
+  public static class DataSourceSystem {
+    public static final Identifier<DataSourceSystemEntity> UUID_5335D715 = id("5335d715-e95c-4777-a424-ab73f2ff5618");
+    public static final Identifier<DataSourceSystemEntity> UUID_4CCBfA06 = id("4ccbfa06-a547-4a76-9dfc-61c22a4ea8ce");
+    public static final Identifier<DataSourceSystemEntity> UUID_E93F1023 = id("e93f1023-850d-4188-bf40-50e5eedaaa57");
+    public static final Identifier<DataSourceSystemEntity> UUID_810AF188 = id("810af188-8800-48f8-9b12-0276bb4b4e0e");
+    public static final Identifier<DataSourceSystemEntity> UUID_7B8FE538 = id("7b8fe538-e8cf-472c-a171-c24e8fb8a704");
   }
 
   @Getter

@@ -8,6 +8,8 @@ agridata:
     otp:
       validation:
         enabled: false
+  product:
+    uploads-bucket-name: uploads
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
@@ -91,6 +93,7 @@ quarkus:
     devservices:
       buckets:
         - contracts
+        - uploads
     aws:
       credentials:
         type: static

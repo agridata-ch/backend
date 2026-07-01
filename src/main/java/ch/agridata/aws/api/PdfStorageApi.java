@@ -1,11 +1,14 @@
 package ch.agridata.aws.api;
 
 /**
- * Internal interface for storing and retrieving PDF files in object storage.
+ * Internal interface for storing, retrieving, and deleting PDF files in object storage. Additionally, it provides operations for reading
+ * the virus scan results.
  *
- * @CommentLastReviewed 2026-04-17
+ * @CommentLastReviewed 2026-07-10
  */
 public interface PdfStorageApi {
+
+  String GUARDDUTY_TAG_KEY = "GuardDutyMalwareScanStatus";
 
   /**
    * Uploads a PDF to a storage bucket.
@@ -24,4 +27,21 @@ public interface PdfStorageApi {
    * @return raw bytes of the downloaded PDF
    */
   byte[] download(String bucket, String fileName);
+
+  /**
+   * Reads the scan result from a storage bucket.
+   *
+   * @param bucket   the name of the bucket
+   * @param fileName the fileName used as the storage key
+   * @return the scan result as a GuardDutyScanResultEnum
+   */
+  GuardDutyScanResultEnum readScanResult(String bucket, String fileName);
+
+  /**
+   * Deletes a PDF from a storage bucket.
+   *
+   * @param bucket   the name of the bucket
+   * @param fileName the fileName used as the storage key
+   */
+  void delete(String bucket, String fileName);
 }
