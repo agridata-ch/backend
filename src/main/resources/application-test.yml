@@ -5,6 +5,8 @@ agridata:
     sender-address: support@agridata.local
   agreement:
     contract-bucket-name: contracts
+  product:
+    uploads-bucket-name: uploads
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
@@ -53,6 +55,7 @@ quarkus:
     devservices:
       buckets:
         - contracts
+        - uploads
     aws:
       credentials:
         type: static

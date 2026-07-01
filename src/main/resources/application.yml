@@ -13,6 +13,9 @@ agridata:
       admin-path: "/admin/{id}"
       consumer-path: "/data-requests/{id}"
       provider-path: "/data-requests-provider/{id}"
+  product:
+    scan-recovery:
+      pending-timeout: PT15M
 bit:
   signature:
     key-bearer: "BLW-Agridata"

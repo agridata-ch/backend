@@ -8,8 +8,10 @@ import ch.agridata.common.utils.ValidationSchemaGenerator;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.mapper.DataProductMapper;
+import ch.agridata.product.persistence.DataProductDocumentRepository;
 import ch.agridata.product.persistence.DataProductEntity;
 import ch.agridata.product.persistence.DataProductRepository;
+import ch.agridata.product.persistence.DocumentScanStatusEnum;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataProductStateService {
   private final DataProductRepository dataProductRepository;
+  private final DataProductDocumentRepository dataProductDocumentRepository;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final DataProductMapper dataProductMapper;
   private final Validator validator;
@@ -56,6 +59,10 @@ public class DataProductStateService {
     if (dataProduct.getStateCode() != ch.agridata.product.persistence.DataProductStateEnum.DRAFT
         || newState != DataProductStateEnum.ACTIVE) {
       throw new IllegalStateException("Unable to transition from state " + dataProduct.getStateCode() + " to " + newState);
+    }
+    if (dataProductDocumentRepository.existsByDataProductIdAndScanStatusNot(dataProduct.getId(), DocumentScanStatusEnum.AVAILABLE)) {
+      throw new IllegalStateException(
+          "Unable to transition to " + newState + ": not all documents of data product " + dataProduct.getId() + " are available");
     }
     validate(dataProductMapper.toUpdateDto(dataProduct), ValidationSchemaGenerator.Submit.class);
     dataProduct.setStateCode(dataProductMapper.toPersistenceDataProductStateEnum(newState));

@@ -1,4 +1,4 @@
-TRUNCATE TABLE data_request, consent_request, audit_log, data_request_data_product, contract_revision, data_product, otp_challenge, notification_batch, notification_recipient, notification_inbox, notification_dispatch;
+TRUNCATE TABLE data_request, consent_request, audit_log, data_request_data_product, contract_revision, data_product, data_product_document, otp_challenge, notification_batch, notification_recipient, notification_inbox, notification_dispatch;
 DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- ===============================================
