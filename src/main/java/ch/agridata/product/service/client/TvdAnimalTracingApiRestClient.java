@@ -1,6 +1,8 @@
-package ch.agridata.datatransferv2.service.client;
+package ch.agridata.product.service.client;
 
 import ch.agridata.common.filters.RestClientLoggingFilter;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.dto.RestClientIdentifier;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Encoded;
@@ -12,18 +14,18 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * REST client for interacting with the TVD ZO API. It applies security, request/response filters,
+ * REST client for interacting with the TVD Animal Tracing API. It applies security, request/response filters,
  * and error mapping for reliable communication.
  *
- * @CommentLastReviewed 2026-03-24
+ * @CommentLastReviewed 2026-02-04
  */
 
-@RegisterRestClient(configKey = "tvd-zo-api")
+@RegisterRestClient(configKey = RestClientIdentifier.ConfigKeys.TVD_ANIMAL_TRACING_API)
 @RegisterProvider(RestClientLoggingFilter.class)
 @RegisterProvider(DataProviderExceptionMapper.class)
 @OidcClientFilter("tvd-api")
 @Path("/")
-public interface TvdZoApiRestClient extends DataProviderRestClient {
+public interface TvdAnimalTracingApiRestClient extends DataProviderRestClient {
 
   @GET
   @Path("/{path}")

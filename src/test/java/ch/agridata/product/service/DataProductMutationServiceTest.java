@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +28,7 @@ class DataProductMutationServiceTest {
   private DataProductRepository dataProductRepository;
   @Mock
   private DataSourceSystemRepository dataSourceSystemRepository;
-  @Spy
+  @Mock
   private DataProductMapperImpl dataProductMapper;
   @Mock
   private RestClientRepository restClientRepository;

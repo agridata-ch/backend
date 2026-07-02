@@ -104,7 +104,7 @@ public class DataProviderController {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("/{providerId}/restClient")
+  @Path("/{providerId}/restClients")
   @Operation(
       operationId = "getRestClientsByProviderId",
       description = "Retrieves all rest clients that are assigned to a specific data provider"

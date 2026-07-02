@@ -1,6 +1,6 @@
 package ch.agridata.datatransferv2.service;
 
-import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
+import static ch.agridata.product.dto.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.api.DataProviderRestClientProviderApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.service.DataProductQueryService;
 import jakarta.ws.rs.core.GenericType;
@@ -46,7 +46,7 @@ class ChangeDetectionServiceTest {
   ConsentRequestApi consentRequestApi;
 
   @Mock
-  DataProviderRestClientProvider dataProviderRestClientProvider;
+  DataProviderRestClientProviderApi dataProviderRestClientProviderApi;
 
   @Mock
   AgridataSecurityIdentity securityIdentity;
@@ -182,7 +182,7 @@ class ChangeDetectionServiceTest {
         .thenReturn(List.of());
     when(securityIdentity.getUid()).thenReturn(Optional.of(CONSUMER_UID));
     when(securityIdentity.getAgateLoginId()).thenReturn(CONSUMER_AGATE_LOGIN_ID);
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     var mockResponse = mock(Response.class);
     when(dataProviderRestClient.get(pathCaptor.capture(), headersCaptor.capture())).thenReturn(mockResponse);
     doReturn(List.of()).when(mockResponse).readEntity(any(GenericType.class));
@@ -214,7 +214,7 @@ class ChangeDetectionServiceTest {
   private void mockProviderResponse(List<String> changedUids) {
     when(securityIdentity.getUid()).thenReturn(Optional.of(CONSUMER_UID));
     when(securityIdentity.getAgateLoginId()).thenReturn(CONSUMER_AGATE_LOGIN_ID);
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     var mockResponse = mock(Response.class);
     when(dataProviderRestClient.get(any(), any())).thenReturn(mockResponse);
     doReturn(changedUids).when(mockResponse).readEntity(any(GenericType.class));

@@ -1,5 +1,8 @@
-package ch.agridata.datatransferv2.service.client;
+package ch.agridata.product.service.client;
 
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.api.DataProviderRestClientProviderApi;
+import ch.agridata.product.dto.RestClientIdentifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -10,7 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  * @CommentLastReviewed 2026-05-26
  */
 @ApplicationScoped
-public class DataProviderRestClientProvider {
+public class DataProviderRestClientProvider implements DataProviderRestClientProviderApi {
 
   private final AgisApiRestClient agisApiRestClient;
   private final TvdAnimalTracingApiRestClient tvdAnimalTracingApiRestClient;
@@ -35,18 +38,6 @@ public class DataProviderRestClientProvider {
       case TVD_ZO_API -> tvdZoApiRestClient;
       case ACONTROL_API -> acontrolApiRestClient;
     };
-  }
-
-  /**
-   * Enumerates supported external rest clients that serve as sources for data products.
-   *
-   * @CommentLastReviewed 2026-05-26
-   */
-  public enum RestClientIdentifier {
-    AGIS_API,
-    TVD_ANIMAL_TRACING_API,
-    TVD_ZO_API,
-    ACONTROL_API
   }
 
 }

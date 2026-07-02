@@ -20,7 +20,7 @@ import org.mapstruct.MappingTarget;
  * @CommentLastReviewed 2026-06-11
  */
 
-@Mapper(componentModel = "jakarta")
+@Mapper(componentModel = "jakarta", uses = RestClientMapper.class)
 public interface DataProductMapper {
 
   @Mapping(target = "dataSourceSystemCode", source = "dataSourceSystem.code")
