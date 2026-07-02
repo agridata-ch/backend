@@ -49,7 +49,7 @@ class AccessTest {
         PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, PROVIDER_ROLE, SUPPORT_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProviderController.PATH + "/1/dataSourceSystems",
         ADMIN_ROLE, PROVIDER_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET, DataProviderController.PATH + "/1/restClient",
+    AccessTestUtils.assertForbiddenForAllExcept(GET, DataProviderController.PATH + "/1/restClients",
         ADMIN_ROLE, PROVIDER_ROLE);
   }
 

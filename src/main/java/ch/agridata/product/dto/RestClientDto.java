@@ -16,6 +16,7 @@ import lombok.Builder;
 @Builder
 public record RestClientDto(
     UUID id,
-    String code
+    String code,
+    String url
 ) {
 }

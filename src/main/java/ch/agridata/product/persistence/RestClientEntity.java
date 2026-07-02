@@ -39,4 +39,7 @@ public class RestClientEntity extends AuditableEntity {
 
   @Column(name = "code", length = 50, nullable = false)
   private String code;
+
+  @Column(name = "url", length = 255, nullable = false)
+  private String url;
 }
