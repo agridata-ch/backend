@@ -1,6 +1,6 @@
 package ch.agridata.datatransferv2.service.task;
 
-import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier.AGIS_API;
+import static ch.agridata.product.dto.RestClientIdentifier.AGIS_API;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.api.DataProviderRestClientProviderApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
@@ -34,7 +34,7 @@ class BuildProviderRequestTaskTest {
   private static final String CONSUMER_AGATE_LOGIN_ID = "12345678";
 
   @Mock
-  DataProviderRestClientProvider dataProviderRestClientProvider;
+  DataProviderRestClientProviderApi dataProviderRestClientProviderApi;
 
   @Mock
   DataProviderRestClient dataProviderRestClient;
@@ -50,7 +50,7 @@ class BuildProviderRequestTaskTest {
     var productConfig = createProductConfig("POST", "/api/data", "{\"uid\": \"{{uid}}\"}");
     var context = createContext(productConfig);
 
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.post(any(), any(), any())).thenReturn(mock(Response.class));
 
     var result = task.apply(context);
@@ -70,7 +70,7 @@ class BuildProviderRequestTaskTest {
     var productConfig = createProductConfig("GET", "/api/data/{{uid}}", null);
     var context = createContext(productConfig);
 
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.get(any(), any())).thenReturn(mock(Response.class));
 
     var result = task.apply(context);
@@ -88,7 +88,7 @@ class BuildProviderRequestTaskTest {
     var productConfig = createProductConfig("DELETE", "/api/data", null);
     var context = createContext(productConfig);
 
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
 
     // The exception is thrown when building the supplier (during apply), not when executing it
     assertThatThrownBy(() -> task.apply(context))
@@ -105,7 +105,7 @@ class BuildProviderRequestTaskTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Parameter 'notFound' not found");
 
-    verifyNoInteractions(dataProviderRestClientProvider);
+    verifyNoInteractions(dataProviderRestClientProviderApi);
   }
 
   @Test
@@ -113,7 +113,7 @@ class BuildProviderRequestTaskTest {
     var productConfig = createProductConfig("POST", "/api/data", null);
     var context = createContext(productConfig);
 
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.post(any(), any(), any())).thenReturn(mock(Response.class));
 
     var result = task.apply(context);
@@ -134,7 +134,7 @@ class BuildProviderRequestTaskTest {
         .requestParameters(Map.of("uid", "CHE987654321", "year", "2024", "format", "json"))
         .build();
 
-    when(dataProviderRestClientProvider.get(AGIS_API)).thenReturn(dataProviderRestClient);
+    when(dataProviderRestClientProviderApi.get(AGIS_API)).thenReturn(dataProviderRestClient);
     when(dataProviderRestClient.get(any(), any())).thenReturn(mock(Response.class));
 
     var result = task.apply(context);

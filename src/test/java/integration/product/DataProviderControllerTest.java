@@ -94,7 +94,7 @@ class DataProviderControllerTest {
     UUID knownId = TestDataIdentifiers.DataProvider.UUID_61404B83.uuid();
 
     List<RestClientDto> restClientDtos =
-        AuthTestUtils.requestAs(user).when().get(DataProviderController.PATH + "/" + knownId.toString() + "/restClient").then()
+        AuthTestUtils.requestAs(user).when().get(DataProviderController.PATH + "/" + knownId.toString() + "/restClients").then()
             .statusCode(200).extract().as(new TypeRef<>() {
             });
 
@@ -106,7 +106,7 @@ class DataProviderControllerTest {
   void givenUnkownRestClientId_whenGetRestClients_thenReturnRestClientDtos(TestUserEnum user) {
     UUID unknownId = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    AuthTestUtils.requestAs(user).when().get(DataProviderController.PATH + "/" + unknownId + "/restClient").then()
+    AuthTestUtils.requestAs(user).when().get(DataProviderController.PATH + "/" + unknownId + "/restClients").then()
         .statusCode(404);
   }
 

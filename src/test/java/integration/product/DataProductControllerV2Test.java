@@ -1,5 +1,6 @@
 package integration.product;
 
+import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
@@ -26,12 +27,16 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import java.util.UUID;
 import lombok.SneakyThrows;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 @QuarkusTest
 class DataProductControllerV2Test {
+  @ConfigProperty(name = "quarkus.rest-client.agis-api.url")
+  String agisApiUrl;
+
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Test
@@ -357,7 +362,8 @@ class DataProductControllerV2Test {
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenAccessibleDraftDataProduct_whenGetDataProduct_thenReturnDataProduct(TestUserEnum user) {
-    DataProductUpdateDto dataProductRequest = DataProductUpdateDto.builder().restClientPathTemplate("/test").build();
+    DataProductUpdateDto dataProductRequest =
+        DataProductUpdateDto.builder().restClientPathTemplate("/test").restClientId(UUID_B1398C9D.uuid()).build();
     DataProductDto existingDataProduct = AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
@@ -365,6 +371,7 @@ class DataProductControllerV2Test {
         AuthTestUtils.requestAs(user).when().get(DataProductControllerV2.PATH + "/" + existingDataProduct.id()).then().statusCode(200)
             .extract().as(DataProductDto.class);
     assertThat(fetchedDataProduct.restClientPathTemplate()).isEqualTo(existingDataProduct.restClientPathTemplate());
+    assertThat(fetchedDataProduct.restClient().url()).isEqualTo(agisApiUrl);
   }
 
   @SneakyThrows

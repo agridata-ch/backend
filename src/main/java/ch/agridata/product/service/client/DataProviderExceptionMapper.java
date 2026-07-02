@@ -1,4 +1,4 @@
-package ch.agridata.datatransferv2.service.client;
+package ch.agridata.product.service.client;
 
 import ch.agridata.common.exceptions.DataProviderException;
 import jakarta.ws.rs.core.Response;

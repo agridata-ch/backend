@@ -1,14 +1,13 @@
 package ch.agridata.datatransferv2.service;
 
-import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier;
-
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
 import ch.agridata.product.api.DataProductApi;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.api.DataProviderRestClientProviderApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
+import ch.agridata.product.dto.RestClientIdentifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.GenericType;
 import java.net.URLEncoder;
@@ -40,7 +39,7 @@ public class ChangeDetectionService {
 
   private final DataProductApi dataProductApi;
   private final ConsentRequestApi consentRequestApi;
-  private final DataProviderRestClientProvider dataProviderRestClientProvider;
+  private final DataProviderRestClientProviderApi dataProviderRestClientProviderApi;
   private final AgridataSecurityIdentity securityIdentity;
 
   public List<ProducerIdentifier> getModifiedProducers(UUID productId, LocalDate since) {
@@ -89,7 +88,7 @@ public class ChangeDetectionService {
         CHANGE_DETECTION_PATH_PLACEHOLDER,
         URLEncoder.encode(since.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), StandardCharsets.UTF_8));
     var restClientIdentifier = RestClientIdentifier.valueOf(config.restClientIdentifierCode());
-    var client = dataProviderRestClientProvider.get(restClientIdentifier);
+    var client = dataProviderRestClientProviderApi.get(restClientIdentifier);
     var headers = DataProviderRestClient.Headers.builder()
         .agridataConsumerUid(securityIdentity.getUid().orElse(null))
         .agridataConsumerAgateLoginId(securityIdentity.getAgateLoginId())

@@ -1,10 +1,9 @@
-package ch.agridata.datatransferv2.client;
+package ch.agridata.product.service.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.common.exceptions.DataProviderException;
-import ch.agridata.datatransferv2.service.client.DataProviderExceptionMapper;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

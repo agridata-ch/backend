@@ -1,6 +1,8 @@
-package ch.agridata.datatransferv2.service.client;
+package ch.agridata.product.service.client;
 
 import ch.agridata.common.filters.RestClientLoggingFilter;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.dto.RestClientIdentifier;
 import io.quarkus.oidc.client.filter.OidcClientFilter;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Encoded;
@@ -18,7 +20,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * @CommentLastReviewed 2026-05-26
  */
 
-@RegisterRestClient(configKey = "acontrol-api")
+@RegisterRestClient(configKey = RestClientIdentifier.ConfigKeys.ACONTROL_API)
 @RegisterProvider(RestClientLoggingFilter.class)
 @RegisterProvider(DataProviderExceptionMapper.class)
 @OidcClientFilter("acontrol-api")

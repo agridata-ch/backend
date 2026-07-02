@@ -3,6 +3,7 @@ package ch.agridata.product.mapper;
 import ch.agridata.product.dto.RestClientDto;
 import ch.agridata.product.persistence.RestClientEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * Maps between {@code RestClientEntity} and its DTO representation {@code RestClientDto}.
@@ -12,7 +13,9 @@ import org.mapstruct.Mapper;
  * @CommentLastReviewed 2026-06-11
  */
 
-@Mapper(componentModel = "jakarta")
+@Mapper(componentModel = "jakarta", uses = RestClientUrlResolver.class)
 public interface RestClientMapper {
+
+  @Mapping(target = "url", source = "entity", qualifiedByName = "resolveRestClientUrl")
   RestClientDto toDto(RestClientEntity entity);
 }
