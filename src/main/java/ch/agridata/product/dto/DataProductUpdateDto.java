@@ -1,9 +1,11 @@
 package ch.agridata.product.dto;
 
+import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -14,9 +16,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * properties and configurations needed for identifying and interacting with a specific
  * data product.
  *
- * @CommentLastReviewed 2026-06-11
+ * @CommentLastReviewed 2026-07-01
  */
-
 @Schema(description = "Data transfer object representing a data product")
 @Builder
 public record DataProductUpdateDto(
@@ -83,7 +84,19 @@ public record DataProductUpdateDto(
         examples = "v1/animal-updates/{{uid}}?since={{LAST_CHANGED_SINCE}}"
     )
     @Size(max = 1000)
-    String restClientChangeDetectionPathTemplate
+    String restClientChangeDetectionPathTemplate,
+
+    @Schema(
+        description = "List of relevant product links"
+    )
+    @Valid
+    List<LinkDto> links,
+
+    @Schema(
+        description = "Technical product details"
+    )
+    @Valid
+    DataProductTechnicalDescriptionDto technicalDescription
 ) {
 
 }
