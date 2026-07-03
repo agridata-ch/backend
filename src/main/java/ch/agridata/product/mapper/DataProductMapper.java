@@ -7,6 +7,7 @@ import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductNameDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataProductStateEnum;
+import ch.agridata.product.dto.DataProductTechnicalDescriptionDto;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.persistence.DataProductEntity;
 import org.mapstruct.Mapper;
@@ -53,6 +54,8 @@ public interface DataProductMapper {
   TranslationPersistenceDto toTranslationPersistenceDto(DataProductNameDto translationDto);
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataProductDescriptionDto translationDto);
+
+  TranslationPersistenceDto toTranslationPersistenceDto(DataProductTechnicalDescriptionDto translationDto);
 
   DataProductStateEnum toDtoDataProductStateEnum(ch.agridata.product.persistence.DataProductStateEnum persistenceStateEnum);
 

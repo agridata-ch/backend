@@ -1,9 +1,11 @@
 package ch.agridata.product.dto;
 
+import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.dto.TranslationDto;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -69,6 +71,16 @@ public record DataProductDto(
         description = "Description of the product"
     )
     TranslationDto description,
+
+    @Schema(
+        description = "List of relevant product links"
+    )
+    List<LinkDto> links,
+
+    @Schema(
+        description = "Technical product details"
+    )
+    TranslationDto technicalDescription,
 
     @Schema(
         description = "Timestamp indicating when the product was marked as deprecated.",

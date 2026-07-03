@@ -10,11 +10,13 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
+import ch.agridata.common.dto.LinkDto;
 import ch.agridata.product.controller.DataProductControllerV2;
 import ch.agridata.product.dto.DataProductDescriptionDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductNameDto;
 import ch.agridata.product.dto.DataProductStateEnum;
+import ch.agridata.product.dto.DataProductTechnicalDescriptionDto;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.product.dto.RestClientMethodCodeEnum;
@@ -25,6 +27,7 @@ import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -188,6 +191,8 @@ class DataProductControllerV2Test {
     assertThat(responseDataProductDto.dataSourceSystem().id()).isEqualTo(requestDataProductUpdate.dataSourceSystemId());
     assertThat(responseDataProductDto.name().de()).isEqualTo(requestDataProductUpdate.name().de());
     assertThat(responseDataProductDto.description().de()).isEqualTo(requestDataProductUpdate.description().de());
+    assertThat(responseDataProductDto.links()).isEqualTo(requestDataProductUpdate.links());
+    assertThat(responseDataProductDto.technicalDescription().it()).isEqualTo(requestDataProductUpdate.technicalDescription().it());
     assertThat(responseDataProductDto.stateCode()).isEqualTo(DataProductStateEnum.DRAFT);
     assertThat(responseDataProductDto.flowCode()).isEqualTo(requestDataProductUpdate.flowCode());
     assertThat(responseDataProductDto.restClient().id()).isEqualTo(requestDataProductUpdate.restClientId());
@@ -201,6 +206,8 @@ class DataProductControllerV2Test {
         .dataSourceSystemId(agisDataSourceSystemId)
         .name(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano"))
         .description(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano"))
+        .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
+        .technicalDescription(new DataProductTechnicalDescriptionDto("", "", "Descrizione tecnica italiano"))
         .restClientId(agisRestClientId)
         .flowCode(FlowCodeEnum.UNBOUND_POST_VALIDATION)
         .restClientPathTemplate("path/template")
