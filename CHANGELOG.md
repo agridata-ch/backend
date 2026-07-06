@@ -1,3 +1,9 @@
+## [1.12.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.4...v1.12.0-rc.5) (2026-07-06)
+
+### Features
+
+* **deps:** Update trivyignore ([17a059b](https://github.com/agridata-ch/backend/commit/17a059be9b26df61abf77c933580690f3efdfd15)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
 ## [1.12.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.3...v1.12.0-rc.4) (2026-07-01)
 
 ### Features
