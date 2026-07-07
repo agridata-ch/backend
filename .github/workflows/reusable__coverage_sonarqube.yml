@@ -1,0 +1,60 @@
+on:
+  workflow_call:
+
+jobs:
+  coverage-sonarqube:
+    name: Coverage Merge and SonarQube
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # SonarQube needs full history for new-code / blame analysis.
+          fetch-depth: 0
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'corretto'
+
+      - name: Restore Maven Cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Collect the *.exec files uploaded by every unit / Quarkus-shard test job.
+      # Each artifact lands in its own subfolder under coverage-data/.
+      - name: Download all coverage data
+        uses: actions/download-artifact@v7
+        with:
+          path: coverage-data
+          pattern: coverage-*
+
+      # test-compile produces target/classes AND target/test-classes (the latter is needed
+      # by SonarQube for sonar.java.test.binaries); it stops before running any tests.
+      # Then merge all shard *.exec files into one report for the complete coverage picture.
+      - name: Merge coverage and generate report
+        run: >
+          mvn -B -Pci-coverage-report clean test-compile
+          org.jacoco:jacoco-maven-plugin:merge@merge-ci
+          org.jacoco:jacoco-maven-plugin:report@report-ci
+
+      - name: Run SonarQube Analysis
+        run: |
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.6.0.6792:sonar \
+            -Dsonar.token=${{secrets.SONAR_TOKEN}} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=agridata-ch \
+            -Dsonar.projectKey=agridata-ch_backend \
+            -Dsonar.sources=src/main/java \
+            -Dsonar.test=src/test/java \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.java.test.binaries=target/test-classes \
+            -Dsonar.java.codeCoveragePlugin=jacoco \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+            -Dsonar.exclusions=**/agridata/common/openapi/**,**/agridata/testdata/**
