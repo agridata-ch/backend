@@ -1,3 +1,9 @@
+## [1.12.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.5...v1.12.0-rc.6) (2026-07-07)
+
+### Features
+
+* **notifications:** Remove custom notification testdata ([2ed1ec0](https://github.com/agridata-ch/backend/commit/2ed1ec0fae4ebb234877a70a9d09e8c2a5be3e8f)), closes [DIGIB2-1480](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1480)
+
 ## [1.12.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.4...v1.12.0-rc.5) (2026-07-06)
 
 ### Features
