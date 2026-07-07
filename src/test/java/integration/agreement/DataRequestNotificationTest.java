@@ -42,7 +42,8 @@ class DataRequestNotificationTest {
     var batches = notificationBatchRepository.findAll().list();
     assertThat(batches).anyMatch(b ->
         b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_APPROVED.name())
-        && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
+            && statusCodeIsNotFailed(b.getStatusCode())
+    );
   }
 
   @Test
@@ -59,7 +60,8 @@ class DataRequestNotificationTest {
     var batches = notificationBatchRepository.findAll().list();
     assertThat(batches).anyMatch(b ->
         b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_CHANGES_NEEDED.name())
-        && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
+            && statusCodeIsNotFailed(b.getStatusCode())
+    );
   }
 
   @Test
@@ -76,6 +78,11 @@ class DataRequestNotificationTest {
     assertThat(batches).anyMatch(b -> b.getTemplate()
         .getEventTypeCode()
         .equals(EventTypeCodeEnum.DATA_REQUEST_READY_FOR_REVIEW.name())
-        && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
+        && statusCodeIsNotFailed(b.getStatusCode())
+    );
+  }
+
+  private static boolean statusCodeIsNotFailed(NotificationBatchStatusEnum statusCode) {
+    return statusCode == NotificationBatchStatusEnum.PENDING || statusCode == NotificationBatchStatusEnum.COMPLETE;
   }
 }

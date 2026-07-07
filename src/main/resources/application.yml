@@ -37,6 +37,13 @@ quarkus:
     db-kind: postgresql
     jdbc:
       driver: org.postgresql.Driver
+    # DevServices image pinned so CI can pre-cache it (dev/test only; prod uses the real datasource).
+    devservices:
+      image-name: postgres:18
+  # DevServices image pinned so CI can pre-cache it (dev/test only; prod uses the real OIDC server).
+  keycloak:
+    devservices:
+      image-name: quay.io/keycloak/keycloak:26.6.2
   flyway:
     baseline-on-migrate: true
     locations:
