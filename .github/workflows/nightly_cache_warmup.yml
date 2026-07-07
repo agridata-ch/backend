@@ -70,3 +70,68 @@ jobs:
         with:
           path: ${{ github.workspace }}/.cache/trivy
           key: cache-trivy-${{ github.run_id }}
+
+  # Pre-pull the Quarkus DevServices images so the @QuarkusTest shards docker-load them
+  # instead of pulling from the registry during boot. Image tags are pinned in
+  # src/main/resources/application.yml (quarkus.datasource/keycloak.devservices.image-name)
+  # and MUST be kept in sync with the tags below.
+  warm-devservices-images:
+    name: Warm Quarkus DevServices image cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Pull and save DevServices images
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/.cache/devservices"
+          docker pull postgres:18
+          docker pull quay.io/keycloak/keycloak:26.6.2
+          docker save -o "$GITHUB_WORKSPACE/.cache/devservices/images.tar" \
+            postgres:18 quay.io/keycloak/keycloak:26.6.2
+
+      - name: Save DevServices image cache
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ github.workspace }}/.cache/devservices
+          key: devservices-images-${{ github.run_id }}
+
+  # The warmup is a single point of dependency: if it fails silently, every CI run
+  # degrades (stale Maven / NVD / Trivy / DevServices caches). Surface it as a tracking issue.
+  notify-on-failure:
+    name: Report warmup failure
+    runs-on: ubuntu-latest
+    needs: [ warm-maven-cache, warm-trivy-cache, warm-devservices-images ]
+    if: failure()
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update tracking issue
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const label = "ci-warmup-failure";
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `Nightly cache warmup failed.\n\n` +
+              `Run: ${runUrl}\n\n` +
+              `Until this is fixed, CI runs degrade (stale Maven / NVD / Trivy / DevServices caches).`;
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: label,
+            });
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: "Nightly cache warmup failed",
+                body,
+                labels: [ label ],
+              });
+            }
