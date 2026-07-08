@@ -51,8 +51,8 @@ jobs:
       - name: Maven package
         run: mvn -B clean package -DskipTests -T 1C
 
-      - name: Set image tag to GITHUB_ENV
-        run: echo "IMAGE_TAG=${{ inputs.version }}" >> $GITHUB_ENV
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -64,16 +64,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and Tag Image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # Layer-cache the base image + apk security layer across runs (GHA cache),
+      # then push the built image to ECR.
+      - name: Build and push image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Push Image to AWS ECR
+      - name: Expose pushed image reference
         id: push-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        run: echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ inputs.version }}" >> "$GITHUB_OUTPUT"
