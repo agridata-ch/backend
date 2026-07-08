@@ -1,10 +1,10 @@
 package ch.agridata.product.dto;
 
 import ch.agridata.common.dto.TranslationDto;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Builder;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * Represents a data provider with identifiers, code, and name. It provides the essential
