@@ -1,6 +1,7 @@
 package ch.agridata.notification.dto;
 
 import ch.agridata.common.dto.TranslationDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,7 +11,12 @@ import java.util.UUID;
  * @CommentLastReviewed 2026-05-08
  */
 public record InboxEntryDto(
-    UUID id, TranslationDto title, TranslationDto text, UUID userId, boolean isRead, LocalDateTime createdAt,
+    UUID id,
+    TranslationDto title,
+    TranslationDto text,
+    UUID userId,
+    @JsonProperty("isRead") boolean isRead,
+    LocalDateTime createdAt,
     TargetTypeCodeEnum targetType,
     UUID targetId
 ) {

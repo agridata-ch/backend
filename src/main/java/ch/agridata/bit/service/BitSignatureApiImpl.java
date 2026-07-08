@@ -25,6 +25,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.UUID;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -32,7 +33,6 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jspecify.annotations.NonNull;
 
 /**
  * Seals a PDF document using the BIT evidence Signing API with Mobile ID as the authentication

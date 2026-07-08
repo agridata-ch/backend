@@ -29,6 +29,40 @@ class DataRequestNotificationTest {
   private final NotificationBatchRepository notificationBatchRepository;
 
   @Test
+  void givenValidInReviewRequest_whenAdminApproves_thenPendingNotificationBatchIsQueued() {
+    // Trigger consumer user creation so the recipient list has at least one result
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get("/api/user/v1/user-info");
+
+    String id = createDataRequest().then().statusCode(201).extract().path("id");
+    updateDataRequest(id, getDataRequestDtoBuilder().build()).then().statusCode(200);
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE).then().statusCode(200);
+
+    setStatusAs(id, DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER, ADMIN).then().statusCode(200);
+
+    var batches = notificationBatchRepository.findAll().list();
+    assertThat(batches).anyMatch(b ->
+        b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_APPROVED.name())
+        && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
+  }
+
+  @Test
+  void givenValidInReviewRequest_whenAdminRequestsChanges_thenPendingNotificationBatchIsQueued() {
+    // Trigger consumer user creation so the recipient list has at least one result
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get("/api/user/v1/user-info");
+
+    String id = createDataRequest().then().statusCode(201).extract().path("id");
+    updateDataRequest(id, getDataRequestDtoBuilder().build()).then().statusCode(200);
+    setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE).then().statusCode(200);
+
+    setStatusAs(id, DataRequestStateEnum.DRAFT, ADMIN).then().statusCode(200);
+
+    var batches = notificationBatchRepository.findAll().list();
+    assertThat(batches).anyMatch(b ->
+        b.getTemplate().getEventTypeCode().equals(EventTypeCodeEnum.DATA_REQUEST_CHANGES_NEEDED.name())
+        && b.getStatusCode() == NotificationBatchStatusEnum.PENDING);
+  }
+
+  @Test
   void givenValidDraftRequest_whenConsumerSubmits_thenPendingNotificationBatchIsQueued() {
     // Trigger admin user creation so UserService.getAdminUserIds() has at least one result
     AuthTestUtils.requestAs(ADMIN).when().get("/api/user/v1/user-info");

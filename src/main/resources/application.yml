@@ -11,8 +11,8 @@ agridata:
   notifications:
     frontend-url-paths:
       admin-path: "/admin/{id}"
-      provider-path: "/provider/{id}"
-      consumer-path: "/consumer/{id}"
+      consumer-path: "/data-requests/{id}"
+      provider-path: "/data-requests-provider/{id}"
 bit:
   signature:
     key-bearer: "BLW-Agridata"

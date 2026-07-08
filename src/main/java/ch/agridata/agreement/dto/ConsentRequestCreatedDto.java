@@ -1,5 +1,6 @@
 package ch.agridata.agreement.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public record ConsentRequestCreatedDto(
     @NotNull
     String dataProducerUid,
 
+    @JsonProperty("isCreated")
     boolean isCreated
 ) {
 }

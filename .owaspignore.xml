@@ -2,6 +2,7 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <!--    Example: -->
     <!--    <suppress until="2025-07-31Z">-->
+    <!--        &lt;!&ndash; started: YYYY-MM-DD | affected: NO (<<REASON>>) &ndash;&gt;-->
     <!--        <cve>CVE-2025-49574</cve>-->
     <!--    </suppress>-->
 
@@ -13,11 +14,11 @@
         logic. Additionally, the project does not declare quarkus-opentelemetry, so no
         OTel exporter or instrumentation pipeline is active.
     -->
-    <suppress until="2026-06-30Z">
+    <suppress until="2026-07-31Z">
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-39883</cve>
     </suppress>
-    <suppress until="2026-06-30Z">
+    <suppress until="2026-07-31Z">
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-29181</cve>
     </suppress>
@@ -29,7 +30,7 @@
         HTTP/3 is not enabled (quarkus.http.http3.* unset, no QUIC listener configured).
         The vulnerable QPACK decoder is never instantiated.
     -->
-    <suppress until="2026-06-30Z">
+    <suppress until="2026-07-31Z">
         <!-- started: 2026-06-15 | affected: NO (HTTP/3 not enabled) -->
         <cve>CVE-2026-42582</cve>
     </suppress>

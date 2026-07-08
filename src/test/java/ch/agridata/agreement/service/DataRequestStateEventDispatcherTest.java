@@ -41,23 +41,23 @@ class DataRequestStateEventDispatcherTest {
   // ── auditAdminStatusTransition ────────────────────────────────────────────
 
   @Test
-  void givenInReviewToDraft_whenAuditAdmin_thenLogRejected() {
+  void givenInReviewToDraft_whenAuditAdmin_thenLogRejectedAndQueueNotification() {
     var entity = entity();
 
     service.dispatchAdminStatusTransition(entity, IN_REVIEW, DRAFT);
 
     verify(auditingService).logDataRequestRejected(entity.getId());
-    verifyNoInteractions(notificationService);
+    verify(notificationService).queueDataRequestChangesNeeded(entity);
   }
 
   @Test
-  void givenInReviewToToBeSignedByConsumer_whenAuditAdmin_thenLogApproved() {
+  void givenInReviewToToBeSignedByConsumer_whenAuditAdmin_thenLogApprovedAndQueueNotification() {
     var entity = entity();
 
     service.dispatchAdminStatusTransition(entity, IN_REVIEW, TO_BE_SIGNED_BY_CONSUMER);
 
     verify(auditingService).logDataRequestApproved(entity.getId());
-    verifyNoInteractions(notificationService);
+    verify(notificationService).queueDataRequestApproved(entity);
   }
 
   // ── auditConsumerStatusTransition ─────────────────────────────────────────

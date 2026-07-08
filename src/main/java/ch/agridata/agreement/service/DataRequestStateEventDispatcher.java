@@ -32,9 +32,11 @@ public class DataRequestStateEventDispatcher {
   ) {
     if (oldStateCode == IN_REVIEW && newStateCode == DRAFT) {
       auditingService.logDataRequestRejected(entity.getId());
+      notificationService.queueDataRequestChangesNeeded(entity);
     } else if (oldStateCode == IN_REVIEW && newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
       auditingService.logDataRequestApproved(entity.getId());
       auditingService.logCollectiveSignatureSet(entity.getId());
+      notificationService.queueDataRequestApproved(entity);
     } else if (oldStateCode == TO_BE_ACTIVATED && newStateCode == ACTIVE) {
       auditingService.logDataRequestActivated(entity.getId());
       notificationService.queueDataRequestActivated(entity);

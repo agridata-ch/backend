@@ -9,6 +9,7 @@ import ch.agridata.notification.persistence.NotificationInboxEntity;
 import ch.agridata.notification.persistence.NotificationInboxRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,16 @@ public class NotificationInboxService {
   private final NotificationTargetTypeMapper targetTypeMapper;
 
   public PageResponseDto<InboxEntryDto> getInboxForUser(UUID userId, ResourceQueryDto query) {
-    var pagedEntities = inboxRepository.findPageByUserId(userId, query);
+    ResourceQueryDto effectiveQuery = query;
+    if (query.sortParams() == null || query.sortParams().isEmpty()) {
+      effectiveQuery = ResourceQueryDto.builder()
+          .page(query.page())
+          .size(query.size())
+          .sortParams(List.of("-createdAt"))
+          .searchTerm(query.searchTerm())
+          .build();
+    }
+    var pagedEntities = inboxRepository.findPageByUserId(userId, effectiveQuery);
     var items = pagedEntities.items().stream().map(this::toDto).toList();
     return new PageResponseDto<>(
         items,
