@@ -98,4 +98,10 @@ public class UserEntity extends AuditableEntity {
   @Column(name = "roles_at_last_login")
   @JdbcTypeCode(SqlTypes.JSON)
   private Set<String> rolesAtLastLogin;
+
+  @Column(name = "last_accepted_agb_date")
+  private LocalDateTime lastAcceptedAgbDate;
+
+  @Column(name = "last_accepted_agb_revision_id")
+  private UUID lastAcceptedAgbRevisionId;
 }

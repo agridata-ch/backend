@@ -29,6 +29,7 @@ import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -36,6 +37,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -141,6 +143,24 @@ public class UserController {
     if (!identity.isImpersonating()) {
       userService.updateUserPreferences(userPreferences);
     }
+  }
+
+  @POST
+  @ApiSubset({WEB_APP})
+  @Path("/agb-revisions/{agb-revision-id}/accept")
+  @Operation(
+      operationId = "acceptAgb",
+      description = "Records acceptance of the current AGB revision for the currently authenticated user.")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
+  @ResponseStatus(RestResponse.StatusCode.NO_CONTENT)
+  public void acceptAgb(
+      @Parameter(
+          description = "The id of the AGB revision the user is accepting.",
+          example = "3fa85f64-5717-4562-b3fc-2c963f66afb7"
+      )
+      @PathParam("agb-revision-id") UUID agbRevisionId) {
+    userService.acceptCurrentAgb(agbRevisionId);
   }
 
   @GET

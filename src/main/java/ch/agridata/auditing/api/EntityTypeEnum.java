@@ -9,5 +9,6 @@ package ch.agridata.auditing.api;
 public enum EntityTypeEnum {
   CONSENT_REQUEST,
   DATA_REQUEST,
-  CONTRACT_REVISION
+  CONTRACT_REVISION,
+  AGB_REVISION
 }

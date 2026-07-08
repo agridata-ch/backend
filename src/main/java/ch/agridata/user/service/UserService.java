@@ -1,11 +1,14 @@
 package ch.agridata.user.service;
 
+import static ch.agridata.auditing.api.ActionEnum.AGBS_ACCEPTED;
+import static ch.agridata.auditing.api.EntityTypeEnum.AGB_REVISION;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
+import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.dto.SupportedLanguage;
@@ -20,8 +23,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +44,9 @@ public class UserService {
   private final AgridataSecurityIdentity identity;
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final AgbRevisionService agbRevisionService;
+  private final AuditingApi auditingApi;
+  private final Clock clock;
 
   @RolesAllowed({SUPPORT_ROLE})
   public PageResponseDto<UserInfoDto> getProducers(ResourceQueryDto resourceQueryDto) {
@@ -83,6 +93,24 @@ public class UserService {
   public void updateUserPreferences(@Valid UserPreferencesDto userPreferences) {
     var user = userRepository.findById(identity.getUserId());
     user.setUserPreferences(userMapper.toUserPreferenceEntity(userPreferences));
+  }
+
+  @Transactional
+  public void acceptCurrentAgb(UUID agbRevisionId) {
+    var revision = agbRevisionService.getCurrentRevision();
+    if (!revision.id().equals(agbRevisionId)) {
+      throw new WebApplicationException(
+          "Accepted AGB revision id '%s' does not match the currently valid revision '%s'."
+              .formatted(agbRevisionId, revision.id()),
+          Response.Status.CONFLICT);
+    }
+
+    var user = userRepository.findById(identity.getUserId());
+
+    user.setLastAcceptedAgbDate(LocalDateTime.now(clock));
+    user.setLastAcceptedAgbRevisionId(revision.id());
+
+    auditingApi.logUserAction(AGBS_ACCEPTED, AGB_REVISION, revision.id());
   }
 
   public List<UserNotificationInfoDto> getAdminUsers() {
