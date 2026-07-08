@@ -1,3 +1,19 @@
+## [1.12.0](https://github.com/agridata-ch/backend/compare/v1.11.0...v1.12.0) (2026-07-08)
+
+### Features
+
+* **contract:** include seal state in dto and read adminglobalid from token ([050ca88](https://github.com/agridata-ch/backend/commit/050ca88b69dc659f23b9dbf1682ce50452fdf8ef)), closes [DIGIB2-311](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-311)
+* **deps:** Update trivyignore ([17a059b](https://github.com/agridata-ch/backend/commit/17a059be9b26df61abf77c933580690f3efdfd15)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+* **notifications:** Add notification data request triggers approve and rejected ([a11d940](https://github.com/agridata-ch/backend/commit/a11d9400bcc38ebca3d501427380f67c60afdd76)), closes [DIGIB2-548](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-548)
+* **notifications:** Remove custom notification testdata ([2ed1ec0](https://github.com/agridata-ch/backend/commit/2ed1ec0fae4ebb234877a70a9d09e8c2a5be3e8f)), closes [DIGIB2-1480](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1480)
+
+### Bug Fixes
+
+* **ai:** Cleanup CLAUDE.md context ([1190a08](https://github.com/agridata-ch/backend/commit/1190a0837883d25987f06f94ca76ae7b8912f3e2))
+* **contract:** rename adminGlobalID claim to match agate configuration ([d7d9445](https://github.com/agridata-ch/backend/commit/d7d94457102a79d82600b5c80bcddb6825647410)), closes [DIGIB2-311](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-311)
+* **deps:** update quarkus ([b56b8c8](https://github.com/agridata-ch/backend/commit/b56b8c89880e8fe68c6802b73a0b768f50983f98))
+* **notifications:** Add default descending sort to inbox entries ([f39a47a](https://github.com/agridata-ch/backend/commit/f39a47aca68d88acfdabd9d70d10bd990f4e8361)), closes [DIGIB2-1468](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1468)
+
 ## [1.12.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.12.0-rc.5...v1.12.0-rc.6) (2026-07-07)
 
 ### Features
