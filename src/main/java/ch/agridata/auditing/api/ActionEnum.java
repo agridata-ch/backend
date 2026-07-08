@@ -3,7 +3,7 @@ package ch.agridata.auditing.api;
 /**
  * Defines the set of supported actions that can be recorded. It ensures standardized naming for audit events.
  *
- * @CommentLastReviewed 2026-06-01
+ * @CommentLastReviewed 2026-07-15
  */
 
 public enum ActionEnum {
@@ -33,5 +33,8 @@ public enum ActionEnum {
   CONTRACT_SECOND_PROVIDER_SLOT_SIGNED,
   DATA_REQUEST_RELEASED_BY_PROVIDER,
 
-  CONTRACT_PDF_ELECTRONICALLY_SIGNED
+  CONTRACT_PDF_ELECTRONICALLY_SIGNED,
+
+  // terms
+  AGBS_ACCEPTED
 }

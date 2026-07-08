@@ -107,6 +107,18 @@ public record UserInfoDto(
     @Schema(
         description = "Roles of the user at the last login"
     )
-    List<String> rolesAtLastLogin
+    List<String> rolesAtLastLogin,
+
+    @Schema(
+        description = "Date and time when the user last accepted the AGB.",
+        examples = {"2026-07-20T14:35:00"}
+    )
+    LocalDateTime lastAcceptedAgbDate,
+
+    @Schema(
+        description = "Unique identifier of the AGB revision the user last accepted.",
+        examples = {"3fa85f64-5717-4562-b3fc-2c963f66afa6"}
+    )
+    UUID lastAcceptedAgbRevisionId
 ) {
 }

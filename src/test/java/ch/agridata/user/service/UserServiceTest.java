@@ -1,22 +1,36 @@
 package ch.agridata.user.service;
 
+import static ch.agridata.auditing.api.ActionEnum.AGBS_ACCEPTED;
+import static ch.agridata.auditing.api.EntityTypeEnum.AGB_REVISION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.user.dto.AgbRevisionDto;
 import ch.agridata.user.mapper.UserMapper;
 import ch.agridata.user.persistence.UserEntity;
 import ch.agridata.user.persistence.UserRepository;
 import io.quarkus.oidc.UserInfo;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -38,6 +52,15 @@ class UserServiceTest {
 
   @Mock
   private UserMapper userMapper;
+
+  @Mock
+  private AgbRevisionService agbRevisionService;
+
+  @Mock
+  private AuditingApi auditingApi;
+
+  @Spy
+  private final Clock clock = Clock.fixed(Instant.parse("2026-07-20T10:00:00Z"), ZoneOffset.UTC);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -120,5 +143,40 @@ class UserServiceTest {
     service.updateUserData();
 
     assertThat(user.getLanguage()).isEqualTo(SupportedLanguage.DE);
+  }
+
+  // ── acceptCurrentAgb ──────────────────────────────────────────────────────
+
+  @Test
+  void whenAcceptCurrentAgb_thenUserFieldsStampedAndActionAudited() {
+    var userId = UUID.randomUUID();
+    var user = new UserEntity();
+    var revisionId = UUID.randomUUID();
+    var revision = AgbRevisionDto.builder().id(revisionId).build();
+
+    when(identity.getUserId()).thenReturn(userId);
+    when(userRepository.findById(userId)).thenReturn(user);
+    when(agbRevisionService.getCurrentRevision()).thenReturn(revision);
+
+    service.acceptCurrentAgb(revisionId);
+
+    assertThat(user.getLastAcceptedAgbDate()).isEqualTo(LocalDateTime.now(clock));
+    assertThat(user.getLastAcceptedAgbRevisionId()).isEqualTo(revisionId);
+    verify(auditingApi).logUserAction(AGBS_ACCEPTED, AGB_REVISION, revisionId);
+  }
+
+  @Test
+  void givenMismatchedId_whenAcceptCurrentAgb_thenConflictAndUserNotStamped() {
+    var revision = AgbRevisionDto.builder().id(UUID.randomUUID()).build();
+    var mismatchedId = UUID.randomUUID();
+
+    when(agbRevisionService.getCurrentRevision()).thenReturn(revision);
+
+    assertThatThrownBy(() -> service.acceptCurrentAgb(mismatchedId))
+        .isInstanceOf(WebApplicationException.class)
+        .satisfies(ex -> assertThat(((WebApplicationException) ex).getResponse().getStatus())
+            .isEqualTo(Response.Status.CONFLICT.getStatusCode()));
+
+    verifyNoInteractions(userRepository, auditingApi);
   }
 }
