@@ -1,3 +1,9 @@
+## [1.13.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.2...v1.13.0-rc.3) (2026-07-08)
+
+### Features
+
+* **product:** Add name field to rest client endpoint. ([8b40159](https://github.com/agridata-ch/backend/commit/8b40159af4da0914bcf6cf06e707902a5e33845d)), closes [DIGIB2-1466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1466)
+
 ## [1.13.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.1...v1.13.0-rc.2) (2026-07-08)
 
 ### Features
