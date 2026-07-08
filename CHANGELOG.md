@@ -1,3 +1,9 @@
+## [1.13.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.3...v1.13.0-rc.4) (2026-07-08)
+
+### Features
+
+* **pipeline:** Improve build pipeline, add test parallelism and more ([e2471d9](https://github.com/agridata-ch/backend/commit/e2471d99a52323d21072fb3cd029a1dc4cd25491)), closes [DIGIB2-1505](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1505)
+
 ## [1.13.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.2...v1.13.0-rc.3) (2026-07-08)
 
 ### Features
