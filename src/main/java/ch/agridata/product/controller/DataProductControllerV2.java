@@ -8,7 +8,6 @@ import static ch.agridata.product.controller.DataProductControllerV2.PATH;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
-import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
@@ -38,14 +37,12 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,20 +112,11 @@ public class DataProductControllerV2 {
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE})
   @EnableActingRoleHolder
   public PageResponseDto<DataProductDto> getDataProductsPaginated(
-      @BeanParam @Valid ResourceQueryDto resourceQueryDto,
-      @Context HttpHeaders headers
+      @BeanParam @Valid ResourceQueryDto resourceQueryDto
   ) {
-    SupportedLanguage language = headers.getAcceptableLanguages()
-        .stream()
-        .findFirst()
-        .map(Locale::getLanguage)
-        .map(SupportedLanguage::from)
-        .orElse(SupportedLanguage.DE);
-
     return switch (actingRoleHolder.getRole()) {
-      case ADMIN -> dataProductQueryService.getDataProductsPagedAsAdmin(resourceQueryDto, language);
-      case PROVIDER -> dataProductQueryService.getDataProductsPagedAsProvider(resourceQueryDto, identity.getUidOrElseThrow(),
-          language);
+      case ADMIN -> dataProductQueryService.getDataProductsPagedAsAdmin(resourceQueryDto);
+      case PROVIDER -> dataProductQueryService.getDataProductsPagedAsProvider(resourceQueryDto, identity.getUidOrElseThrow());
       default -> throw new ForbiddenException();
     };
   }

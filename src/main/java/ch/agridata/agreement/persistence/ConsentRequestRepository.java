@@ -127,9 +127,11 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .getResultList();
   }
 
-  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(ResourceQueryDto resourceQueryDto,
-                                                                                      UUID dataRequestId,
-                                                                                      LocalDateTime lastModifiedFrom) {
+  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(
+      ResourceQueryDto resourceQueryDto,
+      UUID dataRequestId,
+      LocalDateTime lastModifiedFrom
+  ) {
     return findPage(
         resourceQueryDto,
         "dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom",
@@ -229,13 +231,15 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
       int to = Math.min(from + batchSize, ids.size());
       List<UUID> batchIds = ids.subList(from, to);
 
-      List<ConsentRequestEntity> batchResult = entityManager.createQuery("""
-              select cr
-              from ConsentRequestEntity cr
-              where cr.id in :ids
-                and cr.archived = false
-                and cr.uidBurRelationUntil is null
-              """, ConsentRequestEntity.class)
+      List<ConsentRequestEntity> batchResult = entityManager.createQuery(
+              """
+                  select cr
+                  from ConsentRequestEntity cr
+                  where cr.id in :ids
+                    and cr.archived = false
+                    and cr.uidBurRelationUntil is null
+                  """, ConsentRequestEntity.class
+          )
           .setParameter("ids", batchIds)
           .getResultList();
 
