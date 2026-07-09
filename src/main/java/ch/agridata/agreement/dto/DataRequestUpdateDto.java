@@ -127,8 +127,7 @@ public record DataRequestUpdateDto(
     )
     @Size(max = 5, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull
-    @Valid
-    List<DataRequestAdvantageDto> advantages
+    List<@Valid DataRequestAdvantageDto> advantages
 ) {
 
 
