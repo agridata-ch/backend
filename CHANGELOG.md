@@ -1,3 +1,13 @@
+## [1.13.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.4...v1.13.0-rc.5) (2026-07-09)
+
+### Features
+
+* **pipeline:** Revert non working part of pipeline improvement ([c10a69c](https://github.com/agridata-ch/backend/commit/c10a69cabe009c7393d0e4fa66b4d9db7207b602)), closes [DIGIB2-1505](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1505)
+
+### Bug Fixes
+
+* **deps:** Bump swagger parser to fix vulnerability ([53a8162](https://github.com/agridata-ch/backend/commit/53a8162cca5a6d2c1093b42e0cbdfdcb74032846)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
 ## [1.13.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.3...v1.13.0-rc.4) (2026-07-08)
 
 ### Features
