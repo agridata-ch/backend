@@ -74,7 +74,7 @@
 
         <fo:list-block provisional-distance-between-starts="5mm"
                        margin-left="10mm"
-                       font-family="Helvetica"
+                       font-family="LiberationSans"
                        font-size="10pt"
                        line-height="15pt">
 
@@ -84,7 +84,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">agridata.ch</fo:inline>:
+                        <fo:inline text-decoration="underline">agridata.ch</fo:inline>
+                        :
                         les partenaires contractuels utilisent le service de transfert de données
                         agridata.ch pour la transmission des données et les demandes de consentement
                         adressées aux producteurs de données pour le partage de leurs données. Les
@@ -100,7 +101,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Producteur de données</fo:inline>:
+                        <fo:inline text-decoration="underline">Producteur de données</fo:inline>
+                        :
                         les producteurs de données sont des personnes physiques ou morales qui, dans le
                         cadre de leur activité quotidienne, produisent, saisissent ou préparent des données
                         qui peuvent être transmises via agridata.ch. Il s’agit notamment, mais pas
@@ -133,7 +135,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Fournisseur des données</fo:inline>:
+                        <fo:inline text-decoration="underline">Fournisseur des données</fo:inline>
+                        :
                         les fournisseurs de données mettent à disposition via agridata.ch les données
                         demandées par les utilisateurs. Ils ne transmettent ces données que si les
                         producteurs de données concernés ont donné leur consentement.
@@ -147,7 +150,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Demande de données</fo:inline>:
+                        <fo:inline text-decoration="underline">Demande de données</fo:inline>
+                        :
                         demande de l’utilisateur de données visant à obtenir du fournisseur des produits de
                         données prédéfinis pour un usage visé à l’art. 27, al. 9, OSIAgr. Les producteurs de
                         données peuvent consulter la demande de données dans le service agridata.ch et y
@@ -163,7 +167,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Produit de données</fo:inline>:
+                        <fo:inline text-decoration="underline">Produit de données</fo:inline>
+                        :
                         les fournisseurs de données proposent aux utilisateurs des produits de données dont
                         le contenu est clairement défini. Un utilisateur peut demander plusieurs produits de
                         données d’un fournisseur.
@@ -177,7 +182,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Demande de consentement</fo:inline>:
+                        <fo:inline text-decoration="underline">Demande de consentement</fo:inline>
+                        :
                         service dans agridata.ch à l’aide duquel les producteurs de données peuvent
                         consulter les demandes de données en attente et donner leur consentement à la
                         transmission des données. Ils peuvent accepter ou refuser la transmission pour
@@ -192,7 +198,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Interface d’échange de données</fo:inline>:
+                        <fo:inline text-decoration="underline">Interface d’échange de données</fo:inline>
+                        :
                         interface technique protégée sur laquelle les utilisateurs de données peuvent, pour
                         chaque demande, obtenir toutes les données des producteurs qui ont donné leur
                         consentement.

@@ -42,4 +42,19 @@
         <!-- started: 2026-07-13 -->
         <cve>CVE-2026-54291</cve>
     </suppress>
+
+    <!--
+        Vert.x 4.5.28 vulnerabilities (CVE-2026-15076, CVE-2026-15075)
+        Waiting for Quarkus to bump to a patched Vert.x version.
+
+        Affects: vertx-core, vertx-web, vertx-pg-client, vertx-sql-client
+    -->
+    <suppress until="2026-12-31Z">
+        <!-- started: 2026-07-15 | affected: NO (waiting for Quarkus patch) -->
+        <cve>CVE-2026-15076</cve>
+    </suppress>
+    <suppress until="2026-12-31Z">
+        <!-- started: 2026-07-15 | affected: NO (waiting for Quarkus patch) -->
+        <cve>CVE-2026-15075</cve>
+    </suppress>
 </suppressions>

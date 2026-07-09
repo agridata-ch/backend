@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fop version="1.0">
+
+    <base>.</base>
+    <font-base>fonts/</font-base>
+
+    <renderers>
+        <renderer mime="application/pdf">
+            <pdf-a-mode>PDF/A-2b</pdf-a-mode>
+            <output-profile>color/sRGB2014.icc</output-profile>
+
+            <fonts>
+                <font kerning="yes" embed-url="LiberationSans-Regular.ttf">
+                    <font-triplet name="LiberationSans" style="normal" weight="normal"/>
+                </font>
+
+                <font kerning="yes" embed-url="LiberationSans-Bold.ttf">
+                    <font-triplet name="LiberationSans" style="normal" weight="bold"/>
+                </font>
+
+                <font kerning="yes" embed-url="LiberationSans-Italic.ttf">
+                    <font-triplet name="LiberationSans" style="italic" weight="normal"/>
+                </font>
+
+                <font kerning="yes" embed-url="LiberationSans-BoldItalic.ttf">
+                    <font-triplet name="LiberationSans" style="italic" weight="bold"/>
+                </font>
+
+                <font kerning="yes" embed-url="LiberationMono-Regular.ttf">
+                    <font-triplet name="LiberationMono" style="normal" weight="normal"/>
+                </font>
+            </fonts>
+        </renderer>
+    </renderers>
+
+</fop>

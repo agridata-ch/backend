@@ -92,7 +92,7 @@
 
                 <!-- First page header -->
                 <fo:static-content flow-name="first.before">
-                    <fo:block xsl:use-attribute-sets="font-helvetica-8">
+                    <fo:block xsl:use-attribute-sets="font-liberation-sans-8">
                         <fo:table table-layout="fixed" width="100%">
                             <fo:table-column column-width="50%"/>
                             <fo:table-column column-width="50%"/>
