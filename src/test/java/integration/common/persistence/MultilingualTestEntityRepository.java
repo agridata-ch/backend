@@ -10,27 +10,26 @@ import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-public class TestEntityRepository extends BaseSearchRepository<TestEntity, Long> {
+public class MultilingualTestEntityRepository extends BaseSearchRepository<MultilingualTestEntity, Long> {
 
-  public static final List<SearchField> FIELDS = List.of(
-      SearchField.simple("firstName"),
-      SearchField.simple("name"),
-      SearchField.simple("description"),
-      SearchField.simple("category")
+  public static final List<SearchField> SEARCHABLE_FIELDS = List.of(
+      SearchField.translated("name"),
+      SearchField.translated("description"),
+      SearchField.simple("code")
   );
+
   public static final List<List<SearchField>> COMBINED_FIELDS = List.of(
-      List.of(SearchField.simple("firstName"), SearchField.simple("name"))
-  );
-  public static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
-      "firstName", SearchField.simple("firstName"),
-      "name", SearchField.simple("name"),
-      "description", SearchField.simple("description"),
-      "category", SearchField.simple("category")
+      List.of(SearchField.translated("name"), SearchField.translated("description"))
   );
 
-  public PageResponseDto<TestEntity> searchEntitiesByCategory(ResourceQueryDto query, String category) {
+  public static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
+      "name", SearchField.translated("name"),
+      "code", SearchField.simple("code")
+  );
+
+  public PageResponseDto<MultilingualTestEntity> search(ResourceQueryDto query, String category) {
     var spec = SearchSpec.builder()
-        .searchableFields(FIELDS)
+        .searchableFields(SEARCHABLE_FIELDS)
         .combinedFields(COMBINED_FIELDS)
         .sortableFields(SORTABLE_FIELDS);
     if (category != null) {

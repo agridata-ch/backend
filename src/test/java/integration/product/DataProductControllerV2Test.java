@@ -182,10 +182,10 @@ class DataProductControllerV2Test {
   }
 
   @Test
-  void givenAdmin_whenAcceptLanguageIt_thenReturns200() {
+  void givenAdmin_whenLanguageIt_thenReturns200() {
     RequestSpecification admin = AuthTestUtils.requestAs(ADMIN);
 
-    admin.header("Accept-Language", "it")
+    admin.queryParam("language", "it")
         .queryParam("sortBy", "productName")
         .when()
         .get(DataProductControllerV2.PATH)

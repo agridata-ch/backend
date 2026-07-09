@@ -5,6 +5,8 @@ import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.G
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.persistence.BaseSearchRepository;
+import ch.agridata.common.persistence.SearchField;
+import ch.agridata.common.persistence.SearchSpec;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -127,15 +129,18 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .getResultList();
   }
 
-  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(ResourceQueryDto resourceQueryDto,
-                                                                                      UUID dataRequestId,
-                                                                                      LocalDateTime lastModifiedFrom) {
+  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(
+      ResourceQueryDto resourceQueryDto,
+      UUID dataRequestId,
+      LocalDateTime lastModifiedFrom
+  ) {
     return findPage(
         resourceQueryDto,
-        "dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom",
-        Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom),
-        List.of(),
-        List.of()
+        SearchSpec.builder()
+            .baseWhere("dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom")
+            .baseParams(Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom))
+            .sortableFields(Map.of("modifiedAt", SearchField.simple("modifiedAt")))
+            .build()
     );
   }
 
@@ -229,13 +234,15 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
       int to = Math.min(from + batchSize, ids.size());
       List<UUID> batchIds = ids.subList(from, to);
 
-      List<ConsentRequestEntity> batchResult = entityManager.createQuery("""
-              select cr
-              from ConsentRequestEntity cr
-              where cr.id in :ids
-                and cr.archived = false
-                and cr.uidBurRelationUntil is null
-              """, ConsentRequestEntity.class)
+      List<ConsentRequestEntity> batchResult = entityManager.createQuery(
+              """
+                  select cr
+                  from ConsentRequestEntity cr
+                  where cr.id in :ids
+                    and cr.archived = false
+                    and cr.uidBurRelationUntil is null
+                  """, ConsentRequestEntity.class
+          )
           .setParameter("ids", batchIds)
           .getResultList();
 
