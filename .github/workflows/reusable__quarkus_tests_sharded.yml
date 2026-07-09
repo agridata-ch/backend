@@ -53,23 +53,6 @@ jobs:
           IFS=,; echo "tests=${bucket[*]}" >> "$GITHUB_OUTPUT"
           echo "Shard $idx runs ${#bucket[@]} of ${#ALL[@]} integration test classes."
 
-      # Load the nightly-warmed DevServices images so Testcontainers uses local copies
-      # instead of pulling Postgres/Keycloak from the registry during boot.
-      - name: Restore DevServices image cache
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ github.workspace }}/.cache/devservices
-          key: devservices-images-${{ github.run_id }}
-          restore-keys: devservices-images-
-
-      - name: Load DevServices images
-        run: |
-          if [ -f "$GITHUB_WORKSPACE/.cache/devservices/images.tar" ]; then
-            docker load -i "$GITHUB_WORKSPACE/.cache/devservices/images.tar"
-          else
-            echo "No DevServices image cache found - Testcontainers will pull as usual."
-          fi
-
       - name: Run Quarkus integration tests
         run: mvn -B test -Dtest="${{ steps.shard.outputs.tests }}" -DfailIfNoTests=false
 
