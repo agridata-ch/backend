@@ -8,6 +8,7 @@ import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
@@ -35,9 +36,9 @@ public class ContractRevisionFopConfig {
   @ApplicationScoped
   public FopFactory fopFactory() {
     try {
-      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      ClassLoader classLoader = getClass().getClassLoader();
 
-      URI baseUri = getPdfBaseResource(classLoader).toURI();
+      URI baseUri = resolvePdfBaseUri(classLoader);
       Configuration configuration = loadFopConfiguration(classLoader);
 
       return new FopFactoryBuilder(baseUri)
@@ -49,18 +50,24 @@ public class ContractRevisionFopConfig {
     }
   }
 
-  private static URL getPdfBaseResource(ClassLoader classLoader) {
-    URL configResource = classLoader.getResource(FOP_CONFIG_RESOURCE);
+  /**
+   * Resolves the FOP base URI to the directory that contains {@code fop.xconf} (and, alongside it,
+   * the embedded fonts, ICC output profile and images). FOP resolves the relative references in
+   * {@code fop.xconf} / the XSL templates against this base via {@code new URL(base, ...)}, which
+   * works for both {@code file:} URLs (local, exploded classpath) and {@code jar:} URLs (packaged
+   * deployment).
+   */
+  private static URI resolvePdfBaseUri(ClassLoader classLoader) throws URISyntaxException {
+    URL configUrl = classLoader.getResource(FOP_CONFIG_RESOURCE);
 
-    if (configResource == null) {
+    if (configUrl == null) {
       throw new IllegalStateException("Missing resource: " + FOP_CONFIG_RESOURCE);
     }
 
-    try {
-      return configResource.toURI().resolve(".").toURL();
-    } catch (Exception e) {
-      throw new IllegalStateException("Failed to resolve PDF base resource from " + FOP_CONFIG_RESOURCE, e);
-    }
+    String configUri = configUrl.toURI().toString();
+    String baseUri = configUri.substring(0, configUri.lastIndexOf('/') + 1);
+
+    return new URI(baseUri);
   }
 
   private static Configuration loadFopConfiguration(ClassLoader classLoader)
