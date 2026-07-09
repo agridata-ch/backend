@@ -3,6 +3,8 @@ package ch.agridata.notification.persistence;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.persistence.BaseSearchRepository;
+import ch.agridata.common.persistence.SearchField;
+import ch.agridata.common.persistence.SearchSpec;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +18,20 @@ import java.util.UUID;
 @ApplicationScoped
 public class NotificationInboxRepository extends BaseSearchRepository<NotificationInboxEntity, UUID> {
 
+  private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
+      "createdAt", SearchField.simple("createdAt"),
+      "isRead", SearchField.simple("isRead")
+  );
+
   public PageResponseDto<NotificationInboxEntity> findPageByUserId(UUID userId, ResourceQueryDto query) {
-    return findPage(query, "userId = :userId", Map.of("userId", userId), List.of(), List.of());
+    return findPage(
+        query,
+        SearchSpec.builder()
+            .baseWhere("userId = :userId")
+            .baseParams(Map.of("userId", userId))
+            .sortableFields(SORTABLE_FIELDS)
+            .build()
+    );
   }
 
   public boolean existsByRecipientId(UUID recipientId) {

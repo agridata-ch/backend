@@ -2,7 +2,6 @@ package ch.agridata.product.service;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
-import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
@@ -59,19 +58,15 @@ public class DataProductQueryService implements DataProductApi {
     return dataProductRepository.findAllActive().stream().map(dataProductMapper::toDto).toList();
   }
 
-  public PageResponseDto<DataProductDto> getDataProductsPagedAsAdmin(
-      ResourceQueryDto resourceQueryDto,
-      SupportedLanguage language
-  ) {
-    var pagedEntities = dataProductRepository.findPaged(resourceQueryDto, language);
+  public PageResponseDto<DataProductDto> getDataProductsPagedAsAdmin(ResourceQueryDto resourceQueryDto) {
+    var pagedEntities = dataProductRepository.findPaged(resourceQueryDto);
 
     return dataProductMapper.toPagedDataProductDto(pagedEntities);
   }
 
   public PageResponseDto<DataProductDto> getDataProductsPagedAsProvider(
       ResourceQueryDto resourceQueryDto,
-      String providerUid,
-      SupportedLanguage language
+      String providerUid
   ) {
 
     Optional<DataProviderEntity> optionalProvider = dataProviderRepository.findByUidOptional(providerUid);
@@ -80,7 +75,7 @@ public class DataProductQueryService implements DataProductApi {
       throw new NotFoundException(providerUid);
     }
 
-    var pagedEntities = dataProductRepository.findPagedByProviderUid(optionalProvider.get().getUid(), resourceQueryDto, language);
+    var pagedEntities = dataProductRepository.findPagedByProviderUid(optionalProvider.get().getUid(), resourceQueryDto);
 
     return dataProductMapper.toPagedDataProductDto(pagedEntities);
   }
