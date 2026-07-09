@@ -26,3 +26,6 @@ decode_and_write "$BASE_DIR/agis" AGIS_CERTIFICATE_P12_BASE64 key-store.p12
 # === BIT Signature certificate ===
 decode_and_write "$BASE_DIR/bit-signature" BIT_SIGNATURE_CERTIFICATE_P12_BASE64 key-store.p12
 decode_and_write "$BASE_DIR/bit-signature" BIT_SIGNATURE_TRUST_STORE_P12_BASE64 trust-store.p12
+
+# === ACONTROL certificate ===
+decode_and_write "$BASE_DIR/acontrol" ACONTROL_CERTIFICATE_P12_BASE64 key-store.p12

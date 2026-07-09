@@ -89,8 +89,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "List of relevant product links"
     )
-    @Valid
-    List<LinkDto> links,
+    List<@Valid LinkDto> links,
 
     @Schema(
         description = "Technical product details"
