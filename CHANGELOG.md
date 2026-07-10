@@ -1,3 +1,9 @@
+## [1.13.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.5...v1.13.0-rc.6) (2026-07-10)
+
+### Features
+
+* **api:** add acontrol connection ([485c948](https://github.com/agridata-ch/backend/commit/485c9486e7c6ac831192f2c0c85347e2423ba47d)), closes [DIGIB2-1429](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1429)
+
 ## [1.13.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.4...v1.13.0-rc.5) (2026-07-09)
 
 ### Features
