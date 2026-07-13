@@ -1,3 +1,9 @@
+## [1.13.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.6...v1.13.0-rc.7) (2026-07-13)
+
+### Features
+
+* **product:** Allow providers to add documents to their data products ([b9c9f0e](https://github.com/agridata-ch/backend/commit/b9c9f0e4491e11183599fe4594e6b663c16a6ad5)), closes [DIGIB2-1474](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1474)
+
 ## [1.13.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.5...v1.13.0-rc.6) (2026-07-10)
 
 ### Features
