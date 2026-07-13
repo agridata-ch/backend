@@ -34,4 +34,12 @@
         <!-- started: 2026-06-15 | affected: NO (HTTP/3 not enabled) -->
         <cve>CVE-2026-42582</cve>
     </suppress>
+
+    <!--
+    Waiting for a newer Quarkus version that pulls pgjdbc >= 42.7.12.
+    -->
+    <suppress until="2026-07-31Z">
+        <!-- started: 2026-07-13 -->
+        <cve>CVE-2026-54291</cve>
+    </suppress>
 </suppressions>
