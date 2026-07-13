@@ -8,17 +8,17 @@ import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Represents the multilingual technical description of a DataProduct.
+ * Represents the multilingual extended description of a DataProduct.
  *
  * @CommentLastReviewed 2026-07-08
  */
 
 @Builder
-public record DataProductTechnicalDescriptionDto(
+public record DataProductExtendedDescriptionDto(
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
-        description = "German technical description of the data product",
+        description = "German extended description of the data product",
         examples = {
             """
                 Konkret werden folgende Daten übermittelt:
@@ -30,7 +30,7 @@ public record DataProductTechnicalDescriptionDto(
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
-        description = "French technical description of the data product",
+        description = "French extended description of the data product",
         examples = {
             """
                 Concrètement, les données suivantes sont transmises :
@@ -42,7 +42,7 @@ public record DataProductTechnicalDescriptionDto(
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
-        description = "Italian technical description of the data product",
+        description = "Italian extended description of the data product",
         examples = {
             """
                 Concretamente vengono trasmessi i dati seguenti:

@@ -78,9 +78,9 @@ public record DataProductDto(
     List<LinkDto> links,
 
     @Schema(
-        description = "Technical product details"
+        description = "Extended product details"
     )
-    TranslationDto technicalDescription,
+    TranslationDto extendedDescription,
 
     @Schema(
         description = "Timestamp indicating when the product was marked as deprecated.",

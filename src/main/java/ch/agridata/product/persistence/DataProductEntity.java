@@ -102,8 +102,8 @@ public class DataProductEntity extends AuditableEntity {
   private List<LinkPersistenceDto> links;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "technical_description")
-  private TranslationPersistenceDto technicalDescription;
+  @Column(name = "extended_description")
+  private TranslationPersistenceDto extendedDescription;
 
 }
 

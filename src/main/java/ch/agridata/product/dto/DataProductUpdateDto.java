@@ -92,10 +92,10 @@ public record DataProductUpdateDto(
     List<@Valid LinkDto> links,
 
     @Schema(
-        description = "Technical product details"
+        description = "Extended product details"
     )
     @Valid
-    DataProductTechnicalDescriptionDto technicalDescription
+    DataProductExtendedDescriptionDto extendedDescription
 ) {
 
 }
