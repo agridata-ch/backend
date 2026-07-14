@@ -1,3 +1,9 @@
+## [1.13.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.7...v1.13.0-rc.8) (2026-07-14)
+
+### Features
+
+* **data-product:** rename technicalDescription to extendedDescription ([68adc94](https://github.com/agridata-ch/backend/commit/68adc9417afff0554032511e896e6229b700fcb8)), closes [DIGIB2-1352](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1352)
+
 ## [1.13.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.6...v1.13.0-rc.7) (2026-07-13)
 
 ### Features
