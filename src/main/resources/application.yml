@@ -59,6 +59,10 @@ quarkus:
           paths: /q/*
           policy: permit
           auth-mechanism: none
+        public:
+          paths: /public/*
+          policy: permit
+          auth-mechanism: none
     cors:
       access-control-allow-credentials: true
       enabled: true
