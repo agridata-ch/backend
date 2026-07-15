@@ -8,8 +8,10 @@ import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
 import org.apache.fop.apps.FopFactory;
@@ -24,7 +26,7 @@ import org.apache.fop.configuration.DefaultConfigurationBuilder;
  * required for Apache FOP (Formatting Objects Processor) operations,
  * XML transformations, and JAXB marshalling.
  *
- * @CommentLastReviewed: 2026-04-17
+ * @CommentLastReviewed: 2026-07-15
  */
 
 @ApplicationScoped
@@ -32,13 +34,31 @@ public class ContractRevisionFopConfig {
 
   private static final String FOP_CONFIG_RESOURCE = "pdf/fop.xconf";
 
+  /**
+   * Resources referenced (relatively) by {@code fop.xconf} and the XSL templates: the ICC output
+   * profile, the embedded fonts and the logo. They are copied to a temporary directory at startup so
+   * FOP can resolve them through plain {@code file:} URLs. This works identically for an exploded
+   * classpath (local dev) and a packaged jar (fast-jar deployment): FOP parses the font
+   * configuration with its own default resource resolver, which resolves relative references against
+   * the base URI and opens them via {@code URI.toURL()} — that fails for the opaque {@code jar:}
+   * base URI of a packaged deployment, hence the materialization to the filesystem.
+   */
+  private static final List<String> PDF_RESOURCES = List.of(
+      "color/sRGB2014.icc",
+      "fonts/LiberationSans-Regular.ttf",
+      "fonts/LiberationSans-Bold.ttf",
+      "fonts/LiberationSans-Italic.ttf",
+      "fonts/LiberationSans-BoldItalic.ttf",
+      "fonts/LiberationMono-Regular.ttf",
+      "swiss-logo.png");
+
   @Produces
   @ApplicationScoped
   public FopFactory fopFactory() {
     try {
       ClassLoader classLoader = getClass().getClassLoader();
 
-      URI baseUri = resolvePdfBaseUri(classLoader);
+      URI baseUri = materializePdfResources(classLoader);
       Configuration configuration = loadFopConfiguration(classLoader);
 
       return new FopFactoryBuilder(baseUri)
@@ -51,23 +71,31 @@ public class ContractRevisionFopConfig {
   }
 
   /**
-   * Resolves the FOP base URI to the directory that contains {@code fop.xconf} (and, alongside it,
-   * the embedded fonts, ICC output profile and images). FOP resolves the relative references in
-   * {@code fop.xconf} / the XSL templates against this base via {@code new URL(base, ...)}, which
-   * works for both {@code file:} URLs (local, exploded classpath) and {@code jar:} URLs (packaged
-   * deployment).
+   * Copies the {@link #PDF_RESOURCES} from the classpath into a temporary directory (preserving their
+   * relative layout) and returns that directory as the FOP base URI, so all relative references in
+   * {@code fop.xconf} / the XSL templates resolve to {@code file:} URLs regardless of packaging.
    */
-  private static URI resolvePdfBaseUri(ClassLoader classLoader) throws URISyntaxException {
-    URL configUrl = classLoader.getResource(FOP_CONFIG_RESOURCE);
+  private static URI materializePdfResources(ClassLoader classLoader) throws IOException {
+    // NOSONAR java:S5443 - Files.createTempDirectory creates the directory atomically with owner-only permissions.
+    // It holds only non-sensitive, read-only assets (fonts, ICC profile, logo) already bundled in the jar
+    Path baseDir = Files.createTempDirectory("contract-revision-pdf");
+    baseDir.toFile().deleteOnExit();
 
-    if (configUrl == null) {
-      throw new IllegalStateException("Missing resource: " + FOP_CONFIG_RESOURCE);
+    for (String resource : PDF_RESOURCES) {
+      Path target = baseDir.resolve(resource);
+      Files.createDirectories(target.getParent());
+
+      try (InputStream resourceStream = classLoader.getResourceAsStream("pdf/" + resource)) {
+        if (resourceStream == null) {
+          throw new IllegalStateException("Missing PDF resource: pdf/" + resource);
+        }
+
+        Files.copy(resourceStream, target, StandardCopyOption.REPLACE_EXISTING);
+        target.toFile().deleteOnExit();
+      }
     }
 
-    String configUri = configUrl.toURI().toString();
-    String baseUri = configUri.substring(0, configUri.lastIndexOf('/') + 1);
-
-    return new URI(baseUri);
+    return baseDir.toUri();
   }
 
   private static Configuration loadFopConfiguration(ClassLoader classLoader)

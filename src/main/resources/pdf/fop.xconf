@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fop version="1.0">
-
+    <!-- Font cache disabled: it is written to ${user.home}/.fop, which is not writable on the read-only container root filesystem. -->
+    <use-cache>false</use-cache>
     <base>.</base>
     <font-base>fonts/</font-base>
 
