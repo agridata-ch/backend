@@ -1,3 +1,9 @@
+## [1.13.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.10...v1.13.0-rc.11) (2026-07-15)
+
+### Features
+
+* **contract-revision:** make contract revision pdfs pdf/a compliant ([366e8de](https://github.com/agridata-ch/backend/commit/366e8deff75de8bbebdc5d6cb01e3c0533966ee1)), closes [DIGIB2-1511](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1511)
+
 ## [1.13.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.9...v1.13.0-rc.10) (2026-07-15)
 
 ### Bug Fixes
