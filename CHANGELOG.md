@@ -1,3 +1,9 @@
+## [1.13.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.9...v1.13.0-rc.10) (2026-07-15)
+
+### Bug Fixes
+
+* **cicd:** revert docker build and push to allow vulnerability scanning in AWS ECR ([ed12bf4](https://github.com/agridata-ch/backend/commit/ed12bf4d29735de90ebdcd89b74bbabfeeafd480))
+
 ## [1.13.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.8...v1.13.0-rc.9) (2026-07-15)
 
 ### Features
