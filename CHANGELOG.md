@@ -1,3 +1,9 @@
+## [1.13.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.12...v1.13.0-rc.13) (2026-07-16)
+
+### Features
+
+* **data-transfer:** allow empty producer headers in UNBOUND flows ([e2a5eff](https://github.com/agridata-ch/backend/commit/e2a5eff454c2e741ec6669cf3cb0f71b4f5e4d8b)), closes [DIGIB2-1534](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1534)
+
 ## [1.13.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.11...v1.13.0-rc.12) (2026-07-15)
 
 ### Features
