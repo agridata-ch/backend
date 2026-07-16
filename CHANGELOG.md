@@ -1,3 +1,9 @@
+## [1.13.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.13...v1.13.0-rc.14) (2026-07-16)
+
+### Features
+
+* **user:** Add endpoint for fetching current agb revision. ([3c68746](https://github.com/agridata-ch/backend/commit/3c68746aad6617ee52211f6a347af384f4cf7624)), closes [DIGIB2-1526](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1526)
+
 ## [1.13.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.12...v1.13.0-rc.13) (2026-07-16)
 
 ### Features
