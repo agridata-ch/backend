@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
  * Parses the comma-separated values in {@code AGRIDATA-RESPONSE-PRODUCER-UIDS} and
  * {@code AGRIDATA-RESPONSE-PRODUCER-BURS} and sets them on the context for downstream validation.
  * Each individual entry must consist of alphanumeric characters only.
- * At least one of the two headers must be non-empty.
+ * At least one of the two headers must be present.
  *
- * @CommentLastReviewed 2026-06-04
+ * @CommentLastReviewed 2026-07-16
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -33,21 +33,21 @@ public class ResolveProducerIdentifiersFromResponseHeaderTask implements UnaryOp
   @Override
   public AgridataContext apply(final AgridataContext context) {
 
-    String uidsHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER).orElse("");
-    String bursHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER).orElse("");
+    Optional<String> uidsHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER);
+    Optional<String> bursHeaderValue = findHeaderValue(context.getResponseHeaders(), AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER);
 
-    List<String> producerUids = parseHeader(uidsHeaderValue, AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER);
+    if (uidsHeaderValue.isEmpty() && bursHeaderValue.isEmpty()) {
+      throw new ExternalWebServiceException("Neither " + AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER
+          + " nor " + AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER + " header is present in provider response");
+    }
+
+    List<String> producerUids = parseHeader(uidsHeaderValue.orElse(""), AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER);
     context.setProducerUids(producerUids);
     log.debug("Resolved ProducerUids={}", producerUids);
 
-    List<String> producerBurs = parseHeader(bursHeaderValue, AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER);
+    List<String> producerBurs = parseHeader(bursHeaderValue.orElse(""), AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER);
     context.setProducerBurs(producerBurs);
     log.debug("Resolved ProducerBurs={}", producerBurs);
-
-    if (producerUids.isEmpty() && producerBurs.isEmpty()) {
-      throw new ExternalWebServiceException("Neither " + AGRIDATA_RESPONSE_PRODUCER_UIDS_HEADER
-          + " nor " + AGRIDATA_RESPONSE_PRODUCER_BURS_HEADER + " header values are present in provider response");
-    }
 
     return context;
   }

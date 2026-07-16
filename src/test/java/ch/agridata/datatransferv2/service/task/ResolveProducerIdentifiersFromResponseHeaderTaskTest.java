@@ -66,23 +66,34 @@ class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
     assertThat(result.getProducerUids()).containsExactly(UID_1);
   }
 
-  static Stream<Arguments> missingOrEmptyHeaderCases() {
-    return Stream.of(
-        Arguments.of("no headers at all", Map.<String, String>of()),
-        Arguments.of("both headers empty", Map.of(UID_HEADER, "", BUR_HEADER, "")),
-        Arguments.of("both headers blank/whitespace only", Map.of(UID_HEADER, " , , ", BUR_HEADER, "  "))
-    );
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("missingOrEmptyHeaderCases")
-  void givenMissingOrEmptyHeaders_whenApply_thenExternalWebServiceExceptionThrown(String description, Map<String, String> headers) {
-    var context = createContext(headers);
+  @Test
+  void givenNeitherHeaderPresent_whenApply_thenExternalWebServiceExceptionThrown() {
+    var context = createContext(Map.of());
 
     assertThatThrownBy(() -> task.apply(context))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining(UID_HEADER)
         .hasMessageContaining(BUR_HEADER);
+  }
+
+  static Stream<Arguments> presentButEmptyHeaderCases() {
+    return Stream.of(
+        Arguments.of("both headers present but empty", Map.of(UID_HEADER, "", BUR_HEADER, "")),
+        Arguments.of("both headers present but blank/whitespace only", Map.of(UID_HEADER, " , , ", BUR_HEADER, "  ")),
+        Arguments.of("only UIDs header present but empty", Map.of(UID_HEADER, "")),
+        Arguments.of("only BURs header present but empty", Map.of(BUR_HEADER, ""))
+    );
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("presentButEmptyHeaderCases")
+  void givenPresentButEmptyHeaders_whenApply_thenBothIdentifierSetsEmpty(String description, Map<String, String> headers) {
+    var context = createContext(headers);
+
+    var result = task.apply(context);
+
+    assertThat(result.getProducerUids()).isEmpty();
+    assertThat(result.getProducerBurs()).isEmpty();
   }
 
   @ParameterizedTest
