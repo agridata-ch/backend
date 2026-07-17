@@ -1,3 +1,9 @@
+## [1.13.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.14...v1.13.0-rc.15) (2026-07-17)
+
+### Bug Fixes
+
+* **sealing:** use new bit sealing api ([88b42ec](https://github.com/agridata-ch/backend/commit/88b42ec480d7a5dbc772ad51e166e5641952134f)), closes [DIGIB2-1535](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1535)
+
 ## [1.13.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.13...v1.13.0-rc.14) (2026-07-16)
 
 ### Features
