@@ -18,7 +18,8 @@ public interface BitSignatureApi {
    *
    * @param documentBytes raw bytes of a valid, non-encrypted PDF document
    * @param adminGlobalId global ID of the user who will receive the Mobile ID push notification
+   * @param authUserId    auth user ID of the user who will receive the Mobile ID push notification
    * @return the sealed PDF as a byte array
    */
-  byte[] sign(byte @NonNull [] documentBytes, @NonNull String adminGlobalId);
+  byte[] sign(byte @NonNull [] documentBytes, @NonNull String adminGlobalId, @NonNull String authUserId);
 }

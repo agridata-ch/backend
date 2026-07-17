@@ -39,6 +39,7 @@ class BitSignatureApiImplTest {
 
   private static final String TOKEN = "test-sign-process-token";
   private static final String ADMIN_GLOBAL_ID = "admin-123";
+  private static final String EMAIL = "test-email";
   private static final String KEY_BEARER = "test-key-bearer";
   private static final String PROFILE = "test-profile";
   // PDFBox accepts any bytes as the embedded signature; 4 bytes are enough for unit tests
@@ -62,14 +63,14 @@ class BitSignatureApiImplTest {
     mockHappyPath();
 
     // when
-    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID);
+    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL);
 
     // then
     assertThat(result).isNotEmpty();
 
     var initCaptor = ArgumentCaptor.forClass(BitInitSignRequest.class);
     verify(restClient).initSign(initCaptor.capture());
-    assertThat(initCaptor.getValue().adminGlobalId()).isEqualTo(ADMIN_GLOBAL_ID);
+    assertThat(initCaptor.getValue().authUserId()).isEqualTo(EMAIL);
     assertThat(initCaptor.getValue().keyBearer()).isEqualTo(KEY_BEARER);
     assertThat(initCaptor.getValue().profile()).isEqualTo(PROFILE);
     assertThat(initCaptor.getValue().authType()).isEqualTo("mobileid");
@@ -95,12 +96,12 @@ class BitSignatureApiImplTest {
   @Test
   void givenInitSignNonOkStatus_whenSign_thenThrowsWithoutCallingDropSign() {
     // given
-    when(restClient.initSign(any()))
+    when(restClient.initSign(any(BitInitSignRequest.class)))
         .thenReturn(new BitInitSignResponse(BitSignReturnStatusCode.ERROR, "log-1", null));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("initSign failed");
 
@@ -110,13 +111,13 @@ class BitSignatureApiImplTest {
   @Test
   void givenAddHashNonOkStatus_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any()))
         .thenReturn(new BitAddHashResponse(BitSignReturnStatusCode.ERROR, "log-2"));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("addHash failed");
 
@@ -126,14 +127,14 @@ class BitSignatureApiImplTest {
   @Test
   void givenStartSignNonOkStatus_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any()))
         .thenReturn(new BitStartSignResponse(BitSignReturnStatusCode.ERROR, "log-3", null, null));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("startSign failed");
 
@@ -143,14 +144,14 @@ class BitSignatureApiImplTest {
   @Test
   void givenSignStateCanceled_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_CANCELED));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("cancelled");
 
@@ -160,14 +161,14 @@ class BitSignatureApiImplTest {
   @Test
   void givenSignStateInvalidState_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_INVALID_STATE));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("unexpected state");
 
@@ -177,14 +178,14 @@ class BitSignatureApiImplTest {
   @Test
   void givenSignStateAlwaysRunning_whenSign_thenThrowsAfterMaxIterationsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_RUNNING));
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("maximum polling iterations");
 
@@ -195,7 +196,7 @@ class BitSignatureApiImplTest {
   @Test
   void givenSignStateRunningThenFinished_whenSign_thenPollsUntilFinishedAndSucceeds() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any()))
@@ -205,7 +206,7 @@ class BitSignatureApiImplTest {
     when(restClient.getSignedHashes(any())).thenReturn(getSignedHashesOk());
 
     // when
-    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID);
+    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL);
 
     // then
     assertThat(result).isNotEmpty();
@@ -215,7 +216,7 @@ class BitSignatureApiImplTest {
   @Test
   void givenGetSignedHashesNonOkStatus_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_FINISHED));
@@ -224,7 +225,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("getSignedHashes failed");
 
@@ -234,7 +235,7 @@ class BitSignatureApiImplTest {
   @Test
   void givenGetSignedHashesEmptySignatures_whenSign_thenThrowsAndCallsDropSign() {
     // given
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_FINISHED));
@@ -243,7 +244,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("no signatures");
 
@@ -257,11 +258,11 @@ class BitSignatureApiImplTest {
     doThrow(new RuntimeException("network error")).when(restClient).dropSign(any());
 
     // when / then – dropSign exception must not propagate
-    assertThat(bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID)).isNotEmpty();
+    assertThat(bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL)).isNotEmpty();
   }
 
   private void mockHappyPath() {
-    when(restClient.initSign(any())).thenReturn(initOk());
+    when(restClient.initSign(any(BitInitSignRequest.class))).thenReturn(initOk());
     when(restClient.addHash(any())).thenReturn(addHashOk());
     when(restClient.startSign(any())).thenReturn(startSignOk());
     when(restClient.checkSignState(any())).thenReturn(checkSignState(BitSignState.SIGN_FINISHED));

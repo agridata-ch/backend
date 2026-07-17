@@ -1,6 +1,7 @@
 package ch.agridata.bit.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Request DTO for the BIT evidence Signing API {@code /secure/v1/initSign} endpoint.
@@ -9,12 +10,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @CommentLastReviewed 2026-04-09
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record BitInitSignRequest(
+@Deprecated
+public record BitInitSignRequestDeprecated(
     String keyBearer,
     String profile,
     String lang,
     String callbackUrl,
     String authType,
-    String authUserId
+    @JsonProperty("adminGlobalID") String adminGlobalId
 ) {
 }
