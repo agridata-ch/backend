@@ -4,12 +4,3 @@
 #  - CVE-2026-XXXXX - description
 #    See: https://avd.aquasec.com/nvd/cve-2026-xxxxx
 #CVE-2026-XXXX exp:2026-06-30
-
-# com.ongres.scram:scram-client:3.2, com.ongres.scram:scram-common:3.2
-# (transitive via io.quarkus:quarkus-reactive-pg-client -> com.ongres.scram:scram-client/scram-common)
-# Issues:
-#  - CVE-2026-53712 - OnGres SCRAM silent channel-binding authentication downgrade via unsupported certificate algorithms
-#    See: https://github.com/advisories/ghsa-p9jg-fcr6-3mhf
-#    Fix pinned upstream to scram-client/scram-common 3.2 by the Quarkus BOM (3.37.0); fixed in 3.3.
-#    Re-check after upgrading quarkus.platform.version.
-CVE-2026-53712 exp:2026-08-01
