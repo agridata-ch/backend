@@ -1,3 +1,9 @@
+## [1.13.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.15...v1.13.0-rc.16) (2026-07-20)
+
+### Features
+
+* **testing:** stabilize flaky data-request notification assertions ([8a4f2c2](https://github.com/agridata-ch/backend/commit/8a4f2c267f2d81d9a6b881047da60dbc3fa150f8)), closes [DIGIB2-1524](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1524)
+
 ## [1.13.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.14...v1.13.0-rc.15) (2026-07-17)
 
 ### Bug Fixes
