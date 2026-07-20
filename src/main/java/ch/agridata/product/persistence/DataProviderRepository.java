@@ -1,22 +1,22 @@
 package ch.agridata.product.persistence;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import jakarta.enterprise.context.ApplicationScoped;
+import io.quarkus.hibernate.panache.PanacheRepository;
+import jakarta.data.repository.Find;
+import jakarta.data.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Provides persistence operations for data providers.
+ * Provides persistence operations for data providers. The {@link Find}/{@link Query} methods are validated against the entity model at
+ * compile time by the Hibernate annotation processor, while the managed (stateful) session preserves lazy loading of associations such as
+ * {@link DataProviderEntity#getRestClients()}.
  *
- * @CommentLastReviewed 2026-02-06
+ * @CommentLastReviewed 2026-07-20
  */
-@ApplicationScoped
-public class DataProviderRepository implements PanacheRepositoryBase<DataProviderEntity, UUID> {
-  public Optional<DataProviderEntity> findByUidOptional(String uid) {
-    return find("uid", uid).firstResultOptional();
-  }
+public interface DataProviderRepository extends PanacheRepository.Managed<DataProviderEntity, UUID> {
+  @Find
+  Optional<DataProviderEntity> findByUidOptional(String uid);
 
-  public Optional<DataProviderEntity> findByIdAndProviderUidOptional(UUID id, String uid) {
-    return find("id = ?1 and uid = ?2", id, uid).firstResultOptional();
-  }
+  @Query("where id = :id and uid = :uid")
+  Optional<DataProviderEntity> findByIdAndProviderUidOptional(UUID id, String uid);
 }
