@@ -4,6 +4,7 @@ import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,7 @@ public record DataProductUpdateDto(
         description = "Name of the data product"
     )
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Valid
     DataProductNameDto name,
 
@@ -32,6 +34,7 @@ public record DataProductUpdateDto(
         description = "Description of the data product"
     )
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Valid
     DataProductDescriptionDto description,
 
@@ -40,6 +43,8 @@ public record DataProductUpdateDto(
         examples = "5335d715-e95c-4777-a424-ab73f2ff5618"
     )
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsAdmin.class)
     UUID dataSourceSystemId,
 
     @Schema(
@@ -89,6 +94,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "List of relevant product links"
     )
+    @Size(max = 5)
     List<@Valid LinkDto> links,
 
     @Schema(
