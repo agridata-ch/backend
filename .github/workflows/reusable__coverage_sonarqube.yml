@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # SonarQube needs full history for new-code / blame analysis.
           fetch-depth: 0
@@ -20,7 +20,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Restore Maven Cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -30,7 +30,7 @@ jobs:
       # Collect the *.exec files uploaded by every unit / Quarkus-shard test job.
       # Each artifact lands in its own subfolder under coverage-data/.
       - name: Download all coverage data
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: coverage-data
           pattern: coverage-*
