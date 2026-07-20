@@ -31,6 +31,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -169,6 +170,29 @@ public class DataProductControllerV2 {
     return switch (actingRoleHolder.getRole()) {
       case PROVIDER -> dataProductMutationService.updateDataProductDraftAsProvider(dataProductId, dataProductUpdateDto);
       case ADMIN -> dataProductMutationService.updateDataProductDraftAsAdmin(dataProductId, dataProductUpdateDto);
+      default -> throw new ForbiddenException();
+    };
+  }
+
+  @PATCH
+  @Path("/{id}")
+  @ApiSubset({WEB_APP})
+  @Operation(
+      operationId = "patchDataProduct",
+      description = "Partially updates an existing data product. Each provided field is validated against the data product's current "
+          + "state and the caller's role. If any field cannot be updated, the entire request is rejected and no changes are applied."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public DataProductDto patchDataProduct(
+      @PathParam("id") UUID dataProductId,
+      @Valid DataProductUpdateDto dataProductUpdateDto
+  ) {
+    return switch (actingRoleHolder.getRole()) {
+      case PROVIDER -> dataProductMutationService.patchDataProductAsProvider(dataProductId, dataProductUpdateDto);
+      case ADMIN -> dataProductMutationService.patchDataProductAsAdmin(dataProductId, dataProductUpdateDto);
       default -> throw new ForbiddenException();
     };
   }

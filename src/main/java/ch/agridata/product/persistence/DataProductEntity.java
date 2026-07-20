@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -97,6 +98,7 @@ public class DataProductEntity extends AuditableEntity {
   @Column(name = "data_provider_uid", length = 20)
   private String dataProviderUid;
 
+  @Size(max = 5)
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "links")
   private List<LinkPersistenceDto> links;
@@ -106,5 +108,3 @@ public class DataProductEntity extends AuditableEntity {
   private TranslationPersistenceDto extendedDescription;
 
 }
-
-

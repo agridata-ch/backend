@@ -7,6 +7,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static integration.testutils.AccessTestUtils.HttpMethod.DELETE;
 import static integration.testutils.AccessTestUtils.HttpMethod.GET;
+import static integration.testutils.AccessTestUtils.HttpMethod.PATCH;
 import static integration.testutils.AccessTestUtils.HttpMethod.POST;
 import static integration.testutils.AccessTestUtils.HttpMethod.PUT;
 
@@ -36,6 +37,8 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(POST, DataProductControllerV2.PATH,
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataProductControllerV2.PATH + "/1",
+        ADMIN_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(PATCH, DataProductControllerV2.PATH + "/1",
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataProductControllerV2.PATH + "/1/status",
         ADMIN_ROLE, PROVIDER_ROLE);
