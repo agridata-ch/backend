@@ -73,7 +73,7 @@
 
         <fo:list-block provisional-distance-between-starts="5mm"
                        margin-left="10mm"
-                       font-family="Helvetica"
+                       font-family="LiberationSans"
                        font-size="10pt"
                        line-height="15pt">
 

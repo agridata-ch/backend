@@ -26,10 +26,22 @@ jobs:
     needs: [ checkstyle, gitleaks ]
     secrets: inherit
 
-  unit-test-sonarqube:
+  unit-tests:
     name: "."
-    uses: ./.github/workflows/reusable__unit_test_sonarqube.yml
+    uses: ./.github/workflows/reusable__unit_tests.yml
     needs: [ checkstyle, gitleaks ]
+    secrets: inherit
+
+  quarkus-tests:
+    name: "."
+    uses: ./.github/workflows/reusable__quarkus_tests_sharded.yml
+    needs: [ checkstyle, gitleaks ]
+    secrets: inherit
+
+  coverage-sonarqube:
+    name: "."
+    uses: ./.github/workflows/reusable__coverage_sonarqube.yml
+    needs: [ unit-tests, quarkus-tests ]
     secrets: inherit
 
   trivy-image-scan:
@@ -43,7 +55,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     name: "."
     uses: ./.github/workflows/reusable__semantic_release.yml
-    needs: [ unit-test-sonarqube ]
+    needs: [ coverage-sonarqube ]
     secrets: inherit
 
   build-push-image:

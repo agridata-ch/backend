@@ -1,3 +1,103 @@
+## [1.13.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.15...v1.13.0-rc.16) (2026-07-20)
+
+### Features
+
+* **testing:** stabilize flaky data-request notification assertions ([8a4f2c2](https://github.com/agridata-ch/backend/commit/8a4f2c267f2d81d9a6b881047da60dbc3fa150f8)), closes [DIGIB2-1524](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1524)
+
+## [1.13.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.14...v1.13.0-rc.15) (2026-07-17)
+
+### Bug Fixes
+
+* **sealing:** use new bit sealing api ([88b42ec](https://github.com/agridata-ch/backend/commit/88b42ec480d7a5dbc772ad51e166e5641952134f)), closes [DIGIB2-1535](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1535)
+
+## [1.13.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.13...v1.13.0-rc.14) (2026-07-16)
+
+### Features
+
+* **user:** Add endpoint for fetching current agb revision. ([3c68746](https://github.com/agridata-ch/backend/commit/3c68746aad6617ee52211f6a347af384f4cf7624)), closes [DIGIB2-1526](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1526)
+
+## [1.13.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.12...v1.13.0-rc.13) (2026-07-16)
+
+### Features
+
+* **data-transfer:** allow empty producer headers in UNBOUND flows ([e2a5eff](https://github.com/agridata-ch/backend/commit/e2a5eff454c2e741ec6669cf3cb0f71b4f5e4d8b)), closes [DIGIB2-1534](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1534)
+
+## [1.13.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.11...v1.13.0-rc.12) (2026-07-15)
+
+### Features
+
+* **contract-revision:** enhance PDF/A compliance by materializing resources for FOP ([8c4cdce](https://github.com/agridata-ch/backend/commit/8c4cdce016afd18e119b874762caca76623faff7)), closes [DIGIB2-1511](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1511)
+
+## [1.13.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.10...v1.13.0-rc.11) (2026-07-15)
+
+### Features
+
+* **contract-revision:** make contract revision pdfs pdf/a compliant ([366e8de](https://github.com/agridata-ch/backend/commit/366e8deff75de8bbebdc5d6cb01e3c0533966ee1)), closes [DIGIB2-1511](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1511)
+
+## [1.13.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.9...v1.13.0-rc.10) (2026-07-15)
+
+### Bug Fixes
+
+* **cicd:** revert docker build and push to allow vulnerability scanning in AWS ECR ([ed12bf4](https://github.com/agridata-ch/backend/commit/ed12bf4d29735de90ebdcd89b74bbabfeeafd480))
+
+## [1.13.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.8...v1.13.0-rc.9) (2026-07-15)
+
+### Features
+
+* **contract-revision:** make contract revision pdfs pdf/a compliant ([071787b](https://github.com/agridata-ch/backend/commit/071787b346fe898ecee8d7bbb1c3245a40e52996)), closes [DIGIB2-1511](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1511)
+
+## [1.13.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.7...v1.13.0-rc.8) (2026-07-14)
+
+### Features
+
+* **data-product:** rename technicalDescription to extendedDescription ([68adc94](https://github.com/agridata-ch/backend/commit/68adc9417afff0554032511e896e6229b700fcb8)), closes [DIGIB2-1352](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1352)
+
+## [1.13.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.6...v1.13.0-rc.7) (2026-07-13)
+
+### Features
+
+* **product:** Allow providers to add documents to their data products ([b9c9f0e](https://github.com/agridata-ch/backend/commit/b9c9f0e4491e11183599fe4594e6b663c16a6ad5)), closes [DIGIB2-1474](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1474)
+
+## [1.13.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.5...v1.13.0-rc.6) (2026-07-10)
+
+### Features
+
+* **api:** add acontrol connection ([485c948](https://github.com/agridata-ch/backend/commit/485c9486e7c6ac831192f2c0c85347e2423ba47d)), closes [DIGIB2-1429](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1429)
+
+## [1.13.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.4...v1.13.0-rc.5) (2026-07-09)
+
+### Features
+
+* **pipeline:** Revert non working part of pipeline improvement ([c10a69c](https://github.com/agridata-ch/backend/commit/c10a69cabe009c7393d0e4fa66b4d9db7207b602)), closes [DIGIB2-1505](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1505)
+
+### Bug Fixes
+
+* **deps:** Bump swagger parser to fix vulnerability ([53a8162](https://github.com/agridata-ch/backend/commit/53a8162cca5a6d2c1093b42e0cbdfdcb74032846)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
+## [1.13.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.3...v1.13.0-rc.4) (2026-07-08)
+
+### Features
+
+* **pipeline:** Improve build pipeline, add test parallelism and more ([e2471d9](https://github.com/agridata-ch/backend/commit/e2471d99a52323d21072fb3cd029a1dc4cd25491)), closes [DIGIB2-1505](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1505)
+
+## [1.13.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.2...v1.13.0-rc.3) (2026-07-08)
+
+### Features
+
+* **product:** Add name field to rest client endpoint. ([8b40159](https://github.com/agridata-ch/backend/commit/8b40159af4da0914bcf6cf06e707902a5e33845d)), closes [DIGIB2-1466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1466)
+
+## [1.13.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.13.0-rc.1...v1.13.0-rc.2) (2026-07-08)
+
+### Features
+
+* **data-product:** add links and technical description ([6c69b34](https://github.com/agridata-ch/backend/commit/6c69b3465e780134434590f57f80749c28befc92)), closes [DIGIB2-1352](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1352)
+
+## [1.13.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.12.0...v1.13.0-rc.1) (2026-07-08)
+
+### Features
+
+* **product:** Add field for url to restClient-Endpoint ([a0807dc](https://github.com/agridata-ch/backend/commit/a0807dcd82097579f1bae1cc277537bc10cec492)), closes [DIGIB2-1466](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1466)
+
 ## [1.12.0](https://github.com/agridata-ch/backend/compare/v1.11.0...v1.12.0) (2026-07-08)
 
 ### Features

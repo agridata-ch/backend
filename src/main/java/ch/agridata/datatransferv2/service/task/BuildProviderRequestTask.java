@@ -1,10 +1,9 @@
 package ch.agridata.datatransferv2.service.task;
 
-import static ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider.RestClientIdentifier;
-
 import ch.agridata.datatransferv2.service.AgridataContext;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClient;
-import ch.agridata.datatransferv2.service.client.DataProviderRestClientProvider;
+import ch.agridata.product.api.DataProviderRestClient;
+import ch.agridata.product.api.DataProviderRestClientProviderApi;
+import ch.agridata.product.dto.RestClientIdentifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -33,7 +32,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
 
   private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
 
-  private final DataProviderRestClientProvider dataProviderRestClientProvider;
+  private final DataProviderRestClientProviderApi dataProviderRestClientProviderApi;
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
@@ -56,7 +55,7 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
     var finalPath = appendUnusedAsQueryParams(requestPath, requestParameters, usedKeys);
 
     var restClientIdentifierCode = RestClientIdentifier.valueOf(productProviderConfiguration.restClientIdentifierCode());
-    var client = dataProviderRestClientProvider.get(restClientIdentifierCode);
+    var client = dataProviderRestClientProviderApi.get(restClientIdentifierCode);
     var headers = DataProviderRestClient.Headers.builder()
         .agridataConsumerAgateLoginId(context.getConsumerAgateLoginId())
         .agridataConsumerUid(context.getConsumerUid())

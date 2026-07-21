@@ -1,10 +1,10 @@
 package ch.agridata.agreement.dto;
 
 import ch.agridata.common.dto.TranslationDto;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Builder;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * Agreement-module representation of a data source system reference. Used in responses to avoid

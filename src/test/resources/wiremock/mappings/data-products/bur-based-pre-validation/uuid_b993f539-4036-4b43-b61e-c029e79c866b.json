@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/acontrol/api/inspections/search",
+    "urlPath": "/acontrol/inspection/1",
     "bodyPatterns": [
       {
         "matches": "\\{\"unitIdentifiers\":\\[\\{\"unitIdentifier\":\"[^\"]+\",\"type\":\"BurId\"}],\"inspectionDomainIds\":\\[\"09\"],\"pageOffset\":[0-9]+,\"pageSize\":[0-9]+}"

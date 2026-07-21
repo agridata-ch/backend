@@ -4,6 +4,7 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.product.dto.DataProductDescriptionDto;
 import ch.agridata.product.dto.DataProductDto;
+import ch.agridata.product.dto.DataProductExtendedDescriptionDto;
 import ch.agridata.product.dto.DataProductNameDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataProductStateEnum;
@@ -20,7 +21,7 @@ import org.mapstruct.MappingTarget;
  * @CommentLastReviewed 2026-06-11
  */
 
-@Mapper(componentModel = "jakarta")
+@Mapper(componentModel = "jakarta", uses = RestClientMapper.class)
 public interface DataProductMapper {
 
   @Mapping(target = "dataSourceSystemCode", source = "dataSourceSystem.code")
@@ -53,6 +54,8 @@ public interface DataProductMapper {
   TranslationPersistenceDto toTranslationPersistenceDto(DataProductNameDto translationDto);
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataProductDescriptionDto translationDto);
+
+  TranslationPersistenceDto toTranslationPersistenceDto(DataProductExtendedDescriptionDto translationDto);
 
   DataProductStateEnum toDtoDataProductStateEnum(ch.agridata.product.persistence.DataProductStateEnum persistenceStateEnum);
 

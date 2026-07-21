@@ -1,6 +1,7 @@
 package ch.agridata.product.persistence;
 
 import ch.agridata.common.persistence.AuditableEntity;
+import ch.agridata.common.persistence.LinkPersistenceDto;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -94,6 +96,14 @@ public class DataProductEntity extends AuditableEntity {
 
   @Column(name = "data_provider_uid", length = 20)
   private String dataProviderUid;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "links")
+  private List<LinkPersistenceDto> links;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "extended_description")
+  private TranslationPersistenceDto extendedDescription;
 
 }
 

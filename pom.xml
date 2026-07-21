@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.12.0</version>
+    <version>1.13.0-rc.16</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -13,7 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.37.0</quarkus.platform.version>
+        <quarkus.platform.version>3.37.2</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
@@ -26,7 +26,7 @@
         <guava.version>33.6.0-jre</guava.version>
         <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
-        <swagger-parser.version>2.1.39</swagger-parser.version>
+        <swagger-parser.version>2.1.42</swagger-parser.version>
         <pdfbox.version>3.0.7</pdfbox.version>
         <fop-core.version>2.11</fop-core.version>
 
@@ -660,6 +660,70 @@
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
+        </profile>
+
+        <!-- CI: run only the fast ch.agridata.** unit tests; the @QuarkusTest classes
+             under the integration package are executed separately (sharded) in CI. -->
+        <profile>
+            <id>ci-unit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>integration/**/*Test.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- CI: merge the JaCoCo *.exec data files collected from every (sharded) test job
+             into a single report that SonarQube consumes. The executions are unbound (no
+             phase); invoke them explicitly, e.g.
+               mvn -Pci-coverage-report jacoco:merge@merge-ci jacoco:report@report-ci
+             Expects the collected *.exec files under ${project.basedir}/coverage-data. -->
+        <profile>
+            <id>ci-coverage-report</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>merge-ci</id>
+                                <goals>
+                                    <goal>merge</goal>
+                                </goals>
+                                <configuration>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${project.basedir}/coverage-data</directory>
+                                            <includes>
+                                                <include>**/*.exec</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
+                                    <destFile>${project.build.directory}/jacoco-merged.exec</destFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>report-ci</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <dataFile>${project.build.directory}/jacoco-merged.exec</dataFile>
+                                    <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

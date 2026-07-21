@@ -66,6 +66,21 @@ class UnboundPostValidationFlowTest {
         new Case("two BURs without UIDs, both with consent",
             null, List.of(Bur.CODE_99910002.getCode(), Bur.CODE_99910003.getCode()), Map.of(), 200, null),
 
+        // --- 200: no data (present-but-empty headers), no consent check ---------------------------
+
+        new Case("both headers present but empty",
+            List.of(), List.of(), Map.of(), 200, null),
+        new Case("only UIDs header present but empty",
+            List.of(), null, Map.of(), 200, null),
+        new Case("only BURs header present but empty",
+            null, List.of(), Map.of(), 200, null),
+
+        // --- 502: neither header present ----------------------------------------------------------
+
+        new Case("neither header present",
+            null, null, Map.of(), 502,
+            "Neither AGRIDATA-RESPONSE-PRODUCER-UIDS nor AGRIDATA-RESPONSE-PRODUCER-BURS header is present in provider response"),
+
         // --- 403: consent missing -----------------------------------------------------------------
 
         new Case("single UID has no consent",

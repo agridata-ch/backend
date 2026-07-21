@@ -1,0 +1,66 @@
+on:
+  workflow_call:
+
+env:
+  # Keep in sync with strategy.matrix.shard below.
+  TOTAL_SHARDS: 6
+
+jobs:
+  quarkus-tests:
+    name: Quarkus Tests (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      # Do not cancel the other shards when one fails – we want the full picture.
+      fail-fast: false
+      matrix:
+        shard: [ 0, 1, 2, 3, 4, 5 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'corretto'
+
+      - name: Restore Maven Cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Deterministically bucket the integration @QuarkusTest classes across the shards.
+      # Every runner gets its own DevServices DB/Keycloak, so there is no shared DB state.
+      - name: Select test classes for this shard
+        id: shard
+        run: |
+          mapfile -t ALL < <(find src/test/java/integration -name '*Test.java' \
+            | sed -e 's#^src/test/java/##' -e 's#\.java$##' -e 's#/#.#g' | sort)
+          total="${TOTAL_SHARDS}"
+          idx="${{ matrix.shard }}"
+          bucket=()
+          for i in "${!ALL[@]}"; do
+            if [ $(( i % total )) -eq "$idx" ]; then bucket+=("${ALL[$i]}"); fi
+          done
+          if [ "${#bucket[@]}" -eq 0 ]; then
+            echo "No test classes assigned to shard $idx (found ${#ALL[@]} total) – check TOTAL_SHARDS." >&2
+            exit 1
+          fi
+          IFS=,; echo "tests=${bucket[*]}" >> "$GITHUB_OUTPUT"
+          echo "Shard $idx runs ${#bucket[@]} of ${#ALL[@]} integration test classes."
+
+      - name: Run Quarkus integration tests
+        run: mvn -B test -Dtest="${{ steps.shard.outputs.tests }}" -DfailIfNoTests=false
+
+      # Coverage is produced distributed and merged later in the coverage-sonarqube job.
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-quarkus-${{ matrix.shard }}
+          path: target/*.exec
+          if-no-files-found: error
+          retention-days: 1
