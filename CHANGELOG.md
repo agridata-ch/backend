@@ -1,3 +1,9 @@
+## [1.13.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.0...v1.13.1-rc.1) (2026-07-21)
+
+### Bug Fixes
+
+* **deps:** update dependencies ([542e675](https://github.com/agridata-ch/backend/commit/542e675ff0cc4ebb3e907e4e5c9fb82aaa504bd3)), closes [DIGIB2-1542](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1542)
+
 ## [1.13.0](https://github.com/agridata-ch/backend/compare/v1.12.0...v1.13.0) (2026-07-21)
 
 ### Features
