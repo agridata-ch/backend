@@ -1,3 +1,9 @@
+## [1.14.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.1-rc.1...v1.14.0-rc.1) (2026-07-22)
+
+### Features
+
+* **agbs:** add AGB acceptance functionality and related fields ([f6b1e8f](https://github.com/agridata-ch/backend/commit/f6b1e8fd541322176a469bd851b06470c8a488bd)), closes [DIGIB2-1241](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1241)
+
 ## [1.13.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.0...v1.13.1-rc.1) (2026-07-21)
 
 ### Bug Fixes
