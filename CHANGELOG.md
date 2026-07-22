@@ -1,3 +1,9 @@
+## [1.14.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.1...v1.14.0-rc.2) (2026-07-22)
+
+### Features
+
+* **user:** Allow providers and administrators to patch released data products. ([b225f14](https://github.com/agridata-ch/backend/commit/b225f14dc5497f07d8d1f4285fc3d202e9211016)), closes [DIGIB2-1354](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1354)
+
 ## [1.14.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.1-rc.1...v1.14.0-rc.1) (2026-07-22)
 
 ### Features
