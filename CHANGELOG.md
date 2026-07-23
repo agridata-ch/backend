@@ -1,3 +1,9 @@
+## [1.14.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.2...v1.14.0-rc.3) (2026-07-23)
+
+### Features
+
+* **data-product:** make extended descrption optional ([9ba4fff](https://github.com/agridata-ch/backend/commit/9ba4fffb046cc6a9f30ca1a79c0ffd8ff9fa76b8)), closes [DIGIB2-1352](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1352)
+
 ## [1.14.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.1...v1.14.0-rc.2) (2026-07-22)
 
 ### Features
