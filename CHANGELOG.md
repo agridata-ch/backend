@@ -1,3 +1,9 @@
+## [1.14.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.3...v1.14.0-rc.4) (2026-07-23)
+
+### Features
+
+* **bit:** add more debug logging statements for seal api ([2b65bad](https://github.com/agridata-ch/backend/commit/2b65bad4e727ffcbc1e4a8dfbb129082da07be15)), closes [DIGIB2-1535](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1535)
+
 ## [1.14.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.2...v1.14.0-rc.3) (2026-07-23)
 
 ### Features
