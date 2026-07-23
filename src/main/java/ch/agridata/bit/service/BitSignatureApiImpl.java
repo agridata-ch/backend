@@ -152,11 +152,17 @@ public class BitSignatureApiImpl implements BitSignatureApi {
 
     if (useDeprecatedMode) {
       var request = new BitInitSignRequestDeprecated(keyBearer, profile, "DE", null, AUTH_TYPE_MOBILE_ID, adminGlobalId);
+      log.debug("BIT initSign request (deprecated mode): keyBearer={}, profile={}, lang={}, authType={}, adminGlobalId={}",
+          request.keyBearer(), request.profile(), request.lang(), request.authType(), request.adminGlobalId());
       response = restClient.initSign(request);
     } else {
       var request = new BitInitSignRequest(keyBearer, profile, "DE", null, AUTH_TYPE_MOBILE_ID, authUserId);
+      log.debug("BIT initSign request: keyBearer={}, profile={}, lang={}, authType={}, authUserId={}",
+          request.keyBearer(), request.profile(), request.lang(), request.authType(), request.authUserId());
       response = restClient.initSign(request);
     }
+    log.debug("BIT initSign response: status={}, logId={}, token={}",
+        response.status(), response.logId(), response.signProcessToken());
     if (response.status() != BitSignReturnStatusCode.OK) {
       throw new ExternalWebServiceException("BIT initSign failed: status=" + response.status() + ", logId=" + response.logId());
     }
@@ -166,7 +172,10 @@ public class BitSignatureApiImpl implements BitSignatureApi {
 
   private void addHash(String signProcessToken, String hashBase64, String tag) {
     var request = new BitAddHashRequest(signProcessToken, hashBase64, BIT_SIGNATURE_ALGORITHM, PKCS_VERSION, tag);
+    log.debug("BIT addHash request: token={}, tag={}, signatureAlgorithm={}, pkcsVersion={}, digest={}",
+        request.signProcessToken(), request.tag(), request.signatureAlgorithm(), request.pkcsVersion(), request.digest());
     var response = restClient.addHash(request);
+    log.debug("BIT addHash response: status={}, logId={}", response.status(), response.logId());
     if (response.status() != BitSignReturnStatusCode.OK) {
       throw new ExternalWebServiceException(
           "BIT addHash failed: status=" + response.status() + ", logId=" + response.logId());
@@ -174,7 +183,10 @@ public class BitSignatureApiImpl implements BitSignatureApi {
   }
 
   private void startSign(String signProcessToken) {
+    log.debug("BIT startSign request: token={}", signProcessToken);
     BitStartSignResponse response = restClient.startSign(new BitStartSignRequest(signProcessToken));
+    log.debug("BIT startSign response: status={}, logId={}, mode={}, interactionUrl={}",
+        response.status(), response.logId(), response.mode(), response.interactionUrl());
     if (response.status() != BitSignReturnStatusCode.OK) {
       throw new ExternalWebServiceException(
           "BIT startSign failed: status=" + response.status() + ", logId=" + response.logId());
@@ -189,7 +201,10 @@ public class BitSignatureApiImpl implements BitSignatureApi {
 
   private void pollUntilFinished(String signProcessToken) {
     for (int i = 0; i < MAX_POLL_ITERATIONS; i++) {
+      log.debug("BIT checkSignState request: token={}, longPolling={}", signProcessToken, true);
       BitCheckSignStateResponse response = restClient.checkSignState(new BitCheckSignStateRequest(signProcessToken, true));
+      log.debug("BIT checkSignState response: status={}, logId={}, signState={}",
+          response.status(), response.logId(), response.signState());
 
       if (response.status() != BitSignReturnStatusCode.OK) {
         throw new ExternalWebServiceException(
@@ -214,7 +229,10 @@ public class BitSignatureApiImpl implements BitSignatureApi {
   }
 
   private byte[] retrieveSignature(String signProcessToken) {
+    log.debug("BIT getSignedHashes request: token={}", signProcessToken);
     var response = restClient.getSignedHashes(new BitGetSignedHashesRequest(signProcessToken));
+    log.debug("BIT getSignedHashes response: status={}, logId={}, signatureCount={}",
+        response.status(), response.logId(), response.signatures() == null ? 0 : response.signatures().size());
     if (response.status() != BitSignReturnStatusCode.OK) {
       throw new ExternalWebServiceException(
           "BIT getSignedHashes failed: status=" + response.status() + ", logId=" + response.logId());
@@ -229,7 +247,9 @@ public class BitSignatureApiImpl implements BitSignatureApi {
 
   private void dropSign(String signProcessToken) {
     try {
-      restClient.dropSign(new BitDropSignRequest(signProcessToken));
+      log.debug("BIT dropSign request: token={}", signProcessToken);
+      var response = restClient.dropSign(new BitDropSignRequest(signProcessToken));
+      log.debug("BIT dropSign response: status={}, logId={}", response.status(), response.logId());
       log.debug("BIT sign process dropped: token={}", signProcessToken);
     } catch (Exception e) {
       log.warn("Failed to drop BIT sign process token={}: {}", signProcessToken, e.getMessage());
