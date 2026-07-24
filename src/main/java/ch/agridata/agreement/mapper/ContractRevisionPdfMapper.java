@@ -22,6 +22,7 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "jakarta")
 public interface ContractRevisionPdfMapper {
+  @Mapping(target = "requestHumanFriendlyId", source = "dataRequestHumanFriendlyId")
   @Mapping(target = "requestTitle", source = "title", qualifiedByName = "toContractRevisionPdfTranslationDto")
   @Mapping(target = "requestDescription", source = "description", qualifiedByName = "toContractRevisionPdfTranslationDto")
   @Mapping(target = "requestPurpose", source = "purpose", qualifiedByName = "toContractRevisionPdfTranslationDto")
@@ -38,18 +39,18 @@ public interface ContractRevisionPdfMapper {
   @Mapping(target = "providerZipCity", expression = "java(entity.getDataProviderZip() + \" \" + entity.getDataProviderCity())")
   @Mapping(target = "providerAddressInline", source = "entity", qualifiedByName = "mapProviderAddressInline")
   @Mapping(target = "providerSystemName", source = "systemName", qualifiedByName = "toContractRevisionPdfTranslationDto")
-  @Mapping(target = "consumerSignatureDate1",
+  @Mapping(target = "consumerSignatureDateTime1",
       source = "consumerSignatureTimestamp1",
-      qualifiedByName = "toSwissDate")
-  @Mapping(target = "consumerSignatureDate2",
+      qualifiedByName = "toSwissDateTime")
+  @Mapping(target = "consumerSignatureDateTime2",
       source = "consumerSignatureTimestamp2",
-      qualifiedByName = "toSwissDate")
-  @Mapping(target = "providerSignatureDate1",
+      qualifiedByName = "toSwissDateTime")
+  @Mapping(target = "providerSignatureDateTime1",
       source = "providerSignatureTimestamp1",
-      qualifiedByName = "toSwissDate")
-  @Mapping(target = "providerSignatureDate2",
+      qualifiedByName = "toSwissDateTime")
+  @Mapping(target = "providerSignatureDateTime2",
       source = "providerSignatureTimestamp2",
-      qualifiedByName = "toSwissDate")
+      qualifiedByName = "toSwissDateTime")
   @Mapping(target = "targetGroup", source = "targetGroup")
   ContractRevisionPdfDto toPdfDto(ContractRevisionEntity entity);
 
@@ -71,12 +72,12 @@ public interface ContractRevisionPdfMapper {
         entity.getDataProviderCity());
   }
 
-  @Named("toSwissDate")
-  default String toSwissDate(LocalDateTime dateTime) {
+  @Named("toSwissDateTime")
+  default String toSwissDateTime(LocalDateTime dateTime) {
     if (dateTime == null) {
       return null;
     }
-    return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss")) + " Uhr";
   }
 
   @Named("toContractRevisionPdfTranslationDto")
