@@ -35,6 +35,7 @@ public interface ContractRevisionMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "dataRequest", source = "dataRequest")
+  @Mapping(target = "dataRequestHumanFriendlyId", source = "dataRequest.humanFriendlyId")
   @Mapping(target = "dataConsumerName", source = "dataRequest.dataConsumerLegalName")
   @Mapping(target = "dataConsumerStreet", source = "dataRequest.dataConsumerStreet")
   @Mapping(target = "dataConsumerZip", source = "dataRequest.dataConsumerZip")

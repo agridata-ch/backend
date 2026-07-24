@@ -5,7 +5,7 @@
     <xsl:template name="germanContract">
 
         <fo:block xsl:use-attribute-sets="document-title">
-            Vertrag
+            Datenaustauschvertrag agridata.ch
         </fo:block>
 
         <xsl:call-template name="horizontal-rule">
@@ -17,7 +17,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="consumerAddressInline"/>
+            <xsl:value-of select="consumerAddressInline"/> (hiernach «Datenanbieter»)
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text-spacious">
@@ -25,45 +25,71 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="providerAddressInline"/>
+            <xsl:value-of select="providerAddressInline"/> (hiernach «Datenbezüger»)
+        </fo:block>
+
+        <fo:block xsl:use-attribute-sets="body-text-spacious">
+            (zusammen «Vertragspartner»)
         </fo:block>
 
         <xsl:call-template name="horizontal-rule"/>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            Rechtsgrundlage für Datenbereitstellung
+            Rechtsgrundlage für Datenübermittlung
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text-justify">
-            <fo:inline font-weight="bold">
-                <xsl:value-of select="consumerName"/>
-            </fo:inline>
-            (hiernach: Datenanbieter) und
-            <fo:inline font-weight="bold">
-                <xsl:value-of select="providerName"/>
-            </fo:inline>
-            (hiernach: Datenbezüger) vereinbaren gestützt auf Art. 165c ff. des Bundesgesetzes vom 29. April
-            1998 über die Landwirtschaft (SR. 910.1), Art. 36 des Bundesgesetzes vom 25. September 2020 über
-            den Datenschutz (SR 235.1) und Art. 27 Abs. 9 der Verordnung vom 23. Oktober 2013 über
-            Informationssysteme im Bereich der Landwirtschaft (SR 919.117.71), was folgt:
+            <fo:list-block>
+                <fo:list-item>
+                    <fo:list-item-label end-indent="label-end()">
+                        <fo:block>1.</fo:block>
+                    </fo:list-item-label>
+                    <fo:list-item-body start-indent="body-start()">
+                        <fo:block>
+                            Nutzung des Datenübertragungsdienst: Die Bereitstellung und Nutzung des technischen Dienstes
+                            agridata.ch erfolgen gestützt auf Art. 165c ff. LwG und Art. 27 Abs. 9 ISLV.
+                        </fo:block>
+                    </fo:list-item-body>
+                </fo:list-item>
+                <fo:list-item>
+                    <fo:list-item-label end-indent="label-end()">
+                        <fo:block>2.</fo:block>
+                    </fo:list-item-label>
+                    <fo:list-item-body start-indent="body-start()">
+                        <fo:block>
+                            [Spezifischer Baustein je nach Datenanbieter und System]
+                        </fo:block>
+                    </fo:list-item-body>
+                </fo:list-item>
+                <fo:list-item>
+                    <fo:list-item-label end-indent="label-end()">
+                        <fo:block>3.</fo:block>
+                    </fo:list-item-label>
+                    <fo:list-item-body start-indent="body-start()">
+                        <fo:block>
+                            Sofern sich der Sitz oder Wohnsitz des Datenbezügers ausserhalb der Schweiz befindet,
+                            verpflichtet sich dieser zur Einhaltung der Bestimmungen des Schweizerischen
+                            Datenschutzgesetzes (DSG). Liegt im Sitzstaat des Datenbezügers kein vom Schweizerischen
+                            Bundesrat als angemessen anerkanntes Datenschutzniveau vor, garantiert der Datenbezüger den
+                            Schutz der übermittelten Daten durch die Übernahme der Standardvertragsklauseln (SCC)
+                            beziehungsweise gleichwertiger, durch den EDÖB anerkannter Garantien (gemäss Art. 16 Abs. 2
+                            DSG).
+                        </fo:block>
+                    </fo:list-item-body>
+                </fo:list-item>
+            </fo:list-block>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
             Vertragsgegenstand
         </fo:block>
-        <fo:block>
-            Der vorliegende Vertrag regelt die Bereitstellung von Daten vom Datenanbieter an den
-            Datenbezüger.
-            Er legt die diesbezüglichen Rechte und Pflichten beider Vertragspartner fest.
+        <fo:block xsl:use-attribute-sets="body-text">
+            Der vorliegende Datenaustauschvertrag regelt die Bereitstellung von Daten durch den Datenanbieter zum Abruf
+            durch den Datenbezüger über den Datenübertragungsdienst agridata.ch. Er legt die diesbezüglichen Rechte und
+            Pflichten der Vertragspartner fest.
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text">
-            <fo:inline font-weight="bold">Nicht</fo:inline>
-            Gegenstand dieses Vertrags sind mögliche Vergütungen zwischen den Vertragspartnern für
-            z.B. Datenaufbereitung oder Datennutzung.
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="body-text">
-            Dieser Vertrag wird in deutscher und französischer Sprache ausgefertigt. Im Falle von
+            Dieser Datenaustauschvertrag wird in deutscher und französischer Sprache ausgefertigt. Im Falle von
             Widersprüchen oder Auslegungszweifeln gilt ausschliesslich die deutsche Version.
         </fo:block>
 
@@ -84,11 +110,11 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">agridata.ch</fo:inline>:
-                        Die Vertragspartner nutzen für die Datenübertragung und die Abfrage der
-                        Zustimmung der Datenproduzenten zur Datenweitergabe den Datenübertragungsdienst
-                        agridata.ch. Die für die Nutzung von agridata.ch geltenden Allgemeinen
-                        Geschäftsbedingungen (AGB) sind von den Vertragspartnern unabhängig vom vorliegenden
-                        Vertrag einzuhalten.
+                        Die Vertragspartner nutzen für die Datenübertragung den Datenübertragungsdienst agridata.ch.
+                        Dieser dient dem Informieren der Datenproduzenten sowie, bei zustimmungspflichtigen
+                        Datenprodukten, der Einholung von deren Zustimmung. Die Nutzung von agridata.ch erfolgt für die
+                        Vertragspartner auf freiwilliger Basis und die geltenden Allgemeinen Geschäftsbedingungen (AGB)
+                        sind von den Vertragspartnern unabhängig vom vorliegenden Datenaustauschvertrag einzuhalten.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -100,13 +126,11 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenproduzent</fo:inline>:
-                        Als Datenproduzenten gelten natürliche oder juristische Personen, die im
-                        Rahmen ihrer Tätigkeit Daten erzeugen, erfassen oder bereitstellen, welche über
-                        agridata.ch übermittelt werden können. Dazu gehören insbesondere, aber nicht
-                        abschliessend, Bewirtschafterinnen und Bewirtschafter, Tierhalterinnen und
-                        Tierhalter, Eigentümerinnen und Eigentümer von Equiden sowie Unternehmen,
-                        Organisationen oder Institutionen, die landwirtschaftsrelevante Daten erzeugen oder
-                        verwalten.
+                        Als Datenproduzenten gelten natürliche oder juristische Personen, die im Rahmen ihrer Tätigkeit
+                        Daten erzeugen, erfassen oder bereitstellen, welche über agridata.ch übermittelt werden können.
+                        Dazu gehören insbesondere, aber nicht abschliessend, Bewirtschafterinnen und Bewirtschafter,
+                        Tierhalterinnen und Tierhalter, Eigentümerinnen und Eigentümer von Equiden sowie Unternehmen,
+                        Organisationen oder Institutionen, die landwirtschaftsrelevante Daten erzeugen oder verwalten.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -118,11 +142,11 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenbezüger</fo:inline>:
-                        Als Datenbezüger gelten natürliche oder juristische Personen, oder Behörden,
-                        die über agridata.ch auf die Daten der Datenproduzenten zugreifen oder entsprechende
-                        Datenanfragen stellen, um diese ausschliesslich zu den im Datenantrag festgelegten
-                        Zwecken zu verwenden. Der Zugriff auf Daten ist nur möglich, wenn die Zustimmung der jeweiligen
-                        Datenproduzenten vorliegt.
+                        Als Datenbezüger gelten juristische Personen, Behörden oder natürliche Personen in Ausübung
+                        ihrer beruflichen oder gewerblichen Tätigkeit (z. B. Einzelfirmen), die über agridata.ch auf die
+                        Daten der Datenproduzenten zugreifen oder entsprechende Datenanfragen stellen, um diese
+                        ausschliesslich zu den im Datenantrag festgelegten Zwecken zu verwenden. Der Zugriff auf Daten
+                        ist nur möglich, sofern die Bereitstellungsvoraussetzungen gemäss diesem Vertrag erfüllt sind.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -134,25 +158,10 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenanbieter</fo:inline>:
-                        Stellt dem Datenbezüger die von ihm beantragten Daten der zustimmenden
-                        Datenproduzenten über agridata.ch bereit.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-
-            <fo:list-item space-after="2mm">
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        <fo:inline text-decoration="underline">Datenantrag / Datenanfrage</fo:inline>:
-                        Antrag des Datenbezügers, um definierte Datenprodukte zu
-                        einem angegebenen Zweck im Sinne des Art. 27 Abs. 9 ISLV vom Datenanbieter zu
-                        erhalten.
-                        Datenproduzenten erhalten im Datenübertragungsdienst agridata.ch Einsicht in den
-                        Datenantrag und können dort ihre Zustimmung zur Datenweitergabe vom Datenanbieter an
-                        den Datenbezüger erteilen.
+                        Als Datenanbieter gelten natürliche oder juristische Personen, oder Behörden, die über
+                        agridata.ch einem Datenbezüger die von diesem beantragten Daten bereitstellen. Der Datenanbieter
+                        entscheidet eigenständig unter Einhaltung der für ihn massgebenden rechtlichen Bestimmungen, ob
+                        und welchem Datenbezüger er seine Daten zur Verfügung stellt.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -164,9 +173,9 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenprodukt</fo:inline>:
-                        Datenanbieter stellen Datenprodukte mit klar umrissenen Inhalten für den
-                        Datenbezüger zur Auswahl. Ein Datenbezüger kann mehrere Datenprodukte eines
-                        Datenanbieters beantragen.
+                        Datenanbieter stellen Datenprodukte mit klar definierten Inhalten und Datenformaten für die
+                        Datenbezüger zur Auswahl. Ein Datenbezüger kann mehrere Datenprodukte eines Datenanbieters
+                        beantragen.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -177,11 +186,40 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        <fo:inline text-decoration="underline">Zustimmungsabfrage</fo:inline>:
-                        Dienst in agridata.ch, mit dem Datenproduzenten bestehende
-                        Datenanträge einsehen und ihre Zustimmung zur Datenweitergabe bearbeiten können.
-                        Datenproduzenten können pro Datenanfrage der Datenweitergabe zustimmen oder diese
-                        ablehnen.
+                        <fo:inline text-decoration="underline">Datenantrag</fo:inline>:
+                        Von einem Datenbezüger über den Datenübertragungsdienst agridata.ch eingereichtes Gesuch an den
+                        Datenanbieter zum Bezug definierter Datenprodukte für einen festgelegten Nutzungszweck. Der
+                        genehmigte Datenantrag bildet die Grundlage des vorliegenden Datenaustauschvertrages.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+
+            <fo:list-item space-after="2mm">
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        <fo:inline text-decoration="underline">Datenanfrage</fo:inline>:
+                        Die auf einem genehmigten Datenantrag basierende, an die einzelnen Datenproduzenten gerichtete
+                        Information auf agridata.ch. Sie dient der Transparenz und ermöglicht den Datenproduzenten
+                        Einsicht in den Zweck der Datennutzung sowie, bei zustimmungspflichtigen Datenprodukten, die
+                        Erteilung oder Ablehnung ihrer Zustimmung zur Datenweitergabe.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+
+            <fo:list-item space-after="2mm">
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        <fo:inline text-decoration="underline">Zustimmungsprüfung</fo:inline>:
+                        Automatisierte Systemfunktion des Datenübertragungsdienstes agridata.ch, welche vor jeder
+                        Datenübermittlung an der Schnittstelle überprüft und sicherstellt, dass die rechtlichen
+                        Bereitstellungsvoraussetzungen (bei zustimmungspflichtigen Datenprodukten das Vorliegen einer
+                        aktiven und gültigen Zustimmung des jeweiligen Datenproduzenten) erfüllt sind.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -193,8 +231,10 @@
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenschnittstelle</fo:inline>:
-                        Geschützte technische Schnittstelle mit der Datenbezüger pro Datenantrag
-                        alle Daten der zustimmenden Datenproduzenten beziehen können.
+                        Geschützte technische Schnittstelle, über die der Datenbezüger bzw. der Datenanbieter bei
+                        agridata.ch angebunden ist und über die pro Datenantrag die Daten der definierten
+                        Datenproduzenten unter Berücksichtigung der jeweiligen Bereitstellungsvoraussetzungen bezogen
+                        werden können.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -202,7 +242,13 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            2. Angaben zum Datenantrag
+            2. Inhaltliche Angaben zum Datenantrag
+        </fo:block>
+
+        <fo:block xsl:use-attribute-sets="body-text">
+            Die nachfolgenden Angaben basieren auf dem vom Datenbezüger auf agridata.ch eingereichten Datenantrag. Sie
+            werden den Datenproduzenten in der Datenanfrage angezeigt und dienen als Entscheidungsgrundlage für ihre
+            Zustimmung:
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
@@ -233,16 +279,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text">
-            DE:
-            <xsl:value-of select="requestTitle/de"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            FR:
-            <xsl:value-of select="requestTitle/fr"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            IT:
-            <xsl:value-of select="requestTitle/it"/>
+            Der im Antrag definierte Titel des Datenanbieters
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
@@ -250,15 +287,15 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text">
-            DE:
+            Deutsch:
             <xsl:value-of select="requestDescription/de"/>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
-            FR:
+            Französisch:
             <xsl:value-of select="requestDescription/fr"/>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
-            IT:
+            Italienisch:
             <xsl:value-of select="requestDescription/it"/>
         </fo:block>
 
@@ -267,52 +304,33 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text">
-            DE:
+            Deutsch:
             <xsl:value-of select="requestPurpose/de"/>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
-            FR :
+            Französisch:
             <xsl:value-of select="requestPurpose/fr"/>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
-            IT:
+            Italienisch:
             <xsl:value-of select="requestPurpose/it"/>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            Name System beim Datenanbieter:
+            Datenanbieter System:
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
-            DE:
-            <xsl:value-of select="providerSystemName/de"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            FR :
-            <xsl:value-of select="providerSystemName/fr"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            IT:
-            <xsl:value-of select="providerSystemName/it"/>
+            Das im Antrag definierte Quellsystem des Datenanbieters
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
             Gewünschte Datenprodukte:
         </fo:block>
-        <fo:list-block>
-            <xsl:for-each select="products">
-                <fo:list-item>
-                    <fo:list-item-label end-indent="label-end()">
-                        <fo:block>•</fo:block>
-                    </fo:list-item-label>
-
-                    <fo:list-item-body start-indent="body-start()">
-                        <fo:block>
-                            <xsl:value-of select="de"/>
-                        </fo:block>
-                    </fo:list-item-body>
-                </fo:list-item>
-            </xsl:for-each>
-        </fo:list-block>
+        <fo:block>
+            Gegenstand dieses Datenaustauschvertrag sind diejenigen Datenprodukte, welche im elektronischen Datenantrag
+            auf agridata.ch unter der Antrags-ID
+            <xsl:value-of select="requestHumanFriendlyId"/> geführt und freigegeben sind.
+        </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
             Angabe zu Zielgruppe:
@@ -326,7 +344,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            3.1 AGB für die Nutzung von agridata.ch
+            3.1 Datenanbieter
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -335,16 +353,142 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Die für die Nutzung von agridata.ch geltenden Allgemeinen Geschäftsbedingungen (AGB)
-                        sind unabhängig von diesem vorliegenden Vertrag von den Vertragspartnern
-                        einzuhalten.
+                        Der Datenanbieter spezifiziert und beschreibt die von ihm bereitgestellten Datenprodukte
+                        verbindlich bezüglich Inhalts und Format. Die Datenproduktbeschreibung des Datenanbieters muss
+                        öffentlich zugänglich und über agridata.ch aufrufbar sein.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Für die Bereitstellung von Datenprodukten nutzt der Datenanbieter die automatisierte Steuerung
+                        von agridata.ch, welche sicherstellt, dass die Übermittlung von Datenprodukten strikt an das
+                        Vorliegen einer aktiven Zustimmung des Datenproduzenten in der Zustimmungsprüfung gekoppelt ist.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenanbieter stellt die Datenprodukte über die geschützte Schnittstelle direkt an den
+                        Datenübertragungsdienst agridata.ch bereit. Er stellt sicher, dass seinerseits nur
+                        datenschutzkonforme und vom Datenübertragungsdienst agridata.ch angeforderte Datenprodukte
+                        übergeben werden. Die anschliessende Absicherung des Abrufs und die Bereitstellung für den
+                        Datenbezüger erfolgen durch agridata.ch gemäss den jeweils anwendbaren
+                        Bereitstellungsvoraussetzungen (bei zustimmungspflichtigen Datenprodukten das Vorliegen einer
+                        aktiven und gültigen Zustimmung des Datenproduzenten; bei zustimmungsfreien Datenprodukten das
+                        Vorliegen der gesetzlichen Grundlage und der Produzentendefinition). Abweichende, bilaterale
+                        Bereitstellungswege (z. B. die direkte Datenübergabe durch den Datenanbieter via
+                        Applikations-GUI, E-Mail oder manuellen Datei-Export) bleiben vorbehalten. In diesen Fällen
+                        obliegt es der alleinigen Verantwortung des Datenanbieters, vor jeder Datenauslieferung
+                        eigenständig zu überprüfen und sicherzustellen, dass die entsprechenden
+                        Bereitstellungsvoraussetzungen (aktive Zustimmung bzw. gesetzliche Transparenzanzeige) in
+                        agridata.ch erfüllt sind. Die Leistung von agridata.ch beschränkt sich hierbei auf das
+                        Bereitstellen der Legitimationsinformationen; die technische Übermittlung und Datensicherheit
+                        des gewählten Transportwegs liegen vollumfänglich beim Datenanbieter.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenanbieter stellt auf eigene Kosten eine geeignete technische Schnittstelle zu
+                        agridata.ch zur Verfügung und unterhält diese. Er trägt die alleinige Verantwortung für die
+                        funktions- und spezifikationskonforme Umsetzung der Schnittstelle auf seinen eigenen Systemen.
+                        Der sichere und automatisierte Austausch von Datenprodukten sowie die Fristen und
+                        Informationspflichten bei Schnittstellenanpassungen richten sich nach den jeweils gültigen
+                        Nutzungsbedingungen (AGB) für Datenanbieter von agridata.ch.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenanbieter informiert über die Einstellung oder wesentliche Änderung von Datenprodukten
+                        rechtzeitig im Voraus über den Datenübertragungsdienst agridata.ch. Die Information der
+                        betroffenen Datenbezüger erfolgt über agridata.ch. Das Risiko und die Verantwortung für die
+                        rechtzeitige Anpassung der eigenen Systeme an Produktänderungen (Holschuld) liegen beim
+                        Datenbezüger. Details zu den Ankündigungsfristen, Übergangsphasen sowie der Ausserdienststellung
+                        von Datenprodukten sind in den Nutzungsbedingungen (AGB) geregelt.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Entstehende Kosten für die Einrichtung und Anpassung der Datenbereitstellung beim Datenanbieter
+                        (z.B. für neue oder angepasste IT-Infrastruktur oder Anpassungen an der Schnittstelle) können
+                        nicht dem Datenbezüger oder agridata.ch in Rechnung gestellt werden.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+        </fo:list-block>
+
+
+        <fo:block xsl:use-attribute-sets="section-heading">
+            3.2 Datenbezüger
+        </fo:block>
+        <fo:list-block>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Die Einholung der erforderlichen Zustimmungen bei den Datenproduzenten ist die ausschliessliche
+                        Aufgabe und Verantwortung des Datenbezügers. Den Datenanbieter trifft keinerlei Pflicht zur
+                        Information, Aufklärung oder Aktivierung der Datenproduzenten. Der Datenanbieter haftet nicht
+                        für das Vorliegen oder die Gültigkeit der Zustimmungen; die technische Überprüfung und
+                        Absicherung der Zustimmungen vor der Datenbereitstellung erfolgen vollautomatisiert durch
+                        agridata.ch.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenbezüger verpflichtet sich, Datenanfragen ausschliesslich an diejenigen Datenproduzenten
+                        zu richten, die im vorliegenden Datenaustauschvertrag als Zielgruppe definiert sind. Eine
+                        wahllose oder zweckfremde Kontaktaufnahme ist untersagt.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenbezüger trägt sämtliche Kosten, die ihm im Zusammenhang mit der Einrichtung, Anpassung,
+                        Nutzung oder dem Unterhalt des Datenbezugs entstehen (z. B. für die eigene IT-Infrastruktur,
+                        Schnittstellenanpassungen oder Drittsoftware). Jegliche Kostenabwälzung oder Rechnungsstellung
+                        an den Datenanbieter oder an agridata.ch ist ausgeschlossen.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            3.2 Datenanbieter
+            3.3 Transparenz gegenüber Datenproduzenten
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -353,194 +497,11 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter stellt über agridata.ch die im Datenantrag beschriebenen
-                        Datenprodukte zur Verfügung. Dabei stellt agridata.ch sicher, dass nur Daten vom
-                        Datenanbieter an den Datenbezüger weitergegeben werden, bei denen die Zustimmung der
-                        Datenproduzenten vorliegt.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenanbieter verpflichtet sich, auf eigene Kosten eine geeignete technische
-                        Schnittstelle zu agridata.ch einzurichten und zu unterhalten. Diese Schnittstelle
-                        muss den sicheren, vollständigen und automatisierten Datenaustausch gemäss
-                        Spezifikationen
-                        <fo:basic-link
-                                external-destination="url('https://github.com/agridata-ch/.github/wiki')"
-                                color="blue"
-                                text-decoration="underline">
-                            https://github.com/agridata-ch/.github/wiki
-                        </fo:basic-link>
-                        gewährleisten.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenanbieter stellt dem Datenbezüger die Daten über eine geschützte
-                        Schnittstelle zum selbständigen Bezug bereit. Der Zugriff auf die Daten muss sowohl
-                        beim Datenanbieter als auch beim Datenbezüger beschränkt, kontrolliert und geschützt
-                        sein.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Wenn bisher bereitgestellte Datenprodukte nicht mehr angeboten oder geändert werden,
-                        informiert der Datenanbieter agridata.ch und den Datenbezüger.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die für die Abwicklung der Datenbereitstellung beim Datenanbieter allenfalls
-                        entstehenden Kosten (z.B. für neue oder angepasste IT-Infrastruktur) können nicht
-                        dem Datenbezüger oder agridata.ch in Rechnung gestellt werden.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-        </fo:list-block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            3.3 Datenbezüger
-        </fo:block>
-        <fo:list-block>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die gelieferten Daten werden ausschliesslich für den Zweck bearbeitet, welcher den
-                        zustimmenden Datenproduzenten und dem Datenanbieter angegeben wurde.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenbezüger verpflichtet sich, dem Datenproduzenten eine beabsichtigte
-                        Weitergabe von Daten an Dritte in der Beschreibung des Nutzungszwecks mitzuteilen.
-                        Davon nicht berührt ist eine allfällige Herausgabe an Behörden, welche gestützt auf
-                        eine gesetzliche Grundlage erfolgt.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenbezüger verpflichtet sich, dem Datenproduzenten mitzuteilen, sowohl wenn
-                        Datenbezüger als auch wenn Dritte die Daten im Ausland beziehen.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Zulässig ist der Beizug von Auftragsbearbeitern durch Datenbezüger (in seinem
-                        Auftrag und seinem Interesse).
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenbezüger ist für den Datenschutz verantwortlich und verpflichtet sich die
-                        Datenschutzgesetzgebung, inklusive einer allfälligen Einholung der Zustimmung zur
-                        Datenweitergabe bei den Datenproduzenten, einzuhalten. Der Zugriff auf die Daten
-                        muss sowohl beim Datenanbieter als auch beim Datenbezüger beschränkt, kontrolliert
-                        und geschützt sein.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die Datenbezüger sind selbst dafür verantwortlich, ihre jeweiligen Datenproduzenten
-                        über die entsprechenden Datenanfragen zu informieren und deren Zustimmung einzuholen
-                        bzw. sicherzustellen, dass diese Zustimmung vorliegt.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenbezüger nutzt für die aktive Kommunikation des Datenantrags / der
-                        Datenanfrage gegenüber den Datenproduzenten Vorlagen von agridata.ch, um gegenüber
-                        den Datenproduzenten eine durchgängige Kommunikation im Zusammenhang mit agridata.ch
-                        einzuhalten.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenbezüger darf den Link auf die Datenanfrage nur an solche Datenproduzenten
-                        versenden, die unter den Angaben zum Vertrag als Zielgruppe beschrieben wurden.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Sofern der Datenbezüger in der Lage ist, in agridata.ch eine Liste mit den
-                        UID-Nummern der betroffenen Datenproduzenten zur Verfügung zu stellen, kann die
-                        Datenanfrage auf agridata.ch für die entsprechenden Datenproduzenten aktiviert
-                        werden, und es können Informations-E-Mails an die betreffenden Datenproduzenten
-                        versendet werden.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die für die Abwicklung des Datenbezugs beim Datenbezüger allenfalls entstehenden
-                        Kosten (z.B. für neue oder angepasste IT-Infrastruktur) können nicht dem
-                        Datenanbieter oder agridata.ch in Rechnung gestellt werden.
+                        Die Vertragspartner erklären sich ausdrücklich damit einverstanden, dass dieser
+                        Datenaustauschvertrag den angefragten Datenproduzenten auf dem Datenübertragungsdienst
+                        agridata.ch zur Einsichtnahme bereitgestellt werden kann. Diese Offenlegung dient der Förderung
+                        der digitalen Selbstbestimmung, der Stärkung des Vertrauens sowie der Gewährleistung von
+                        Transparenz über die stattfindenden Datenflüsse.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -557,11 +518,45 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter und agridata.ch übernehmen keine Gewähr für die inhaltliche
-                        Richtigkeit und Vollständigkeit der gelieferten Daten. Insbesondere garantieren
-                        Datenanbieter und agridata.ch nicht, dass Angaben zu sämtlichen Personen bzw.
-                        Betrieben geliefert werden können, für welche der Datenbezüger die Datenweitergabe
-                        beantragt.
+                        Berechtigung zur Datennutzung und -bereitstellung: Unabhängig von ihrem rechtlichen Status
+                        sichern die Vertragsparteien mit der digitalen Unterschrift dieses Datenaustauschvertrages zu,
+                        dass sie zur Erfüllung ihrer jeweiligen Rolle vollumfänglich berechtigt sind:
+                    </fo:block>
+                    <fo:list-block>
+                        <fo:list-item>
+                            <fo:list-item-label end-indent="label-end()">
+                                <fo:block>•</fo:block>
+                            </fo:list-item-label>
+                            <fo:list-item-body start-indent="body-start()">
+                                <fo:block>
+                                    Der Datenanbieter sichert zu, zur Bereitstellung und Offenlegung der
+                                    vertragsgegenständlichen Daten vollumfänglich berechtigt zu sein.
+                                </fo:block>
+                            </fo:list-item-body>
+                        </fo:list-item>
+                        <fo:list-item>
+                            <fo:list-item-label end-indent="label-end()">
+                                <fo:block>•</fo:block>
+                            </fo:list-item-label>
+                            <fo:list-item-body start-indent="body-start()">
+                                <fo:block>
+                                    Der Datenbezüger sichert zu, zum Bezug und zur Bearbeitung dieser Daten für den
+                                    vereinbarten Nutzungszweck vollumfänglich berechtigt zu sein.
+                                </fo:block>
+                            </fo:list-item-body>
+                        </fo:list-item>
+                    </fo:list-block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Produzentendefinition durch den Datenbezüger: Die technische Datenbereitstellung setzt voraus,
+                        dass der Datenbezüger die abzufragenden Datenproduzenten über die Systemfunktionen von
+                        agridata.ch eindeutig definiert hat.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -571,9 +566,55 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter und agridata.ch schliessen, soweit rechtlich zulässig, jegliche
-                        Haftungsansprüche, insbesondere wegen nicht funktionierendem Datenbezug oder
-                        mangelhaften Daten, aus.
+                        Bereitstellungsvoraussetzungen und Datenbezug: Der Datenbezüger kann Daten für einen konkreten
+                        Datenproduzenten nur beziehen, wenn die Bereitstellungsvoraussetzungen in agridata.ch erfüllt
+                        sind (aktive Zustimmung bei zustimmungspflichtigen bzw. gesetzliche Grundlage bei
+                        zustimmungsfreien Datenprodukten). Die Überprüfung erfolgt automatisiert durch den
+                        Datenübertragungsdienst. Fehlen die Voraussetzungen (z. B. fehlende Zustimmung), besteht kein
+                        Anspruch auf Datenbereitstellung, und jegliche Haftung des Datenanbieters sowie des Betreibers
+                        von agridata.ch für daraus entstehende Folgen ist ausgeschlossen. Bei bilateralen
+                        Bereitstellungswegen (Ziffer 3.1) prüft der Datenanbieter das Vorliegen der Voraussetzungen
+                        eigenverantwortlich vor der Datenübergabe.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Datenqualität: Der Datenanbieter übernimmt keine Gewähr für die inhaltliche Richtigkeit,
+                        Aktualität und Vollständigkeit der bereitgestellten Daten. Insbesondere garantiert der
+                        Datenanbieter nicht, dass Angaben zu sämtlichen Personen bzw. Betrieben bezogen werden können,
+                        für welche der Datenbezüger Daten beantragt.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Technische Verfügbarkeit (Best-Effort): Die Bereitstellung der Daten über die Schnittstellen
+                        erfolgt ohne Gewährleistung einer ununterbrochenen oder störungsfreien Verfügbarkeit. Die
+                        Datenanbieter bemühen sich im Rahmen ihrer technischen Möglichkeiten um einen verlässlichen
+                        Betrieb (Best-Effort), garantieren jedoch keine spezifischen Systemlaufzeiten oder Service
+                        Levels (SLAs).
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Haftungsausschluss: Der Datenanbieter schliesst, soweit rechtlich zulässig, jegliche
+                        Haftungsansprüche aus. Dies gilt insbesondere für Schäden aus einer zeitweisen oder dauerhaften
+                        Nichtverfügbarkeit der Datenbereitstellung (z. B. bei Systemunterbrüchen oder technischen
+                        Störungen) sowie für Schäden aufgrund mangelhafter Daten.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -590,40 +631,20 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Sowohl der Eidgenössischen Finanzkontrolle als auch agridata.ch steht jederzeit ein
-                        Kontroll- und ein Auskunftsrecht über alle Teile des Vertrages zu; sie können diese
-                        Rechte auch durch ausserhalb der Bundesverwaltung stehende Sachverständige
-                        wahrnehmen lassen.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die Vertragspartnerin hat den Kontrollorganen jederzeit Einsicht in sämtliche Akten
-                        und Zutritt zu den Anlagen, die Gegenstand des vorliegenden Vertragsverhältnisses
-                        sind, zu gewähren sowie für Auskünfte zur Verfügung zu stehen.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die Kontrollorgane sind an das Amtsgeheimnis gebunden und haben bei der Bearbeitung
-                        von Personendaten die Datenschutzvorschriften zu beachten.
+                        Der Datenanbieter ist berechtigt, die Einhaltung der Bestimmungen dieses Datenaustauschvertrages
+                        durch den Datenbezüger selbst oder durch einen zur Verschwiegenheit verpflichteten, unabhängigen
+                        Dritten überprüfen zu lassen (Audit). Der Datenbezüger verpflichtet sich, dem Datenanbieter auf
+                        begründete Anfrage hin die für die Überprüfung der vertragsgemässen Datennutzung erforderlichen
+                        Auskünfte zu erteilen und Einsicht in die relevanten Dokumente zu gewähren. Die Kosten der
+                        Prüfung trägt der Datenanbieter, es sei denn, es wird ein wesentlicher Verstoss gegen diesen
+                        Datenaustauschvertrag festgestellt.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            6. Vertragsdatuer
+            6. Vertragsdauer
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -632,9 +653,9 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der vorliegende Vertrag tritt ab der beidseitigen Unterzeichnung durch die
-                        Vertragspartner in Kraft. Ab diesem Zeitpunkt können Datenproduzenten ihre
-                        Zustimmung zur Datenweitergabe bearbeiten.
+                        Der vorliegende Datenaustauschvertrag tritt mit der erfolgreichen zweiseitigen digitalen
+                        Bestätigung (Authentifizierung via 2FA) durch die zeichnungsberechtigten Personen des
+                        Datenanbieters und des Datenbezügers auf dem Datenübertragungsdienst agridata.ch in Kraft.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -644,14 +665,29 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Vertrag gilt bis zur schriftlichen Beendigung durch einen Vertragspartner.
+                        Der Datenaustauschvertrag wird auf unbestimmte Zeit abgeschlossen. Er kann von jeder
+                        Vertragspartei unter Einhaltung einer Frist von drei Monaten auf das Ende eines Kalendermonats
+                        in Textform (z. B. via E-Mail oder über den Datenübertragungsdienst) gekündigt werden.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Der Datenaustauschvertrag ist untrennbar an die Existenz des zugrundeliegenden Datenantrags
+                        gekoppelt. Wird der zugehörige Datenantrag auf dem Datenübertragungsdienst agridata.ch gelöscht
+                        oder dauerhaft deaktiviert, endet dieser Datenaustauschvertrag automatisch mit dem Zeitpunkt der
+                        Löschung oder Deaktivierung, ohne dass es einer separaten Kündigung bedarf (Kopplungsklausel).
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            7. Vertragsänderung
+            7. Vertragsänderungen
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -660,9 +696,12 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Änderungen am Vertrag können nach Vertragsabschluss nicht vorgenommen werden, da
-                        diese
-                        sich auf alle bis zur Änderung erteilten Zustimmungen zur Datenweitergabe auswirken.
+                        Materieller Inhaltsschutz: Der Nutzungszweck, die Kurzbeschreibung sowie die übergeordnete
+                        Zielgruppe bilden die wesentliche Informationsbasis für die Datenproduzenten. Sie können nach
+                        der Aktivierung des Datenantrags nicht mehr geändert werden. Jegliche Erweiterung oder
+                        materielle Anpassung des Nutzungszwecks, der Beschreibung oder der Zielgruppe erfordert das
+                        Einreichen eines neuen Datenantrags sowie, soweit erforderlich, das erneute Einholen der
+                        Zustimmung der Datenproduzenten.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -672,7 +711,10 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Vertrag kann durch beide Vertragspartner beendet werden.
+                        Redaktionelle Anpassung des Titels: Erweist sich der Titel des Datenantrags im Nachgang als
+                        unvollständig, missverständlich oder rein sprachlich korrekturbedürftig, kann dieser
+                        redaktionell angepasst werden, sofern der fundamentale Sinngehalt sowie der Nutzungszweck und
+                        die Kurzbeschreibung unverändert bleiben.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -682,15 +724,36 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Eine schriftliche Beendigung ist mit einer Frist von drei Monaten auf ein Monatsende
-                        möglich.
+                        Begleitdaten: Angaben im Datenantrag, die nicht Teil der zentralen Vertragsinhalte sind, können
+                        über die Systemfunktionen des Datenübertragungsdienstes agridata.ch aktualisiert werden. Solche
+                        Anpassungen verändern den vorliegenden Datenaustauschvertrag nicht.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Auf Anfrage des Datenbezügers und im gegenseitigen Einvernehmen der Vertragspartner können zu
+                        diesem Datenaustauschvertrag über agridata.ch nachträglich neue, erweiterte oder geänderte
+                        Datenprodukte hinzugefügt werden, sofern diese inhaltlich dem vereinbarten Nutzungszweck
+                        entsprechen. Es besteht kein Anspruch des Datenbezügers auf die Freigabe oder Bereitstellung
+                        solcher Anpassungen. Die Erfassung und Freigabe erfolgen rein digital im System und erfordern
+                        keine manuelle Vertragsanpassung. Die einmal erteilte Zustimmung der Datenproduzenten gilt auch
+                        für diese Anpassungen, sofern es sich um untergeordnete Ergänzungen der bisherigen Datenprodukte
+                        handelt und der Betreiber von agridata.ch die betroffenen Datenproduzenten transparent darüber
+                        informiert und ihnen eine einfache Möglichkeit zum Widerspruch (Opt-out) bietet. Handelt es sich
+                        um neuartige oder wesentlich erweiterte Datenkategorien, ist über die Datenanfrage auf
+                        agridata.ch eine erneute aktive Zustimmung (Opt-in) der Datenproduzenten einzuholen.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            8. Datenschutz / Geheimhaltungspflicht
+            8. Datenschutz
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -699,11 +762,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Die Vertragspartner verpflichten sich, Daten der Datenproduzenten gemäss den
-                        geltenden
-                        Datenschutzbestimmungen zu schützen, insbesondere ergreifen sie technische und
-                        organisatorische Massnahmen für eine angemessene Datensicherheit in ihrer Sphäre der
-                        Verantwortung und Zuständigkeit.
+                        Die Vertragspartner verpflichten sich, Verletzungen der Datensicherheit oder entsprechende
+                        begründete Verdachtsmomente unverzüglich gegenseitig zu informieren.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -713,43 +773,12 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Die Vertragspartner gewährleisten – auch nach Beendigung des vorliegenden
-                        Vertragsverhältnisses – den vollen Daten- und Geheimnisschutz für alle Daten
-                        (Informationen), die ihnen im Rahmen des vorliegenden Vertrags zur Kenntnis gelangen
-                        oder
-                        von ihnen in irgendeiner Weise bearbeitet werden. Sie treffen hierzu alle
-                        erforderlichen
-                        organisatorischen, technischen und personellen Schutzmassnahmen.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die Vertragspartner garantieren insbesondere, dass alle ihnen zur Kenntnis
-                        gelangenden
-                        Daten ausschliesslich für die vertragliche vereinbarte Zweckbestimmung bearbeitet
-                        und
-                        verwendet werden und stellen sicher, dass sämtliche Mitarbeitenden und
-                        (gegebenenfalls)
-                        externe Dienstleister (und deren Mitarbeitenden) die einschlägigen Geheimhaltungs-
-                        und
-                        Datenschutzvorschriften ebenfalls strikte einhalten.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Die Vertragspartner informieren sich gegenseitig bei datenschutzrelevanten Vorfällen
-                        oder
-                        begründetem Verdacht unverzüglich.
+                        Da der Datenaustausch über agridata.ch abgewickelt wird, ist der betroffene Vertragspartner
+                        verpflichtet, gleichzeitig eine Meldung zur Kenntnisnahme an die auf agridata.ch ausgewiesene
+                        Supportstelle zu senden. Aus dieser Meldung erwachsen für den Betreiber von agridata.ch keine
+                        eigenständigen Pflichten, Haftungen oder Überwachungspflichten; sie dient rein der operativen
+                        Information. Die gesetzlichen Meldepflichten (z. B. gegenüber dem EDÖB) verbleiben
+                        vollumfänglich bei den Vertragspartnern.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -765,20 +794,31 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        In Fällen des Missbrauchs der Daten oder anderen Verletzungen der Bestimmungen
-                        dieses
-                        Vertrages kann der vorliegende Vertrag von den Vertragspartnern fristlos gekündigt
-                        werden. Kündigt ein Vertragspartner den Vertrag fristlos, so wird der bestehende
-                        Datenantrag der
-                        Vertragspartnerin deaktiviert und es werden fortan keine der beantragten Daten
-                        bereitgestellt.
+                        Sperrung bei Missbrauch oder Verdacht: Besteht ein begründeter Verdacht auf einen Missbrauch der
+                        Daten oder eine sonstige erhebliche Verletzung der Vertragsbestimmungen, ist der Datenanbieter
+                        sowie der Betreiber von agridata.ch berechtigt, den Datenfluss über den Datenübertragungsdienst
+                        als Schutzmassnahme temporär zu sperren.
+                    </fo:block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Fristlose Kündigung und Ausschluss: Bei schwerwiegenden oder wiederholten Verstössen gegen
+                        diesen Datenaustauschvertrag oder die anwendbaren Rechtsvorschriften kann dieser
+                        Datenaustauschvertrag von der verletzten Partei fristlos gekündigt werden. In diesem Fall wird
+                        der Datenantrag auf agridata.ch dauerhaft deaktiviert und der Datenbezüger vom weiteren
+                        Datenbezug bezüglich des betroffenen Datenprodukts ausgeschlossen.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            10. Streitigkeiten aus diesem Vertrag
+            10. Streitigkeiten aus diesem Datenaustauschvertrag
         </fo:block>
         <fo:list-block>
             <fo:list-item>
@@ -787,9 +827,8 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Bei allfälligen Meinungsverschiedenheiten bemühen sich die Vertragspartner nach Treu
-                        und
-                        Glauben um eine möglichst rasche und gütliche Einigung.
+                        Bei allfälligen Meinungsverschiedenheiten bemühen sich die Vertragspartner nach Treu und Glauben
+                        um eine möglichst rasche und gütliche Einigung.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -799,11 +838,63 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Kann innert 30 Arbeitstagen weder die Meinungsdifferenz bereinigt noch ein
-                        Bereinigungsplan
-                        vereinbart werden, ist jeder Vertragspartner berechtigt, die Angelegenheit bei
-                        Gericht
-                        anhängig zu machen.
+                        Kann innert 30 Arbeitstagen keine Einigung erzielt werden, steht den Vertragspartnern der
+                        Rechtsweg offen. Der Gerichtsstand bestimmt sich wie folgt:
+                    </fo:block>
+                    <fo:list-block>
+                        <fo:list-item>
+                            <fo:list-item-label end-indent="label-end()">
+                                <fo:block>•</fo:block>
+                            </fo:list-item-label>
+                            <fo:list-item-body start-indent="body-start()">
+                                <fo:block>
+                                    Handelt es sich bei mindestens einem Vertragspartner um eine Bundesbehörde, ist das
+                                    Bundesverwaltungsgericht zuständig.
+                                </fo:block>
+                            </fo:list-item-body>
+                        </fo:list-item>
+                        <fo:list-item>
+                            <fo:list-item-label end-indent="label-end()">
+                                <fo:block>•</fo:block>
+                            </fo:list-item-label>
+                            <fo:list-item-body start-indent="body-start()">
+                                <fo:block>
+                                    Handelt es sich bei einem Vertragspartner um eine kantonale Behörde (ohne
+                                    Beteiligung des Bundes), liegt der Gerichtsstand am Sitz der kantonalen Behörde.
+                                </fo:block>
+                            </fo:list-item-body>
+                        </fo:list-item>
+                        <fo:list-item>
+                            <fo:list-item-label end-indent="label-end()">
+                                <fo:block>•</fo:block>
+                            </fo:list-item-label>
+                            <fo:list-item-body start-indent="body-start()">
+                                <fo:block>
+                                    Handelt es sich ausschliesslich um private Vertragspartner, liegt der Gerichtsstand
+                                    am Sitz des Datenanbieters, unter Ausschluss allfälliger kollisionsrechtlicher
+                                    Normen (IPRG).
+                                </fo:block>
+                            </fo:list-item-body>
+                        </fo:list-item>
+                    </fo:list-block>
+                </fo:list-item-body>
+            </fo:list-item>
+            <fo:list-item>
+                <fo:list-item-label end-indent="label-end()">
+                    <fo:block>•</fo:block>
+                </fo:list-item-label>
+                <fo:list-item-body start-indent="body-start()">
+                    <fo:block>
+                        Sollten sich einzelne Bestimmungen dieses Datenaustauschvertrages als ungültig, unwirksam oder
+                        unerfüllbar erweisen, so wird dadurch die Gültigkeit der übrigen Teile des
+                        Datenaustauschvertrages nicht beeinträchtigt. Die Vertragspartner verpflichten sich in diesem
+                        Fall, die ungültige Bestimmung durch eine rechtskonforme Regelung zu ersetzen, die dem
+                        angestrebten fachlichen und rechtlichen Zweck der ursprünglichen Bestimmung am nächsten kommt.
+                        Da eine nachträgliche Anpassung dieses Datenaustauschvertrages systemseitig ausgeschlossen ist,
+                        ist in diesem Fall der bestehende Vertrag über den Datenübertragungsdienst agridata.ch zu
+                        beenden und ein neuer, korrigierter Datenantrag zu stellen. Erfordert die Ersetzung einer
+                        ungültigen Bestimmung die Anpassung von zentralen Vertragsinhalten, ist der bestehende Vertrag
+                        über den Datenübertragungsdienst agridata.ch zu beenden und ein neuer Datenantrag zu stellen.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
@@ -813,27 +904,7 @@
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Über Streitigkeiten aus diesem Vertrag entscheidet auf Klage hin das
-                        Bundesverwaltungsgericht als erste Instanz.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Sollten sich einzelne Bestimmungen dieses Vertrages als ungültig, unwirksam oder
-                        unerfüllbar erweisen, so wird dadurch die Gültigkeit, Wirksamkeit und Erfüllbarkeit
-                        der übrigen
-                        Teile des Vertrages nicht beeinträchtigt. Die Vertragspartner verpflichten sich in
-                        diesem Fall,
-                        den ungültigen, unwirksamen oder unerfüllbaren Teil des Vertrages durch eine
-                        gültige,
-                        wirksame und erfüllbare Bestimmung zu ersetzen, die inhaltlich der ursprünglichen
-                        Absicht
-                        der Vertragspartner am nächsten kommt.
+                        Auf diesen Datenaustauschvertrag ist ausschliesslich materielles Schweizer Recht anwendbar.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>

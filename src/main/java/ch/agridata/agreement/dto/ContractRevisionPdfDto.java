@@ -21,6 +21,7 @@ import lombok.Builder;
 public record ContractRevisionPdfDto(
 
     // request information
+    String requestHumanFriendlyId,
     ContractRevisionPdfTranslationDto requestTitle,
     ContractRevisionPdfTranslationDto requestDescription,
     ContractRevisionPdfTranslationDto requestPurpose,
@@ -50,13 +51,13 @@ public record ContractRevisionPdfDto(
     ContractRevisionPdfTranslationDto providerSystemName,
 
     String consumerSignatureName1,
-    String consumerSignatureDate1,
+    String consumerSignatureDateTime1,
     String consumerSignatureName2,
-    String consumerSignatureDate2,
+    String consumerSignatureDateTime2,
     String providerSignatureName1,
-    String providerSignatureDate1,
+    String providerSignatureDateTime1,
     String providerSignatureName2,
-    String providerSignatureDate2,
+    String providerSignatureDateTime2,
 
     String consumerSignatureType,
     String providerSignatureType
@@ -67,7 +68,7 @@ public record ContractRevisionPdfDto(
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
-        null, null, null
+        null, null, null, null
     );
   }
 }

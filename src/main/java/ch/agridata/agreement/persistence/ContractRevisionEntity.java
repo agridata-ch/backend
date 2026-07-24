@@ -55,6 +55,9 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   // DataRequest information
 
+  @Column(name = "data_request_human_friendly_id", nullable = false, length = 4)
+  private String dataRequestHumanFriendlyId;
+
   @Column(name = "data_consumer_name", nullable = false)
   private String dataConsumerName;
 
