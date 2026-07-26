@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.ses.model.SesException;
 public class EmailSesService implements EmailApi {
 
   public static final String UTF_8 = "UTF-8";
-  public static final List<String> ALLOWED_EMAIL_DOMAINS_NON_PROD = List.of("agridata.local", "blw.admin.ch");
+  public static final List<String> ALLOWED_EMAIL_DOMAINS_NON_PROD = List.of("agridata.local", "blw.admin.ch", "dev.agridata.ch");
   public static final List<String> NON_PROD_PROFILES = List.of("local", "test", "develop", "testing", "integration");
 
   @ConfigProperty(name = "agridata.email.sender-address")
