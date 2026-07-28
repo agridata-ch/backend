@@ -1,3 +1,10 @@
+## [1.14.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.4...v1.14.0-rc.5) (2026-07-28)
+
+### Features
+
+* **image:** empty commit to trigger build image ([be604be](https://github.com/agridata-ch/backend/commit/be604be8d699ed510603cdcf3ab5298b4ce76445))
+* **persistence:** Multiple language search/sort generic solution ([5f85fcd](https://github.com/agridata-ch/backend/commit/5f85fcd3b53eeac6ce7ec1009be82603c550fb04)), closes [DIGIB2-1529](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1529)
+
 ## [1.14.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.3...v1.14.0-rc.4) (2026-07-23)
 
 ### Features
