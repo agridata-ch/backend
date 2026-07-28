@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class AcceptAgbTest {
 
-  private static final UUID CURRENT_AGB_REVISION_ID = UUID.fromString("73b2f303-2e87-4970-b82d-c5a6e296f1ec");
+  private static final UUID CURRENT_AGB_REVISION_ID = UUID.fromString("ec502832-e140-4dcf-8b9e-5252192d031a");
 
   private final AuditLogTestUtils auditLogTestUtils;
 
