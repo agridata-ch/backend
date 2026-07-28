@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Test;
  */
 class BaseSearchRepositoryUnitTest {
 
-  private static final Map<String, SearchField> SORT_FIELDS = Map.of(
+  private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "name", SearchField.translated("dp.name"),
       "code", SearchField.simple("code")
   );
 
-  private static final List<SearchField> FILTER_FIELDS = List.of(
+  private static final List<SearchField> SEARCHABLE_FIELDS = List.of(
       SearchField.translated("dp.name"),
       SearchField.simple("code")
   );
@@ -56,7 +56,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Translated sort field is lowered and resolved to the request language")
   void translatedSortFieldResolvesLanguage() {
-    repository.searchWithSelect(query(List.of("name"), null, SupportedLanguage.FR), SORT_FIELDS);
+    repository.searchWithSelect(query(List.of("name"), null, SupportedLanguage.FR), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .contains("order by lower(function('jsonb_extract_path_text', dp.name, 'fr')) asc, dp.id");
@@ -65,7 +65,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Simple sort field is not wrapped in lower() and ignores the language")
   void simpleSortFieldIsNotLowered() {
-    repository.searchWithSelect(query(List.of("code"), null, SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithSelect(query(List.of("code"), null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery).contains("order by code asc, dp.id");
   }
@@ -73,7 +73,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Leading '-' produces a descending sort")
   void descendingSortIsRendered() {
-    repository.searchWithSelect(query(List.of("-name"), null, SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithSelect(query(List.of("-name"), null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .contains("order by lower(function('jsonb_extract_path_text', dp.name, 'de')) desc, dp.id");
@@ -82,7 +82,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Comma-separated sort params are split into multiple ORDER BY parts")
   void commaSeparatedSortParamsAreSplit() {
-    repository.searchWithSelect(query(List.of("code,-name"), null, SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithSelect(query(List.of("code,-name"), null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .contains("order by code asc, lower(function('jsonb_extract_path_text', dp.name, 'de')) desc, dp.id");
@@ -91,7 +91,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("No sort params produces no ORDER BY clause")
   void noSortParamsProducesNoOrderBy() {
-    repository.searchWithSelect(query(null, null, SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithSelect(query(null, null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery).doesNotContain("order by");
   }
@@ -102,7 +102,7 @@ class BaseSearchRepositoryUnitTest {
     var q = query(List.of("createdBy; drop table users"), null, SupportedLanguage.DE);
 
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> repository.searchWithSelect(q, SORT_FIELDS))
+        .isThrownBy(() -> repository.searchWithSelect(q, SORTABLE_FIELDS))
         .withMessageContaining("Unsupported sort field");
 
     assertThat(repository.capturedQuery).isNull();
@@ -111,7 +111,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Null language falls back to German")
   void nullLanguageFallsBackToGerman() {
-    repository.searchWithSelect(query(List.of("name"), null, null), SORT_FIELDS);
+    repository.searchWithSelect(query(List.of("name"), null, null), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery).contains("'de'");
   }
@@ -121,7 +121,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Base select, base where and search filter are combined into one query")
   void baseSelectWhereAndSearchAreCombined() {
-    repository.searchWithSelect(query(null, "apfel", SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithSelect(query(null, "apfel", SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .startsWith("select dp from DataProductEntity dp")
@@ -136,7 +136,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Search term is applied even without a base where clause")
   void searchAppliesWithoutBaseWhere() {
-    repository.searchWithoutSelect(query(null, "apfel", SupportedLanguage.IT), SORT_FIELDS);
+    repository.searchWithoutSelect(query(null, "apfel", SupportedLanguage.IT), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .contains("LOWER(function('jsonb_extract_path_text', dp.name, 'it')) LIKE :paramfull");
@@ -145,7 +145,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("Convenience overload without base select appends the default 'id' tie breaker")
   void convenienceOverloadUsesIdTieBreaker() {
-    repository.searchWithoutSelect(query(List.of("name"), null, SupportedLanguage.DE), SORT_FIELDS);
+    repository.searchWithoutSelect(query(List.of("name"), null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
         .doesNotStartWith("select")
@@ -157,7 +157,7 @@ class BaseSearchRepositoryUnitTest {
   @Test
   @DisplayName("PageResponseDto is assembled from the Panache query result")
   void pageResponseIsAssembledFromResult() {
-    var result = repository.searchWithSelect(query(null, null, SupportedLanguage.DE), SORT_FIELDS);
+    var result = repository.searchWithSelect(query(null, null, SupportedLanguage.DE), SORTABLE_FIELDS);
 
     assertThat(result.items()).containsExactly("a", "b");
     assertThat(result.totalItems()).isEqualTo(2L);
@@ -196,24 +196,24 @@ class BaseSearchRepositoryUnitTest {
       return stubQuery;
     }
 
-    PageResponseDto<Object> searchWithSelect(ResourceQueryDto query, Map<String, SearchField> sortFields) {
-      return findPageMultilingual(
+    PageResponseDto<Object> searchWithSelect(ResourceQueryDto query, Map<String, SearchField> sortableFields) {
+      return findPage(
           query, SearchSpec.builder()
               .baseSelect(BASE_SELECT)
               .baseWhere(BASE_WHERE)
               .baseParams(Map.of("providerUid", "X"))
-              .filterFields(FILTER_FIELDS)
-              .sortFields(sortFields)
+              .searchableFields(SEARCHABLE_FIELDS)
+              .sortableFields(sortableFields)
               .sortTieBreaker("dp.id")
               .build()
       );
     }
 
-    PageResponseDto<Object> searchWithoutSelect(ResourceQueryDto query, Map<String, SearchField> sortFields) {
-      return findPageMultilingual(
+    PageResponseDto<Object> searchWithoutSelect(ResourceQueryDto query, Map<String, SearchField> sortableFields) {
+      return findPage(
           query, SearchSpec.builder()
-              .filterFields(FILTER_FIELDS)
-              .sortFields(sortFields)
+              .searchableFields(SEARCHABLE_FIELDS)
+              .sortableFields(sortableFields)
               .build()
       );
     }

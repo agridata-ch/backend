@@ -12,7 +12,7 @@ import java.util.Map;
 @ApplicationScoped
 public class MultilingualTestEntityRepository extends BaseSearchRepository<MultilingualTestEntity, Long> {
 
-  public static final List<SearchField> FILTER_FIELDS = List.of(
+  public static final List<SearchField> SEARCHABLE_FIELDS = List.of(
       SearchField.translated("name"),
       SearchField.translated("description"),
       SearchField.simple("code")
@@ -22,19 +22,19 @@ public class MultilingualTestEntityRepository extends BaseSearchRepository<Multi
       List.of(SearchField.translated("name"), SearchField.translated("description"))
   );
 
-  public static final Map<String, SearchField> SORT_FIELDS = Map.of(
+  public static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "name", SearchField.translated("name"),
       "code", SearchField.simple("code")
   );
 
   public PageResponseDto<MultilingualTestEntity> search(ResourceQueryDto query, String category) {
     var spec = SearchSpec.builder()
-        .filterFields(FILTER_FIELDS)
+        .searchableFields(SEARCHABLE_FIELDS)
         .combinedFields(COMBINED_FIELDS)
-        .sortFields(SORT_FIELDS);
+        .sortableFields(SORTABLE_FIELDS);
     if (category != null) {
       spec.baseWhere("category = :category").baseParams(Map.of("category", category));
     }
-    return findPageMultilingual(query, spec.build());
+    return findPage(query, spec.build());
   }
 }

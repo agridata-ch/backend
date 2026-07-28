@@ -38,7 +38,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
   private static final String BY_STATE = "dp.stateCode = :" + PARAM_STATE;
 
 
-  private static final Map<String, SearchField> SORT_FIELDS = Map.of(
+  private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "productName", SearchField.translated("dp.name"),
       "providerName", SearchField.translated("p.name"),
       "systemName", SearchField.translated("ds.name")
@@ -81,22 +81,22 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
   }
 
   public PageResponseDto<DataProductEntity> findPaged(ResourceQueryDto query) {
-    return findPageMultilingual(
+    return findPage(
         query, SearchSpec.builder()
             .baseSelect(BASE_QUERY)
-            .sortFields(SORT_FIELDS)
+            .sortableFields(SORTABLE_FIELDS)
             .sortTieBreaker("dp.id")
             .build()
     );
   }
 
   public PageResponseDto<DataProductEntity> findPagedByProviderUid(String providerUid, ResourceQueryDto query) {
-    return findPageMultilingual(
+    return findPage(
         query, SearchSpec.builder()
             .baseSelect(BASE_QUERY)
             .baseWhere(BY_PROVIDER_UID)
             .baseParams(Map.of(PARAM_PROVIDER_UID, providerUid))
-            .sortFields(SORT_FIELDS)
+            .sortableFields(SORTABLE_FIELDS)
             .sortTieBreaker("dp.id")
             .build()
     );
