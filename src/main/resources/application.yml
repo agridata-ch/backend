@@ -36,6 +36,8 @@ quarkus:
     name: agridata.ch
   banner:
     path: banner.txt
+  jackson:
+    timezone: Europe/Zurich # Required for correct conversion of OffsetDateTime to LocalDateTime
   datasource:
     db-kind: postgresql
     jdbc:
