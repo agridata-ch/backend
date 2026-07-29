@@ -58,4 +58,8 @@ public class DataSourceSystemEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
   private TranslationPersistenceDto name;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "legal_basis", nullable = false)
+  private TranslationPersistenceDto legalBasis;
 }

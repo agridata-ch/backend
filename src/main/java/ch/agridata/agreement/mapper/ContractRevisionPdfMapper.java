@@ -52,6 +52,9 @@ public interface ContractRevisionPdfMapper {
       source = "providerSignatureTimestamp2",
       qualifiedByName = "toSwissDateTime")
   @Mapping(target = "targetGroup", source = "targetGroup")
+  @Mapping(target = "providerSystemLegalBasis",
+      source = "systemLegalBasis",
+      qualifiedByName = "toContractRevisionPdfTranslationDto")
   ContractRevisionPdfDto toPdfDto(ContractRevisionEntity entity);
 
   @Named("mapConsumerAddressInline")

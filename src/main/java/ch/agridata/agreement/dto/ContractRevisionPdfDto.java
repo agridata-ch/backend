@@ -49,6 +49,7 @@ public record ContractRevisionPdfDto(
     String providerAddressInline,
 
     ContractRevisionPdfTranslationDto providerSystemName,
+    ContractRevisionPdfTranslationDto providerSystemLegalBasis,
 
     String consumerSignatureName1,
     String consumerSignatureDateTime1,
@@ -68,7 +69,7 @@ public record ContractRevisionPdfDto(
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
-        null, null, null, null
+        null, null, null, null, null
     );
   }
 }

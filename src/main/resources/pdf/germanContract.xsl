@@ -56,7 +56,7 @@
                     </fo:list-item-label>
                     <fo:list-item-body start-indent="body-start()">
                         <fo:block>
-                            [Spezifischer Baustein je nach Datenanbieter und System]
+                            <xsl:value-of select="providerSystemLegalBasis/de"/>
                         </fo:block>
                     </fo:list-item-body>
                 </fo:list-item>
