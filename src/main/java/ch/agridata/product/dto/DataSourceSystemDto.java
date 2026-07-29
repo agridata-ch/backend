@@ -26,7 +26,11 @@ public record DataSourceSystemDto(
 
     @Schema(description = "Reference to the data provider")
     @NotNull
-    DataProviderDto dataProvider
+    DataProviderDto dataProvider,
+
+    @Schema(description = "Legal basis for the data source system")
+    @NotNull
+    TranslationDto legalBasis
 ) {
 
 }

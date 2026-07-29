@@ -57,7 +57,7 @@
                     </fo:list-item-label>
                     <fo:list-item-body start-indent="body-start()">
                         <fo:block>
-                            [Module spécifique selon le fournisseur de données et le système]
+                            <xsl:value-of select="providerSystemLegalBasis/fr"/>
                         </fo:block>
                     </fo:list-item-body>
                 </fo:list-item>

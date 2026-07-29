@@ -76,7 +76,13 @@ class DataProviderControllerTest {
             .statusCode(200).extract().as(new TypeRef<>() {
             });
 
-    assertThat(dataSourceSystemDtos).hasSize(2);
+    assertThat(dataSourceSystemDtos)
+        .hasSize(2)
+        .allSatisfy(dto -> {
+          assertThat(dto.legalBasis()).isNotNull();
+          assertThat(dto.legalBasis().de()).isNotBlank();
+          assertThat(dto.legalBasis().fr()).isNotBlank();
+        });
   }
 
   @ParameterizedTest

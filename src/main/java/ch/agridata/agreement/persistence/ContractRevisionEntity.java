@@ -114,6 +114,11 @@ public class ContractRevisionEntity extends AuditableEntity {
   private TranslationPersistenceDto systemName;
 
   @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "system_legal_basis", nullable = false)
+  @Valid
+  private TranslationPersistenceDto systemLegalBasis;
+
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "data_product", nullable = false)
   private List<TranslationPersistenceDto> dataProducts;
 
