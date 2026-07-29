@@ -19,7 +19,8 @@ public class DataTransferAuthorizationService {
   private static final List<FlowEnum> FLOWS_WITH_PROVIDER_SIDE_AUTHORIZATION = List.of(
       FlowEnum.UID_BASED_POST_VALIDATION,
       FlowEnum.BUR_BASED_POST_VALIDATION,
-      FlowEnum.UNBOUND_POST_VALIDATION);
+      FlowEnum.UNBOUND_UID_BASED_POST_VALIDATION,
+      FlowEnum.UNBOUND_BUR_BASED_POST_VALIDATION);
 
   private final AgridataSecurityIdentity agridataSecurityIdentity;
 

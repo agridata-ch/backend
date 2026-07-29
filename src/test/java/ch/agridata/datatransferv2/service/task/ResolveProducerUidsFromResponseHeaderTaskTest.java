@@ -20,17 +20,14 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
+class ResolveProducerUidsFromResponseHeaderTaskTest {
 
   private static final String UID_HEADER = "AGRIDATA-RESPONSE-PRODUCER-UIDS";
-  private static final String BUR_HEADER = "AGRIDATA-RESPONSE-PRODUCER-BURS";
   private static final String UID_1 = "CHE101000001";
   private static final String UID_2 = "CHE103000001";
-  private static final String BUR_1 = "99910002";
-  private static final String BUR_2 = "99910003";
 
   @InjectMocks
-  ResolveProducerIdentifiersFromResponseHeaderTask task;
+  ResolveProducerUidsFromResponseHeaderTask task;
 
   static Stream<Arguments> csvParseCases() {
     return Stream.of(
@@ -49,7 +46,6 @@ class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
     var result = task.apply(context);
 
     assertThat(result.getProducerUids()).containsExactlyElementsOf(expected);
-    assertThat(result.getProducerBurs()).isEmpty();
   }
 
   @ParameterizedTest
@@ -67,33 +63,21 @@ class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
   }
 
   @Test
-  void givenNeitherHeaderPresent_whenApply_thenExternalWebServiceExceptionThrown() {
+  void givenUidsHeaderMissing_whenApply_thenExternalWebServiceExceptionThrown() {
     var context = createContext(Map.of());
 
     assertThatThrownBy(() -> task.apply(context))
         .isInstanceOf(ExternalWebServiceException.class)
-        .hasMessageContaining(UID_HEADER)
-        .hasMessageContaining(BUR_HEADER);
+        .hasMessageContaining(UID_HEADER);
   }
 
-  static Stream<Arguments> presentButEmptyHeaderCases() {
-    return Stream.of(
-        Arguments.of("both headers present but empty", Map.of(UID_HEADER, "", BUR_HEADER, "")),
-        Arguments.of("both headers present but blank/whitespace only", Map.of(UID_HEADER, " , , ", BUR_HEADER, "  ")),
-        Arguments.of("only UIDs header present but empty", Map.of(UID_HEADER, "")),
-        Arguments.of("only BURs header present but empty", Map.of(BUR_HEADER, ""))
-    );
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("presentButEmptyHeaderCases")
-  void givenPresentButEmptyHeaders_whenApply_thenBothIdentifierSetsEmpty(String description, Map<String, String> headers) {
-    var context = createContext(headers);
+  @Test
+  void givenUidsHeaderPresentButEmpty_whenApply_thenProducerUidsEmpty() {
+    var context = createContext(Map.of(UID_HEADER, ""));
 
     var result = task.apply(context);
 
     assertThat(result.getProducerUids()).isEmpty();
-    assertThat(result.getProducerBurs()).isEmpty();
   }
 
   @ParameterizedTest
@@ -115,42 +99,10 @@ class ResolveProducerIdentifiersFromResponseHeaderTaskTest {
         .hasMessageContaining("alphanumeric");
   }
 
-  @Test
-  void givenNonAlphanumericValueInBursHeader_whenApply_thenExternalWebServiceExceptionThrown() {
-    var context = createContext(Map.of(BUR_HEADER, "999-10002"));
-
-    assertThatThrownBy(() -> task.apply(context))
-        .isInstanceOf(ExternalWebServiceException.class)
-        .hasMessageContaining(BUR_HEADER)
-        .hasMessageContaining("alphanumeric");
-  }
-
-  @Test
-  void givenBothHeadersPopulated_whenApply_thenBothProducerIdentifiersResolved() {
-    var context = createContext(Map.of(
-        UID_HEADER, UID_1 + "," + UID_2,
-        BUR_HEADER, BUR_1 + "," + BUR_2));
-
-    var result = task.apply(context);
-
-    assertThat(result.getProducerUids()).containsExactly(UID_1, UID_2);
-    assertThat(result.getProducerBurs()).containsExactly(BUR_1, BUR_2);
-  }
-
-  @Test
-  void givenEmptyUidsHeaderWithBursPresent_whenApply_thenBursResolved() {
-    var context = createContext(Map.of(UID_HEADER, "", BUR_HEADER, BUR_1));
-
-    var result = task.apply(context);
-
-    assertThat(result.getProducerUids()).isEmpty();
-    assertThat(result.getProducerBurs()).containsExactly(BUR_1);
-  }
-
   private AgridataContext createContext(Map<String, String> responseHeaders) {
     return AgridataContext.builder()
         .productId(UUID.randomUUID())
-        .flowEnum(FlowEnum.UNBOUND_POST_VALIDATION)
+        .flowEnum(FlowEnum.UNBOUND_UID_BASED_POST_VALIDATION)
         .responseHeaders(responseHeaders)
         .build();
   }

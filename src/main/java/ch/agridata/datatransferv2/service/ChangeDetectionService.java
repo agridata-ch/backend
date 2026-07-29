@@ -54,7 +54,9 @@ public class ChangeDetectionService {
            UID_BASED_POST_VALIDATION -> getUidResult(config, since);
       case BUR_BASED_PRE_VALIDATION,
            BUR_BASED_POST_VALIDATION,
-           UNBOUND_POST_VALIDATION -> throw new IllegalArgumentException("Change detection is not supported for product=" + productId);
+           UNBOUND_UID_BASED_POST_VALIDATION,
+           UNBOUND_BUR_BASED_POST_VALIDATION ->
+          throw new IllegalArgumentException("Change detection is not supported for product=" + productId);
     };
 
   }

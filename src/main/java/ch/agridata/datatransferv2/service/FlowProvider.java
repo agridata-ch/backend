@@ -4,7 +4,8 @@ import ch.agridata.datatransferv2.service.flows.BurBasedPostValidationFlow;
 import ch.agridata.datatransferv2.service.flows.BurBasedPreValidationFlow;
 import ch.agridata.datatransferv2.service.flows.UidBasedPostValidationFlow;
 import ch.agridata.datatransferv2.service.flows.UidBasedPreValidationFlow;
-import ch.agridata.datatransferv2.service.flows.UnboundPostValidationFlow;
+import ch.agridata.datatransferv2.service.flows.UnboundBurBasedPostValidationFlow;
+import ch.agridata.datatransferv2.service.flows.UnboundUidBasedPostValidationFlow;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,7 +26,8 @@ public class FlowProvider {
   private final UidBasedPostValidationFlow uidBasedPostValidationFlow;
   private final BurBasedPreValidationFlow burBasedPreValidationFlow;
   private final BurBasedPostValidationFlow burBasedPostValidationFlow;
-  private final UnboundPostValidationFlow unboundPostValidationFlow;
+  private final UnboundUidBasedPostValidationFlow unboundUidBasedPostValidationFlow;
+  private final UnboundBurBasedPostValidationFlow unboundBurBasedPostValidationFlow;
 
   /**
    * Bundles a resolved {@link Flowable} with the already-fetched {@link DataProductProviderConfigurationDto}
@@ -44,7 +46,8 @@ public class FlowProvider {
       case FlowEnum.UID_BASED_POST_VALIDATION -> uidBasedPostValidationFlow;
       case FlowEnum.BUR_BASED_PRE_VALIDATION -> burBasedPreValidationFlow;
       case FlowEnum.BUR_BASED_POST_VALIDATION -> burBasedPostValidationFlow;
-      case FlowEnum.UNBOUND_POST_VALIDATION -> unboundPostValidationFlow;
+      case FlowEnum.UNBOUND_UID_BASED_POST_VALIDATION -> unboundUidBasedPostValidationFlow;
+      case FlowEnum.UNBOUND_BUR_BASED_POST_VALIDATION -> unboundBurBasedPostValidationFlow;
     };
 
     return new FlowWithProductProviderConfiguration(flowable, productProviderConfiguration);

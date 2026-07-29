@@ -12,7 +12,6 @@ import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers.Bur;
 import integration.testutils.TestDataIdentifiers.DataProduct;
 import integration.testutils.TestDataIdentifiers.Identifier;
-import integration.testutils.TestDataIdentifiers.Uid;
 import integration.testutils.TestUserEnum;
 import io.quarkiverse.wiremock.devservice.ConnectWireMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,100 +27,70 @@ import org.junit.jupiter.params.provider.MethodSource;
 @QuarkusTest
 @RequiredArgsConstructor
 @ConnectWireMock
-class UnboundPostValidationFlowTest {
+class UnboundBurBasedPostValidationFlowTest {
 
   private static final String EARTAG_NUMBER = "123456";
   private static final String RECIPIENT_UID = "CHE123456789";
   private static final String CONSENT_NOT_GRANTED_MSG = "Consent not granted for the requested data producer(s): ";
+  private static final String BURS_HEADER_MISSING_MSG =
+      "AGRIDATA-RESPONSE-PRODUCER-BURS header is not present in provider response";
   // Consumer UID returned by the provider in the response header when CONSUMER_BLV_WITHOUT_UID calls without a UID in token
   private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = "CHE403244345";
 
-  private static final Identifier<DataProductEntity> PRODUCT_UNBOUND_POST_VALIDATION = DataProduct.UUID_6319423C;
+  private static final Identifier<DataProductEntity> PRODUCT_BUR_BASED = DataProduct.UUID_6319423C;
 
   WireMock wireMock;
 
   static Stream<Arguments> testCases() {
-    // Consents GRANTED for data request dc7dbc72: CHE101000001/99910002, CHE101000001/99910003, CHE103000001/99930004
-    record Case(String desc, List<String> uids, List<String> burs, Map<String, String> params, int status, String msg) {
+    // Consents GRANTED for data request 218bca06: CHE101000001/99910002, CHE101000001/99910003, CHE103000001/99930004
+    record Case(String desc, List<String> burs, Map<String, String> params, int status, String msg) {
     }
 
     var cases = List.of(
 
         // --- 200: consent granted -----------------------------------------------------------------
 
-        new Case("single UID with consent",
-            List.of(Uid.CHE101000001.name()), null, Map.of(), 200, null),
-        new Case("single UID CHE103000001 with consent",
-            List.of(Uid.CHE103000001.name()), null, Map.of(), 200, null),
         new Case("single BUR 99910002 with consent",
-            null, List.of(Bur.CODE_99910002.getCode()), Map.of(), 200, null),
+            List.of(Bur.CODE_99910002.getCode()), Map.of(), 200, null),
         new Case("single BUR 99910003 with consent",
-            null, List.of(Bur.CODE_99910003.getCode()), Map.of(), 200, null),
-        new Case("UID and BUR both with consent",
-            List.of(Uid.CHE101000001.name()), List.of(Bur.CODE_99910003.getCode()), Map.of(), 200, null),
-        new Case("multiple UIDs and BURs, all with consent",
-            List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
-            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()),
-            Map.of(), 200, null),
-        new Case("two BURs without UIDs, both with consent",
-            null, List.of(Bur.CODE_99910002.getCode(), Bur.CODE_99910003.getCode()), Map.of(), 200, null),
+            List.of(Bur.CODE_99910003.getCode()), Map.of(), 200, null),
+        new Case("two BURs, both with consent",
+            List.of(Bur.CODE_99910002.getCode(), Bur.CODE_99910003.getCode()), Map.of(), 200, null),
 
-        // --- 200: no data (present-but-empty headers), no consent check ---------------------------
+        // --- 200: no data (present-but-empty header), no consent check ----------------------------
 
-        new Case("both headers present but empty",
-            List.of(), List.of(), Map.of(), 200, null),
-        new Case("only UIDs header present but empty",
-            List.of(), null, Map.of(), 200, null),
-        new Case("only BURs header present but empty",
-            null, List.of(), Map.of(), 200, null),
+        new Case("BURs header present but empty",
+            List.of(), Map.of(), 200, null),
 
-        // --- 502: neither header present ----------------------------------------------------------
+        // --- 502: required header not present -----------------------------------------------------
 
-        new Case("neither header present",
-            null, null, Map.of(), 502,
-            "Neither AGRIDATA-RESPONSE-PRODUCER-UIDS nor AGRIDATA-RESPONSE-PRODUCER-BURS header is present in provider response"),
+        new Case("BURs header not present",
+            null, Map.of(), 502, BURS_HEADER_MISSING_MSG),
 
         // --- 403: consent missing -----------------------------------------------------------------
 
-        new Case("single UID has no consent",
-            List.of(Uid.CHE102000001.name()), null, Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
-        new Case("one of multiple UIDs has no consent",
-            List.of(Uid.CHE101000001.name(), Uid.CHE102000001.name()), null, Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
         new Case("single BUR has no consent",
-            null, List.of(Bur.CODE_99910004.getCode()), Map.of(), 403,
+            List.of(Bur.CODE_99910004.getCode()), Map.of(), 403,
             CONSENT_NOT_GRANTED_MSG + Bur.CODE_99910004.getCode()),
         new Case("one of multiple BURs has no consent",
-            List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
-            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99910004.getCode()),
-            Map.of(), 403,
+            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99910004.getCode()), Map.of(), 403,
             CONSENT_NOT_GRANTED_MSG + Bur.CODE_99910004.getCode()),
-        new Case("UID without consent alongside BUR with consent",
-            List.of(Uid.CHE102000001.name()), List.of(Bur.CODE_99910003.getCode()), Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
-        new Case("one UID and one BUR each without consent",
-            List.of(Uid.CHE101000001.name(), Uid.CHE102000001.name()),
-            List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99910004.getCode()),
-            Map.of(), 403,
-            CONSENT_NOT_GRANTED_MSG + Uid.CHE102000001.name()),
 
         // --- 403: consent outdated ----------------------------------------------------------------
 
-        // uid_bur_relation_since=2000-01-01 for all dc7dbc72 consents; UIDs are not date-filtered,
-        // BURs are – so only the BURs appear in the debug message when a historic date is given
+        // uid_bur_relation_since=2000-01-01 for all 218bca06 consents; BURs are date-filtered,
+        // so a historic requested date leaves the BURs without covering consent
         new Case("all BUR consents outdated at historic date",
-            List.of(Uid.CHE101000001.name(), Uid.CHE103000001.name()),
             List.of(Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()),
             Map.of("date", "1999-01-01"), 403,
             CONSENT_NOT_GRANTED_MSG + String.join(", ", Bur.CODE_99910003.getCode(), Bur.CODE_99930004.getCode()))
     );
 
     // Run all cases for both users: CONSUMER_BLV_1 (UID in token) and CONSUMER_BLV_WITHOUT_UID (no UID in token).
-    // Both must yield identical results, covering both code paths of UnboundPostValidationFlow.
+    // Both must yield identical results, covering both code paths of UnboundBurBasedPostValidationFlow.
     return Stream.of(CONSUMER_BLV_1, CONSUMER_BLV_WITHOUT_UID)
         .flatMap(user -> cases.stream()
-            .map(c -> Arguments.of(user, c.desc(), c.uids(), c.burs(), c.params(), c.status(), c.msg())));
+            .map(c -> Arguments.of(user, c.desc(), c.burs(), c.params(), c.status(), c.msg())));
   }
 
   @ParameterizedTest(name = "[{index}] [{0}] {1}")
@@ -129,13 +98,13 @@ class UnboundPostValidationFlowTest {
   void givenResponseHeaders_whenProductRequested_thenExpectedStatusReturned(
       TestUserEnum testUser,
       String description,
-      List<String> responseUids, List<String> responseBurs,
+      List<String> responseBurs,
       Map<String, String> optionalQueryParams,
       int expectedStatus, String expectedDebugMessage) {
-    mockResponseHeaders(responseUids, responseBurs);
+    mockResponseHeaders(responseBurs);
 
     var request = AuthTestUtils.requestAs(testUser)
-        .pathParam("productId", PRODUCT_UNBOUND_POST_VALIDATION.uuid())
+        .pathParam("productId", PRODUCT_BUR_BASED.uuid())
         .queryParam("eartagNumber", EARTAG_NUMBER)
         .queryParam("recipientUid", RECIPIENT_UID);
     optionalQueryParams.forEach(request::queryParam);
@@ -160,11 +129,8 @@ class UnboundPostValidationFlowTest {
     wireMock.verifyThat(1, WireMock.getRequestedFor(WireMock.urlEqualTo(expectedUrl)));
   }
 
-  void mockResponseHeaders(List<String> uids, List<String> burs) {
+  void mockResponseHeaders(List<String> burs) {
     var baseResponse = WireMock.aResponse().withStatus(200);
-    if (uids != null) {
-      baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-UIDS", String.join(",", uids));
-    }
     if (burs != null) {
       baseResponse = baseResponse.withHeader("AGRIDATA-RESPONSE-PRODUCER-BURS", String.join(",", burs));
     }
