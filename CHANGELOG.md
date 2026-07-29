@@ -1,3 +1,13 @@
+## [1.14.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.5...v1.14.0-rc.6) (2026-07-29)
+
+### Features
+
+* **datatransferv2:** split unbound flow into two separate flows ([82a54f1](https://github.com/agridata-ch/backend/commit/82a54f11aa82976605bdb5856e7ff726a7dad3b2)), closes [DIGIB2-1570](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1570)
+
+### Bug Fixes
+
+* **pipeline:** empty commit ([fc51384](https://github.com/agridata-ch/backend/commit/fc51384c22c2a407201d69770bfb6054451f45fe))
+
 ## [1.14.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.4...v1.14.0-rc.5) (2026-07-28)
 
 ### Features
