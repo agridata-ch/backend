@@ -245,7 +245,7 @@ class DataProductControllerV2Test {
         .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
         .extendedDescription(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano"))
         .restClientId(restClientId)
-        .flowCode(FlowCodeEnum.UNBOUND_POST_VALIDATION)
+        .flowCode(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION)
         .restClientPathTemplate("path/template")
         .restClientChangeDetectionPathTemplate("change/detection/path/template")
         .restClientMethodCode(RestClientMethodCodeEnum.GET)

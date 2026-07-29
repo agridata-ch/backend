@@ -63,9 +63,9 @@ public class UidBasedPostValidationFlow implements Flowable {
     if (agridataSecurityIdentity.getUid().isPresent()) {
       return agridataFlow.run(initContext,
           List.of(
-              resolveConsumerUidFromTokenTask,
               ensureValidConsumerRequestTask,
               resolveRequestedProducerUidTask,
+              resolveConsumerUidFromTokenTask,
               ensureValidDataRequestTask,
               ensureValidConsentForProducerUidsTask,
               buildProviderRequestTask),
