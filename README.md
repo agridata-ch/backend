@@ -57,7 +57,7 @@ DevServices automatically starts:
 ## Running Tests
 
 ```bash
-# Unit tests ONLY
+# Unit tests only
 mvn test
 
 # Unit + integration tests
