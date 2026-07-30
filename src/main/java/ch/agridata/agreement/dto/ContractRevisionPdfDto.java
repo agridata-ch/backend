@@ -34,6 +34,7 @@ public record ContractRevisionPdfDto(
     String consumerName,
     String consumerStreet,
     String consumerZipCity,
+    ContractRevisionPdfTranslationDto consumerCountry,
     String consumerPhoneNumber,
     String consumerEmailAddress,
     String consumerUid,
@@ -44,6 +45,7 @@ public record ContractRevisionPdfDto(
     String providerName,
     String providerStreet,
     String providerZipCity,
+    ContractRevisionPdfTranslationDto providerCountry,
 
     // Pre-formatted Address in the style "name, street, zip city"
     String providerAddressInline,
@@ -69,7 +71,7 @@ public record ContractRevisionPdfDto(
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null,
-        null, null, null, null, null
+        null, null, null, null, null, null, null
     );
   }
 }

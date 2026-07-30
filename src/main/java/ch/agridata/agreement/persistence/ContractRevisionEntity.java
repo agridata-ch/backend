@@ -70,6 +70,9 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "data_consumer_city", nullable = false)
   private String dataConsumerCity;
 
+  @Column(name = "data_consumer_country", length = 2, nullable = false)
+  private String dataConsumerCountry;
+
   @Column(name = "data_provider_name", nullable = false)
   private String dataProviderName;
 
@@ -81,6 +84,9 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @Column(name = "data_provider_city", nullable = false)
   private String dataProviderCity;
+
+  @Column(name = "data_provider_country", length = 2, nullable = false)
+  private String dataProviderCountry;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "title", nullable = false)
