@@ -31,10 +31,11 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Service class for managing and mutating data product entities. Provides functionality for adding,
- * updating, and patching data product drafts either as a data provider or as an administrator.
+ * updating, patching and deleting data product drafts either as a data provider or as an administrator.
+ * Deleting a draft cascades to its documents (see {@link DataProductDocumentService}).
  * Enforces role-based access control and performs necessary validations for consistency and security.
  *
- * @CommentLastReviewed 2026-07-22
+ * @CommentLastReviewed 2026-07-29
  */
 
 @ApplicationScoped
@@ -45,6 +46,7 @@ public class DataProductMutationService {
   private final DataProductMapper dataProductMapper;
   private final DataProductRepository dataProductRepository;
   private final DataSourceSystemRepository dataSourceSystemRepository;
+  private final DataProductDocumentService dataProductDocumentService;
   private final Validator validator;
 
   @Transactional
@@ -203,5 +205,23 @@ public class DataProductMutationService {
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
     }
+  }
+
+  @Transactional
+  @RolesAllowed(PROVIDER_ROLE)
+  public void deleteDataProductDraftAsProvider(@NotNull UUID dataProductId) {
+    deleteDataProductDraft(resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional));
+  }
+
+  @Transactional
+  @RolesAllowed(ADMIN_ROLE)
+  public void deleteDataProductDraftAsAdmin(@NotNull UUID dataProductId) {
+    deleteDataProductDraft(resolve(dataProductId, dataProductRepository::findByIdOptional));
+  }
+
+  private void deleteDataProductDraft(DataProductEntity entity) {
+    verifyState(entity, DataProductStateEnum.DRAFT);
+    dataProductDocumentService.deleteAllDataProductDocuments(entity.getId());
+    dataProductRepository.delete(entity);
   }
 }
