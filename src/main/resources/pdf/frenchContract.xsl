@@ -276,6 +276,9 @@
         <fo:block>
             <xsl:value-of select="consumerZipCity"/>
         </fo:block>
+        <fo:block>
+            <xsl:value-of select="consumerCountry/fr"/>
+        </fo:block>
 
         <fo:block>Contact:
             <xsl:value-of select="consumerPhoneNumber"/>,

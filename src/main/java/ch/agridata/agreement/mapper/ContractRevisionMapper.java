@@ -44,6 +44,7 @@ public interface ContractRevisionMapper {
   @Mapping(target = "dataProviderZip", source = "dataProvider.address.zip")
   @Mapping(target = "dataProviderStreet", source = "dataProvider.address.street")
   @Mapping(target = "dataProviderCity", source = "dataProvider.address.city")
+  @Mapping(target = "dataProviderCountry", source = "dataProvider.address.country")
   @Mapping(target = "consumerSignatureUserId1", ignore = true)
   @Mapping(target = "consumerSignatureName1", ignore = true)
   @Mapping(target = "consumerSignatureTimestamp1", ignore = true)

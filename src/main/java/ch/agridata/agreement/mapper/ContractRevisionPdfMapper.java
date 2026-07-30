@@ -7,6 +7,7 @@ import ch.agridata.common.persistence.TranslationPersistenceDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -30,6 +31,7 @@ public interface ContractRevisionPdfMapper {
   @Mapping(target = "consumerName", source = "dataConsumerName")
   @Mapping(target = "consumerStreet", source = "dataConsumerStreet")
   @Mapping(target = "consumerZipCity", expression = "java(entity.getDataConsumerZip() + \" \" + entity.getDataConsumerCity())")
+  @Mapping(target = "consumerCountry", source = "dataConsumerCountry", qualifiedByName = "toCountryTranslationDto")
   @Mapping(target = "consumerAddressInline", source = "entity", qualifiedByName = "mapConsumerAddressInline")
   @Mapping(target = "consumerPhoneNumber", source = "contactPhoneNumber")
   @Mapping(target = "consumerEmailAddress", source = "contactEmailAddress")
@@ -37,6 +39,7 @@ public interface ContractRevisionPdfMapper {
   @Mapping(target = "providerName", source = "dataProviderName")
   @Mapping(target = "providerStreet", source = "dataProviderStreet")
   @Mapping(target = "providerZipCity", expression = "java(entity.getDataProviderZip() + \" \" + entity.getDataProviderCity())")
+  @Mapping(target = "providerCountry", source = "dataProviderCountry", qualifiedByName = "toCountryTranslationDto")
   @Mapping(target = "providerAddressInline", source = "entity", qualifiedByName = "mapProviderAddressInline")
   @Mapping(target = "providerSystemName", source = "systemName", qualifiedByName = "toContractRevisionPdfTranslationDto")
   @Mapping(target = "consumerSignatureDateTime1",
@@ -100,5 +103,15 @@ public interface ContractRevisionPdfMapper {
     return dtos.stream()
         .map(this::toContractRevisionPdfTranslationDto)
         .toList();
+  }
+
+  @Named("toCountryTranslationDto")
+  default ContractRevisionPdfTranslationDto toCountryTranslationDto(String isoCode) {
+    Locale country = Locale.of("", isoCode.toUpperCase(Locale.ROOT));
+    return ContractRevisionPdfTranslationDto.builder()
+        .de(country.getDisplayCountry(Locale.GERMAN))
+        .fr(country.getDisplayCountry(Locale.FRENCH))
+        .it(country.getDisplayCountry(Locale.ITALIAN))
+        .build();
   }
 }
