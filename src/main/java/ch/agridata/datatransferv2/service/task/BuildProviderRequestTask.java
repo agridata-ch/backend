@@ -33,10 +33,15 @@ public class BuildProviderRequestTask implements UnaryOperator<AgridataContext> 
   private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_\\-.]+)\\s*}}");
 
   private final DataProviderRestClientProviderApi dataProviderRestClientProviderApi;
+  private final OverrideTvdConsumerUidTask overrideTvdConsumerUidTask;
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
     log.debug("Building provider request for productId={}", context.getProductId());
+
+    // Only on test systems: Swap the data consumer's identity toward the TVD for a shared dummy organization. No-op otherwise.
+    // TODO: remove once organisations are registered in TVD
+    overrideTvdConsumerUidTask.apply(context);
 
     var request = buildProviderRequest(context);
     context.setProviderRequest(request);

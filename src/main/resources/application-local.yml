@@ -10,6 +10,11 @@ agridata:
         enabled: false
   product:
     uploads-bucket-name: uploads
+  tvd:
+    consumer-uid-override:
+      enabled: false
+      dummy-uid:
+      excluded-consumer-uids:
   tvd-equid-owner-dropdown:
     enabled: true
 quarkus:
