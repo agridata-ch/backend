@@ -82,7 +82,7 @@ public class DataProductControllerV2 {
   private final DataProductDocumentService dataProductDocumentService;
 
   @GET
-  @Path("{id}")
+  @Path("/{id}")
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getDataProduct",
@@ -185,6 +185,27 @@ public class DataProductControllerV2 {
     };
   }
 
+  @DELETE
+  @ApiSubset({WEB_APP})
+  @Path("/{id}")
+  @Operation(
+      operationId = "deleteDataProductDraft",
+      description = "Deletes a draft data product. Accessible to the owning provider and admins."
+  )
+  @ResponseStatus(RestResponse.StatusCode.NO_CONTENT)
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public Response deleteDataProductDraft(
+      @PathParam("id") UUID dataProductId
+  ) {
+    switch (actingRoleHolder.getRole()) {
+      case PROVIDER -> dataProductMutationService.deleteDataProductDraftAsProvider(dataProductId);
+      case ADMIN -> dataProductMutationService.deleteDataProductDraftAsAdmin(dataProductId);
+      default -> throw new ForbiddenException();
+    }
+    return Response.noContent().build();
+  }
+
   @PUT
   @ApiSubset({WEB_APP})
   @Path("/{id}/status")
@@ -210,7 +231,7 @@ public class DataProductControllerV2 {
 
   @POST
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents")
+  @Path("/{id}/documents")
   @Operation(
       operationId = "addDataProductDocument",
       description = "Uploads a document to a data product. Accessible to the owning provider and admins."
@@ -237,7 +258,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents")
+  @Path("/{id}/documents")
   @Operation(
       operationId = "getDataProductDocumentsMetadata",
       description = "Retrieves metadata for all documents of a data product. Accessible to the owning provider and admins."
@@ -257,7 +278,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}")
+  @Path("/{id}/documents/{documentId}")
   @Operation(
       operationId = "getDataProductDocumentMetadata",
       description = "Retrieves metadata for a single data product document, optionally long-polling until the scan completes. Accessible "
@@ -280,7 +301,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}/download")
+  @Path("/{id}/documents/{documentId}/download")
   @Operation(
       operationId = "getDataProductDocument",
       description = "Downloads the content of a data product document. Accessible to the owning provider and admins."
@@ -313,7 +334,7 @@ public class DataProductControllerV2 {
 
   @DELETE
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}")
+  @Path("/{id}/documents/{documentId}")
   @Operation(
       operationId = "deleteDataProductDocument",
       description = "Deletes a document from a data product. Accessible to the owning provider and admins."

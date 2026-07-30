@@ -40,6 +40,8 @@ class AccessTest {
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(PATCH, DataProductControllerV2.PATH + "/1",
         ADMIN_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(DELETE, DataProductControllerV2.PATH + "/1",
+        ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataProductControllerV2.PATH + "/1/status",
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST, DataProductControllerV2.PATH + "/1/documents", ContentType.MULTIPART,

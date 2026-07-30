@@ -8,7 +8,7 @@ import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -16,6 +16,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.aws.api.PdfStorageApi;
@@ -31,6 +33,7 @@ import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.DocumentScanStatusEnum;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.product.dto.RestClientMethodCodeEnum;
+import ch.agridata.product.persistence.DataProductDocumentEntity;
 import ch.agridata.product.persistence.DataProductDocumentRepository;
 import ch.agridata.product.service.DataProductDocumentScanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -761,6 +764,99 @@ class DataProductControllerV2Test {
         .statusCode(403);
   }
 
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftProduct_whenDeleteProduct_thenNoContentAndGone(TestUserEnum user) {
+    UUID productId = createEmptyDraft(user);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .get(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftProductWithDocuments_whenDeleteProduct_thenDocumentsAndS3ObjectsDeleted(TestUserEnum user) {
+    UUID productId = createEmptyDraft(user);
+    DataProductDocumentMetadataDto first = uploadDocument(user, productId, "first.pdf", SAMPLE_PDF);
+    DataProductDocumentMetadataDto second = uploadDocument(user, productId, "second.pdf", SAMPLE_PDF);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    verify(pdfStorageApi).delete(anyString(), eq("data-product/" + first.id()));
+    verify(pdfStorageApi).delete(anyString(), eq("data-product/" + second.id()));
+    assertThat(findDocuments(productId)).isEmpty();
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenDeleteProduct_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("must be in state DRAFT"));
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .get(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  void givenProviderDoesNotOwnProduct_whenDeleteProduct_thenNotFound() {
+    UUID productId = createEmptyDraft(ADMIN);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenDeleteProduct_thenNotFound() {
+    AuthTestUtils.requestAs(ADMIN)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + UUID.randomUUID())
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenAlreadyDeletedProduct_whenDeleteProductAgain_thenNotFound() {
+    UUID productId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
   @SneakyThrows
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
@@ -1079,6 +1175,13 @@ class DataProductControllerV2Test {
   private void forceScanStatus(UUID documentId, ch.agridata.product.persistence.DocumentScanStatusEnum status) {
     QuarkusTransaction.requiringNew()
         .run(() -> documentRepository.update("scanStatus = ?1 where id = ?2", status, documentId));
+  }
+
+  /**
+   * Archived documents are hidden by {@code @SQLRestriction}, so an empty result means they were soft-deleted.
+   */
+  private List<DataProductDocumentEntity> findDocuments(UUID productId) {
+    return QuarkusTransaction.requiringNew().call(() -> documentRepository.findByDataProductId(productId));
   }
 }
 

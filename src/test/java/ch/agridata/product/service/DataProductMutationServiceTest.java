@@ -1,8 +1,12 @@
 package ch.agridata.product.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.product.dto.DataProductUpdateDto;
@@ -18,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +37,8 @@ class DataProductMutationServiceTest {
   private DataProductMapperImpl dataProductMapper;
   @Mock
   private RestClientRepository restClientRepository;
+  @Mock
+  private DataProductDocumentService dataProductDocumentService;
   @InjectMocks
   private DataProductMutationService dataProductMutationService;
 
@@ -54,5 +61,38 @@ class DataProductMutationServiceTest {
     dataProductMutationService.updateDataProductDraftAsAdmin(dataProductId, updateDto);
 
     verify(dataProductEntity).setDataProviderUid(providerUid);
+  }
+
+  @Test
+  void givenAdminAndDataProductDraft_whenDeleteDraft_thenDocumentsAndProductDeleted() {
+    UUID dataProductId = UUID.randomUUID();
+    DataProductEntity dataProductEntity = DataProductEntity.builder()
+        .id(dataProductId)
+        .stateCode(DataProductStateEnum.DRAFT)
+        .build();
+    when(dataProductRepository.findByIdOptional(dataProductId)).thenReturn(Optional.of(dataProductEntity));
+
+    dataProductMutationService.deleteDataProductDraftAsAdmin(dataProductId);
+
+    InOrder inOrder = inOrder(dataProductDocumentService, dataProductRepository);
+    inOrder.verify(dataProductDocumentService).deleteAllDataProductDocuments(dataProductId);
+    inOrder.verify(dataProductRepository).delete(dataProductEntity);
+  }
+
+  @Test
+  void givenAdminAndActiveDataProduct_whenDeleteDraft_thenIllegalStateExceptionAndNothingDeleted() {
+    UUID dataProductId = UUID.randomUUID();
+    DataProductEntity dataProductEntity = DataProductEntity.builder()
+        .id(dataProductId)
+        .stateCode(DataProductStateEnum.ACTIVE)
+        .build();
+    when(dataProductRepository.findByIdOptional(dataProductId)).thenReturn(Optional.of(dataProductEntity));
+
+    assertThatThrownBy(() -> dataProductMutationService.deleteDataProductDraftAsAdmin(dataProductId))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("must be in state DRAFT");
+
+    verifyNoInteractions(dataProductDocumentService);
+    verify(dataProductRepository, never()).delete(dataProductEntity);
   }
 }
