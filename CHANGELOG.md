@@ -1,3 +1,9 @@
+## [1.14.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.6...v1.14.0-rc.7) (2026-07-30)
+
+### Features
+
+* **contract:** Update contract layout. ([33367a7](https://github.com/agridata-ch/backend/commit/33367a771528799d36df93e05ba766b3aa9905d9)), closes [DIGIB2-1509](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1509)
+
 ## [1.14.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.5...v1.14.0-rc.6) (2026-07-29)
 
 ### Features
