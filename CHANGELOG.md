@@ -1,3 +1,9 @@
+## [1.14.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.8...v1.14.0-rc.9) (2026-07-30)
+
+### Features
+
+* **contract:** Add countries to addresses. ([a37b39c](https://github.com/agridata-ch/backend/commit/a37b39cf7720dc64bb502f8f15fa86354b511a54)), closes [DIGIB2-1564](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1564)
+
 ## [1.14.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.7...v1.14.0-rc.8) (2026-07-30)
 
 ### Features
