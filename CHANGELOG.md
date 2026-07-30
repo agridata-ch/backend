@@ -1,3 +1,9 @@
+## [1.14.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.7...v1.14.0-rc.8) (2026-07-30)
+
+### Features
+
+* **contract-revision:** add legal basis fields to contract revision and data source system ([9d272ad](https://github.com/agridata-ch/backend/commit/9d272adb657ac42733ca04dc5528bc408fc1dc5b)), closes [DIGIB2-1510](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1510)
+
 ## [1.14.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.6...v1.14.0-rc.7) (2026-07-30)
 
 ### Features
