@@ -9,6 +9,7 @@ import ch.agridata.product.dto.DataProductNameDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
+import ch.agridata.product.dto.PublicDataProductDto;
 import ch.agridata.product.persistence.DataProductEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -32,6 +33,10 @@ public interface DataProductMapper {
   DataProductProviderConfigurationDto toProviderConfigurationDto(DataProductEntity dataProductEntity);
 
   PageResponseDto<DataProductDto> toPagedDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
+
+  PublicDataProductDto toPublicDto(DataProductEntity dataProductEntity);
+
+  PageResponseDto<PublicDataProductDto> toPagedPublicDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "name", source = "dataProductUpdateDto.name")

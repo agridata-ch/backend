@@ -21,6 +21,10 @@ public class DataProductDocumentRepository implements PanacheRepositoryBase<Data
     return find("dataProduct.id", dataProductId).list();
   }
 
+  public List<DataProductDocumentEntity> findByDataProductIdAndScanStatus(UUID dataProductId, DocumentScanStatusEnum scanStatus) {
+    return find("dataProduct.id = ?1 and scanStatus = ?2", dataProductId, scanStatus).list();
+  }
+
   public Optional<DataProductDocumentEntity> findByDataProductIdAndDocumentId(UUID dataProductId, UUID documentId) {
     return find("dataProduct.id = ?1 and id = ?2", dataProductId, documentId).firstResultOptional();
   }
