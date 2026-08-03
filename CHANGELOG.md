@@ -1,3 +1,9 @@
+## [1.14.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.10...v1.14.0-rc.11) (2026-08-03)
+
+### Features
+
+* **datatransferv2:** map consumer UID to TVD dummy LegalUnit on non-prod ([fc1c4a5](https://github.com/agridata-ch/backend/commit/fc1c4a5fe83a0284d8b7fd397599a90f6734de4d)), closes [DIGIB2-1581](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1581)
+
 ## [1.14.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.9...v1.14.0-rc.10) (2026-08-03)
 
 ### Bug Fixes
