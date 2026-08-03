@@ -27,6 +27,10 @@ public class DataSourceSystemService {
   private final DataProviderRepository dataProviderRepository;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
 
+  public List<DataSourceSystemDto> getDataSourceSystems() {
+    return dataSourceSystemRepository.listAll().stream().map(dataSourceSystemMapper::toDto).toList();
+  }
+
   public List<DataSourceSystemDto> getByProviderIdAsAdmin(UUID dataProviderId) {
     dataProviderRepository.findByIdOptional(dataProviderId).orElseThrow(() -> new NotFoundException(dataProviderId.toString()));
     return dataSourceSystemRepository.find("dataProvider.id", dataProviderId)

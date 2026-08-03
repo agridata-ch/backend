@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class DataProductRepository extends BaseSearchRepository<DataProductEntity, UUID> {
+  private static final String DP_ID = "dp.id";
 
   private static final String BASE_QUERY = """
       select dp
@@ -37,12 +38,17 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
   private static final String BY_PROVIDER_UID = "dp.dataProviderUid = :" + PARAM_PROVIDER_UID;
   private static final String BY_STATE = "dp.stateCode = :" + PARAM_STATE;
 
+  private static final SearchField FIELD_PRODUCT_NAME = SearchField.translated("dp.name");
+  private static final SearchField FIELD_PROVIDER_NAME = SearchField.translated("p.name");
+  private static final SearchField FIELD_SYSTEM_NAME = SearchField.translated("ds.name");
 
   private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
-      "productName", SearchField.translated("dp.name"),
-      "providerName", SearchField.translated("p.name"),
-      "systemName", SearchField.translated("ds.name")
+      "productName", FIELD_PRODUCT_NAME,
+      "providerName", FIELD_PROVIDER_NAME,
+      "systemName", FIELD_SYSTEM_NAME
   );
+
+  private static final List<SearchField> SEARCHABLE_FIELDS = List.of(FIELD_PRODUCT_NAME, FIELD_PROVIDER_NAME, FIELD_SYSTEM_NAME);
 
   public Optional<DataProductEntity> findByIdAndDataProviderUidOptional(UUID id, String dataProviderUid) {
     return find(
@@ -85,7 +91,20 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
         query, SearchSpec.builder()
             .baseSelect(BASE_QUERY)
             .sortableFields(SORTABLE_FIELDS)
-            .sortTieBreaker("dp.id")
+            .sortTieBreaker(DP_ID)
+            .build()
+    );
+  }
+
+  public PageResponseDto<DataProductEntity> findActivePaged(ResourceQueryDto query) {
+    return findPage(
+        query, SearchSpec.builder()
+            .baseSelect(BASE_QUERY)
+            .baseWhere(BY_STATE)
+            .baseParams(Map.of(PARAM_STATE, DataProductStateEnum.ACTIVE))
+            .sortableFields(SORTABLE_FIELDS)
+            .searchableFields(SEARCHABLE_FIELDS)
+            .sortTieBreaker(DP_ID)
             .build()
     );
   }
@@ -97,7 +116,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
             .baseWhere(BY_PROVIDER_UID)
             .baseParams(Map.of(PARAM_PROVIDER_UID, providerUid))
             .sortableFields(SORTABLE_FIELDS)
-            .sortTieBreaker("dp.id")
+            .sortTieBreaker(DP_ID)
             .build()
     );
   }

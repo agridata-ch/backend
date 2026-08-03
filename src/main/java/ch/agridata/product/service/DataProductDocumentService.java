@@ -13,6 +13,7 @@ import ch.agridata.product.persistence.DataProductRepository;
 import ch.agridata.product.persistence.DocumentScanStatusEnum;
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.LockModeType;
@@ -236,6 +237,16 @@ public class DataProductDocumentService {
   private List<DataProductDocumentMetadataDto> getDataProductDocumentsMetadata(UUID dataProductId) {
     var entities = dataProductDocumentRepository.findByDataProductId(dataProductId);
     return entities.stream().map(dataProductDocumentMapper::toDto).toList();
+  }
+
+  @PermitAll
+  public List<DataProductDocumentMetadataDto> getPublicDataProductDocumentsMetadata(UUID dataProductId) {
+    dataProductRepository.findActiveByIdOptional(dataProductId)
+        .orElseThrow(() -> new NotFoundException(dataProductId.toString()));
+    return dataProductDocumentRepository.findByDataProductIdAndScanStatus(dataProductId, DocumentScanStatusEnum.AVAILABLE)
+        .stream()
+        .map(dataProductDocumentMapper::toDto)
+        .toList();
   }
 
   @RolesAllowed({PROVIDER_ROLE})

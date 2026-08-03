@@ -11,13 +11,13 @@ import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Represents a data product with identifiers, source system, name, description, and source-specific product ID. It provides the essential
- * structure for client-facing product listings.
+ * Public, client-facing view of a data product. It exposes only the display information required to list publicly available data products
+ * and deliberately omits internal integration details (REST client, URL, request/path templates).
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-08-06
  */
 @Builder
-public record DataProductDto(
+public record PublicDataProductDto(
     @Schema(
         description = "Unique identifier of the product",
         examples = {"3fa85f64-5717-4562-b3fc-2c963f66afb7"}
@@ -26,35 +26,9 @@ public record DataProductDto(
     UUID id,
 
     @Schema(
-        description = "Code of data source system from which this product originates",
-        examples = {"AGIS"}
-    )
-    String dataSourceSystemCode,
-
-    @Schema(
         description = "Data source system from which this product originates"
     )
     DataSourceSystemDto dataSourceSystem,
-
-    @Schema(
-        description = "Rest client used to fetch the data product"
-    )
-    RestClientDto restClient,
-
-    @Schema(
-        description = "Template for the path where the data product is fetched from"
-    )
-    String restClientPathTemplate,
-
-    @Schema(
-        description = "Template of the request body for fetching the data product"
-    )
-    String restClientRequestTemplate,
-
-    @Schema(
-        description = "Http-Method used to fetch the data product"
-    )
-    RestClientMethodCodeEnum restClientMethodCode,
 
     @Schema(
         description = "Code of the flow used to fetch the data product"
@@ -90,16 +64,10 @@ public record DataProductDto(
     @Schema(
         description = "State of the data product",
         implementation = DataProductStateEnum.class,
-        examples = {"DRAFT"}
+        examples = {"ACTIVE"}
     )
     @NotNull
-    DataProductStateEnum stateCode,
-
-    @Schema(
-        description = "Template for the path for retrieving updates to the data product",
-        examples = "v1/animal-updates/{{uid}}?since={{LAST_CHANGED_SINCE}}"
-    )
-    String restClientChangeDetectionPathTemplate
+    DataProductStateEnum stateCode
 )
 
     implements Serializable {
