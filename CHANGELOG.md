@@ -1,3 +1,9 @@
+## [1.14.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.11...v1.14.0-rc.12) (2026-08-03)
+
+### Features
+
+* **data-product:** delete functionality for draft data products ([c033474](https://github.com/agridata-ch/backend/commit/c033474559bcffd8b94c23e255658160f3f542a0)), closes [DIGIB2-1452](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1452)
+
 ## [1.14.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.10...v1.14.0-rc.11) (2026-08-03)
 
 ### Features
