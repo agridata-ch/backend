@@ -14,22 +14,27 @@ jobs:
     uses: ./.github/workflows/reusable__check_single_commit.yml
     secrets: inherit
 
+  check-commit-message:
+    name: "."
+    uses: ./.github/workflows/reusable__check_commit_message.yml
+    secrets: inherit
+
   checkstyle:
     name: "."
     uses: ./.github/workflows/reusable__checkstyle.yml
-    needs: check-single-commit
+    needs: [ check-single-commit, check-commit-message ]
     secrets: inherit
 
   check-comments:
     name: "."
     uses: ./.github/workflows/reusable__check_comments.yml
-    needs: check-single-commit
+    needs: [ check-single-commit, check-commit-message ]
     secrets: inherit
 
   gitleaks:
     name: "."
     uses: ./.github/workflows/reusable__gitleaks.yml
-    needs: check-single-commit
+    needs: [ check-single-commit, check-commit-message ]
     secrets: inherit
 
   owasp-dependency-check:
