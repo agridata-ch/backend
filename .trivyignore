@@ -10,4 +10,4 @@
 #  - GHSA-r7wm-3cxj-wff9 - jackson-core async parser vulnerability: maxNumberLength bypass via chunked digit accumulation
 #    See: https://github.com/advisories/GHSA-r7wm-3cxj-wff9
 #    Low risk: Not affected by this code, uses standard Jackson parser. Resolved when upgrading to Quarkus 3.38+
-GHSA-r7wm-3cxj-wff9 exp:2026-07-31
+GHSA-r7wm-3cxj-wff9 exp:2026-08-31
