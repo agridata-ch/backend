@@ -6,7 +6,6 @@ jobs:
     name: Check Commit Message
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'pull_request'
     steps:
       - name: Check that each commit starts with feat(...) or fix(...)
         uses: actions/github-script@v9
