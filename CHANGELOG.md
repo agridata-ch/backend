@@ -1,3 +1,9 @@
+## [1.14.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.13...v1.14.0-rc.14) (2026-08-04)
+
+### Features
+
+* **logging:** improve logging structure ([f538655](https://github.com/agridata-ch/backend/commit/f538655c32e381c8af8599789b85509f1ccd1ea8)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
 ## [1.14.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.12...v1.14.0-rc.13) (2026-08-04)
 
 ### Features
