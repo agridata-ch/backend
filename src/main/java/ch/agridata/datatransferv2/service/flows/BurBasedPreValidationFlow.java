@@ -1,10 +1,7 @@
 package ch.agridata.datatransferv2.service.flows;
 
-import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIELD;
-
-import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.AgridataFlow;
+import ch.agridata.datatransferv2.service.FlowContextFactory;
 import ch.agridata.datatransferv2.service.FlowEnum;
 import ch.agridata.datatransferv2.service.Flowable;
 import ch.agridata.datatransferv2.service.task.BuildProviderRequestTask;
@@ -20,7 +17,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.jboss.logging.MDC;
 
 /**
  * Flow for BUR-based data transfers where the consumer is fully identified before calling the data provider.
@@ -37,7 +33,7 @@ import org.jboss.logging.MDC;
 public class BurBasedPreValidationFlow implements Flowable {
 
   private final AgridataFlow agridataFlow;
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final FlowContextFactory flowContextFactory;
   private final ResolveConsumerUidFromTokenTask resolveConsumerUidFromTokenTask;
   private final EnsureValidConsumerRequestTask ensureValidConsumerRequestTask;
   private final ResolveRequestedProducerBurTask resolveRequestedProducerBurTask;
@@ -51,14 +47,7 @@ public class BurBasedPreValidationFlow implements Flowable {
                       Map<String, String> requestParameters) {
 
     return agridataFlow.run(
-        AgridataContext.builder()
-            .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
-            .flowEnum(FlowEnum.BUR_BASED_PRE_VALIDATION)
-            .productId(productProviderConfiguration.id())
-            .productProviderConfiguration(productProviderConfiguration)
-            .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
-            .requestParameters(requestParameters)
-            .build(),
+        flowContextFactory.create(FlowEnum.BUR_BASED_PRE_VALIDATION, productProviderConfiguration, requestParameters),
         List.of(
             resolveConsumerUidFromTokenTask,
             ensureValidConsumerRequestTask,
