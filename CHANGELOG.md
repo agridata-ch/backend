@@ -1,3 +1,14 @@
+## [1.14.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.12...v1.14.0-rc.13) (2026-08-04)
+
+### Features
+
+* **persistence:** Add BUR to ConsentRequestProducerViewDto ([7c6cccf](https://github.com/agridata-ch/backend/commit/7c6cccf489899d3a97f28bc49f3f7c7dc2354730)), closes [DIGIB2-1576](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1576)
+
+### Bug Fixes
+
+* **cicd:** add cicd job to check commit message ([503933a](https://github.com/agridata-ch/backend/commit/503933ace3a737e2b4bb42be114fc2147fe7649c))
+* **cicd:** fix pipeline ([064e493](https://github.com/agridata-ch/backend/commit/064e493dad79ae42e0992bb26b2cc9c2661be796))
+
 ## [1.14.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.11...v1.14.0-rc.12) (2026-08-03)
 
 ### Features
