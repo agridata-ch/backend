@@ -1,10 +1,8 @@
 package ch.agridata.datatransferv2.service.flows;
 
-import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIELD;
-
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.AgridataFlow;
+import ch.agridata.datatransferv2.service.FlowContextFactory;
 import ch.agridata.datatransferv2.service.FlowEnum;
 import ch.agridata.datatransferv2.service.Flowable;
 import ch.agridata.datatransferv2.service.task.BuildProviderRequestTask;
@@ -21,7 +19,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.jboss.logging.MDC;
 
 /**
  * Flow for BUR-based data transfers where the consumer UID is not necessarily known before calling the data provider.
@@ -39,6 +36,7 @@ import org.jboss.logging.MDC;
 public class BurBasedPostValidationFlow implements Flowable {
 
   private final AgridataFlow agridataFlow;
+  private final FlowContextFactory flowContextFactory;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final ResolveConsumerUidFromTokenTask resolveConsumerUidFromTokenTask;
   private final EnsureValidConsumerRequestTask ensureValidConsumerRequestTask;
@@ -53,14 +51,7 @@ public class BurBasedPostValidationFlow implements Flowable {
   public Response run(DataProductProviderConfigurationDto productProviderConfiguration,
                       Map<String, String> requestParameters) {
 
-    var initContext = AgridataContext.builder()
-        .dataTransferRequestId(MDC.get(REQUEST_ID_MDC_FIELD).toString())
-        .flowEnum(FlowEnum.BUR_BASED_POST_VALIDATION)
-        .productId(productProviderConfiguration.id())
-        .productProviderConfiguration(productProviderConfiguration)
-        .consumerAgateLoginId(agridataSecurityIdentity.getAgateLoginId())
-        .requestParameters(requestParameters)
-        .build();
+    var initContext = flowContextFactory.create(FlowEnum.BUR_BASED_POST_VALIDATION, productProviderConfiguration, requestParameters);
 
     if (agridataSecurityIdentity.getUid().isPresent()) {
       return agridataFlow.run(initContext,
