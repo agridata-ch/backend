@@ -47,8 +47,8 @@ quarkus:
       port: 6999
       realm-path: agate_realm.json
   log:
-    console:
-      json:
+    json:
+      console:
         enabled: false
     category:
       ch.agridata.common.filters:

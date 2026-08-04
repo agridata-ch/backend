@@ -1,5 +1,6 @@
 package ch.agridata.common.filters;
 
+import static ch.agridata.common.utils.LogUtil.structuredFields;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
@@ -98,7 +99,10 @@ class RestClientLoggingFilterTest {
     assertThat(logsList).isNotEmpty();
     LogRecord logRecord = logsList.get(0);
     assertThat(logRecord.getLevel()).isEqualTo(Level.INFO);
-    assertThat(logRecord.getMessage()).contains("REST Client Request: GET https://example.com/api/test");
+    assertThat(structuredFields(logRecord))
+        .containsEntry("operation", "rest.client.request")
+        .containsEntry("method", "GET")
+        .containsEntry("uri", "https://example.com/api/test");
   }
 
   @Test
@@ -130,7 +134,11 @@ class RestClientLoggingFilterTest {
     List<LogRecord> logsList = LOG_HANDLER.getRecords();
     assertThat(logsList).isNotEmpty();
     LogRecord logRecord = logsList.get(0);
-    assertThat(logRecord.getMessage()).contains("REST Client Request: POST https://example.com/api/test");
+    assertThat(structuredFields(logRecord))
+        .containsEntry("operation", "rest.client.request")
+        .containsEntry("method", "POST")
+        .containsEntry("uri", "https://example.com/api/test")
+        .containsKey("body");
   }
 
   @Test
@@ -168,9 +176,12 @@ class RestClientLoggingFilterTest {
     assertThat(logsList).isNotEmpty();
     LogRecord logRecord = logsList.get(0);
     assertThat(logRecord.getLevel()).isEqualTo(Level.INFO);
-    assertThat(logRecord.getMessage()).contains("REST Client Response: GET https://example.com/api/test");
-    assertThat(logRecord.getMessage()).contains("Status: 200");
-    assertThat(logRecord.getMessage()).contains("Duration:");
+    assertThat(structuredFields(logRecord))
+        .containsEntry("operation", "rest.client.response")
+        .containsEntry("method", "GET")
+        .containsEntry("uri", "https://example.com/api/test")
+        .containsEntry("status", 200)
+        .containsKey("duration");
   }
 
   @Test
@@ -190,8 +201,8 @@ class RestClientLoggingFilterTest {
     List<LogRecord> logsList = LOG_HANDLER.getRecords();
     assertThat(logsList).isNotEmpty();
     LogRecord logRecord = logsList.get(0);
-    assertThat(logRecord.getMessage()).contains("Duration:");
-    assertThat(logRecord.getMessage()).matches(".*Duration: \\d+ ms.*");
+    assertThat(structuredFields(logRecord).get("duration")).isInstanceOf(Long.class);
+    assertThat((Long) structuredFields(logRecord).get("duration")).isGreaterThanOrEqualTo(0L);
   }
 
   @Test
@@ -210,7 +221,7 @@ class RestClientLoggingFilterTest {
     List<LogRecord> logsList = LOG_HANDLER.getRecords();
     assertThat(logsList).isNotEmpty();
     LogRecord logRecord = logsList.get(0);
-    assertThat(logRecord.getMessage()).contains("Duration: -1 ms");
+    assertThat(structuredFields(logRecord)).containsEntry("duration", -1L);
   }
 
   @Test

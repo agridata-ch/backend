@@ -1,5 +1,6 @@
 package integration.common.filters;
 
+import static ch.agridata.common.utils.LogUtil.structuredFields;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,11 +70,17 @@ class PreSecurityLogFilterTest {
 
     assertThat(LOG_HANDLER.getRecords())
         .anySatisfy(evt ->
-            assertThat(evt.getMessage())
-                .contains("operation=rest.request method=POST uri=/api/test contentType=application/json"))
+            assertThat(structuredFields(evt))
+                .containsEntry("operation", "rest.request")
+                .containsEntry("method", "POST")
+                .containsEntry("uri", "/api/test")
+                .containsEntry("contentType", "application/json"))
         .anySatisfy(evt ->
-            assertThat(evt.getMessage())
-                .contains("rest.response method=POST uri=/api/test status=200"));
+            assertThat(structuredFields(evt))
+                .containsEntry("operation", "rest.response")
+                .containsEntry("method", "POST")
+                .containsEntry("uri", "/api/test")
+                .containsEntry("status", 200));
 
   }
 
@@ -94,17 +101,16 @@ class PreSecurityLogFilterTest {
         .statusCode(404);
 
     assertThat(LOG_HANDLER.getRecords())
-        .anySatisfy(evt -> assertThat(evt.getMessage())
-            .contains("operation=rest.request")
-            .contains("method=PUT")
-            .contains(uri)
-            .contains("contentType=multipart/form-data"))
-        .noneSatisfy(evt -> assertThat(evt.getMessage())
-            .contains("operation=rest.request")
-            .contains("method=PUT")
-            .contains(uri)
-            .contains("contentType=multipart/form-data")
-            .contains("body="));
+        .anySatisfy(evt -> assertThat(structuredFields(evt))
+            .containsEntry("operation", "rest.request")
+            .containsEntry("method", "PUT")
+            .hasEntrySatisfying("uri", v -> assertThat((String) v).endsWith(uri))
+            .hasEntrySatisfying("contentType",
+                v -> assertThat((String) v).startsWith("multipart/form-data")))
+        .noneSatisfy(evt -> assertThat(structuredFields(evt))
+            .containsEntry("method", "PUT")
+            .hasEntrySatisfying("uri", v -> assertThat((String) v).endsWith(uri))
+            .containsKey("body"));
   }
 
   @Test
@@ -122,11 +128,18 @@ class PreSecurityLogFilterTest {
 
     assertThat(LOG_HANDLER.getRecords())
         .anySatisfy(evt ->
-            assertThat(evt.getMessage())
-                .contains("operation=rest.request method=POST uri=/api/test contentType=application/json body=hello world"))
+            assertThat(structuredFields(evt))
+                .containsEntry("operation", "rest.request")
+                .containsEntry("method", "POST")
+                .containsEntry("uri", "/api/test")
+                .containsEntry("contentType", "application/json")
+                .containsEntry("body", "hello world"))
         .anySatisfy(evt ->
-            assertThat(evt.getMessage())
-                .contains("operation=rest.response method=POST uri=/api/test status=200"));
+            assertThat(structuredFields(evt))
+                .containsEntry("operation", "rest.response")
+                .containsEntry("method", "POST")
+                .containsEntry("uri", "/api/test")
+                .containsEntry("status", 200));
 
   }
 }

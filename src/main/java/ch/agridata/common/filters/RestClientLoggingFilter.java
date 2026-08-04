@@ -1,5 +1,7 @@
 package ch.agridata.common.filters;
 
+import static io.quarkiverse.loggingjson.providers.KeyValueStructuredArgument.kv;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.client.ClientRequestContext;
@@ -10,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,7 +22,10 @@ import lombok.extern.slf4j.Slf4j;
  * - DEBUG: additionally logs request body
  * - TRACE: additionally logs response body
  *
- * @CommentLastReviewed 2025-10-15
+ * <p>Each detail is emitted as a dedicated JSON property via {@code kv(...)} structured arguments,
+ * keeping the log message itself clean.</p>
+ *
+ * @CommentLastReviewed 2026-08-03
  */
 @ApplicationScoped
 @Slf4j
@@ -39,21 +46,22 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     String uri = requestContext.getUri().toString();
     String query = requestContext.getUri().getQuery();
 
-    var logBuilder = log.atInfo()
-        .addKeyValue("operation", "rest.client.request")
-        .addKeyValue("method", method)
-        .addKeyValue("uri", uri);
+    var logArguments = new ArrayList<>(List.of(
+        method,
+        uri,
+        kv("operation", "rest.client.request"),
+        kv("method", method),
+        kv("uri", uri)));
 
     if (query != null && !query.isEmpty()) {
-      logBuilder = logBuilder.addKeyValue("query", query);
+      logArguments.add(kv("query", query));
     }
 
     if (log.isDebugEnabled() && requestContext.hasEntity()) {
-      String requestBody = getEntityAsString(requestContext);
-      logBuilder = logBuilder.addKeyValue("body", requestBody);
+      logArguments.add(kv("body", getEntityAsString(requestContext)));
     }
 
-    logBuilder.log("message=REST Client Request: {} {}", method, uri);
+    log.info("rest.client.request {} {}", logArguments.toArray());
   }
 
   @Override
@@ -69,31 +77,26 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     Long startTime = (Long) requestContext.getProperty(START_TIME_PROPERTY);
     long duration = startTime != null ? System.currentTimeMillis() - startTime : -1;
 
-    StringBuilder logMessage = new StringBuilder();
-    logMessage.append("REST Client Response: ").append(method).append(" ").append(uri);
-    if (query != null && !query.isEmpty()) {
-      logMessage.append("?").append(query);
-    }
-    logMessage.append(" -> Status: ").append(status)
-        .append(", Duration: ").append(duration).append(" ms");
-
-    var logBuilder = log.atInfo()
-        .addKeyValue("operation", "rest.client.response")
-        .addKeyValue("method", method)
-        .addKeyValue("uri", uri)
-        .addKeyValue("duration", duration)
-        .addKeyValue("status", status);
+    var logArguments = new ArrayList<>(List.of(
+        method,
+        uri,
+        status,
+        duration,
+        kv("operation", "rest.client.response"),
+        kv("method", method),
+        kv("uri", uri),
+        kv("duration", duration),
+        kv("status", status)));
 
     if (query != null && !query.isEmpty()) {
-      logBuilder = logBuilder.addKeyValue("query", query);
+      logArguments.add(kv("query", query));
     }
 
     if (log.isTraceEnabled() && responseContext.hasEntity()) {
-      String responseBody = getResponseBodyAsString(responseContext);
-      logBuilder = logBuilder.addKeyValue("body", responseBody);
+      logArguments.add(kv("body", getResponseBodyAsString(responseContext)));
     }
-    logBuilder.log("message={}", logMessage);
 
+    log.info("rest.client.response {} {} -> {} ({} ms)", logArguments.toArray());
   }
 
   private String getEntityAsString(ClientRequestContext requestContext) {
