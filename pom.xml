@@ -257,8 +257,9 @@
             <artifactId>quarkus-cache</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
+            <groupId>io.quarkiverse.loggingjson</groupId>
             <artifactId>quarkus-logging-json</artifactId>
+            <version>3.5.0</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
