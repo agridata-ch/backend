@@ -1,3 +1,9 @@
+## [1.14.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.14...v1.14.0-rc.15) (2026-08-04)
+
+### Features
+
+* **datatransferv2:** minor refactoring to reduce code duplicates ([2e78397](https://github.com/agridata-ch/backend/commit/2e78397fde6136562c8fddef46bee3f895e4925a))
+
 ## [1.14.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.13...v1.14.0-rc.14) (2026-08-04)
 
 ### Features
