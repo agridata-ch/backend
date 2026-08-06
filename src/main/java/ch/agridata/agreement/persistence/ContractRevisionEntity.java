@@ -55,6 +55,9 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   // DataRequest information
 
+  @Column(name = "data_request_human_friendly_id", nullable = false, length = 4)
+  private String dataRequestHumanFriendlyId;
+
   @Column(name = "data_consumer_name", nullable = false)
   private String dataConsumerName;
 
@@ -67,6 +70,9 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "data_consumer_city", nullable = false)
   private String dataConsumerCity;
 
+  @Column(name = "data_consumer_country", length = 2, nullable = false)
+  private String dataConsumerCountry;
+
   @Column(name = "data_provider_name", nullable = false)
   private String dataProviderName;
 
@@ -78,6 +84,9 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @Column(name = "data_provider_city", nullable = false)
   private String dataProviderCity;
+
+  @Column(name = "data_provider_country", length = 2, nullable = false)
+  private String dataProviderCountry;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "title", nullable = false)
@@ -109,6 +118,11 @@ public class ContractRevisionEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "system_name", nullable = false)
   private TranslationPersistenceDto systemName;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "system_legal_basis", nullable = false)
+  @Valid
+  private TranslationPersistenceDto systemLegalBasis;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "data_product", nullable = false)

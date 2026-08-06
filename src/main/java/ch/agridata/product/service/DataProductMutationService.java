@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.utils.ValidationSchemaGenerator;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.mapper.DataProductMapper;
@@ -15,20 +16,26 @@ import ch.agridata.product.persistence.RestClientRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Service class for managing and mutating data product entities. Provides functionality for adding
- * and updating data product drafts either as a data provider or as an administrator.
+ * Service class for managing and mutating data product entities. Provides functionality for adding,
+ * updating, patching and deleting data product drafts either as a data provider or as an administrator.
+ * Deleting a draft cascades to its documents (see {@link DataProductDocumentService}).
  * Enforces role-based access control and performs necessary validations for consistency and security.
  *
- * @CommentLastReviewed 2026-06-11
+ * @CommentLastReviewed 2026-07-29
  */
 
 @ApplicationScoped
@@ -39,6 +46,8 @@ public class DataProductMutationService {
   private final DataProductMapper dataProductMapper;
   private final DataProductRepository dataProductRepository;
   private final DataSourceSystemRepository dataSourceSystemRepository;
+  private final DataProductDocumentService dataProductDocumentService;
+  private final Validator validator;
 
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
@@ -75,9 +84,43 @@ public class DataProductMutationService {
 
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
-  public DataProductDto updateDataProductDraftAsProvider(UUID dataProductId, DataProductUpdateDto updateDto) {
+  public DataProductDto patchDataProductAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    validate(updateDto, ValidationSchemaGenerator.PatchAsProvider.class);
+
     var entity = resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional);
-    verifyDraftState(entity);
+
+    verifyState(entity, DataProductStateEnum.ACTIVE);
+
+    if (updateDto.restClientId() != null) {
+      var restClient = resolveForCurrentProvider(updateDto.restClientId(), restClientRepository::findByIdAndProviderUidOptional);
+      entity.setRestClient(restClient);
+    }
+
+    return patch(updateDto, entity);
+  }
+
+  @Transactional
+  @RolesAllowed(ADMIN_ROLE)
+  public DataProductDto patchDataProductAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    validate(updateDto, ValidationSchemaGenerator.PatchAsAdmin.class);
+
+    var entity = resolve(dataProductId, dataProductRepository::findByIdOptional);
+
+    verifyState(entity, DataProductStateEnum.ACTIVE);
+
+    if (updateDto.restClientId() != null) {
+      var restClient = resolve(updateDto.restClientId(), restClientRepository::findByIdOptional);
+      entity.setRestClient(restClient);
+    }
+
+    return patch(updateDto, entity);
+  }
+
+  @Transactional
+  @RolesAllowed(PROVIDER_ROLE)
+  public DataProductDto updateDataProductDraftAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    var entity = resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional);
+    verifyState(entity, DataProductStateEnum.DRAFT);
 
     var dataSourceSystem =
         resolveForCurrentProvider(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdAndProviderUidOptional);
@@ -91,9 +134,9 @@ public class DataProductMutationService {
 
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
-  public DataProductDto updateDataProductDraftAsAdmin(UUID dataProductId, DataProductUpdateDto updateDto) {
+  public DataProductDto updateDataProductDraftAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
     var entity = resolve(dataProductId, dataProductRepository::findByIdOptional);
-    verifyDraftState(entity);
+    verifyState(entity, DataProductStateEnum.DRAFT);
 
     var dataSourceSystem = resolve(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdOptional);
     var restClient = resolve(updateDto.restClientId(), restClientRepository::findByIdOptional);
@@ -118,10 +161,18 @@ public class DataProductMutationService {
     return dataProductMapper.toDto(entity);
   }
 
-  private void verifyDraftState(DataProductEntity entity) {
-    if (entity.getStateCode() != DataProductStateEnum.DRAFT) {
+  private DataProductDto patch(DataProductUpdateDto updateDto, DataProductEntity entity) {
+    verifyRestClientOwnership(entity);
+    validate(dataProductMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
+    dataProductMapper.patchEntity(updateDto, entity);
+    // No .persist() called, because the entity is already managed by the persistence context.
+    return dataProductMapper.toDto(entity);
+  }
+
+  private void verifyState(DataProductEntity entity, DataProductStateEnum state) {
+    if (entity.getStateCode() != state) {
       throw new IllegalStateException(
-          "Data product " + entity.getId() + " must be in state DRAFT to be edited, but was " + entity.getStateCode());
+          "Data product " + entity.getId() + " must be in state " + state + " to be edited, but was " + entity.getStateCode());
     }
   }
 
@@ -129,8 +180,8 @@ public class DataProductMutationService {
     if (entity.getDataSourceSystem() != null && entity.getRestClient() != null
         && !entity.getDataSourceSystem().getDataProvider().getRestClients().contains(entity.getRestClient())) {
       throw new ValidationException(
-          "Rest client " + entity.getRestClient().getCode() + " is not assigned to data provider "
-              + entity.getDataSourceSystem().getDataProvider().getName());
+          "Rest client " + entity.getRestClient().getId() + " is not assigned to data provider "
+              + entity.getDataSourceSystem().getDataProvider().getId());
     }
   }
 
@@ -147,5 +198,30 @@ public class DataProductMutationService {
     }
     var uid = agridataSecurityIdentity.getUidOrElseThrow();
     return finder.apply(id, uid).orElseThrow(() -> new NotFoundException(id.toString()));
+  }
+
+  private void validate(DataProductUpdateDto dto, Class<?> group) {
+    Set<ConstraintViolation<DataProductUpdateDto>> violations = validator.validate(dto, group);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
+  }
+
+  @Transactional
+  @RolesAllowed(PROVIDER_ROLE)
+  public void deleteDataProductDraftAsProvider(@NotNull UUID dataProductId) {
+    deleteDataProductDraft(resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional));
+  }
+
+  @Transactional
+  @RolesAllowed(ADMIN_ROLE)
+  public void deleteDataProductDraftAsAdmin(@NotNull UUID dataProductId) {
+    deleteDataProductDraft(resolve(dataProductId, dataProductRepository::findByIdOptional));
+  }
+
+  private void deleteDataProductDraft(DataProductEntity entity) {
+    verifyState(entity, DataProductStateEnum.DRAFT);
+    dataProductDocumentService.deleteAllDataProductDocuments(entity.getId());
+    dataProductRepository.delete(entity);
   }
 }

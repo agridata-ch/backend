@@ -35,6 +35,7 @@ public interface ContractRevisionMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "dataRequest", source = "dataRequest")
+  @Mapping(target = "dataRequestHumanFriendlyId", source = "dataRequest.humanFriendlyId")
   @Mapping(target = "dataConsumerName", source = "dataRequest.dataConsumerLegalName")
   @Mapping(target = "dataConsumerStreet", source = "dataRequest.dataConsumerStreet")
   @Mapping(target = "dataConsumerZip", source = "dataRequest.dataConsumerZip")
@@ -43,6 +44,7 @@ public interface ContractRevisionMapper {
   @Mapping(target = "dataProviderZip", source = "dataProvider.address.zip")
   @Mapping(target = "dataProviderStreet", source = "dataProvider.address.street")
   @Mapping(target = "dataProviderCity", source = "dataProvider.address.city")
+  @Mapping(target = "dataProviderCountry", source = "dataProvider.address.country")
   @Mapping(target = "consumerSignatureUserId1", ignore = true)
   @Mapping(target = "consumerSignatureName1", ignore = true)
   @Mapping(target = "consumerSignatureTimestamp1", ignore = true)
@@ -60,6 +62,7 @@ public interface ContractRevisionMapper {
   @Mapping(target = "consumerSignatureType", ignore = true)
   @Mapping(target = "providerSignatureType", ignore = true)
   @Mapping(target = "systemName", source = "dataSourceSystemDto.name")
+  @Mapping(target = "systemLegalBasis", source = "dataSourceSystemDto.legalBasis")
   @Mapping(target = "dataProducts", source = "dataProductDtos", qualifiedByName = "mapDataProductToName")
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest,
                                          UidRegisterOrganisationDto dataProvider,

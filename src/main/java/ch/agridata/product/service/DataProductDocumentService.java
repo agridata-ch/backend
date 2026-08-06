@@ -204,9 +204,19 @@ public class DataProductDocumentService {
     deleteDataProductDocument(dataProductId, documentId);
   }
 
+  @Transactional
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  public void deleteAllDataProductDocuments(UUID dataProductId) {
+    dataProductDocumentRepository.findByDataProductId(dataProductId).forEach(this::deleteDocument);
+  }
+
   private void deleteDataProductDocument(UUID dataProductId, UUID documentId) {
     var entity = dataProductDocumentRepository.findByDataProductIdAndDocumentId(dataProductId, documentId)
         .orElseThrow(() -> new NotFoundException(documentId.toString()));
+    deleteDocument(entity);
+  }
+
+  private void deleteDocument(DataProductDocumentEntity entity) {
     dataProductDocumentStorageService.delete(entity.getId());
     dataProductDocumentRepository.delete(entity);
   }

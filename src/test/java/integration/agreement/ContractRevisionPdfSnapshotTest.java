@@ -2,9 +2,12 @@ package integration.agreement;
 
 import static integration.agreement.DataRequestTestFactory.createReadyForSigningByConsumerDataRequestFor;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+import ch.agridata.agreement.service.HumanFriendlyIdService;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,12 +34,17 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 class ContractRevisionPdfSnapshotTest {
 
+  @InjectMock
+  HumanFriendlyIdService humanFriendlyIdService;
+
   private static final String PDF_PATH = ch.agridata.agreement.controller.ContractRevisionController.PATH + "/{id}/pdf";
   private static final Path SNAPSHOT_PATH = Path.of("src/test/resources/pdf/contract-revision-snapshot.pdf");
   private static final Path DIFF_DIR = Path.of("target/contract-revision-pdf-snapshot-test/diffs");
 
   @Test
   void givenExistingRevision_whenGetPdf_thenMatchesSnapshot() throws Exception {
+    when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AA00");
+
     UUID revisionId = createReadyForSigningByConsumerDataRequestFor(TestUserEnum.CONSUMER_BLV_1).currentContractRevisionId();
     byte[] pdfBytes = AuthTestUtils.requestAs(TestUserEnum.CONSUMER_BLV_1)
         .pathParam("id", revisionId)

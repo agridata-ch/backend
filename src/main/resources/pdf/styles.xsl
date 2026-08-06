@@ -79,15 +79,12 @@
     </xsl:attribute-set>
 
     <xsl:attribute-set name="signature-block-container">
-        <xsl:attribute name="margin-left">2mm</xsl:attribute>
-        <xsl:attribute name="height">12mm</xsl:attribute>
+        <xsl:attribute name="margin-left">1mm</xsl:attribute>
+        <xsl:attribute name="height">20mm</xsl:attribute>
         <xsl:attribute name="display-align">after</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="signature-placeholder-inline">
-        <xsl:attribute name="background-color">#BBB</xsl:attribute>
-        <xsl:attribute name="padding">1mm</xsl:attribute>
-        <xsl:attribute name="font-family">LiberationMono</xsl:attribute>
     </xsl:attribute-set>
 
     <!-- ========================================================= -->

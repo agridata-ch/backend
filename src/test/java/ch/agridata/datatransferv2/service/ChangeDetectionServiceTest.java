@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -86,10 +88,11 @@ class ChangeDetectionServiceTest {
         .hasMessageContaining("Change detection is not supported for product=" + PRODUCT_ID);
   }
 
-  @Test
-  void givenUnboundFlow_whenGetModifiedProducers_thenThrowsIllegalArgumentException() {
+  @ParameterizedTest
+  @ValueSource(strings = {"UNBOUND_UID_BASED_POST_VALIDATION", "UNBOUND_BUR_BASED_POST_VALIDATION"})
+  void givenUnboundFlow_whenGetModifiedProducers_thenThrowsIllegalArgumentException(String flowCode) {
     var config = configBuilder()
-        .flowCode("UNBOUND_POST_VALIDATION")
+        .flowCode(flowCode)
         .restClientChangeDetectionPathTemplate("/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}")
         .build();
     when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);

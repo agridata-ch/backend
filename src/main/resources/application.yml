@@ -93,12 +93,12 @@ quarkus:
       "ch.agridata.common.filters.RestClientLoggingFilter":
         min-level: TRACE
     console:
-      json:
-        enabled: true
-        pretty-print: false
-        exception-output-type: formatted
       format: >-
-        %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %s [%c] (%t) requestId: %X{requestId}, userId: %X{agateUserId},  api: %X{api}%e%n
+        %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %s [%c] (%t) requestId: %X{requestId}, agridataUserId: %X{agridataUserId},  api: %X{api}%e%n
+    json:
+      console:
+        enabled: true
+      pretty-print: false
   oidc:
     authentication:
       pkce-required: true

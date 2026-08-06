@@ -1,7 +1,6 @@
 package ch.agridata.product.dto;
 
 import ch.agridata.common.utils.ValidationSchemaGenerator;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.groups.Default;
 import lombok.Builder;
@@ -10,13 +9,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents the multilingual extended description of a DataProduct.
  *
- * @CommentLastReviewed 2026-07-08
+ * @CommentLastReviewed 2026-07-23
  */
 
 @Builder
 public record DataProductExtendedDescriptionDto(
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
-    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
         description = "German extended description of the data product",
         examples = {
@@ -28,7 +26,6 @@ public record DataProductExtendedDescriptionDto(
     String de,
 
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
-    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
         description = "French extended description of the data product",
         examples = {
@@ -40,7 +37,6 @@ public record DataProductExtendedDescriptionDto(
     String fr,
 
     @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
-    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Schema(
         description = "Italian extended description of the data product",
         examples = {

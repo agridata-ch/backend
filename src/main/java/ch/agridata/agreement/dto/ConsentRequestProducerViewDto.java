@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * Provides a producer-facing view of a consent request. It includes identifiers, state information, request dates, and details of the
  * underlying data request.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-07-29
  */
 
 @Schema(description = "Data transfer object representing a consent request")
@@ -31,6 +31,12 @@ public record ConsentRequestProducerViewDto(
         examples = {"CHE123456789"}
     )
     String dataProducerUid,
+
+    @Schema(
+        description = "BUR of the data producer; null for UID-based consent requests",
+        examples = {"99910003"}
+    )
+    String dataProducerBur,
 
     ConsentRequestStateEnum stateCode,
 

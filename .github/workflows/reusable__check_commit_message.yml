@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+
+jobs:
+  check-commit-message:
+    name: Check Commit Message
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check that each commit starts with feat(...) or fix(...)
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+                console.log("Not a pull request event. Skipping commit message check.");
+                return;
+            }
+            const commits = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            const prefixPattern = /^(feat|fix)\(.+\)/;
+            const invalid = commits.data.filter(
+              (c) => !prefixPattern.test(c.commit.message.split("\n")[0])
+            );
+            if (invalid.length > 0) {
+              const list = invalid
+                .map((c) => `  - ${c.sha.substring(0, 7)}: ${c.commit.message.split("\n")[0]}`)
+                .join("\n");
+              core.setFailed(
+                `The following commits must start with feat(...) or fix(...):\n${list}`
+              );
+            } else {
+              console.log("All commit messages start with feat(...) or fix(...). ✅");
+            }

@@ -19,7 +19,7 @@ import org.mapstruct.ValueMapping;
 /**
  * Transforms consent request data between transport and storage formats. It supports seamless communication between application layers.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-07-29
  */
 
 @Mapper(componentModel = "jakarta")
@@ -33,6 +33,7 @@ public interface ConsentRequestMapper {
   @Mapping(target = "dataRequest", source = "dataRequest")
   @Mapping(target = "stateCode", source = "entity.stateCode")
   @Mapping(target = "showStateAsMigrated", source = "entity.showStateAsMigrated")
+  @Mapping(target = "dataProducerBur", source = "entity.dataProducerBur")
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
 
   ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestEntity entity);

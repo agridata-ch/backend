@@ -30,6 +30,9 @@ public record AgbRevisionDto(
     @Schema(description = "Date and time from which the agb revision is valid")
     LocalDateTime validFrom,
 
+    @Schema(description = "Date and time from which the agb revision enforces consent")
+    LocalDateTime enforceConsentFrom,
+
     @Schema(description = "Data transfer object representing an agb text")
     AgbTextDto agbText
 

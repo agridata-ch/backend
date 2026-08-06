@@ -1,3 +1,115 @@
+## [1.14.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.15...v1.14.0-rc.16) (2026-08-06)
+
+### Features
+
+* **contract:** Add new agb revision. ([e1f42f2](https://github.com/agridata-ch/backend/commit/e1f42f20839093d2e063cf0aedb43674a291b0a7)), closes [DIGIB2-1573](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1573)
+
+## [1.14.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.14...v1.14.0-rc.15) (2026-08-04)
+
+### Features
+
+* **datatransferv2:** minor refactoring to reduce code duplicates ([2e78397](https://github.com/agridata-ch/backend/commit/2e78397fde6136562c8fddef46bee3f895e4925a))
+
+## [1.14.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.13...v1.14.0-rc.14) (2026-08-04)
+
+### Features
+
+* **logging:** improve logging structure ([f538655](https://github.com/agridata-ch/backend/commit/f538655c32e381c8af8599789b85509f1ccd1ea8)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
+## [1.14.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.12...v1.14.0-rc.13) (2026-08-04)
+
+### Features
+
+* **persistence:** Add BUR to ConsentRequestProducerViewDto ([7c6cccf](https://github.com/agridata-ch/backend/commit/7c6cccf489899d3a97f28bc49f3f7c7dc2354730)), closes [DIGIB2-1576](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1576)
+
+### Bug Fixes
+
+* **cicd:** add cicd job to check commit message ([503933a](https://github.com/agridata-ch/backend/commit/503933ace3a737e2b4bb42be114fc2147fe7649c))
+* **cicd:** fix pipeline ([064e493](https://github.com/agridata-ch/backend/commit/064e493dad79ae42e0992bb26b2cc9c2661be796))
+
+## [1.14.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.11...v1.14.0-rc.12) (2026-08-03)
+
+### Features
+
+* **data-product:** delete functionality for draft data products ([c033474](https://github.com/agridata-ch/backend/commit/c033474559bcffd8b94c23e255658160f3f542a0)), closes [DIGIB2-1452](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1452)
+
+## [1.14.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.10...v1.14.0-rc.11) (2026-08-03)
+
+### Features
+
+* **datatransferv2:** map consumer UID to TVD dummy LegalUnit on non-prod ([fc1c4a5](https://github.com/agridata-ch/backend/commit/fc1c4a5fe83a0284d8b7fd397599a90f6734de4d)), closes [DIGIB2-1581](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1581)
+
+## [1.14.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.9...v1.14.0-rc.10) (2026-08-03)
+
+### Bug Fixes
+
+* **deps:** update dependencies ([35f83e9](https://github.com/agridata-ch/backend/commit/35f83e96019aa61dc0ce015bcd6bbc9ad5229c1a))
+
+## [1.14.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.8...v1.14.0-rc.9) (2026-07-30)
+
+### Features
+
+* **contract:** Add countries to addresses. ([a37b39c](https://github.com/agridata-ch/backend/commit/a37b39cf7720dc64bb502f8f15fa86354b511a54)), closes [DIGIB2-1564](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1564)
+
+## [1.14.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.7...v1.14.0-rc.8) (2026-07-30)
+
+### Features
+
+* **contract-revision:** add legal basis fields to contract revision and data source system ([9d272ad](https://github.com/agridata-ch/backend/commit/9d272adb657ac42733ca04dc5528bc408fc1dc5b)), closes [DIGIB2-1510](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1510)
+
+## [1.14.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.6...v1.14.0-rc.7) (2026-07-30)
+
+### Features
+
+* **contract:** Update contract layout. ([33367a7](https://github.com/agridata-ch/backend/commit/33367a771528799d36df93e05ba766b3aa9905d9)), closes [DIGIB2-1509](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1509)
+
+## [1.14.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.5...v1.14.0-rc.6) (2026-07-29)
+
+### Features
+
+* **datatransferv2:** split unbound flow into two separate flows ([82a54f1](https://github.com/agridata-ch/backend/commit/82a54f11aa82976605bdb5856e7ff726a7dad3b2)), closes [DIGIB2-1570](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1570)
+
+### Bug Fixes
+
+* **pipeline:** empty commit ([fc51384](https://github.com/agridata-ch/backend/commit/fc51384c22c2a407201d69770bfb6054451f45fe))
+
+## [1.14.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.4...v1.14.0-rc.5) (2026-07-28)
+
+### Features
+
+* **image:** empty commit to trigger build image ([be604be](https://github.com/agridata-ch/backend/commit/be604be8d699ed510603cdcf3ab5298b4ce76445))
+* **persistence:** Multiple language search/sort generic solution ([5f85fcd](https://github.com/agridata-ch/backend/commit/5f85fcd3b53eeac6ce7ec1009be82603c550fb04)), closes [DIGIB2-1529](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1529)
+
+## [1.14.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.3...v1.14.0-rc.4) (2026-07-23)
+
+### Features
+
+* **bit:** add more debug logging statements for seal api ([2b65bad](https://github.com/agridata-ch/backend/commit/2b65bad4e727ffcbc1e4a8dfbb129082da07be15)), closes [DIGIB2-1535](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1535)
+
+## [1.14.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.2...v1.14.0-rc.3) (2026-07-23)
+
+### Features
+
+* **data-product:** make extended descrption optional ([9ba4fff](https://github.com/agridata-ch/backend/commit/9ba4fffb046cc6a9f30ca1a79c0ffd8ff9fa76b8)), closes [DIGIB2-1352](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1352)
+
+## [1.14.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.1...v1.14.0-rc.2) (2026-07-22)
+
+### Features
+
+* **user:** Allow providers and administrators to patch released data products. ([b225f14](https://github.com/agridata-ch/backend/commit/b225f14dc5497f07d8d1f4285fc3d202e9211016)), closes [DIGIB2-1354](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1354)
+
+## [1.14.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.1-rc.1...v1.14.0-rc.1) (2026-07-22)
+
+### Features
+
+* **agbs:** add AGB acceptance functionality and related fields ([f6b1e8f](https://github.com/agridata-ch/backend/commit/f6b1e8fd541322176a469bd851b06470c8a488bd)), closes [DIGIB2-1241](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1241)
+
+## [1.13.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.13.0...v1.13.1-rc.1) (2026-07-21)
+
+### Bug Fixes
+
+* **deps:** update dependencies ([542e675](https://github.com/agridata-ch/backend/commit/542e675ff0cc4ebb3e907e4e5c9fb82aaa504bd3)), closes [DIGIB2-1542](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1542)
+
 ## [1.13.0](https://github.com/agridata-ch/backend/compare/v1.12.0...v1.13.0) (2026-07-21)
 
 ### Features

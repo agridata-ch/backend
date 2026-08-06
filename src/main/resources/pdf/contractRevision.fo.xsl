@@ -15,10 +15,9 @@
         <xsl:param name="side"/>
         <xsl:param name="signatureDate"/>
         <xsl:param name="signatureName"/>
-        <xsl:param name="bottomName" select="$signatureName"/>
         <xsl:param name="signatureText"/>
 
-        <fo:table-cell padding-top="12mm">
+        <fo:table-cell padding-top="5mm">
             <xsl:choose>
                 <xsl:when test="$side = 'left'">
                     <xsl:attribute name="padding-right">8mm</xsl:attribute>
@@ -29,8 +28,7 @@
             </xsl:choose>
 
             <fo:block-container xsl:use-attribute-sets="signature-block-container">
-                <fo:block margin-left="2mm">
-
+                <fo:block>
                     <xsl:choose>
                         <xsl:when test="$signatureText and $signatureText != ''">
                             <xsl:value-of select="$signatureText"/>
@@ -38,8 +36,15 @@
                         <xsl:otherwise>
                             <fo:inline xsl:use-attribute-sets="signature-placeholder-inline">
                                 <xsl:if test="$signatureName and $signatureName != ''">
-                                    <xsl:value-of select="$signatureDate"/>,
-                                    <xsl:value-of select="$signatureName"/>
+                                    <fo:block>
+                                        Digital unterzeichnet durch:
+                                    </fo:block>
+                                    <fo:block>
+                                        <xsl:value-of select="$signatureName"/>
+                                    </fo:block>
+                                    <fo:block>
+                                        <xsl:value-of select="$signatureDate"/>
+                                    </fo:block>
                                 </xsl:if>
                             </fo:inline>
                         </xsl:otherwise>
@@ -50,10 +55,6 @@
 
             <fo:block space-after="2mm">
                 <fo:leader leader-pattern="dots" leader-length="100%"/>
-            </fo:block>
-
-            <fo:block>
-                <xsl:value-of select="$bottomName"/>
             </fo:block>
         </fo:table-cell>
     </xsl:template>
@@ -136,6 +137,16 @@
 
                     <fo:block page-break-after="always"/>
 
+                    <fo:block xsl:use-attribute-sets="section-heading">
+                        DIGITALER VERTRAGSABSCHLUSS &amp; SIEGELUNG
+                    </fo:block>
+
+                    <fo:block>
+                        Dieser Datenaustauschvertrag wurde auf dem Datenübertragungsdienst agridata.ch
+                        rein digital unterzeichnet und anschliessend applikationsseitig durch agridata.ch mit
+                        dem BIT-Signaturservice versiegelt.
+                    </fo:block>
+
                     <!-- Signature area -->
                     <fo:table xsl:use-attribute-sets="signature-table">
                         <fo:table-column column-width="50%"/>
@@ -144,12 +155,12 @@
                             <fo:table-row>
                                 <fo:table-cell padding-top="8mm" padding-right="8mm">
                                     <fo:block>Für
-                                        <xsl:value-of select="consumerName"/>
+                                        <xsl:value-of select="consumerName"/> (Datenbezüger)
                                     </fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell padding-top="8mm" padding-left="8mm">
                                     <fo:block>Für
-                                        <xsl:value-of select="providerName"/>
+                                        <xsl:value-of select="providerName"/> (Datenanbieter)
                                     </fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
@@ -158,7 +169,7 @@
                                 <xsl:call-template name="signature-cell">
                                     <xsl:with-param name="side">left</xsl:with-param>
                                     <xsl:with-param name="signatureDate">
-                                        <xsl:value-of select="consumerSignatureDate1"/>
+                                        <xsl:value-of select="consumerSignatureDateTime1"/>
                                     </xsl:with-param>
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="consumerSignatureName1"/>
@@ -169,7 +180,7 @@
                                 <xsl:call-template name="signature-cell">
                                     <xsl:with-param name="side">right</xsl:with-param>
                                     <xsl:with-param name="signatureDate">
-                                        <xsl:value-of select="providerSignatureDate1"/>
+                                        <xsl:value-of select="providerSignatureDateTime1"/>
                                     </xsl:with-param>
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="providerSignatureName1"/>
@@ -182,7 +193,7 @@
                                 <xsl:call-template name="signature-cell">
                                     <xsl:with-param name="side">left</xsl:with-param>
                                     <xsl:with-param name="signatureDate">
-                                        <xsl:value-of select="consumerSignatureDate2"/>
+                                        <xsl:value-of select="consumerSignatureDateTime2"/>
                                     </xsl:with-param>
                                     <xsl:with-param name="signatureName">
                                         <xsl:value-of select="consumerSignatureName2"/>
@@ -202,7 +213,7 @@
                                         <xsl:value-of select="providerSignatureName2"/>
                                     </xsl:with-param>
                                     <xsl:with-param name="signatureDate">
-                                        <xsl:value-of select="providerSignatureDate2"/>
+                                        <xsl:value-of select="providerSignatureDateTime2"/>
                                     </xsl:with-param>
                                     <xsl:with-param name="signatureText">
                                         <xsl:if test="providerSignatureType = 'INDIVIDUAL_SIGNATURE'">

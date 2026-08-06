@@ -8,7 +8,6 @@ import static ch.agridata.product.controller.DataProductControllerV2.PATH;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
-import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
@@ -31,20 +30,19 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +82,7 @@ public class DataProductControllerV2 {
   private final DataProductDocumentService dataProductDocumentService;
 
   @GET
-  @Path("{id}")
+  @Path("/{id}")
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getDataProduct",
@@ -114,20 +112,11 @@ public class DataProductControllerV2 {
   @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE})
   @EnableActingRoleHolder
   public PageResponseDto<DataProductDto> getDataProductsPaginated(
-      @BeanParam @Valid ResourceQueryDto resourceQueryDto,
-      @Context HttpHeaders headers
+      @BeanParam @Valid ResourceQueryDto resourceQueryDto
   ) {
-    SupportedLanguage language = headers.getAcceptableLanguages()
-        .stream()
-        .findFirst()
-        .map(Locale::getLanguage)
-        .map(SupportedLanguage::from)
-        .orElse(SupportedLanguage.DE);
-
     return switch (actingRoleHolder.getRole()) {
-      case ADMIN -> dataProductQueryService.getDataProductsPagedAsAdmin(resourceQueryDto, language);
-      case PROVIDER -> dataProductQueryService.getDataProductsPagedAsProvider(resourceQueryDto, identity.getUidOrElseThrow(),
-          language);
+      case ADMIN -> dataProductQueryService.getDataProductsPagedAsAdmin(resourceQueryDto);
+      case PROVIDER -> dataProductQueryService.getDataProductsPagedAsProvider(resourceQueryDto, identity.getUidOrElseThrow());
       default -> throw new ForbiddenException();
     };
   }
@@ -173,6 +162,50 @@ public class DataProductControllerV2 {
     };
   }
 
+  @PATCH
+  @Path("/{id}")
+  @ApiSubset({WEB_APP})
+  @Operation(
+      operationId = "patchDataProduct",
+      description = "Partially updates an existing data product. Each provided field is validated against the data product's current "
+          + "state and the caller's role. If any field cannot be updated, the entire request is rejected and no changes are applied."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public DataProductDto patchDataProduct(
+      @PathParam("id") UUID dataProductId,
+      @Valid DataProductUpdateDto dataProductUpdateDto
+  ) {
+    return switch (actingRoleHolder.getRole()) {
+      case PROVIDER -> dataProductMutationService.patchDataProductAsProvider(dataProductId, dataProductUpdateDto);
+      case ADMIN -> dataProductMutationService.patchDataProductAsAdmin(dataProductId, dataProductUpdateDto);
+      default -> throw new ForbiddenException();
+    };
+  }
+
+  @DELETE
+  @ApiSubset({WEB_APP})
+  @Path("/{id}")
+  @Operation(
+      operationId = "deleteDataProductDraft",
+      description = "Deletes a draft data product. Accessible to the owning provider and admins."
+  )
+  @ResponseStatus(RestResponse.StatusCode.NO_CONTENT)
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public Response deleteDataProductDraft(
+      @PathParam("id") UUID dataProductId
+  ) {
+    switch (actingRoleHolder.getRole()) {
+      case PROVIDER -> dataProductMutationService.deleteDataProductDraftAsProvider(dataProductId);
+      case ADMIN -> dataProductMutationService.deleteDataProductDraftAsAdmin(dataProductId);
+      default -> throw new ForbiddenException();
+    }
+    return Response.noContent().build();
+  }
+
   @PUT
   @ApiSubset({WEB_APP})
   @Path("/{id}/status")
@@ -198,7 +231,7 @@ public class DataProductControllerV2 {
 
   @POST
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents")
+  @Path("/{id}/documents")
   @Operation(
       operationId = "addDataProductDocument",
       description = "Uploads a document to a data product. Accessible to the owning provider and admins."
@@ -225,7 +258,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents")
+  @Path("/{id}/documents")
   @Operation(
       operationId = "getDataProductDocumentsMetadata",
       description = "Retrieves metadata for all documents of a data product. Accessible to the owning provider and admins."
@@ -245,7 +278,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}")
+  @Path("/{id}/documents/{documentId}")
   @Operation(
       operationId = "getDataProductDocumentMetadata",
       description = "Retrieves metadata for a single data product document, optionally long-polling until the scan completes. Accessible "
@@ -268,7 +301,7 @@ public class DataProductControllerV2 {
 
   @GET
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}/download")
+  @Path("/{id}/documents/{documentId}/download")
   @Operation(
       operationId = "getDataProductDocument",
       description = "Downloads the content of a data product document. Accessible to the owning provider and admins."
@@ -301,7 +334,7 @@ public class DataProductControllerV2 {
 
   @DELETE
   @ApiSubset({WEB_APP})
-  @Path("{id}/documents/{documentId}")
+  @Path("/{id}/documents/{documentId}")
   @Operation(
       operationId = "deleteDataProductDocument",
       description = "Deletes a document from a data product. Accessible to the owning provider and admins."

@@ -36,6 +36,7 @@ public class AccessTestUtils {
         case GET -> AuthTestUtils.requestAs(user).when().get(path).getStatusCode();
         case POST -> AuthTestUtils.requestAs(user).contentType(contentType).when().post(path).getStatusCode();
         case PUT -> AuthTestUtils.requestAs(user).contentType(contentType).when().put(path).getStatusCode();
+        case PATCH -> AuthTestUtils.requestAs(user).contentType(contentType).when().patch(path).getStatusCode();
         case DELETE -> AuthTestUtils.requestAs(user).when().delete(path).getStatusCode();
       };
 
@@ -56,6 +57,7 @@ public class AccessTestUtils {
     GET,
     POST,
     PUT,
+    PATCH,
     DELETE
   }
 }

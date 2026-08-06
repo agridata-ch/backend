@@ -32,6 +32,12 @@ public record ResourceQueryDto(
     @QueryParam("sortBy") List<String> sortParams,
 
     @Schema(description = "string to search for in the resource")
-    @QueryParam("searchTerm") String searchTerm
+    @QueryParam("searchTerm") String searchTerm,
+
+    @Schema(description = "language code for multilingual fields. Must be supported by application.")
+    @QueryParam("language") String language
 ) {
+  public SupportedLanguage supportedLanguage() {
+    return SupportedLanguage.from(language);
+  }
 }

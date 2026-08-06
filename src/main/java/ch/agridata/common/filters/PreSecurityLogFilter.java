@@ -1,11 +1,13 @@
 package ch.agridata.common.filters;
 
 import static ch.agridata.user.service.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
+import static io.quarkiverse.loggingjson.providers.KeyValueStructuredArgument.kv;
 
 import io.quarkus.vertx.web.RouteFilter;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -60,19 +62,20 @@ public class PreSecurityLogFilter {
       if (log.isEnabledForLevel(Level.DEBUG) && !contentTypeIsBinary(ctx)) {
         logRequestWithBody(ctx);
       } else {
-        var logBuilder = log.atInfo()
-            .addKeyValue("operation", "rest.request")
-            .addKeyValue("method", ctx.request().method())
-            .addKeyValue("uri", uriWithQuery)
-            .addKeyValue("contentType", getContentType(ctx));
+        var logArguments = new ArrayList<>(List.of(
+            ctx.request().method().name(),
+            uriWithQuery,
+            kv("operation", "rest.request"),
+            kv("method", ctx.request().method().name()),
+            kv("uri", uriWithQuery),
+            kv("contentType", getContentType(ctx))));
 
         String impersonationInfo = getImpersonationInfo(ctx);
         if (!impersonationInfo.isEmpty()) {
-          logBuilder = logBuilder.addKeyValue("impersonation", impersonationInfo);
+          logArguments.add(kv("impersonation", impersonationInfo));
         }
 
-        logBuilder.log("REQUEST: {} {} {} {} {}", ctx.request().method(), uriWithQuery,
-            getContentType(ctx), ctx.request().query(), impersonationInfo);
+        log.info("rest.request {} {}", logArguments.toArray());
       }
       logResponse(ctx);
     }
@@ -84,22 +87,21 @@ public class PreSecurityLogFilter {
       String bodyString = buffer.toString();
       String uriWithQuery = getUriWithQuery(ctx);
 
-      var logBuilder = log.atDebug()
-          .addKeyValue("operation", "rest.request")
-          .addKeyValue("method", ctx.request().method())
-          .addKeyValue("uri", uriWithQuery)
-          .addKeyValue("contentType", getContentType(ctx))
-          .addKeyValue("body", bodyString);
+      var logArguments = new ArrayList<>(List.of(
+          ctx.request().method().name(),
+          uriWithQuery,
+          kv("operation", "rest.request"),
+          kv("method", ctx.request().method().name()),
+          kv("uri", uriWithQuery),
+          kv("contentType", getContentType(ctx)),
+          kv("body", bodyString)));
 
       String impersonationInfo = getImpersonationInfo(ctx);
       if (!impersonationInfo.isEmpty()) {
-        logBuilder = logBuilder.addKeyValue("impersonating", impersonationInfo);
+        logArguments.add(kv("impersonating", impersonationInfo));
       }
 
-      logBuilder.log("REQUEST: {} {} {} {}", ctx.request().method(),
-          uriWithQuery, getContentType(ctx), impersonationInfo);
-
-      logResponse(ctx);
+      log.debug("rest.request {} {}", logArguments.toArray());
     });
   }
 
@@ -110,14 +112,16 @@ public class PreSecurityLogFilter {
       long duration = startTime != null ? System.currentTimeMillis() - startTime : -1;
       String uriWithQuery = getUriWithQuery(ctx);
 
-      log.atInfo()
-          .addKeyValue("operation", "rest.response")
-          .addKeyValue("method", ctx.request().method())
-          .addKeyValue("uri", uriWithQuery)
-          .addKeyValue("status", status)
-          .addKeyValue("duration", duration)
-          .log("RESPONSE: {} {} status: {} duration: {} ms", ctx.request().method(),
-              uriWithQuery, status, duration);
+      log.info("rest.response {} {} -> {} ({} ms)",
+          ctx.request().method().name(),
+          uriWithQuery,
+          status,
+          duration,
+          kv("operation", "rest.response"),
+          kv("method", ctx.request().method().name()),
+          kv("uri", uriWithQuery),
+          kv("status", status),
+          kv("duration", duration));
     });
   }
 

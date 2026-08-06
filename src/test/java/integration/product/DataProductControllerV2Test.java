@@ -8,13 +8,16 @@ import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.aws.api.PdfStorageApi;
@@ -30,6 +33,7 @@ import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.DocumentScanStatusEnum;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.product.dto.RestClientMethodCodeEnum;
+import ch.agridata.product.persistence.DataProductDocumentEntity;
 import ch.agridata.product.persistence.DataProductDocumentRepository;
 import ch.agridata.product.service.DataProductDocumentScanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,16 +44,19 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 @QuarkusTest
@@ -178,10 +185,10 @@ class DataProductControllerV2Test {
   }
 
   @Test
-  void givenAdmin_whenAcceptLanguageIt_thenReturns200() {
+  void givenAdmin_whenLanguageIt_thenReturns200() {
     RequestSpecification admin = AuthTestUtils.requestAs(ADMIN);
 
-    admin.header("Accept-Language", "it")
+    admin.queryParam("language", "it")
         .queryParam("sortBy", "productName")
         .when()
         .get(DataProductControllerV2.PATH)
@@ -233,15 +240,15 @@ class DataProductControllerV2Test {
     assertThat(responseDataProductDto.restClientRequestTemplate()).isEqualTo(requestDataProductUpdate.restClientRequestTemplate());
   }
 
-  private static DataProductUpdateDto getDataProductUpdateDto(UUID agisDataSourceSystemId, UUID agisRestClientId) {
+  private static DataProductUpdateDto getDataProductUpdateDto(UUID dataSourceSystemId, UUID restClientId) {
     return DataProductUpdateDto.builder()
-        .dataSourceSystemId(agisDataSourceSystemId)
+        .dataSourceSystemId(dataSourceSystemId)
         .name(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano"))
         .description(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano"))
         .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
         .extendedDescription(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano"))
-        .restClientId(agisRestClientId)
-        .flowCode(FlowCodeEnum.UNBOUND_POST_VALIDATION)
+        .restClientId(restClientId)
+        .flowCode(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION)
         .restClientPathTemplate("path/template")
         .restClientChangeDetectionPathTemplate("change/detection/path/template")
         .restClientMethodCode(RestClientMethodCodeEnum.GET)
@@ -356,6 +363,21 @@ class DataProductControllerV2Test {
   @SneakyThrows
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftAndTooManyLinks_whenPath_thenBadRequest(TestUserEnum user) {
+    UUID existingProductId = createEmptyDraft(user);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .links(Collections.nCopies(6, new LinkDto("https://test", "test")))
+        .build();
+
+    AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(updateDto)).when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then().statusCode(400);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenValidDataProductDraft_whenActivateDataProduct_thenReturnDataProduct(TestUserEnum user) {
     var agisDataSourceSystemId = UUID_5335D715.uuid();
     var agisRestClientId = UUID_5D3A4A87.uuid();
@@ -364,9 +386,7 @@ class DataProductControllerV2Test {
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
 
-    DataProductDto updatedDataProduct = AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
-        .put(DataProductControllerV2.PATH + "/" + existingDataProduct.id() + "/status").then().statusCode(200).extract()
+    DataProductDto updatedDataProduct = activateDataProduct(user, existingDataProduct.id()).then().statusCode(200).extract()
         .as(DataProductDto.class);
 
     assertThat(updatedDataProduct.stateCode()).isEqualTo(DataProductStateEnum.ACTIVE);
@@ -381,9 +401,7 @@ class DataProductControllerV2Test {
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
 
-    AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
-        .put(DataProductControllerV2.PATH + "/" + existingDataProduct.id() + "/status").then().statusCode(400);
+    activateDataProduct(user, existingDataProduct.id()).then().statusCode(400);
   }
 
   @SneakyThrows
@@ -392,9 +410,7 @@ class DataProductControllerV2Test {
   void givenActiveDataProduct_whenActivateDataProduct_thenReturnBadRequest(TestUserEnum user) {
     UUID activeDataProductUid = TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid();
 
-    AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
-        .put(DataProductControllerV2.PATH + "/" + activeDataProductUid + "/status").then().statusCode(400);
+    activateDataProduct(user, activeDataProductUid).then().statusCode(400);
   }
 
   @SneakyThrows
@@ -410,9 +426,7 @@ class DataProductControllerV2Test {
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, existingDataProduct.id(), "report.pdf", SAMPLE_PDF);
     forceScanStatus(document.id(), scanStatus);
 
-    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
-        .put(DataProductControllerV2.PATH + "/" + existingDataProduct.id() + "/status").then().statusCode(400);
+    activateDataProduct(PROVIDER_1, existingDataProduct.id()).then().statusCode(400);
   }
 
   @SneakyThrows
@@ -427,9 +441,7 @@ class DataProductControllerV2Test {
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, existingDataProduct.id(), "report.pdf", SAMPLE_PDF);
     forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.AVAILABLE);
 
-    DataProductDto activated = AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
-        .put(DataProductControllerV2.PATH + "/" + existingDataProduct.id() + "/status").then().statusCode(200).extract()
+    DataProductDto activated = activateDataProduct(PROVIDER_1, existingDataProduct.id()).then().statusCode(200).extract()
         .as(DataProductDto.class);
 
     assertThat(activated.stateCode()).isEqualTo(DataProductStateEnum.ACTIVE);
@@ -463,7 +475,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenProviderOwnsProduct_whenUploadValidPdf_thenCreatedWithPendingScan() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf", SAMPLE_PDF);
 
@@ -475,7 +487,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenAdmin_whenUploadValidPdf_thenCreated() {
-    UUID productId = createDraft(ADMIN);
+    UUID productId = createEmptyDraft(ADMIN);
 
     DataProductDocumentMetadataDto document = uploadDocument(ADMIN, productId, "admin.pdf", SAMPLE_PDF);
 
@@ -484,7 +496,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenMissingMultipartPart_whenUpload_thenBadRequest() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -497,7 +509,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenNonPdfContent_whenUpload_thenBadRequest() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -510,7 +522,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenWrongContentType_whenUpload_thenBadRequest() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -523,7 +535,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenProviderDoesNotOwnProduct_whenUpload_thenNotFound() {
-    UUID productId = createDraft(ADMIN);
+    UUID productId = createEmptyDraft(ADMIN);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -536,7 +548,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenDataProductAtDocumentLimit_whenUploadAnotherDocument_thenBadRequest() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
     // A data product accepts at most 5 documents; fill the quota, then the next upload must be rejected.
     for (int i = 0; i < 5; i++) {
       uploadDocument(PROVIDER_1, productId, "report-" + i + ".pdf", SAMPLE_PDF);
@@ -554,7 +566,7 @@ class DataProductControllerV2Test {
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenUploadedDocument_whenGetMetadataList_thenReturnsDocument(TestUserEnum user) {
-    UUID productId = createDraft(user);
+    UUID productId = createEmptyDraft(user);
     DataProductDocumentMetadataDto document = uploadDocument(user, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(user)
@@ -569,7 +581,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenNoDocuments_whenGetMetadataList_thenReturnsEmptyList() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .when()
@@ -581,7 +593,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenProviderDoesNotOwnProduct_whenGetMetadataList_thenNotFound() {
-    UUID productId = createDraft(ADMIN);
+    UUID productId = createEmptyDraft(ADMIN);
     uploadDocument(ADMIN, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -594,7 +606,7 @@ class DataProductControllerV2Test {
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenUploadedDocument_whenGetMetadata_thenReturnsPendingScan(TestUserEnum user) {
-    UUID productId = createDraft(user);
+    UUID productId = createEmptyDraft(user);
     DataProductDocumentMetadataDto document = uploadDocument(user, productId, "report.pdf", SAMPLE_PDF);
 
     DataProductDocumentMetadataDto metadata = AuthTestUtils.requestAs(user)
@@ -611,7 +623,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenAvailableDocument_whenGetMetadata_thenReturnsAvailable() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf", SAMPLE_PDF);
     forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.AVAILABLE);
 
@@ -627,7 +639,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenUnknownDocument_whenGetMetadata_thenNotFound() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .when()
@@ -638,7 +650,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenProviderDoesNotOwnProduct_whenGetMetadata_thenNotFound() {
-    UUID productId = createDraft(ADMIN);
+    UUID productId = createEmptyDraft(ADMIN);
     DataProductDocumentMetadataDto document = uploadDocument(ADMIN, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -652,7 +664,7 @@ class DataProductControllerV2Test {
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenAvailableDocument_whenDownload_thenReturnsContent(TestUserEnum user) {
     when(pdfStorageApi.download(anyString(), anyString())).thenReturn(SAMPLE_PDF);
-    UUID productId = createDraft(user);
+    UUID productId = createEmptyDraft(user);
     DataProductDocumentMetadataDto document = uploadDocument(user, productId, "report.pdf", SAMPLE_PDF);
     forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.AVAILABLE);
 
@@ -669,7 +681,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenPendingScanDocument_whenDownload_thenForbidden() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -681,7 +693,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenRejectedDocument_whenDownload_thenForbidden() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
     DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "malware.pdf", SAMPLE_PDF);
     forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.REJECTED);
 
@@ -694,7 +706,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenUnknownDocument_whenDownload_thenNotFound() {
-    UUID productId = createDraft(PROVIDER_1);
+    UUID productId = createEmptyDraft(PROVIDER_1);
 
     AuthTestUtils.requestAs(PROVIDER_1)
         .when()
@@ -715,7 +727,7 @@ class DataProductControllerV2Test {
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenUploadedDocument_whenDelete_thenNoContentAndGone(TestUserEnum user) {
-    UUID productId = createDraft(user);
+    UUID productId = createEmptyDraft(user);
     DataProductDocumentMetadataDto document = uploadDocument(user, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(user)
@@ -733,7 +745,7 @@ class DataProductControllerV2Test {
 
   @Test
   void givenProviderDoesNotOwnProduct_whenDelete_thenNotFound() {
-    UUID productId = createDraft(ADMIN);
+    UUID productId = createEmptyDraft(ADMIN);
     DataProductDocumentMetadataDto document = uploadDocument(ADMIN, productId, "report.pdf", SAMPLE_PDF);
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -752,18 +764,401 @@ class DataProductControllerV2Test {
         .statusCode(403);
   }
 
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftProduct_whenDeleteProduct_thenNoContentAndGone(TestUserEnum user) {
+    UUID productId = createEmptyDraft(user);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .get(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftProductWithDocuments_whenDeleteProduct_thenDocumentsAndS3ObjectsDeleted(TestUserEnum user) {
+    UUID productId = createEmptyDraft(user);
+    DataProductDocumentMetadataDto first = uploadDocument(user, productId, "first.pdf", SAMPLE_PDF);
+    DataProductDocumentMetadataDto second = uploadDocument(user, productId, "second.pdf", SAMPLE_PDF);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    verify(pdfStorageApi).delete(anyString(), eq("data-product/" + first.id()));
+    verify(pdfStorageApi).delete(anyString(), eq("data-product/" + second.id()));
+    assertThat(findDocuments(productId)).isEmpty();
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenDeleteProduct_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("must be in state DRAFT"));
+
+    AuthTestUtils.requestAs(user)
+        .when()
+        .get(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  void givenProviderDoesNotOwnProduct_whenDeleteProduct_thenNotFound() {
+    UUID productId = createEmptyDraft(ADMIN);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenDeleteProduct_thenNotFound() {
+    AuthTestUtils.requestAs(ADMIN)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + UUID.randomUUID())
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenAlreadyDeletedProduct_whenDeleteProductAgain_thenNotFound() {
+    UUID productId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(204);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .when()
+        .delete(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
   @SneakyThrows
-  private UUID createDraft(TestUserEnum user) {
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatch_thenReturnDto(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientPathTemplate("/test")
+        .build();
+
+    var dataProduct = AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .as(DataProductDto.class);
+
+    assertThat(dataProduct.restClient().id()).isEqualTo(UUID_B1398C9D.uuid());
+    assertThat(dataProduct.name().fr()).isEqualTo(existingProduct.name().fr());
+    assertThat(dataProduct.dataSourceSystem().id()).isEqualTo(existingProduct.dataSourceSystemId());
+    assertThat(dataProduct.restClientPathTemplate()).isEqualTo(updateDto.restClientPathTemplate());
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenDraftProduct_whenPatch_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createDraft(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientPathTemplate("/test")
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenActiveProductAndProvider_whenPatchNameAndDescription_thenBadRequest() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .name(new DataProductNameDto("DE", "FR", "IT"))
+        .description(new DataProductDescriptionDto("DE", "FR", "IT"))
+        .restClientPathTemplate("/test")
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("message", equalTo("Validation failed"))
+        .body("debugMessage", containsString("name"))
+        .body("debugMessage", containsString("description"))
+        .body("debugMessage", not(containsString("restClientPathTemplate")));
+  }
+
+  @SneakyThrows
+  @Test
+  void givenActiveProductAndAdmin_whenPatchNameAndDescription_thenOk() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(ADMIN, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .name(new DataProductNameDto("DE", "FR", "IT"))
+        .description(new DataProductDescriptionDto("DE", "FR", "IT"))
+        .restClientPathTemplate("/test")
+        .build();
+
+    AuthTestUtils.requestAs(ADMIN)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatchDataSourceSystem_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .dataSourceSystemId(UUID_4CCBfA06.uuid())
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatchRestClient_thenReturnDto(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientId(UUID_5D3A4A87.uuid())
+        .build();
+
+    var resultingDataProduct = AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .as(DataProductDto.class);
+
+    assertThat(resultingDataProduct.restClient().id()).isEqualTo(UUID_5D3A4A87.uuid());
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @CsvSource({
+      "PROVIDER_1, 404",
+      "ADMIN, 400"
+  })
+  void givenActiveProductAndRestClientOfOtherProvider_whenPatchDataProduct_thenBadRequest(TestUserEnum user, int expectedStatus) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientId(TestDataIdentifiers.RestClient.UUID_CADF12A3.uuid())
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(expectedStatus);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenDraftProduct_whenPatch_thenBadRequest() {
+    var productId = createEmptyDraft(PROVIDER_1);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientId(UUID_B1398C9D.uuid())
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenNonexistentProduct_whenPatch_thenNotFound(TestUserEnum user) {
+    UUID nonexistentProductId = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + nonexistentProductId)
+        .then()
+        .statusCode(404);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenTooManyLinks_whenPatchDataProduct_thenBadRequest() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .links(Collections.nCopies(
+            6,
+            new LinkDto("https://test", "test")
+        ))
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenProviderDoesNotOwnProduct_whenPatch_thenNotFound() {
+    UUID productId = UUID_5335D715.uuid();
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .links(Collections.nCopies(
+            3,
+            new LinkDto("test", "test")
+        ))
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenRestClientChangeDetectionPathTemplateTooLong_whenPatchDataProduct_thenBadRequest() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .restClientChangeDetectionPathTemplate("a".repeat(1001))
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenActiveProduct_whenUploadFile_thenSuccess() {
+    UUID productId = createActiveDataProduct(PROVIDER_1, getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid()));
+
+    DataProductDocumentMetadataDto document = uploadDocument(ADMIN, productId, "report.pdf", SAMPLE_PDF);
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .get(DataProductControllerV2.PATH + "/" + productId + "/documents/" + document.id())
+        .then()
+        .statusCode(200);
+  }
+
+  @SneakyThrows
+  private UUID createEmptyDraft(TestUserEnum user) {
+    return createDraft(user, DataProductUpdateDto.builder().build());
+  }
+
+  @SneakyThrows
+  private UUID createDraft(TestUserEnum user, DataProductUpdateDto dto) {
     return AuthTestUtils.requestAs(user)
         .given()
         .contentType(ContentType.JSON)
-        .body(MAPPER.writeValueAsString(DataProductUpdateDto.builder().build()))
+        .body(MAPPER.writeValueAsString(dto))
         .when()
         .post(DataProductControllerV2.PATH)
         .then()
         .statusCode(201)
         .extract().as(DataProductDto.class)
         .id();
+  }
+
+  private UUID createActiveDataProduct(TestUserEnum user, DataProductUpdateDto dto) {
+    var id = createDraft(user, dto);
+    activateDataProduct(user, id);
+    return id;
+  }
+
+  @SneakyThrows
+  private Response activateDataProduct(TestUserEnum user, UUID id) {
+    return AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(DataProductStateEnum.ACTIVE)).when()
+        .put(DataProductControllerV2.PATH + "/" + id + "/status");
   }
 
   private DataProductDocumentMetadataDto uploadDocument(TestUserEnum user, UUID productId, String fileName, byte[] content) {
@@ -780,6 +1175,13 @@ class DataProductControllerV2Test {
   private void forceScanStatus(UUID documentId, ch.agridata.product.persistence.DocumentScanStatusEnum status) {
     QuarkusTransaction.requiringNew()
         .run(() -> documentRepository.update("scanStatus = ?1 where id = ?2", status, documentId));
+  }
+
+  /**
+   * Archived documents are hidden by {@code @SQLRestriction}, so an empty result means they were soft-deleted.
+   */
+  private List<DataProductDocumentEntity> findDocuments(UUID productId) {
+    return QuarkusTransaction.requiringNew().call(() -> documentRepository.findByDataProductId(productId));
   }
 }
 

@@ -14,106 +14,27 @@
         logic. Additionally, the project does not declare quarkus-opentelemetry, so no
         OTel exporter or instrumentation pipeline is active.
     -->
-    <suppress until="2026-07-31Z">
+    <suppress until="2026-08-31Z">
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-39883</cve>
     </suppress>
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
-        <cve>CVE-2026-29181</cve>
-    </suppress>
 
     <!--
-        Netty HTTP/3 QPACK (memory exhaustion via crafted requests)
-        Fixed in netty 4.2.13; Quarkus has not bumped yet.
+        netty-transport (transitive) - CPE false positive.
 
-        HTTP/3 is not enabled (quarkus.http.http3.* unset, no QUIC listener configured).
-        The vulnerable QPACK decoder is never instantiated.
+        CVE-2026-56816 is an HTTP/3 DoS (CWE-400): an attacker sends HTTP/3 reserved frames
+        with large unvalidated payload lengths across many streams, causing memory exhaustion.
+        The advisory (GHSA-hpcc-26xq-25fv) lists a single affected artifact,
+        io.netty:netty-codec-http3 (< 4.2.16.Final), a 4.2.x/incubator-only module. It does
+        not reference netty-transport at all; the match here comes from the generic
+        cpe:2.3:a:netty:netty CPE.
+
+        netty-codec-http3 is not on the classpath (not in the dependency tree) and the app
+        uses no HTTP/3, so the vulnerable code path does not exist.
+        RE-EVALUATE if netty-codec-http3 / HTTP/3 is ever pulled in.
     -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-06-15 | affected: NO (HTTP/3 not enabled) -->
-        <cve>CVE-2026-42582</cve>
-    </suppress>
-
-    <!--
-        pgjdbc (CVE-2026-54291)
-        Silent SCRAM channel-binding downgrade: a MITM attacker can strip channel binding from a
-        connection that requested it. Only affects connections that set channelBinding=require;
-        the default (prefer) is documented to fall back and is not affected.
-
-        The datasource does not set channelBinding (default prefer), so the vulnerable path is not
-        exercised. Waiting for a newer Quarkus version that pulls pgjdbc >= 42.7.12.
-    -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-13 | affected: NO (channelBinding=require not set; default is prefer) -->
-        <cve>CVE-2026-54291</cve>
-    </suppress>
-
-    <!--
-        jackson-databind (CVE-2026-54515)
-        Mass-assignment: per-property case-insensitive deserialization re-opens fields excluded
-        via per-property @JsonIgnoreProperties.
-
-        Exploitation requires @JsonFormat(with = ACCEPT_CASE_INSENSITIVE_PROPERTIES) combined with
-        per-property @JsonIgnoreProperties on the same bean. Neither annotation is used anywhere in
-        the codebase, so the vulnerable code path is never reached. (Also matched on jackson-core /
-        jackson-modules-java8 via shared CPE.)
-    -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (required @JsonFormat/@JsonIgnoreProperties combo not used) -->
-        <cve>CVE-2026-54515</cve>
-    </suppress>
-
-    <!--
-        opentelemetry-semconv (CVE-2026-39882, CVE-2026-41178)
-        False positive: both CVEs are OpenTelemetry-Go issues (OTLP HTTP exporter memory exhaustion
-        and baggage-header DoS), matched here only through the generic cpe:opentelemetry:opentelemetry.
-        They do not affect the Java opentelemetry-semconv library, which is a constants-only lib, and
-        OTel is not enabled anyway (see CVE-2026-39883 / CVE-2026-29181 above).
-    -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (opentelemetry-go CVE, wrong CPE; Java constants-only lib, OTel not enabled) -->
-        <cve>CVE-2026-39882</cve>
-    </suppress>
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (opentelemetry-go CVE, wrong CPE; Java constants-only lib, OTel not enabled) -->
-        <cve>CVE-2026-41178</cve>
-    </suppress>
-
-    <!--
-        pdfbox (CVE-2026-23907, CVE-2026-33929)
-        Path traversal (CWE-22) in the ExtractEmbeddedFiles *example* code, not the core library.
-        Our only PDFBox usage is BitSignatureApiImpl (Loader.loadPDF + external signing); the
-        ExtractEmbeddedFiles example is not on the classpath / not used.
-    -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (vuln is in ExtractEmbeddedFiles example, not used) -->
-        <cve>CVE-2026-23907</cve>
-    </suppress>
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (vuln is in ExtractEmbeddedFiles example, not used) -->
-        <cve>CVE-2026-33929</cve>
-    </suppress>
-
-    <!--
-        vertx-core / vertx-web / vertx-sql-client / vertx-pg-client (CVE-2026-15075, CVE-2026-15076)
-        No Quarkus/Vert.x release carrying the fix yet.
-
-        CVE-2026-15075: request headers (Authorization, Cookie, ...) leaked across cross-origin
-        redirects by the Vert.x HTTP client's DefaultRedirectHandler. No REST client enables
-        follow-redirects (Quarkus default is false), so redirects are never followed.
-        RE-EVALUATE if any quarkus.rest-client.* sets follow-redirects=true.
-
-        CVE-2026-15076: Set-Cookie Domain-attribute validation flaw in the Vert.x Web
-        WebClientSession. That component is not used (no WebClientSession / io.vertx.ext.web.client).
-        The vertx-sql-client / vertx-pg-client hits are CPE false positives (no HTTP surface).
-    -->
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (follow-redirects disabled on all rest-clients) -->
-        <cve>CVE-2026-15075</cve>
-    </suppress>
-    <suppress until="2026-07-31Z">
-        <!-- started: 2026-07-15 | affected: NO (WebClientSession not used) -->
-        <cve>CVE-2026-15076</cve>
+    <suppress until="2026-08-31Z">
+        <!-- started: 2026-08-03 | affected: NO (CPE false positive; vuln is in netty-codec-http3, not used) -->
+        <cve>CVE-2026-56816</cve>
     </suppress>
 </suppressions>
