@@ -1,3 +1,9 @@
+## [1.14.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.15...v1.14.0-rc.16) (2026-08-06)
+
+### Features
+
+* **contract:** Add new agb revision. ([e1f42f2](https://github.com/agridata-ch/backend/commit/e1f42f20839093d2e063cf0aedb43674a291b0a7)), closes [DIGIB2-1573](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1573)
+
 ## [1.14.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.14.0-rc.14...v1.14.0-rc.15) (2026-08-04)
 
 ### Features
