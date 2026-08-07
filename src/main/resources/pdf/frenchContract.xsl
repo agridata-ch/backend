@@ -17,7 +17,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="consumerAddressInline"/> (ci-après « fournisseur de données »)
+            <xsl:value-of select="consumerAddressInline"/> (ci-après « acquéreur de données »)
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text-spacious">
@@ -25,7 +25,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="providerAddressInline"/> (ci-après « acquéreur de données »)
+            <xsl:value-of select="providerAddressInline"/> (ci-après « fournisseur de données »)
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
@@ -299,7 +299,9 @@
 
         <fo:block xsl:use-attribute-sets="body-text">
             Allemand:
-            <xsl:value-of select="requestDescription/de"/>
+            <fo:inline xml:lang="de">
+                <xsl:value-of select="requestDescription/de"/>
+            </fo:inline>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Français:
@@ -307,7 +309,9 @@
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Italien:
-            <xsl:value-of select="requestDescription/it"/>
+            <fo:inline xml:lang="it">
+                <xsl:value-of select="requestDescription/it"/>
+            </fo:inline>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
@@ -316,7 +320,9 @@
 
         <fo:block xsl:use-attribute-sets="body-text">
             Allemand:
-            <xsl:value-of select="requestPurpose/de"/>
+            <fo:inline xml:lang="de">
+                <xsl:value-of select="requestPurpose/de"/>
+            </fo:inline>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Français:
@@ -324,7 +330,9 @@
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Italien:
-            <xsl:value-of select="requestPurpose/it"/>
+            <fo:inline xml:lang="it">
+                <xsl:value-of select="requestPurpose/it"/>
+            </fo:inline>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">

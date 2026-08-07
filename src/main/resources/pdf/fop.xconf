@@ -5,9 +5,12 @@
     <base>.</base>
     <font-base>fonts/</font-base>
 
+    <!-- Emit a tagged (accessible) PDF. Required for the PDF/A-2a conformance level. -->
+    <accessibility>true</accessibility>
+
     <renderers>
         <renderer mime="application/pdf">
-            <pdf-a-mode>PDF/A-2b</pdf-a-mode>
+            <pdf-a-mode>PDF/A-2a</pdf-a-mode>
             <output-profile>color/sRGB2014.icc</output-profile>
 
             <fonts>

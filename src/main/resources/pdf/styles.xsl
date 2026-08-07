@@ -93,7 +93,7 @@
 
     <xsl:template name="horizontal-rule">
         <xsl:param name="space-after">0mm</xsl:param>
-        <fo:block space-after="{$space-after}">
+        <fo:block space-after="{$space-after}" role="artifact">
             <fo:leader leader-pattern="rule"
                        rule-thickness="0.5pt"
                        leader-length="100%"/>
