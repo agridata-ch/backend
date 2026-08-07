@@ -1,3 +1,9 @@
+## [1.15.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.14.0...v1.15.0-rc.1) (2026-08-07)
+
+### Features
+
+* **data-product:** Add public endpoints for fetching all active data products. ([e60a218](https://github.com/agridata-ch/backend/commit/e60a21843b6e9c0a2a71df489042fff61681de67)), closes [DIGIB2-1585](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1585)
+
 ## [1.14.0](https://github.com/agridata-ch/backend/compare/v1.13.0...v1.14.0) (2026-08-06)
 
 ### Features
