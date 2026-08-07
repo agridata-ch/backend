@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:fox="http://xmlgraphics.apache.org/fop/extensions">
 
     <xsl:include href="styles.xsl"/>
     <xsl:include href="frenchContract.xsl"/>
@@ -53,7 +54,7 @@
                 </fo:block>
             </fo:block-container>
 
-            <fo:block space-after="2mm">
+            <fo:block space-after="2mm" role="artifact">
                 <fo:leader leader-pattern="dots" leader-length="100%"/>
             </fo:block>
         </fo:table-cell>
@@ -64,7 +65,7 @@
     <!-- ========================================================= -->
 
     <xsl:template match="/ContractRevision">
-        <fo:root>
+        <fo:root xml:lang="de">
             <fo:layout-master-set>
                 <fo:simple-page-master master-name="first-page"
                                        page-height="297mm"
@@ -104,7 +105,8 @@
                                             <fo:external-graphic src="url('swiss-logo.png')"
                                                                  content-height="15mm"
                                                                  content-width="auto"
-                                                                 scaling="uniform"/>
+                                                                 scaling="uniform"
+                                                                 fox:alt-text="Logo der Schweizerischen Eidgenossenschaft"/>
                                         </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell display-align="before" text-align="left">
@@ -123,7 +125,7 @@
 
                 <!-- Page footer -->
                 <fo:static-content flow-name="xsl-region-after">
-                    <fo:block xsl:use-attribute-sets="page-number-footer">
+                    <fo:block xsl:use-attribute-sets="page-number-footer" role="artifact">
                         <fo:page-number/>
                     </fo:block>
                 </fo:static-content>
@@ -131,9 +133,13 @@
                 <!-- Body -->
                 <fo:flow flow-name="xsl-region-body" xsl:use-attribute-sets="body-text">
 
-                    <xsl:call-template name="germanContract"/>
+                    <fo:block xml:lang="de">
+                        <xsl:call-template name="germanContract"/>
+                    </fo:block>
 
-                    <xsl:call-template name="frenchContract"/>
+                    <fo:block xml:lang="fr">
+                        <xsl:call-template name="frenchContract"/>
+                    </fo:block>
 
                     <fo:block page-break-after="always"/>
 

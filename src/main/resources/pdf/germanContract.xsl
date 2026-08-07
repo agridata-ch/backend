@@ -17,7 +17,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="consumerAddressInline"/> (hiernach «Datenanbieter»)
+            <xsl:value-of select="consumerAddressInline"/> (hiernach «Datenbezüger»)
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text-spacious">
@@ -25,7 +25,7 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="bold-paragraph">
-            <xsl:value-of select="providerAddressInline"/> (hiernach «Datenbezüger»)
+            <xsl:value-of select="providerAddressInline"/> (hiernach «Datenanbieter»)
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text-spacious">
@@ -295,11 +295,15 @@
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Französisch:
-            <xsl:value-of select="requestDescription/fr"/>
+            <fo:inline xml:lang="fr">
+                <xsl:value-of select="requestDescription/fr"/>
+            </fo:inline>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Italienisch:
-            <xsl:value-of select="requestDescription/it"/>
+            <fo:inline xml:lang="it">
+                <xsl:value-of select="requestDescription/it"/>
+            </fo:inline>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
@@ -312,11 +316,15 @@
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Französisch:
-            <xsl:value-of select="requestPurpose/fr"/>
+            <fo:inline xml:lang="fr">
+                <xsl:value-of select="requestPurpose/fr"/>
+            </fo:inline>
         </fo:block>
         <fo:block xsl:use-attribute-sets="body-text">
             Italienisch:
-            <xsl:value-of select="requestPurpose/it"/>
+            <fo:inline xml:lang="it">
+                <xsl:value-of select="requestPurpose/it"/>
+            </fo:inline>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
