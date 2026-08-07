@@ -1,3 +1,9 @@
+## [1.15.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.1...v1.15.0-rc.2) (2026-08-07)
+
+### Bug Fixes
+
+* **logging:** add logging for public routes ([ec2cf48](https://github.com/agridata-ch/backend/commit/ec2cf481e18765d5ac87a86b9046f09d36db2a5c)), closes [DIGIB2-1586](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1586)
+
 ## [1.15.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.14.0...v1.15.0-rc.1) (2026-08-07)
 
 ### Features
