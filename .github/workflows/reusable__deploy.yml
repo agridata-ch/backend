@@ -7,29 +7,75 @@ on:
       account-id:
         required: true
         type: string
-      container-name:
-        required: true
-        type: string
-      task-definition-family:
-        required: true
-        type: string
-      service:
-        required: true
-        type: string
       cluster:
         required: true
         type: string
 
+env:
+  AWS_REGION: eu-central-2
+
 jobs:
+  discover:
+    name: Discover services
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.account-id }}:role/agridata-application-deployment-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Find deployment targets
+        id: find
+        env:
+          CLUSTER: ${{ inputs.cluster }}
+        run: |
+          set -euo pipefail
+
+          add_target() { # <service> <task-definition-arn>
+            local svc="$1" td="$2" family container
+            family=$(aws ecs describe-task-definition --task-definition "$td" \
+              --query 'taskDefinition.family' --output text)
+            container=$(aws ecs describe-task-definition --task-definition "$td" \
+              --query 'taskDefinition.containerDefinitions[0].name' --output text)
+            include=$(jq -c --arg s "$svc" --arg f "$family" --arg c "$container" \
+              '. += [{service:$s, family:$f, container:$c}]' <<<"$include")
+          }
+
+          include='[]'
+          for arn in $(aws ecs list-services --cluster "$CLUSTER" --query 'serviceArns' --output text); do
+            svc=$(basename "$arn")
+            read -r tag td < <(aws ecs describe-services --cluster "$CLUSTER" --services "$svc" --include TAGS \
+              --query "services[0].[(tags[?key=='deployment-group'].value)[0], taskDefinition]" --output text)
+            [ "$tag" = "agridata-backend" ] || continue
+            add_target "$svc" "$td"
+          done
+
+          if [ "$include" = "[]" ]; then
+            echo "::error::No ECS service tagged deployment-group=agridata-backend found in cluster $CLUSTER." >&2
+            echo "::error::Ensure the backend service in this account carries the deployment-group tag (Terraform)." >&2
+            exit 1
+          fi
+
+          echo "Deployment targets: $include"
+          echo "matrix={\"include\":$include}" >> "$GITHUB_OUTPUT"
+
   deploy:
-    name: Deploy
+    name: Deploy ${{ matrix.service }} → account ${{ inputs.account-id }} (${{ inputs.image }})
+    needs: discover
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       id-token: write
       contents: read
-    env:
-      AWS_REGION: eu-central-2
+    strategy:
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -44,22 +90,37 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          container-name: ${{inputs.container-name}}
-          task-definition-family: ${{inputs.task-definition-family}}
+          container-name: ${{ matrix.container }}
+          task-definition-family: ${{ matrix.family }}
           image: ${{ inputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{inputs.service}}
-          cluster: ${{inputs.cluster}}
+          service: ${{ matrix.service }}
+          cluster: ${{ inputs.cluster }}
           wait-for-service-stability: true
+
+  finalize:
+    name: Update SSM parameter
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.account-id }}:role/agridata-application-deployment-role
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Update SSM Parameter with deployed image
         run: |
           aws ssm put-parameter \
             --name "/backend/image" \
-            --value "${{ inputs.image}}" \
+            --value "${{ inputs.image }}" \
             --type "String" \
             --overwrite
