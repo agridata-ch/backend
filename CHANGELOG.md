@@ -1,3 +1,9 @@
+## [1.15.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.3...v1.15.0-rc.4) (2026-08-10)
+
+### Features
+
+* **agreement:** add PDF/A-2a conformity and fix swapped party labels ([dae0cb3](https://github.com/agridata-ch/backend/commit/dae0cb305333b3870e3a56e531b0170f58c943e6)), closes [DIGIB2-1512](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1512)
+
 ## [1.15.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.2...v1.15.0-rc.3) (2026-08-10)
 
 ### Features
