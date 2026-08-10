@@ -78,9 +78,6 @@ jobs:
       account-id: 472294263228 # testing
       image: ${{needs.build-push-image.outputs.image}}
       cluster: agridata-ecs-cluster
-      service: agridata-backend
-      task-definition-family: agridata-backend
-      container-name: agridata-backend-service
     secrets: inherit
 
   deploy-integration:
@@ -92,9 +89,6 @@ jobs:
       account-id: 863518438092 # integration
       image: ${{needs.build-push-image.outputs.image}}
       cluster: agridata-ecs-cluster
-      service: agridata-backend
-      task-definition-family: agridata-backend
-      container-name: agridata-backend-service
     secrets: inherit
 
   merge-main-develop:
