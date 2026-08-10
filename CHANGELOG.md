@@ -1,3 +1,9 @@
+## [1.15.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.2...v1.15.0-rc.3) (2026-08-10)
+
+### Features
+
+* **cicd:** separate backend services ([37338bc](https://github.com/agridata-ch/backend/commit/37338bc2cf055eafac95429de971a05941334a49)), closes [DIGIB2-1586](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1586)
+
 ## [1.15.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.1...v1.15.0-rc.2) (2026-08-07)
 
 ### Bug Fixes
