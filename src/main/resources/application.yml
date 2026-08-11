@@ -23,6 +23,9 @@ bit:
 quarkus:
   cache:
     caffeine:
+      health:
+        expire-after-write: 1M
+        maximum-size: 100
       agis-api-register:
         expire-after-write: 5M
         maximum-size: 100
