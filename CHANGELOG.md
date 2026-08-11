@@ -1,3 +1,9 @@
+## [1.15.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.4...v1.15.0-rc.5) (2026-08-11)
+
+### Features
+
+* **bur:** Get BUR from AGIS ([07bc150](https://github.com/agridata-ch/backend/commit/07bc150cbbf2c640e0c5c7e73463ec5b38782d09)), closes [DIGIB2-1574](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1574)
+
 ## [1.15.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.3...v1.15.0-rc.4) (2026-08-10)
 
 ### Features
