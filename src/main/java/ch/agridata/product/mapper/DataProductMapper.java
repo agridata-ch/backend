@@ -39,7 +39,6 @@ public interface DataProductMapper {
   PageResponseDto<PublicDataProductDto> toPagedPublicDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "name", source = "dataProductUpdateDto.name")
   @Mapping(target = "deprecatedSince", ignore = true)
   @Mapping(target = "archived", ignore = true)
   @Mapping(target = "createdBy", ignore = true)

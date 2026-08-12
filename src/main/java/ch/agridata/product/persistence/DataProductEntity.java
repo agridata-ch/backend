@@ -107,4 +107,7 @@ public class DataProductEntity extends AuditableEntity {
   @Column(name = "extended_description")
   private TranslationPersistenceDto extendedDescription;
 
+  @Builder.Default
+  @Column(name = "consent_required", nullable = false)
+  private boolean consentRequired = true;
 }
