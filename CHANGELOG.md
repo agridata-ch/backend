@@ -1,3 +1,9 @@
+## [1.15.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.5...v1.15.0-rc.6) (2026-08-12)
+
+### Features
+
+* **health:** add public health endpoint ([1509f04](https://github.com/agridata-ch/backend/commit/1509f049148149ffb1fba7427738b3c9dc400ab5)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
 ## [1.15.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.4...v1.15.0-rc.5) (2026-08-11)
 
 ### Features
