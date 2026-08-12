@@ -1,3 +1,9 @@
+## [1.15.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.6...v1.15.0-rc.7) (2026-08-12)
+
+### Bug Fixes
+
+* **health:** improve openapi description ([4c0df08](https://github.com/agridata-ch/backend/commit/4c0df085422e0bcef7edccf9e1fac65fd1c12357)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
 ## [1.15.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.5...v1.15.0-rc.6) (2026-08-12)
 
 ### Features
