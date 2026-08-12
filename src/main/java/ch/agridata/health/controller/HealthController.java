@@ -10,6 +10,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static ch.agridata.health.controller.HealthController.PATH;
 
 import ch.agridata.common.openapi.ApiSubset;
+import ch.agridata.health.dto.HealthDto;
 import ch.agridata.health.dto.HealthDto.HealthStatus;
 import ch.agridata.health.service.HealthService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -17,6 +18,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +49,11 @@ public class HealthController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({ADMIN_ROLE, SUPPORT_ROLE, CONSUMER_ROLE, PROVIDER_ROLE})
-  public Response getHealth() {
+  public HealthDto getHealth() {
     var health = healthService.status();
-    var httpStatus = health.agridataStatus() == HealthStatus.UP
-        ? Response.Status.OK
-        : Response.Status.SERVICE_UNAVAILABLE;
-    return Response.status(httpStatus).entity(health).build();
+    if (health.agridataStatus() != HealthStatus.UP) {
+      throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(health).build());
+    }
+    return health;
   }
 }
