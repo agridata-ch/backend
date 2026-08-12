@@ -101,7 +101,16 @@ public record DataProductUpdateDto(
         description = "Extended product details"
     )
     @Valid
-    DataProductExtendedDescriptionDto extendedDescription
+    DataProductExtendedDescriptionDto extendedDescription,
+
+    @Schema(
+        description = "If a consent is required for this data product",
+        examples = "true"
+    )
+    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
+    @Null(groups = ValidationSchemaGenerator.PatchAsAdmin.class)
+    Boolean consentRequired
 ) {
 
 }

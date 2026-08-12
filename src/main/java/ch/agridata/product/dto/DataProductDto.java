@@ -99,7 +99,14 @@ public record DataProductDto(
         description = "Template for the path for retrieving updates to the data product",
         examples = "v1/animal-updates/{{uid}}?since={{LAST_CHANGED_SINCE}}"
     )
-    String restClientChangeDetectionPathTemplate
+    String restClientChangeDetectionPathTemplate,
+
+    @Schema(
+        description = "If a consent is required for this data product",
+        examples = "true"
+    )
+    @NotNull
+    Boolean consentRequired
 )
 
     implements Serializable {
