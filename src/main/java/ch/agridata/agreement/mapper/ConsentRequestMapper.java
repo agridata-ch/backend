@@ -5,6 +5,7 @@ import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestProducerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
@@ -36,6 +37,8 @@ public interface ConsentRequestMapper {
   @Mapping(target = "showStateAsMigrated", source = "entity.showStateAsMigrated")
   @Mapping(target = "dataProducerBur", source = "entity.dataProducerBur")
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
+
+  ConsentRequestProducerViewV2Dto toConsentRequestProducerViewV2Dto(ConsentRequestEntity entity);
 
   ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestEntity entity);
 

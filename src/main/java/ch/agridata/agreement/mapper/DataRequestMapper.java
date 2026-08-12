@@ -4,6 +4,7 @@ import ch.agridata.agreement.dto.DataProviderReferenceDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
+import ch.agridata.agreement.dto.DataRequestSummaryDto;
 import ch.agridata.agreement.dto.DataRequestTitleDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataSourceSystemReferenceDto;
@@ -92,14 +93,18 @@ public interface DataRequestMapper {
   @Mapping(target = "dataConsumerLogo", ignore = true)
   @Mapping(target = "dataConsumerLogoType", ignore = true)
   @Mapping(target = "currentContractRevisionId", ignore = true)
-  void updateEntity(DataRequestUpdateDto dataRequestUpdateDto,
-                    @MappingTarget DataRequestEntity entity);
+  void updateEntity(
+      DataRequestUpdateDto dataRequestUpdateDto,
+      @MappingTarget DataRequestEntity entity
+  );
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataRequestDescriptionDto translationDto);
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataRequestTitleDto translationDto);
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataRequestPurposeDto translationDto);
+
+  DataRequestTitleDto toDataRequestTitleDto(TranslationPersistenceDto translationDto);
 
   @Mapping(target = "products", source = "dataProducts")
   DataRequestUpdateDto toUpdateDto(DataRequestEntity entity);
@@ -113,4 +118,7 @@ public interface DataRequestMapper {
   DataSourceSystemReferenceDto toReferenceDto(DataSourceSystemDto dto);
 
   DataProviderReferenceDto toReferenceDto(DataProviderDto dto);
+
+  @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
+  DataRequestSummaryDto toDataRequestSummaryDto(DataRequestEntity entity);
 }

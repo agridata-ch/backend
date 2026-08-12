@@ -18,7 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Schema(description = "Data transfer object representing an aggregation of consent requests")
 @Builder
-public record ConsentRequestAggregationProducerView(
+public record ConsentRequestAggregationDto(
     @Schema(
         description = "Unique identifier of the aggregation. Corresponds to the underlying data request ID.",
         examples = {"3fa85f64-5717-4562-b3fc-2c963f66afa6"}
@@ -27,15 +27,17 @@ public record ConsentRequestAggregationProducerView(
     UUID id,
 
     @Schema(
-        description = "UID of the data producer",
-        examples = {"CHE123456789"}
-    )
-    String dataProducerUid,
-
-    @Schema(
         description = "Aggregated state derived from the states of the underlying consent requests"
     )
     ConsentRequestAggregationStateEnum stateCode,
+
+    @Schema(
+        description = "Date when the latest consent request was made",
+        examples = {"2025-05-19"},
+        type = SchemaType.STRING,
+        format = "date"
+    )
+    LocalDate requestDate,
 
     @Schema(
         description = "Indicates whether the aggregated state originates from migrated consent requests",
@@ -52,18 +54,13 @@ public record ConsentRequestAggregationProducerView(
     LocalDateTime lastStateChangeDate,
 
     @Schema(
-        description = "Date when the request was made",
-        examples = {"2025-05-19"},
-        type = SchemaType.STRING,
-        format = "date"
-    )
-    LocalDate requestDate,
-
-    @Schema(
-        description = "Details of the underlying data request",
-        implementation = DataRequestDto.class
+        description = "Details of the underlying data request"
     )
     DataRequestDto dataRequest,
-    List<ConsentRequestProducerViewDto> consentRequests
+
+    @Schema(
+        description = "List of consent requests included in this aggregation"
+    )
+    List<ConsentRequestProducerViewV2Dto> consentRequests
 ) {
 }
