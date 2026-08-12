@@ -9,17 +9,14 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Provides a producer-facing view of a consent request. It includes identifiers, state information, request dates, and details of the
- * underlying data request.
+ * Provides a producer-facing view of a consent request. It includes identifiers, state information, request dates
  *
- * @CommentLastReviewed 2026-07-29
- * @deprecated Replaced by {@link ConsentRequestProducerViewV2Dto}
+ * @CommentLastReviewed 2026-08-13
  */
 
 @Schema(description = "Data transfer object representing a consent request")
 @Builder
-@Deprecated(since = "1.15")
-public record ConsentRequestProducerViewDto(
+public record ConsentRequestProducerViewV2Dto(
 
     @Schema(
         description = "Unique identifier of the consent request",
@@ -66,13 +63,7 @@ public record ConsentRequestProducerViewDto(
         type = SchemaType.STRING,
         format = "date"
     )
-    LocalDate requestDate,
-
-    @Schema(
-        description = "Details of the underlying data request",
-        implementation = DataRequestDto.class
-    )
-    DataRequestDto dataRequest
+    LocalDate requestDate
 
 ) {
 }

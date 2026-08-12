@@ -3,6 +3,7 @@ package ch.agridata.agreement.persistence;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 
 import ch.agridata.common.persistence.BaseSearchRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -34,7 +35,8 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
-                + "WHERE cr.dataProducerUid IN :uids", ConsentRequestEntity.class
+                + "WHERE cr.dataProducerUid IN :uids "
+                + "ORDER BY cr.id", ConsentRequestEntity.class
         )
         .setParameter("uids", dataProducerUids)
         .getResultList();
@@ -86,6 +88,7 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
   public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerUids(UUID dataRequestId, List<String> dataProducerUids) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids",
+        Sort.by("id"),
         Map.of(
             "dataRequestId", dataRequestId,
             "dataProducerUids", dataProducerUids
