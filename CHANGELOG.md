@@ -1,3 +1,9 @@
+## [1.15.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.8...v1.15.0-rc.9) (2026-08-12)
+
+### Features
+
+* **product:** add consentRequired flag ([014ceb8](https://github.com/agridata-ch/backend/commit/014ceb8ed1ddfc1679ba0ebb9ee53c4e382ff050)), closes [DIGIB2-1553](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1553)
+
 ## [1.15.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.7...v1.15.0-rc.8) (2026-08-12)
 
 ### Bug Fixes
