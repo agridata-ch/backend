@@ -1,3 +1,9 @@
+## [1.15.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.7...v1.15.0-rc.8) (2026-08-12)
+
+### Bug Fixes
+
+* **health:** increase timeout because of identitas health check response latency ([69a1e8d](https://github.com/agridata-ch/backend/commit/69a1e8d776685a02ce9dba23822f67b24dcbdcb4)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
 ## [1.15.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.6...v1.15.0-rc.7) (2026-08-12)
 
 ### Bug Fixes
