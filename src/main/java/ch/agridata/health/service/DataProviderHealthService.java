@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataProviderHealthService {
 
-  private static final Duration PROBE_TIMEOUT = Duration.ofSeconds(3);
+  private static final Duration PROBE_TIMEOUT = Duration.ofSeconds(10);
 
   private final DataSourceSystemApi dataSourceSystemApi;
   private final Instance<DataProviderProbe> probes;
