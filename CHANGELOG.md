@@ -1,3 +1,9 @@
+## [1.15.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.10...v1.15.0-rc.11) (2026-08-13)
+
+### Bug Fixes
+
+* **mdc:** fix userid mdc field ([12e378b](https://github.com/agridata-ch/backend/commit/12e378b8a8f97beb70210aeb4b2d4eb83b426440))
+
 ## [1.15.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.9...v1.15.0-rc.10) (2026-08-13)
 
 ### Bug Fixes
