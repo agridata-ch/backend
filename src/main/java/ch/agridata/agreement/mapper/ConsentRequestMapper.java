@@ -1,6 +1,5 @@
 package ch.agridata.agreement.mapper;
 
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
@@ -39,10 +38,6 @@ public interface ConsentRequestMapper {
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
 
   ConsentRequestProducerViewV2Dto toConsentRequestProducerViewV2Dto(ConsentRequestEntity entity);
-
-  ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestEntity entity);
-
-  ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestConsumerViewV2Dto v2);
 
   @Mapping(target = "name", source = "uidName")
   ConsentRequestConsumerViewV2Dto toConsentRequestConsumerViewV2Dto(ConsentRequestEntity entity, String uidName);

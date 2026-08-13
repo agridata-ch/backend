@@ -8,7 +8,6 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agreement.api.ConsentRequestApi;
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
@@ -92,20 +91,6 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
         authorizedUids.stream().map(UidDto::uid).toList());
 
     return merge(existingConsentRequests, authorizedUids);
-  }
-
-  /**
-   * This method is deprecated, because it does not return the UIDs of equid owners. They don't have a KtIdP and need to be identified
-   * by their agateLoginId.
-   *
-   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(UUID, String, String)}
-   */
-  @Deprecated(since = "1.5.0")
-  @RolesAllowed(CONSUMER_ROLE)
-  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(UUID dataRequestId, String ktIdP) {
-    return getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null).stream()
-        .map(consentRequestMapper::toConsentRequestConsumerViewDto)
-        .toList();
   }
 
   @RolesAllowed(CONSUMER_ROLE)
