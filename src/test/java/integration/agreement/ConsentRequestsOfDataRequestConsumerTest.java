@@ -9,7 +9,6 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.agreement.controller.DataRequestController;
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -52,37 +51,6 @@ class ConsentRequestsOfDataRequestConsumerTest {
                 .name(CHE102000001.getUidName())
                 .dataProducerUid(CHE102000001.name())
                 .build()));
-  }
-
-  @Test
-  void givenConsumerUsesDeprecatedApi_whenMismatchingDataRequestIsRequested_thenNoConsentRequestsReturned() {
-    List<ConsentRequestConsumerViewDto> consentRequests = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
-        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01
-            + "/kt-id-p/" + TestUserEnum.PRODUCER_B.getKtIdP()
-            + "/consent-requests")
-        .then().statusCode(200)
-        .extract().as(new TypeRef<>() {
-        });
-
-    assertThat(consentRequests).usingRecursiveComparison().isEqualTo(emptyList());
-  }
-
-  @Test
-  void givenConsumerUsesDeprecatedApi_whenMatchingDataRequestIsRequested_thenConsentRequestsReturned() {
-    List<ConsentRequestConsumerViewDto> consentRequests = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
-        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.BIO_SUISSE_01
-            + "/kt-id-p/" + TestUserEnum.PRODUCER_B.getKtIdP()
-            + "/consent-requests")
-        .then().statusCode(200)
-        .extract().as(new TypeRef<>() {
-        });
-
-    assertThat(consentRequests).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(
-        TestDataLoader.of(consentRequestRepository).load(
-                ConsentRequest.BIO_SUISSE_01_CHE102000001,
-                ConsentRequest.BIO_SUISSE_01_CHE102000002).stream()
-            .map(consentRequestMapper::toConsentRequestConsumerViewDto)
-            .toList());
   }
 
   @Test

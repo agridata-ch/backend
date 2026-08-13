@@ -45,7 +45,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path(DataTransferController.PATH)
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "Data Transfer V2")
+@Tag(name = "Data Transfer")
 @RunOnVirtualThread
 public class DataTransferController {
   public static final String PATH = "/api/data-transfer/v2";

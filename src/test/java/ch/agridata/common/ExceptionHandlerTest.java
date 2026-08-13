@@ -11,7 +11,6 @@ import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
-import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -304,24 +303,6 @@ class ExceptionHandlerTest {
     assertThat(dto.type()).isEqualTo(ExceptionEnum.UID_MISSING);
     assertThat(dto.requestId()).isEqualTo("test-request-id");
     assertThat(dto.debugMessage()).isEqualTo(debug ? "uid missing for producer" : null);
-  }
-
-  @ParameterizedTest(name = "handleDataTransferFailedException, debug={0}")
-  @ValueSource(booleans = {false, true})
-  @SuppressWarnings("deprecation")
-  void handleDataTransferFailedException(boolean debug) {
-    exceptionHandler.returnDebug = debug;
-    DataTransferFailedException ex = new DataTransferFailedException(503, "upstream down");
-
-    Response response = exceptionHandler.handleDataTransferFailedException(ex);
-    ExternalServiceExceptionDto dto = (ExternalServiceExceptionDto) response.getEntity();
-
-    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
-    assertThat(dto.message()).isEqualTo("upstream down");
-    assertThat(dto.status()).isEqualTo(503);
-    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXTERNAL_SERVICE_ERROR);
-    assertThat(dto.requestId()).isEqualTo("test-request-id");
-    assertThat(dto.debugMessage()).isEqualTo(debug ? "upstream down" : null);
   }
 
   @ParameterizedTest(name = "handleExternalWebServiceException, debug={0}")

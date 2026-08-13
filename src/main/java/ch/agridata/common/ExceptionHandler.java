@@ -8,7 +8,6 @@ import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
-import ch.agridata.common.exceptions.DataTransferFailedException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -178,22 +177,6 @@ public class ExceptionHandler {
     return Response.status(ex.getResponse().getStatus())
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("Web exception", ex.getMessage()))
-        .build();
-  }
-
-  /**
-   * Handler kept for the deprecated {@link DataTransferFailedException}; remove together with the exception once all callers have
-   * migrated to {@link ch.agridata.common.exceptions.DataProviderException}.
-   *
-   * @deprecated Use {@link #handleDataProviderException(DataProviderException)} instead.
-   */
-  @Deprecated(since = "1.10.0")
-  @ServerExceptionMapper(DataTransferFailedException.class)
-  public Response handleDataTransferFailedException(DataTransferFailedException ex) {
-    log.error("DataTransferFailedException: {}", ex.getMessage(), ex);
-    return Response.status(Status.BAD_GATEWAY)
-        .type(MediaType.APPLICATION_JSON_TYPE)
-        .entity(createExternalServiceFailedResponse(ex.getMessage(), ex.getStatus(), ex.getMessage()))
         .build();
   }
 
