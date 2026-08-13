@@ -28,7 +28,7 @@ import org.jboss.logging.MDC;
 @Priority(Priorities.AUTHORIZATION + 200)
 public class ImpersonationHeaderFilter implements ContainerRequestFilter, ContainerResponseFilter {
   public static final String IMPERSONATION_HEADER = "X-Impersonated-AgateLoginId";
-  private static final String IMPERSONATION_MDC_FIELD = "userId";
+  private static final String IMPERSONATION_MDC_FIELD = "impersonatedAgridataUserId";
   private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final UserService userService;
 
@@ -62,7 +62,7 @@ public class ImpersonationHeaderFilter implements ContainerRequestFilter, Contai
               + ". Only producer users can be impersonated");
     }
 
-    MDC.put(IMPERSONATION_MDC_FIELD, userInfo.agateLoginId());
+    MDC.put(IMPERSONATION_MDC_FIELD, userInfo.userId());
     agridataSecurityIdentity.setImpersonatedAgateLoginId(userInfo.agateLoginId());
     agridataSecurityIdentity.setImpersonatedKtIdP(userInfo.ktIdP());
   }
