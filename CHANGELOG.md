@@ -1,3 +1,9 @@
+## [1.15.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.9...v1.15.0-rc.10) (2026-08-13)
+
+### Bug Fixes
+
+* **pom:** Fix language for maven test runs ([a99a313](https://github.com/agridata-ch/backend/commit/a99a31384e0499f108bec84e62a89c54a127ee34))
+
 ## [1.15.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.8...v1.15.0-rc.9) (2026-08-12)
 
 ### Features
