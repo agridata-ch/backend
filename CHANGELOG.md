@@ -1,3 +1,9 @@
+## [1.15.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.12...v1.15.0-rc.13) (2026-08-14)
+
+### Bug Fixes
+
+* **datatransfer:** introduce ConsentRequestFundamentalViewEntity to speed up data transfers ([391dcc0](https://github.com/agridata-ch/backend/commit/391dcc06cf7c5c9791300970ed5bd71399b07527)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
 ## [1.15.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.11...v1.15.0-rc.12) (2026-08-14)
 
 ### Bug Fixes
