@@ -1,3 +1,9 @@
+## [1.15.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.11...v1.15.0-rc.12) (2026-08-14)
+
+### Bug Fixes
+
+* **datatransfer:** improve performance of datatransfer ([2597265](https://github.com/agridata-ch/backend/commit/2597265b95357bf06d46a616b6dbc25d63e824e9)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
 ## [1.15.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.10...v1.15.0-rc.11) (2026-08-13)
 
 ### Bug Fixes
