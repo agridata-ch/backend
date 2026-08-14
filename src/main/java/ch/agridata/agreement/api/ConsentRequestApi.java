@@ -28,9 +28,11 @@ public interface ConsentRequestApi {
   List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(@Valid @NotNull UUID productId,
                                                                             @Valid @NotNull LocalDateTime since);
 
-  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersUids(@Valid @NotNull UUID dataRequestId,
-                                                                                                @NotNull List<@Valid String> producerUids);
+  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+      @NotNull List<@Valid UUID> dataRequestIds,
+      @NotNull List<@Valid String> producerUids);
 
-  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersBurs(@Valid @NotNull UUID dataRequestId,
-                                                                                                @NotNull List<@Valid String> producerBurs);
+  List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+      @NotNull List<@Valid UUID> dataRequestIds,
+      @NotNull List<@Valid String> producerBurs);
 }

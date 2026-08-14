@@ -52,6 +52,18 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     ).list();
   }
 
+  public List<UUID> findActiveDataRequestIdsByConsumerAndProduct(String dataConsumerUid, UUID productId) {
+    return getEntityManager().createQuery(
+            "SELECT DISTINCT dr.id FROM DataRequestEntity dr JOIN dr.dataProducts dp "
+                + "WHERE dr.dataConsumerUid = :dataConsumerUid "
+                + "AND dr.stateCode = :stateCode "
+                + "AND dp.dataProductId = :productId", UUID.class)
+        .setParameter(DATA_CONSUMER_UID, dataConsumerUid)
+        .setParameter("stateCode", DataRequestEntity.DataRequestStateEnum.ACTIVE)
+        .setParameter("productId", productId)
+        .getResultList();
+  }
+
   public List<DataRequestEntity> findAllByStates(Set<DataRequestEntity.DataRequestStateEnum> states) {
     return find(
         "stateCode in (:state_codes)",
