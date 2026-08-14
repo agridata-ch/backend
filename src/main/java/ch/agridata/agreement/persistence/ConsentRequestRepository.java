@@ -2,11 +2,7 @@ package ch.agridata.agreement.persistence;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 
-import ch.agridata.common.dto.PageResponseDto;
-import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.persistence.BaseSearchRepository;
-import ch.agridata.common.persistence.SearchField;
-import ch.agridata.common.persistence.SearchSpec;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -97,30 +93,6 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).list();
   }
 
-  public List<ConsentRequestEntity> findGrantedByDataRequestIdsAndDataProducerBurs(
-      List<UUID> dataRequestIds, List<String> dataProducerBurs) {
-    return find(
-        "dataRequest.id IN :dataRequestIds and dataProducerBur IN :dataProducerBurs and stateCode = :stateCode",
-        Map.of(
-            "dataRequestIds", dataRequestIds,
-            "dataProducerBurs", dataProducerBurs,
-            "stateCode", GRANTED
-        )
-    ).list();
-  }
-
-  public List<ConsentRequestEntity> findGrantedByDataRequestIdsAndDataProducerUids(
-      List<UUID> dataRequestIds, List<String> dataProducerUids) {
-    return find(
-        "dataRequest.id IN :dataRequestIds and dataProducerUid IN :dataProducerUids and stateCode = :stateCode",
-        Map.of(
-            "dataRequestIds", dataRequestIds,
-            "dataProducerUids", dataProducerUids,
-            "stateCode", GRANTED
-        )
-    ).list();
-  }
-
   public List<String> findGrantedConsentRequestUidsForProductOfConsumerSince(
       UUID productId,
       String dataConsumerUid,
@@ -141,21 +113,6 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .setParameter("stateCode", GRANTED)
         .setParameter("since", since)
         .getResultList();
-  }
-
-  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(
-      ResourceQueryDto resourceQueryDto,
-      UUID dataRequestId,
-      LocalDateTime lastModifiedFrom
-  ) {
-    return findPage(
-        resourceQueryDto,
-        SearchSpec.builder()
-            .baseWhere("dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom")
-            .baseParams(Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom))
-            .sortableFields(Map.of("modifiedAt", SearchField.simple("modifiedAt")))
-            .build()
-    );
   }
 
   public List<UUID> findIdsToTerminateByDataProducerBurs(List<String> burs, int batchSize) {
