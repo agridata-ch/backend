@@ -106,10 +106,7 @@ public class DataRequestQueryService implements DataRequestApi {
   }
 
   @Override
-  public List<DataRequestDto> getActiveDataRequestsOfConsumer(String consumerUid) {
-    return dataRequestRepository.findByDataConsumerUid(consumerUid).stream()
-        .filter(dr -> DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dr.getStateCode()))
-        .map(dataRequestEnrichmentService::toEnrichedDto)
-        .toList();
+  public List<UUID> getActiveDataRequestIdsForConsumerAndProduct(String consumerUid, UUID productId) {
+    return dataRequestRepository.findActiveDataRequestIdsByConsumerAndProduct(consumerUid, productId);
   }
 }

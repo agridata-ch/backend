@@ -3,7 +3,6 @@ package ch.agridata.datatransferv2.service.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
@@ -51,8 +50,8 @@ class EnsureValidConsentForProducerBursTaskTest {
   void givenNoConsentGranted_whenApply_thenConsentNotGrantedExceptionIsThrown() {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1));
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+        any(), any()))
         .thenReturn(List.of());
 
     assertThatThrownBy(() -> task.apply(context))
@@ -69,8 +68,8 @@ class EnsureValidConsentForProducerBursTaskTest {
     var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1, PRODUCER_BUR_2));
     var consent = createConsent(PRODUCER_BUR_1, REQUESTED_RANGE_FROM.minusDays(30), RANGE_UNTIL_MAX);
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+        any(), any()))
         .thenReturn(List.of(consent));
 
     assertThatThrownBy(() -> task.apply(context))
@@ -87,8 +86,8 @@ class EnsureValidConsentForProducerBursTaskTest {
     var consent1 = createConsent(PRODUCER_BUR_1, REQUESTED_RANGE_FROM.minusDays(30), RANGE_UNTIL_MAX);
     var consent2 = createConsent(PRODUCER_BUR_2, REQUESTED_RANGE_FROM.minusDays(60), RANGE_UNTIL_MAX);
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+        any(), any()))
         .thenReturn(List.of(consent1, consent2));
 
     assertThat(task.apply(context)).isSameAs(context);
@@ -104,8 +103,8 @@ class EnsureValidConsentForProducerBursTaskTest {
         .map(range -> createConsent(PRODUCER_BUR_1, range[0], range[1]))
         .toList();
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+        any(), any()))
         .thenReturn(consents);
 
     if (expectValid) {

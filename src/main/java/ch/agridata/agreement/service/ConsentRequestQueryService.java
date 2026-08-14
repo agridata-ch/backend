@@ -15,7 +15,6 @@ import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
-import ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.dto.PageResponseDto;
@@ -172,19 +171,17 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   }
 
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersUids(UUID dataRequestId,
-                                                                                                       List<String> producerUids) {
-    return consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, producerUids).stream()
-        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
+                                                                                                        List<String> producerUids) {
+    return consentRequestRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
 
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersBurs(UUID dataRequestId,
-                                                                                                       List<String> producerBurs) {
-    return consentRequestRepository.findByDataRequestIdAndDataProducerBurs(dataRequestId, producerBurs).stream()
-        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(List<UUID> dataRequestIds,
+                                                                                                        List<String> producerBurs) {
+    return consentRequestRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }

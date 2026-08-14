@@ -97,12 +97,26 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).list();
   }
 
-  public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
+  public List<ConsentRequestEntity> findGrantedByDataRequestIdsAndDataProducerBurs(
+      List<UUID> dataRequestIds, List<String> dataProducerBurs) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs",
+        "dataRequest.id IN :dataRequestIds and dataProducerBur IN :dataProducerBurs and stateCode = :stateCode",
         Map.of(
-            "dataRequestId", dataRequestId,
-            "dataProducerBurs", dataProducerBurs
+            "dataRequestIds", dataRequestIds,
+            "dataProducerBurs", dataProducerBurs,
+            "stateCode", GRANTED
+        )
+    ).list();
+  }
+
+  public List<ConsentRequestEntity> findGrantedByDataRequestIdsAndDataProducerUids(
+      List<UUID> dataRequestIds, List<String> dataProducerUids) {
+    return find(
+        "dataRequest.id IN :dataRequestIds and dataProducerUid IN :dataProducerUids and stateCode = :stateCode",
+        Map.of(
+            "dataRequestIds", dataRequestIds,
+            "dataProducerUids", dataProducerUids,
+            "stateCode", GRANTED
         )
     ).list();
   }

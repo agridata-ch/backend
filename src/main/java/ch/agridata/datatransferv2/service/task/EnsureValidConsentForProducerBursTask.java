@@ -43,10 +43,10 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
     log.debug("Checking consent for producerBurs={}, dataRequestIds={}, requestedDateRange={}",
         producerBurs, validDataRequestIds, requestedDateRange);
 
-    Map<String, List<ConsentRequestFundamentalViewDto>> grantedConsentsByBur = validDataRequestIds.stream()
-        .flatMap(dataRequestId -> consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersBurs(
-            dataRequestId, producerBurs.stream().toList()).stream())
-        .collect(Collectors.groupingBy(ConsentRequestFundamentalViewDto::dataProducerBur));
+    Map<String, List<ConsentRequestFundamentalViewDto>> grantedConsentsByBur =
+        consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+                validDataRequestIds, producerBurs.stream().toList()).stream()
+            .collect(Collectors.groupingBy(ConsentRequestFundamentalViewDto::dataProducerBur));
 
     Set<String> bursWithSufficientConsent = producerBurs.stream()
         .filter(bur -> isRangeFullyCovered(grantedConsentsByBur.getOrDefault(bur, List.of()), requestedDateRange))
