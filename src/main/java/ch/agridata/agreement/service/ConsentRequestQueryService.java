@@ -15,12 +15,12 @@ import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
+import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewRepository;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.product.api.DataProductApi;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.Nullable;
@@ -47,13 +47,13 @@ import lombok.RequiredArgsConstructor;
 public class ConsentRequestQueryService implements ConsentRequestApi {
 
   private final ConsentRequestRepository consentRequestRepository;
+  private final ConsentRequestFundamentalViewRepository consentRequestFundamentalViewRepository;
   private final ConsentRequestMapper consentRequestMapper;
   private final AgridataSecurityIdentity identity;
   private final UserApi userApi;
   private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestQueryService dataRequestQueryService;
-  private final DataProductApi dataProductApi;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
@@ -162,7 +162,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     if (!dataRequestQueryService.isAssignedToCurrentProvider(dataRequestId)) {
       throw new NotFoundException(dataRequestId.toString());
     }
-    var pagedEntities = consentRequestRepository.findByDataRequestIdAndLastModifiedFrom(
+    var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
         lastModifiedFrom);
@@ -173,7 +173,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   @Override
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
                                                                                                         List<String> producerUids) {
-    return consentRequestRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
+    return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
@@ -181,7 +181,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   @Override
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(List<UUID> dataRequestIds,
                                                                                                         List<String> producerBurs) {
-    return consentRequestRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()
+    return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
