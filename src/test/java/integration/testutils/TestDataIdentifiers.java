@@ -36,6 +36,8 @@ public class TestDataIdentifiers {
     public static final Identifier<DataRequestEntity> IP_SUISSE_01 = id("98a35e61-0162-4986-9e9e-ee5c65f86316");
     public static final Identifier<DataRequestEntity> IP_SUISSE_02 = id("341f558a-781c-4eb5-bab7-c2f39216b9f2");
     public static final Identifier<DataRequestEntity> BLV_1 = id("218bca06-e792-4855-bcd9-e3559cea3d18");
+    /** Acontrol data request of Bio Suisse, contains BUR based data products only. */
+    public static final Identifier<DataRequestEntity> ACONTROL_BIO_SUISSE = id("9b013372-a0cc-4193-928f-129c9402f415");
   }
 
   public static class ConsentRequest {
