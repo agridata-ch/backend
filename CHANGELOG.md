@@ -1,3 +1,9 @@
+## [1.15.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.13...v1.15.0-rc.14) (2026-08-18)
+
+### Features
+
+* **bur:** Split consent request aggregate endpoint into summary-list and details ([7d615a9](https://github.com/agridata-ch/backend/commit/7d615a912fb89e94daf717285b1ca4142761b818)), closes [DIGIB2-1600](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1600)
+
 ## [1.15.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.12...v1.15.0-rc.13) (2026-08-14)
 
 ### Bug Fixes
