@@ -1,3 +1,9 @@
+## [1.15.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.15...v1.15.0-rc.16) (2026-08-18)
+
+### Features
+
+* **bur:** Add BURs to consent request creation ([09b53ae](https://github.com/agridata-ch/backend/commit/09b53aed7cb085d6c43df6bf8a1b327df9ed9b49))
+
 ## [1.15.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.14...v1.15.0-rc.15) (2026-08-18)
 
 ### Features
