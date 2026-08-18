@@ -52,6 +52,16 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
+  public List<ConsentRequestEntity> findActiveByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs and uidBurRelationUntil is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerBurs", dataProducerBurs
+        )
+    ).list();
+  }
+
   public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(
       String dataConsumerUid,
       String dataProducerUid,
@@ -74,15 +84,18 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   }
 
-  public Optional<ConsentRequestEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+  /**
+   * Finds the UID-only consent request, i.e. the one without a BUR. BUR based consent requests share the same data request + UID and must
+   * not be returned here.
+   */
+  public Optional<ConsentRequestEntity> findNonBurByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid",
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and dataProducerBur is null",
         Map.of(
             "dataRequestId", dataRequestId,
             "dataProducerUid", dataProducerUid
         )
     ).firstResultOptional();
-
   }
 
   public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerUids(UUID dataRequestId, List<String> dataProducerUids) {
