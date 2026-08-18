@@ -57,6 +57,10 @@ public interface DataProductMapper {
   @Mapping(target = "restClientId", source = "restClient.id")
   DataProductUpdateDto toUpdateDto(DataProductEntity entity);
 
+  // NullValuePropertyMappingStrategy.IGNORE gives this PATCH mapping its partial-update semantics: a null property in the incoming DTO
+  // is skipped, leaving the entity's current value untouched. This is why PATCH cannot clear a field (null means "leave unchanged",
+  // not "set to null") and differs from updateEntity above, which overwrites every mapped property including with
+  // null (full replace, used for PUT).
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "deprecatedSince", ignore = true)

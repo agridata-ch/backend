@@ -11,7 +11,9 @@ import ch.agridata.product.mapper.DataProductMapper;
 import ch.agridata.product.persistence.DataProductEntity;
 import ch.agridata.product.persistence.DataProductRepository;
 import ch.agridata.product.persistence.DataProductStateEnum;
+import ch.agridata.product.persistence.DataSourceSystemEntity;
 import ch.agridata.product.persistence.DataSourceSystemRepository;
+import ch.agridata.product.persistence.RestClientEntity;
 import ch.agridata.product.persistence.RestClientRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,7 +27,6 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
@@ -52,9 +53,8 @@ public class DataProductMutationService {
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
   public DataProductDto addDataProductDraftAsProvider(DataProductUpdateDto updateDto) {
-    var dataSourceSystem =
-        resolveForCurrentProvider(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdAndProviderUidOptional);
-    var restClient = resolveForCurrentProvider(updateDto.restClientId(), restClientRepository::findByIdAndProviderUidOptional);
+    var dataSourceSystem = asCurrentProvider().dataSourceSystem().apply(updateDto.dataSourceSystemId());
+    var restClient = asCurrentProvider().restClient().apply(updateDto.restClientId());
 
     var entity = DataProductEntity.builder()
         .dataSourceSystem(dataSourceSystem)
@@ -69,8 +69,8 @@ public class DataProductMutationService {
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
   public DataProductDto addDataProductDraftAsAdmin(DataProductUpdateDto updateDto) {
-    var dataSourceSystem = resolve(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdOptional);
-    var restClient = resolve(updateDto.restClientId(), restClientRepository::findByIdOptional);
+    var dataSourceSystem = asAdmin().dataSourceSystem().apply(updateDto.dataSourceSystemId());
+    var restClient = asAdmin().restClient().apply(updateDto.restClientId());
 
     var entity = DataProductEntity.builder()
         .dataSourceSystem(dataSourceSystem)
@@ -84,62 +84,47 @@ public class DataProductMutationService {
 
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
-  public DataProductDto patchDataProductAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    validate(updateDto, ValidationSchemaGenerator.PatchAsProvider.class);
-
-    var entity = resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional);
-
-    verifyState(entity, DataProductStateEnum.ACTIVE);
-
-    if (updateDto.restClientId() != null) {
-      var restClient = resolveForCurrentProvider(updateDto.restClientId(), restClientRepository::findByIdAndProviderUidOptional);
-      entity.setRestClient(restClient);
-    }
-
-    return patch(updateDto, entity);
+  public DataProductDto patchActiveDataProductAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    return patchActive(dataProductId, updateDto, asCurrentProvider(), ValidationSchemaGenerator.PatchAsProvider.class);
   }
 
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
-  public DataProductDto patchDataProductAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    validate(updateDto, ValidationSchemaGenerator.PatchAsAdmin.class);
-
-    var entity = resolve(dataProductId, dataProductRepository::findByIdOptional);
-
-    verifyState(entity, DataProductStateEnum.ACTIVE);
-
-    if (updateDto.restClientId() != null) {
-      var restClient = resolve(updateDto.restClientId(), restClientRepository::findByIdOptional);
-      entity.setRestClient(restClient);
-    }
-
-    return patch(updateDto, entity);
+  public DataProductDto patchActiveDataProductAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    return patchActive(dataProductId, updateDto, asAdmin(), ValidationSchemaGenerator.PatchAsAdmin.class);
   }
 
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
   public DataProductDto updateDataProductDraftAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    var entity = resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional);
-    verifyState(entity, DataProductStateEnum.DRAFT);
-
-    var dataSourceSystem =
-        resolveForCurrentProvider(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdAndProviderUidOptional);
-    var restClient = resolveForCurrentProvider(updateDto.restClientId(), restClientRepository::findByIdAndProviderUidOptional);
-
-    entity.setDataSourceSystem(dataSourceSystem);
-    entity.setRestClient(restClient);
-
-    return applyAndPersist(updateDto, entity);
+    return updateDraft(dataProductId, updateDto, asCurrentProvider());
   }
 
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
   public DataProductDto updateDataProductDraftAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    var entity = resolve(dataProductId, dataProductRepository::findByIdOptional);
+    return updateDraft(dataProductId, updateDto, asAdmin());
+  }
+
+  private DataProductDto patchActive(UUID dataProductId, DataProductUpdateDto updateDto, Resolver resolver, Class<?> validationGroup) {
+    validate(updateDto, validationGroup);
+
+    var entity = resolver.dataProduct().apply(dataProductId);
+    verifyState(entity, DataProductStateEnum.ACTIVE);
+
+    if (updateDto.restClientId() != null) {
+      entity.setRestClient(resolver.restClient().apply(updateDto.restClientId()));
+    }
+
+    return patch(updateDto, entity);
+  }
+
+  private DataProductDto updateDraft(UUID dataProductId, DataProductUpdateDto updateDto, Resolver resolver) {
+    var entity = resolver.dataProduct().apply(dataProductId);
     verifyState(entity, DataProductStateEnum.DRAFT);
 
-    var dataSourceSystem = resolve(updateDto.dataSourceSystemId(), dataSourceSystemRepository::findByIdOptional);
-    var restClient = resolve(updateDto.restClientId(), restClientRepository::findByIdOptional);
+    var dataSourceSystem = resolver.dataSourceSystem().apply(updateDto.dataSourceSystemId());
+    var restClient = resolver.restClient().apply(updateDto.restClientId());
 
     entity.setDataSourceSystem(dataSourceSystem);
 
@@ -185,21 +170,6 @@ public class DataProductMutationService {
     }
   }
 
-  private <T> T resolve(UUID id, Function<UUID, Optional<T>> finder) {
-    if (id == null) {
-      return null;
-    }
-    return finder.apply(id).orElseThrow(() -> new NotFoundException(id.toString()));
-  }
-
-  private <T> T resolveForCurrentProvider(UUID id, BiFunction<UUID, String, Optional<T>> finder) {
-    if (id == null) {
-      return null;
-    }
-    var uid = agridataSecurityIdentity.getUidOrElseThrow();
-    return finder.apply(id, uid).orElseThrow(() -> new NotFoundException(id.toString()));
-  }
-
   private void validate(DataProductUpdateDto dto, Class<?> group) {
     Set<ConstraintViolation<DataProductUpdateDto>> violations = validator.validate(dto, group);
     if (!violations.isEmpty()) {
@@ -210,18 +180,46 @@ public class DataProductMutationService {
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
   public void deleteDataProductDraftAsProvider(@NotNull UUID dataProductId) {
-    deleteDataProductDraft(resolveForCurrentProvider(dataProductId, dataProductRepository::findByIdAndDataProviderUidOptional));
+    deleteDataProductDraft(asCurrentProvider().dataProduct().apply(dataProductId));
   }
 
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
   public void deleteDataProductDraftAsAdmin(@NotNull UUID dataProductId) {
-    deleteDataProductDraft(resolve(dataProductId, dataProductRepository::findByIdOptional));
+    deleteDataProductDraft(asAdmin().dataProduct().apply(dataProductId));
   }
 
   private void deleteDataProductDraft(DataProductEntity entity) {
     verifyState(entity, DataProductStateEnum.DRAFT);
     dataProductDocumentService.deleteAllDataProductDocuments(entity.getId());
     dataProductRepository.delete(entity);
+  }
+
+  private record Resolver(
+      Function<UUID, DataProductEntity> dataProduct,
+      Function<UUID, DataSourceSystemEntity> dataSourceSystem,
+      Function<UUID, RestClientEntity> restClient) {
+  }
+
+  private Resolver asCurrentProvider() {
+    var uid = agridataSecurityIdentity.getUidOrElseThrow();
+    return new Resolver(
+        id -> resolve(id, i -> dataProductRepository.findByIdAndDataProviderUidOptional(i, uid)),
+        id -> resolve(id, i -> dataSourceSystemRepository.findByIdAndProviderUidOptional(i, uid)),
+        id -> resolve(id, i -> restClientRepository.findByIdAndProviderUidOptional(i, uid)));
+  }
+
+  private Resolver asAdmin() {
+    return new Resolver(
+        id -> resolve(id, dataProductRepository::findByIdOptional),
+        id -> resolve(id, dataSourceSystemRepository::findByIdOptional),
+        id -> resolve(id, restClientRepository::findByIdOptional));
+  }
+
+  private <T> T resolve(UUID id, Function<UUID, Optional<T>> finder) {
+    if (id == null) {
+      return null;
+    }
+    return finder.apply(id).orElseThrow(() -> new NotFoundException(id.toString()));
   }
 }
