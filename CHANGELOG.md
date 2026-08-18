@@ -1,3 +1,13 @@
+## [1.15.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.14...v1.15.0-rc.15) (2026-08-18)
+
+### Features
+
+* **notification:** Fix email templates for data request notifications ([caf3064](https://github.com/agridata-ch/backend/commit/caf30642426825c1a2ee721f90a96a97752c4c28))
+
+### Bug Fixes
+
+* **product:** refactor DataProductMutationService ([8c81151](https://github.com/agridata-ch/backend/commit/8c8115160cc2565afb1e3872633a52ae6e83768c)), closes [DIGIB2-1606](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1606)
+
 ## [1.15.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.13...v1.15.0-rc.14) (2026-08-18)
 
 ### Features
