@@ -145,7 +145,7 @@ public class DataProductControllerV2 {
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "updateDataProductDraft",
-      description = "Updates the details of an existing data product."
+      description = "Updates the details of an existing DRAFT data product."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -167,8 +167,9 @@ public class DataProductControllerV2 {
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "patchDataProduct",
-      description = "Partially updates an existing data product. Each provided field is validated against the data product's current "
-          + "state and the caller's role. If any field cannot be updated, the entire request is rejected and no changes are applied."
+      description =
+          "Partially updates an existing ACTIVE data product. Each provided field is validated against the data product's current "
+              + "state and the caller's role. If any field cannot be updated, the entire request is rejected and no changes are applied."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -179,8 +180,8 @@ public class DataProductControllerV2 {
       @Valid DataProductUpdateDto dataProductUpdateDto
   ) {
     return switch (actingRoleHolder.getRole()) {
-      case PROVIDER -> dataProductMutationService.patchDataProductAsProvider(dataProductId, dataProductUpdateDto);
-      case ADMIN -> dataProductMutationService.patchDataProductAsAdmin(dataProductId, dataProductUpdateDto);
+      case PROVIDER -> dataProductMutationService.patchActiveDataProductAsProvider(dataProductId, dataProductUpdateDto);
+      case ADMIN -> dataProductMutationService.patchActiveDataProductAsAdmin(dataProductId, dataProductUpdateDto);
       default -> throw new ForbiddenException();
     };
   }

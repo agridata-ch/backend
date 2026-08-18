@@ -12,12 +12,26 @@ import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Represents the DataProductUpdateDto, a data transfer object used to carry information
- * related to the creation and update of a data product. The fields in this record define various
- * properties and configurations needed for identifying and interacting with a specific
- * data product.
+ * Single request body shared by every data-product mutation: create (POST), full replace of a draft (PUT) and partial update of an
+ * active product (PATCH). The rules for <em>which</em> fields may be set are not hard-coded per endpoint but expressed through Bean
+ * Validation groups, so the same record can serve all three verbs:
  *
- * @CommentLastReviewed 2026-07-01
+ * <ul>
+ *   <li><b>Default group (no {@code groups} attribute)</b> &ndash; format checks such as {@code @Size} and nested {@code @Valid} that
+ *       always apply, on every create, update and patch.</li>
+ *   <li><b>{@link ValidationSchemaGenerator.Submit}</b> &ndash; completeness ({@code @NotNull}): the fields that must be present before a
+ *       product can go live. This is <em>not</em> checked while the product is a draft, but only at the {@code DRAFT -> ACTIVE}
+ *       transition (activation). A draft may therefore be saved incomplete via POST/PUT and completed later.</li>
+ *   <li><b>{@link ValidationSchemaGenerator.PatchAsProvider} / {@link ValidationSchemaGenerator.PatchAsAdmin}</b> &ndash; immutability
+ *       rules for PATCH, which is only allowed on an <em>active</em> product. A {@code @Null} in one of these groups marks a field that
+ *       the given role may no longer change once the product is active (admins may change more than providers). A field without such a
+ *       {@code @Null} stays editable while active.</li>
+ * </ul>
+ *
+ * <p>PUT is restricted to draft products and PATCH to active products (enforced in the service layer); the validation group applied to
+ * a given request follows directly from that split.
+ *
+ * @CommentLastReviewed 2026-08-18
  */
 @Schema(description = "Data transfer object representing a data product")
 @Builder
@@ -25,6 +39,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Name of the data product"
     )
+    // Editable while active by admins, but locked for providers (only @Null for PatchAsProvider).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Valid
@@ -33,6 +48,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Description of the data product"
     )
+    // Editable while active by admins, but locked for providers (only @Null for PatchAsProvider).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Valid
@@ -42,6 +58,7 @@ public record DataProductUpdateDto(
         description = "UUID of DataSourceSystem",
         examples = "5335d715-e95c-4777-a424-ab73f2ff5618"
     )
+    // Bound at draft time; immutable once active for every role (@Null for both patch groups).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsAdmin.class)
@@ -107,6 +124,7 @@ public record DataProductUpdateDto(
         description = "If a consent is required for this data product",
         examples = "true"
     )
+    // Bound at draft time; immutable once active for every role (@Null for both patch groups).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsAdmin.class)
