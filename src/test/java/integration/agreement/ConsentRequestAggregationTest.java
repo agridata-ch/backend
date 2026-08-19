@@ -112,7 +112,7 @@ class ConsentRequestAggregationTest {
 
     assertThat(bioSuisse01.consentRequests())
         .extracting(ConsentRequestProducerViewV2Dto::id)
-        .containsExactly(
+        .containsExactlyInAnyOrder(
             TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001.uuid(),
             TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003.uuid()
         );

@@ -151,6 +151,7 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     ('b4441b32-dfe9-4687-8f50-3cc3d6c5ad01'::uuid, false, NOW(), NOW(), 'ZZZ100000087', 'Z10000315', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
 
     -- Data Request: 9b013372-a0cc-4193-928f-129c9402f415
+    ('b0cc1e17-038d-4a29-9cbc-901b2abe8aef'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', '9b013372-a0cc-4193-928f-129c9402f415'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
     ('367b1e87-87a1-489e-8dac-32b7443f03b2'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910002', 'GRANTED', '9b013372-a0cc-4193-928f-129c9402f415'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
 
     -- Data Request: dc7dbc72-084c-451f-aaf9-7db7561d157d
@@ -179,6 +180,7 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     ('01c69c9a-54e2-4966-9654-ef2955011941'::uuid, false, NOW(), NOW(), 'ZZZ100000087', 'Z10000315', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
 
     -- Data Request: 552ade2e-c5e3-4054-ab78-e64cd4c221c0
+    ('64525ccf-a4cb-4ec7-b147-91e71a5f356a'::uuid, false, NOW(), NOW(), 'CHE101000001',null,'GRANTED', '552ade2e-c5e3-4054-ab78-e64cd4c221c0'::uuid, '2026-05-26 14:33:06'::timestamp,'2026-05-26 14:48:50'::timestamp,NULL::timestamp,NULL::timestamp),
     ('ef044657-5060-4f06-aa8f-79baedba45a7'::uuid, false, NOW(), NOW(), 'CHE101000001','99910002','GRANTED', '552ade2e-c5e3-4054-ab78-e64cd4c221c0'::uuid, '2026-05-26 14:33:06'::timestamp,'2026-05-26 14:48:50'::timestamp,'2000-01-01 00:00:00'::timestamp,NULL::timestamp);
 
     -- ===============================================

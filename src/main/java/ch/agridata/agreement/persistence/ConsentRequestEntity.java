@@ -85,6 +85,10 @@ public class ConsentRequestEntity extends AuditableEntity {
     return lastStateChangeDate == null || lastStateChangeDate.isBefore(migratedFromMafDate);
   }
 
+  public boolean isBurConsentRequest() {
+    return dataProducerBur != null;
+  }
+
   /**
    * Lists the possible states of a consent request.
    *

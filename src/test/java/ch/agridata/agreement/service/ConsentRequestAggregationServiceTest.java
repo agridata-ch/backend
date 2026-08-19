@@ -77,14 +77,14 @@ class ConsentRequestAggregationServiceTest {
 
   @Test
   void givenAuthorizedUidAndNoConsentRequests_whenGetAggregations_thenReturnEmptyList() {
-    when(consentRequestRepository.findByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of());
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of());
 
     assertThat(service.getConsentRequestAggregationsAsCurrentDataProducer(AUTH_UID)).isEmpty();
   }
 
   @Test
   void givenConsentRequestsForMultipleDataRequests_whenGetAggregations_thenReturnOneAggregationPerDataRequest() {
-    when(consentRequestRepository.findByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
         consentRequest(CR1, dataRequest(DR1), dateTime(2)),
         consentRequest(CR2, dataRequest(DR2), dateTime(4))
     ));
@@ -100,7 +100,7 @@ class ConsentRequestAggregationServiceTest {
   void givenAggregations_whenGetAggregations_thenSortedByRequestDateDescendingThenById() {
     var dataRequestA = dataRequest(DR1);
     var dataRequestB = dataRequest(DR2);
-    when(consentRequestRepository.findByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
         // DR1 latest request date February, DR2 latest request date April
         consentRequest(CR1, dataRequestA, dateTime(2)),
         consentRequest(CR2, dataRequestB, dateTime(4))
@@ -117,7 +117,7 @@ class ConsentRequestAggregationServiceTest {
   void givenAggregationsWithEqualRequestDate_whenGetAggregations_thenSortedById() {
     var dataRequestA = dataRequest(DR1);
     var dataRequestB = dataRequest(DR2);
-    when(consentRequestRepository.findByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List.of(AUTH_UID))).thenReturn(List.of(
         consentRequest(CR2, dataRequestB, dateTime(2)),
         consentRequest(CR1, dataRequestA, dateTime(2))
     ));
@@ -138,7 +138,7 @@ class ConsentRequestAggregationServiceTest {
 
   @Test
   void givenNoConsentRequestsForDataRequest_whenGetAggregation_thenThrowNotFound() {
-    when(consentRequestRepository.findByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID))).thenReturn(List.of());
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(DR1, AUTH_UID)).thenReturn(List.of());
 
     assertThatThrownBy(() -> service.getConsentRequestAggregationAsCurrentDataProducer(AUTH_UID, DR1))
         .isInstanceOf(NotFoundException.class);
@@ -148,7 +148,7 @@ class ConsentRequestAggregationServiceTest {
   void givenAuthorizedUidAndConsentRequests_whenGetAggregation_thenReturnAggregationWithEnrichedDataRequest() {
     var dataRequest = dataRequest(DR1);
     var enrichedDataRequest = DataRequestDto.builder().id(DR1).build();
-    when(consentRequestRepository.findByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID)))
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(DR1, AUTH_UID))
         .thenReturn(List.of(consentRequest(CR1, dataRequest, dateTime(2))));
     when(dataRequestEnrichmentService.toEnrichedDto(dataRequest)).thenReturn(enrichedDataRequest);
 

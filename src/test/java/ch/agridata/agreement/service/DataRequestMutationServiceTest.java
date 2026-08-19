@@ -1,6 +1,6 @@
 package ch.agridata.agreement.service;
 
-import static ch.agridata.agreement.service.ConsentRequestMutationServiceTest.UID1;
+import static ch.agridata.agreement.service.ConsentRequestCreationServiceTest.UID1;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static org.assertj.core.api.Assertions.assertThat;
