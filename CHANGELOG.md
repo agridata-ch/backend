@@ -1,3 +1,9 @@
+## [1.15.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.17...v1.15.0-rc.18) (2026-08-19)
+
+### Features
+
+* **datatransfer:** remove deprecated endpoints ([0118c81](https://github.com/agridata-ch/backend/commit/0118c817dadb2056ca91bb70abc92353271760ac))
+
 ## [1.15.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.16...v1.15.0-rc.17) (2026-08-19)
 
 ### Features
