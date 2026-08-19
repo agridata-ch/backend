@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
 
 class SoapEnvelopeSupportTest {
 
-  private static final BigInteger BLW_UID = new BigInteger("146680598");
+  private static final BigInteger BLW_UID = new BigInteger("113614519");
 
   private SoapEnvelopeSupport support;
 
@@ -66,7 +66,7 @@ class SoapEnvelopeSupportTest {
         .as("GetByUID bound to the UID-WSE namespace")
         .isEqualTo(1);
     assertThat(firstElementText(document, "uidOrganisationIdCategorie")).isEqualTo("CHE");
-    assertThat(firstElementText(document, "uidOrganisationId")).isEqualTo("146680598");
+    assertThat(firstElementText(document, "uidOrganisationId")).isEqualTo("113614519");
   }
 
   private static Document parseNamespaceAware(String xml) {
@@ -87,7 +87,7 @@ class SoapEnvelopeSupportTest {
 
   @Test
   void givenRealResponseWhenUnwrapBodyThenParsesOrganisation() throws IOException {
-    String responseXml = loadResponse("CHE146680598-blw.xml");
+    String responseXml = loadResponse("CHE113614519-blw.xml");
 
     GetByUIDResponse response = support.unwrapBody(responseXml, GetByUIDResponse.class);
 
@@ -102,7 +102,7 @@ class SoapEnvelopeSupportTest {
 
   @Test
   void givenRealResponseWhenUnwrapBodyThenBindsAddressIncludingZipElementRefs() throws IOException {
-    String responseXml = loadResponse("CHE146680598-blw.xml");
+    String responseXml = loadResponse("CHE113614519-blw.xml");
 
     GetByUIDResponse response = support.unwrapBody(responseXml, GetByUIDResponse.class);
 
