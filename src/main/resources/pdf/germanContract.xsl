@@ -37,9 +37,9 @@
         <fo:block xsl:use-attribute-sets="section-heading">
             Rechtsgrundlage für Datenübermittlung
         </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text-justify">
-            <fo:list-block>
-                <fo:list-item>
+        <fo:block xsl:use-attribute-sets="body-text">
+            <fo:list-block xsl:use-attribute-sets="list-block">
+                <fo:list-item xsl:use-attribute-sets="list-item">
                     <fo:list-item-label end-indent="label-end()">
                         <fo:block>1.</fo:block>
                     </fo:list-item-label>
@@ -50,7 +50,7 @@
                         </fo:block>
                     </fo:list-item-body>
                 </fo:list-item>
-                <fo:list-item>
+                <fo:list-item xsl:use-attribute-sets="list-item">
                     <fo:list-item-label end-indent="label-end()">
                         <fo:block>2.</fo:block>
                     </fo:list-item-label>
@@ -60,7 +60,7 @@
                         </fo:block>
                     </fo:list-item-body>
                 </fo:list-item>
-                <fo:list-item>
+                <fo:list-item xsl:use-attribute-sets="list-item">
                     <fo:list-item-label end-indent="label-end()">
                         <fo:block>3.</fo:block>
                     </fo:list-item-label>
@@ -94,32 +94,30 @@
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            1. Definition und Erklärung von Begriffen
+            1 Definition und Erklärung von Begriffen
         </fo:block>
 
-        <fo:list-block provisional-distance-between-starts="5mm"
-                       margin-left="10mm"
-                       font-family="LiberationSans"
-                       font-size="10pt"
-                       line-height="15pt">
-
-            <fo:list-item space-after="2mm">
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
+                    <fo:block xsl:use-attribute-sets="body-text">
                         <fo:inline text-decoration="underline">agridata.ch</fo:inline>:
                         Die Vertragspartner nutzen für die Datenübertragung den Datenübertragungsdienst agridata.ch.
                         Dieser dient dem Informieren der Datenproduzenten sowie, bei zustimmungspflichtigen
-                        Datenprodukten, der Einholung von deren Zustimmung. Die Nutzung von agridata.ch erfolgt für die
-                        Vertragspartner auf freiwilliger Basis und die geltenden Allgemeinen Geschäftsbedingungen (AGB)
-                        sind von den Vertragspartnern unabhängig vom vorliegenden Datenaustauschvertrag einzuhalten.
+                        Datenprodukten, der Einholung von deren Zustimmung. Die Einholung einer allfällig erforderlichen
+                        Zustimmung der Datenproduzenten erfolgt im alleinigen Interesse und auf Initiative des
+                        Datenbezügers; der Datenanbieter ist an der Aufforderung zur Zustimmungseinholung nicht
+                        beteiligt. Die Nutzung von agridata.ch erfolgt für die Vertragspartner auf freiwilliger Basis
+                        und die geltenden Allgemeinen Geschäftsbedingungen (AGB) sind von den Vertragspartnern
+                        unabhängig vom vorliegenden Datenaustauschvertrag einzuhalten.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
 
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -135,7 +133,7 @@
                 </fo:list-item-body>
             </fo:list-item>
 
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -151,7 +149,7 @@
                 </fo:list-item-body>
             </fo:list-item>
 
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -165,22 +163,22 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         <fo:inline text-decoration="underline">Datenprodukt</fo:inline>:
-                        Datenanbieter stellen Datenprodukte mit klar definierten Inhalten und Datenformaten für die
-                        Datenbezüger zur Auswahl. Ein Datenbezüger kann mehrere Datenprodukte eines Datenanbieters
-                        beantragen.
+                        Ein vordefinierter Datensatz mit klar festgelegten Inhalten und Datenformaten. Dieser wird vom
+                        Datenanbieter definiert und über den Datenübertragungsdienst agridata.ch zur Auswahl gestellt.
+                        Titel und Beschreibung des Datenprodukts werden dem Datenproduzenten bei der Einholung der
+                        Zustimmung transparent angezeigt. Der Datenbezüger kann das Datenprodukt beziehen, sobald die
+                        dafür erforderlichen Bereitstellungsvoraussetzungen erfüllt sind.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -193,8 +191,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -208,8 +205,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -223,8 +219,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
-            <fo:list-item space-after="2mm">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -238,206 +233,191 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            2. Inhaltliche Angaben zum Datenantrag
+            2 Vom Datenbezüger definierte Angaben zum Datenantrag
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="body-text">
-            Die nachfolgenden Angaben basieren auf dem vom Datenbezüger auf agridata.ch eingereichten Datenantrag. Sie
-            werden den Datenproduzenten in der Datenanfrage angezeigt und dienen als Entscheidungsgrundlage für ihre
-            Zustimmung:
+            Die nachfolgenden Angaben wurden vom Datenbezüger eigenverantwortlich im Datenantrag auf agridata.ch
+            definiert und automatisch in diesen Vertrag übernommen. Sie werden den Datenproduzenten in der Datenanfrage
+            angezeigt und dienen als Entscheidungsgrundlage für ihre Zustimmung:
+        </fo:block>
+
+        <fo:block margin-left="5mm">
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Datenbezüger:
+            </fo:block>
+
+            <fo:block>
+                <xsl:value-of select="consumerName"/>
+            </fo:block>
+            <fo:block>
+                UID:
+                <xsl:value-of select="consumerUid"/>
+            </fo:block>
+            <fo:block>
+                <xsl:value-of select="consumerStreet"/>
+            </fo:block>
+            <fo:block>
+                <xsl:value-of select="consumerZipCity"/>
+            </fo:block>
+            <fo:block>
+                <xsl:value-of select="consumerCountry/de"/>
+            </fo:block>
+
+            <fo:block>
+                Kontakt: <xsl:value-of select="consumerPhoneNumber"/>,
+                <xsl:value-of select="consumerEmailAddress"/>
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Name Datenantrag:
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="body-text">
+                Der im Antrag definierte Titel des Datenanbieters
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Beschreibung des Datenantrags:
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="body-text">
+                Deutsch:
+                <xsl:value-of select="requestDescription/de"/>
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Französisch:
+                <fo:inline xml:lang="fr">
+                    <xsl:value-of select="requestDescription/fr"/>
+                </fo:inline>
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Italienisch:
+                <fo:inline xml:lang="it">
+                    <xsl:value-of select="requestDescription/it"/>
+                </fo:inline>
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Zweck der Datennutzung durch den Datenbezüger:
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="body-text">
+                Deutsch:
+                <xsl:value-of select="requestPurpose/de"/>
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Französisch:
+                <fo:inline xml:lang="fr">
+                    <xsl:value-of select="requestPurpose/fr"/>
+                </fo:inline>
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Italienisch:
+                <fo:inline xml:lang="it">
+                    <xsl:value-of select="requestPurpose/it"/>
+                </fo:inline>
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Datenanbieter System:
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Das im Antrag definierte Quellsystem des Datenanbieters
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Gewünschte Datenprodukte:
+            </fo:block>
+            <fo:block xsl:use-attribute-sets="body-text">
+                Gegenstand dieses Datenaustauschvertrag sind diejenigen Datenprodukte, welche im elektronischen
+                Datenantrag auf agridata.ch unter der Antrags-ID
+                <xsl:value-of select="requestHumanFriendlyId"/> geführt und freigegeben sind.
+            </fo:block>
+
+            <fo:block xsl:use-attribute-sets="section-heading">
+                Angabe zu Zielgruppe:
+            </fo:block>
+            <fo:block>
+                <xsl:value-of select="targetGroup"/>
+            </fo:block>
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            Datenbezüger:
-        </fo:block>
-
-        <fo:block>
-            <xsl:value-of select="consumerName"/>
-        </fo:block>
-        <fo:block>
-            UID:
-            <xsl:value-of select="consumerUid"/>
-        </fo:block>
-        <fo:block>
-            <xsl:value-of select="consumerStreet"/>
-        </fo:block>
-        <fo:block>
-            <xsl:value-of select="consumerZipCity"/>
-        </fo:block>
-        <fo:block>
-            <xsl:value-of select="consumerCountry/de"/>
-        </fo:block>
-
-        <fo:block>
-            Kontakt: <xsl:value-of select="consumerPhoneNumber"/>,
-            <xsl:value-of select="consumerEmailAddress"/>
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Name Datenantrag:
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="body-text">
-            Der im Antrag definierte Titel des Datenanbieters
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Beschreibung des Datenantrags:
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="body-text">
-            Deutsch:
-            <xsl:value-of select="requestDescription/de"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            Französisch:
-            <fo:inline xml:lang="fr">
-                <xsl:value-of select="requestDescription/fr"/>
-            </fo:inline>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            Italienisch:
-            <fo:inline xml:lang="it">
-                <xsl:value-of select="requestDescription/it"/>
-            </fo:inline>
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Zweck der Datennutzung durch den Datenbezüger:
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="body-text">
-            Deutsch:
-            <xsl:value-of select="requestPurpose/de"/>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            Französisch:
-            <fo:inline xml:lang="fr">
-                <xsl:value-of select="requestPurpose/fr"/>
-            </fo:inline>
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            Italienisch:
-            <fo:inline xml:lang="it">
-                <xsl:value-of select="requestPurpose/it"/>
-            </fo:inline>
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Datenanbieter System:
-        </fo:block>
-        <fo:block xsl:use-attribute-sets="body-text">
-            Das im Antrag definierte Quellsystem des Datenanbieters
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Gewünschte Datenprodukte:
-        </fo:block>
-        <fo:block>
-            Gegenstand dieses Datenaustauschvertrag sind diejenigen Datenprodukte, welche im elektronischen Datenantrag
-            auf agridata.ch unter der Antrags-ID
-            <xsl:value-of select="requestHumanFriendlyId"/> geführt und freigegeben sind.
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            Angabe zu Zielgruppe:
-        </fo:block>
-        <fo:block>
-            <xsl:value-of select="targetGroup"/>
-        </fo:block>
-
-        <fo:block xsl:use-attribute-sets="section-heading">
-            3. Pflichten der Vertragspartner
+            3 Pflichten der Vertragspartner
         </fo:block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
             3.1 Datenanbieter
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter spezifiziert und beschreibt die von ihm bereitgestellten Datenprodukte
-                        verbindlich bezüglich Inhalts und Format. Die Datenproduktbeschreibung des Datenanbieters muss
-                        öffentlich zugänglich und über agridata.ch aufrufbar sein.
+                        Der Datenanbieter beschreibt die von ihm bereitgestellten Datenprodukte bezüglich Inhalt und
+                        Format. Diese Datenproduktbeschreibung ist für den Datenbezüger über agridata.ch einsehbar.
+                        Titel und Beschreibung müssen den tatsächlichen Inhalt des Datenprodukts stets korrekt und
+                        transparent abbilden.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Für die Bereitstellung von Datenprodukten nutzt der Datenanbieter die automatisierte Steuerung
-                        von agridata.ch, welche sicherstellt, dass die Übermittlung von Datenprodukten strikt an das
-                        Vorliegen einer aktiven Zustimmung des Datenproduzenten in der Zustimmungsprüfung gekoppelt ist.
-                    </fo:block>
-                </fo:list-item-body>
-            </fo:list-item>
-            <fo:list-item>
-                <fo:list-item-label end-indent="label-end()">
-                    <fo:block>•</fo:block>
-                </fo:list-item-label>
-                <fo:list-item-body start-indent="body-start()">
-                    <fo:block>
-                        Der Datenanbieter stellt die Datenprodukte über die geschützte Schnittstelle direkt an den
+                        Der Datenanbieter stellt die Datenprodukte über die geschützte Schnittstelle für den
                         Datenübertragungsdienst agridata.ch bereit. Er stellt sicher, dass seinerseits nur
                         datenschutzkonforme und vom Datenübertragungsdienst agridata.ch angeforderte Datenprodukte
-                        übergeben werden. Die anschliessende Absicherung des Abrufs und die Bereitstellung für den
-                        Datenbezüger erfolgen durch agridata.ch gemäss den jeweils anwendbaren
-                        Bereitstellungsvoraussetzungen (bei zustimmungspflichtigen Datenprodukten das Vorliegen einer
-                        aktiven und gültigen Zustimmung des Datenproduzenten; bei zustimmungsfreien Datenprodukten das
-                        Vorliegen der gesetzlichen Grundlage und der Produzentendefinition). Abweichende, bilaterale
-                        Bereitstellungswege (z. B. die direkte Datenübergabe durch den Datenanbieter via
-                        Applikations-GUI, E-Mail oder manuellen Datei-Export) bleiben vorbehalten. In diesen Fällen
-                        obliegt es der alleinigen Verantwortung des Datenanbieters, vor jeder Datenauslieferung
-                        eigenständig zu überprüfen und sicherzustellen, dass die entsprechenden
-                        Bereitstellungsvoraussetzungen (aktive Zustimmung bzw. gesetzliche Transparenzanzeige) in
-                        agridata.ch erfüllt sind. Die Leistung von agridata.ch beschränkt sich hierbei auf das
-                        Bereitstellen der Legitimationsinformationen; die technische Übermittlung und Datensicherheit
-                        des gewählten Transportwegs liegen vollumfänglich beim Datenanbieter.
+                        übergeben werden. Die Absicherung des Abrufs und die Übermittlung erfolgen standardmässig
+                        automatisiert durch agridata.ch gemäss den anwendbaren Bereitstellungsvoraussetzungen (bei
+                        zustimmungspflichtigen Datenprodukten das Vorliegen einer aktiven und gültigen Zustimmung des
+                        Datenproduzenten; bei zustimmungsfreien Datenprodukten das Vorliegen der gesetzlichen Grundlage
+                        und der Produzentendefinition). Abweichende, bilaterale Bereitstellungswege (z. B. die direkte
+                        Datenübergabe durch den Datenanbieter via Applikations-GUI, E-Mail oder manuellen Datei-Export)
+                        bleiben vorbehalten. In diesen Fällen obliegt es der alleinigen Verantwortung des
+                        Datenanbieters, vor jeder Datenauslieferung eigenständig zu überprüfen und sicherzustellen, dass
+                        die entsprechenden Bereitstellungsvoraussetzungen (aktive Zustimmung bzw. gesetzliche
+                        Transparenzanzeige) in agridata.ch erfüllt sind. Die Leistung von agridata.ch beschränkt sich
+                        hierbei auf das Bereitstellen der Legitimationsinformationen; die technische Übermittlung und
+                        Datensicherheit des gewählten Transportwegs liegen vollumfänglich beim Datenanbieter.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter stellt auf eigene Kosten eine geeignete technische Schnittstelle zu
-                        agridata.ch zur Verfügung und unterhält diese. Er trägt die alleinige Verantwortung für die
-                        funktions- und spezifikationskonforme Umsetzung der Schnittstelle auf seinen eigenen Systemen.
-                        Der sichere und automatisierte Austausch von Datenprodukten sowie die Fristen und
-                        Informationspflichten bei Schnittstellenanpassungen richten sich nach den jeweils gültigen
+                        Der Datenanbieter stellt auf eigene Kosten eine geeignete technische Schnittstelle für
+                        agridata.ch zur Verfügung und unterhält diese. Er trägt die alleinige Verantwortung für deren
+                        funktions- und spezifikationskonforme Umsetzung auf seinen eigenen Systemen. Die technischen und
+                        sicherheitsbezogenen Anforderungen an den Datenaustausch richten sich nach den jeweils gültigen
                         Nutzungsbedingungen (AGB) für Datenanbieter von agridata.ch.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Der Datenanbieter informiert über die Einstellung oder wesentliche Änderung von Datenprodukten
-                        rechtzeitig im Voraus über den Datenübertragungsdienst agridata.ch. Die Information der
-                        betroffenen Datenbezüger erfolgt über agridata.ch. Das Risiko und die Verantwortung für die
-                        rechtzeitige Anpassung der eigenen Systeme an Produktänderungen (Holschuld) liegen beim
-                        Datenbezüger. Details zu den Ankündigungsfristen, Übergangsphasen sowie der Ausserdienststellung
-                        von Datenprodukten sind in den Nutzungsbedingungen (AGB) geregelt.
+                        Der Datenanbieter verpflichtet sich, wesentliche Änderungen, Einschränkungen oder die
+                        Einstellung von Datenprodukten sowie damit verbundene Schnittstellenanpassungen so früh wie
+                        möglich an agridata.ch zu kommunizieren.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -451,12 +431,11 @@
             </fo:list-item>
         </fo:list-block>
 
-
         <fo:block xsl:use-attribute-sets="section-heading">
             3.2 Datenbezüger
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -471,7 +450,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -483,7 +462,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -501,8 +480,8 @@
         <fo:block xsl:use-attribute-sets="section-heading">
             3.3 Transparenz gegenüber Datenproduzenten
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -519,11 +498,11 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            4. Gewährleistung / Haftungsausschluss
+            4 Gewährleistung / Haftungsausschluss
         </fo:block>
 
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -533,8 +512,8 @@
                         sichern die Vertragsparteien mit der digitalen Unterschrift dieses Datenaustauschvertrages zu,
                         dass sie zur Erfüllung ihrer jeweiligen Rolle vollumfänglich berechtigt sind:
                     </fo:block>
-                    <fo:list-block>
-                        <fo:list-item>
+                    <fo:list-block xsl:use-attribute-sets="list-block">
+                        <fo:list-item xsl:use-attribute-sets="list-item">
                             <fo:list-item-label end-indent="label-end()">
                                 <fo:block>•</fo:block>
                             </fo:list-item-label>
@@ -545,7 +524,7 @@
                                 </fo:block>
                             </fo:list-item-body>
                         </fo:list-item>
-                        <fo:list-item>
+                        <fo:list-item xsl:use-attribute-sets="list-item">
                             <fo:list-item-label end-indent="label-end()">
                                 <fo:block>•</fo:block>
                             </fo:list-item-label>
@@ -559,7 +538,7 @@
                     </fo:list-block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -571,7 +550,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -589,7 +568,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -602,7 +581,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -616,7 +595,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -632,33 +611,33 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            5. Kontrolle
+            5 Kontrolle
         </fo:block>
 
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
                         Der Datenanbieter ist berechtigt, die Einhaltung der Bestimmungen dieses Datenaustauschvertrages
-                        durch den Datenbezüger selbst oder durch einen zur Verschwiegenheit verpflichteten, unabhängigen
-                        Dritten überprüfen zu lassen (Audit). Der Datenbezüger verpflichtet sich, dem Datenanbieter auf
-                        begründete Anfrage hin die für die Überprüfung der vertragsgemässen Datennutzung erforderlichen
-                        Auskünfte zu erteilen und Einsicht in die relevanten Dokumente zu gewähren. Die Kosten der
-                        Prüfung trägt der Datenanbieter, es sei denn, es wird ein wesentlicher Verstoss gegen diesen
-                        Datenaustauschvertrag festgestellt.
+                        durch den Datenbezüger von einem zur Verschwiegenheit verpflichteten, unabhängigen Dritten
+                        durchführen zu lassen oder selbst zu überprüfen (Audit). Der Datenbezüger verpflichtet sich, dem
+                        Datenanbieter auf begründete Anfrage hin die für die Überprüfung der vertragsgemässen
+                        Datennutzung erforderlichen Auskünfte zu erteilen und Einsicht in die relevanten Dokumente zu
+                        gewähren. Die Kosten der Prüfung trägt der Datenanbieter, es sei denn, es wird ein wesentlicher
+                        Verstoss gegen diesen Datenaustauschvertrag festgestellt.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            6. Vertragsdauer
+            6 Vertragsdauer
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -670,7 +649,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -682,7 +661,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -698,10 +677,10 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            7. Vertragsänderungen
+            7 Vertragsänderungen
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -716,7 +695,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -729,7 +708,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -741,33 +720,26 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
                 <fo:list-item-body start-indent="body-start()">
                     <fo:block>
-                        Auf Anfrage des Datenbezügers und im gegenseitigen Einvernehmen der Vertragspartner können zu
-                        diesem Datenaustauschvertrag über agridata.ch nachträglich neue, erweiterte oder geänderte
-                        Datenprodukte hinzugefügt werden, sofern diese inhaltlich dem vereinbarten Nutzungszweck
-                        entsprechen. Es besteht kein Anspruch des Datenbezügers auf die Freigabe oder Bereitstellung
-                        solcher Anpassungen. Die Erfassung und Freigabe erfolgen rein digital im System und erfordern
-                        keine manuelle Vertragsanpassung. Die einmal erteilte Zustimmung der Datenproduzenten gilt auch
-                        für diese Anpassungen, sofern es sich um untergeordnete Ergänzungen der bisherigen Datenprodukte
-                        handelt und der Betreiber von agridata.ch die betroffenen Datenproduzenten transparent darüber
-                        informiert und ihnen eine einfache Möglichkeit zum Widerspruch (Opt-out) bietet. Handelt es sich
-                        um neuartige oder wesentlich erweiterte Datenkategorien, ist über die Datenanfrage auf
-                        agridata.ch eine erneute aktive Zustimmung (Opt-in) der Datenproduzenten einzuholen.
+                        Nachträgliche Anpassung oder Ergänzung von Datenprodukten: Datenprodukte können nachträglich
+                        angepasst, ergänzt oder eingestellt werden, ohne dass die Gültigkeit des Vertrags für die
+                        übrigen Datenprodukte berührt wird. Die Voraussetzungen und das Verfahren für solche Anpassungen
+                        richten sich nach den AGB.
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            8. Datenschutz
+            8 Datenschutz
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -778,7 +750,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -796,10 +768,10 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            9. Vertragsverletzung
+            9 Vertragsverletzung
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -812,7 +784,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -829,10 +801,10 @@
         </fo:list-block>
 
         <fo:block xsl:use-attribute-sets="section-heading">
-            10. Streitigkeiten aus diesem Datenaustauschvertrag
+            10 Streitigkeiten aus diesem Datenaustauschvertrag
         </fo:block>
-        <fo:list-block>
-            <fo:list-item>
+        <fo:list-block xsl:use-attribute-sets="list-block">
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -843,7 +815,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -852,8 +824,8 @@
                         Kann innert 30 Arbeitstagen keine Einigung erzielt werden, steht den Vertragspartnern der
                         Rechtsweg offen. Der Gerichtsstand bestimmt sich wie folgt:
                     </fo:block>
-                    <fo:list-block>
-                        <fo:list-item>
+                    <fo:list-block xsl:use-attribute-sets="list-block">
+                        <fo:list-item xsl:use-attribute-sets="list-item">
                             <fo:list-item-label end-indent="label-end()">
                                 <fo:block>•</fo:block>
                             </fo:list-item-label>
@@ -864,7 +836,7 @@
                                 </fo:block>
                             </fo:list-item-body>
                         </fo:list-item>
-                        <fo:list-item>
+                        <fo:list-item xsl:use-attribute-sets="list-item">
                             <fo:list-item-label end-indent="label-end()">
                                 <fo:block>•</fo:block>
                             </fo:list-item-label>
@@ -875,7 +847,7 @@
                                 </fo:block>
                             </fo:list-item-body>
                         </fo:list-item>
-                        <fo:list-item>
+                        <fo:list-item xsl:use-attribute-sets="list-item">
                             <fo:list-item-label end-indent="label-end()">
                                 <fo:block>•</fo:block>
                             </fo:list-item-label>
@@ -890,7 +862,7 @@
                     </fo:list-block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -909,7 +881,7 @@
                     </fo:block>
                 </fo:list-item-body>
             </fo:list-item>
-            <fo:list-item>
+            <fo:list-item xsl:use-attribute-sets="list-item">
                 <fo:list-item-label end-indent="label-end()">
                     <fo:block>•</fo:block>
                 </fo:list-item-label>
@@ -920,7 +892,5 @@
                 </fo:list-item-body>
             </fo:list-item>
         </fo:list-block>
-
     </xsl:template>
-
 </xsl:stylesheet>

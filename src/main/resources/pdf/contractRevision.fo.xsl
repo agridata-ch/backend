@@ -71,17 +71,17 @@
                                        page-height="297mm"
                                        page-width="210mm"
                                        margin="20mm">
-                    <fo:region-body margin-top="35mm" margin-bottom="20mm"/>
+                    <fo:region-body margin-top="30mm" margin-bottom="10mm"/>
                     <fo:region-before extent="50mm" region-name="first.before"/>
-                    <fo:region-after extent="15mm"/>
+                    <fo:region-after/>
                 </fo:simple-page-master>
 
                 <fo:simple-page-master master-name="rest-pages"
                                        page-height="297mm"
                                        page-width="210mm"
                                        margin="20mm">
-                    <fo:region-body margin-top="20mm" margin-bottom="20mm"/>
-                    <fo:region-after extent="15mm"/>
+                    <fo:region-body margin-bottom="10mm"/>
+                    <fo:region-after/>
                 </fo:simple-page-master>
 
                 <fo:page-sequence-master master-name="document-sequence">
