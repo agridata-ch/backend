@@ -9,14 +9,11 @@
 
     <xsl:attribute-set name="font-liberation-sans">
         <xsl:attribute name="font-family">LiberationSans</xsl:attribute>
+        <xsl:attribute name="line-height">1.2</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="font-liberation-sans-8" use-attribute-sets="font-liberation-sans">
         <xsl:attribute name="font-size">8pt</xsl:attribute>
-    </xsl:attribute-set>
-
-    <xsl:attribute-set name="font-liberation-sans-9" use-attribute-sets="font-liberation-sans">
-        <xsl:attribute name="font-size">9pt</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="font-liberation-sans-10" use-attribute-sets="font-liberation-sans">
@@ -41,27 +38,33 @@
         <xsl:attribute name="margin-top">5mm</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="body-text" use-attribute-sets="font-liberation-sans-10">
+    <xsl:attribute-set name="body-text" use-attribute-sets="font-liberation-sans-11">
         <xsl:attribute name="space-after">5mm</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="body-text-justify" use-attribute-sets="body-text">
-        <xsl:attribute name="text-align">justify</xsl:attribute>
-    </xsl:attribute-set>
-
-    <xsl:attribute-set name="body-text-spacious" use-attribute-sets="font-liberation-sans-10">
+    <xsl:attribute-set name="body-text-spacious" use-attribute-sets="font-liberation-sans-11">
         <xsl:attribute name="space-after">6mm</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="bold-paragraph" use-attribute-sets="font-liberation-sans-11">
+    <xsl:attribute-set name="bold-paragraph" use-attribute-sets="font-liberation-sans-12">
         <xsl:attribute name="font-weight">bold</xsl:attribute>
         <xsl:attribute name="space-after">6mm</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="section-heading" use-attribute-sets="font-liberation-sans-11">
+    <xsl:attribute-set name="section-heading" use-attribute-sets="font-liberation-sans-12">
         <xsl:attribute name="font-weight">bold</xsl:attribute>
         <xsl:attribute name="space-before">3mm</xsl:attribute>
         <xsl:attribute name="space-after">3mm</xsl:attribute>
+        <xsl:attribute name="keep-with-next.within-page">always</xsl:attribute>
+    </xsl:attribute-set>
+
+    <xsl:attribute-set name="list-block" use-attribute-sets="font-liberation-sans-11">
+        <xsl:attribute name="provisional-distance-between-starts">5mm</xsl:attribute>
+    </xsl:attribute-set>
+
+    <xsl:attribute-set name="list-item" use-attribute-sets="font-liberation-sans-11">
+        <xsl:attribute name="space-after">1mm</xsl:attribute>
+        <xsl:attribute name="space-before">1mm</xsl:attribute>
     </xsl:attribute-set>
 
     <xsl:attribute-set name="footer-address" use-attribute-sets="font-liberation-sans-8">
@@ -69,11 +72,11 @@
         <xsl:attribute name="text-align">left</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="page-number-footer" use-attribute-sets="font-liberation-sans-10">
+    <xsl:attribute-set name="page-number-footer" use-attribute-sets="font-liberation-sans-11">
         <xsl:attribute name="text-align">right</xsl:attribute>
     </xsl:attribute-set>
 
-    <xsl:attribute-set name="signature-table" use-attribute-sets="font-liberation-sans-10">
+    <xsl:attribute-set name="signature-table" use-attribute-sets="font-liberation-sans-11">
         <xsl:attribute name="table-layout">fixed</xsl:attribute>
         <xsl:attribute name="width">100%</xsl:attribute>
     </xsl:attribute-set>
