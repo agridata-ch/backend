@@ -46,7 +46,7 @@ public class ConsentRequestAggregationService {
       return List.of();
     }
 
-    var entities = consentRequestRepository.findByDataProducerUidsWithDataRequest(List.of(dataProducerUid));
+    var entities = consentRequestRepository.findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List.of(dataProducerUid));
 
     return entities.stream()
         .collect(Collectors.groupingBy(cr -> cr.getDataRequest().getId()))
@@ -73,7 +73,7 @@ public class ConsentRequestAggregationService {
       throw new NotFoundException(dataRequestId.toString());
     }
 
-    var group = consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, List.of(dataProducerUid));
+    var group = consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, dataProducerUid);
     if (group.isEmpty()) {
       throw new NotFoundException(dataRequestId.toString());
     }

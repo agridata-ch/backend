@@ -3,7 +3,6 @@ package ch.agridata.agreement.service;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
-import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
@@ -20,7 +19,6 @@ import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,37 +38,16 @@ import org.hibernate.SessionFactory;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class ConsentRequestMutationService {
+public class ConsentRequestCreationService {
 
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestMapper consentRequestMapper;
-  private final ConsentRequestStateService consentRequestStateService;
-  private final AuditingService auditingService;
+  private final ConsentRequestSyncService consentRequestSyncService;
   private final AgridataSecurityIdentity identity;
   private final UserApi userApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataProductApi dataProductApi;
   private final SessionFactory sessionFactory;
-
-  @RolesAllowed(PRODUCER_ROLE)
-  @Transactional
-  public void updateConsentRequestStateAsCurrentDataProducer(
-      UUID consentRequestId,
-      ConsentRequestStateEnum state
-  ) {
-    var uids = getAuthorizedUidsAsCurrentProducer();
-    var consentRequestEntity = consentRequestRepository.findByIdAndDataProducerUids(consentRequestId, uids)
-        .orElseThrow(() -> new NotFoundException(consentRequestId.toString()));
-    var targetState = consentRequestMapper.toEntityStateEnum(state);
-
-    consentRequestStateService.verifyStatusTransition(
-        consentRequestEntity.getStateCode(),
-        targetState,
-        consentRequestEntity.getLastStateChangeDate()
-    );
-    consentRequestEntity.setStateCode(consentRequestMapper.toEntityStateEnum(state));
-    addLogEntry(targetState, consentRequestEntity.getId());
-  }
 
   @RolesAllowed(PRODUCER_ROLE)
   public List<ConsentRequestCreatedDto> createConsentRequestForDataRequest(List<CreateConsentRequestDto> createConsentRequestDtos) {
@@ -94,7 +71,7 @@ public class ConsentRequestMutationService {
                 + " must be in ACTIVE state to create a consent request.");
           }
 
-          var uidConsentRequest = consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dto.dataRequestId(), dto.uid())
+          var uidConsentRequest = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dto.dataRequestId(), dto.uid())
               .map(existingRequest -> consentRequestMapper.toConsentRequestCreatedDto(existingRequest, false))
               .orElseGet(() ->
                   createConsentRequest(dto.uid(), null, null, dataRequest)
@@ -103,6 +80,7 @@ public class ConsentRequestMutationService {
           @NonNull var isAbsent = hasBurProductsByDataRequestId.computeIfAbsent(dto.dataRequestId(), id -> hasBurProducts(dataRequest));
           if (isAbsent) {
             createMissingBurConsentRequests(dto.uid(), dataRequest, bursByUid);
+            consentRequestSyncService.syncUidConsentRequestWithBurConsentRequests(dataRequest.getId(), dto.uid());
           }
 
           return uidConsentRequest;
@@ -133,7 +111,7 @@ public class ConsentRequestMutationService {
 
     var burs = burDtos.stream().map(BurDto::bur).toList();
     var activeBurs = consentRequestRepository
-        .findActiveByDataRequestIdAndDataProducerBurs(dataRequest.getId(), burs).stream()
+        .findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), burs).stream()
         .filter(consentRequest -> uid.equals(consentRequest.getDataProducerUid()))
         .map(ConsentRequestEntity::getDataProducerBur)
         .collect(Collectors.toSet());
@@ -159,14 +137,6 @@ public class ConsentRequestMutationService {
         .build();
     consentRequestRepository.persist(consentRequestEntity);
     return consentRequestMapper.toConsentRequestCreatedDto(consentRequestEntity, true);
-  }
-
-  private void addLogEntry(ConsentRequestEntity.StateEnum state, UUID entityId) {
-    switch (state) {
-      case GRANTED -> auditingService.logConsentRequestGranted(entityId);
-      case DECLINED -> auditingService.logConsentRequestDeclined(entityId);
-      case OPENED -> auditingService.logConsentRequestReopened(entityId);
-    }
   }
 
   private List<String> getAuthorizedUidsAsCurrentProducer() {

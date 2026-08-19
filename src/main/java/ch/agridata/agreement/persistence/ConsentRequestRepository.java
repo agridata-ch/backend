@@ -6,6 +6,7 @@ import ch.agridata.common.persistence.BaseSearchRepository;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,24 +28,23 @@ import lombok.RequiredArgsConstructor;
 public class ConsentRequestRepository extends BaseSearchRepository<ConsentRequestEntity, UUID> {
   private final EntityManager entityManager;
 
-  public List<ConsentRequestEntity> findByDataProducerUids(List<String> dataProducerUids) {
-    return find("dataProducerUid IN ?1", dataProducerUids).list();
-  }
+  //region "UID and BUR" based queries
 
-  public List<ConsentRequestEntity> findByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
+  public List<ConsentRequestEntity> findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
                 + "WHERE cr.dataProducerUid IN :uids "
+                + "AND cr.uidBurRelationUntil IS NULL "
                 + "ORDER BY cr.id", ConsentRequestEntity.class
         )
         .setParameter("uids", dataProducerUids)
         .getResultList();
   }
 
-  public Optional<ConsentRequestEntity> findByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
+  public Optional<ConsentRequestEntity> findActiveUidAndBurBasedByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
     return find(
-        "id = :id and dataProducerUid IN :dataProducerUids",
+        "id = :id and dataProducerUid IN :dataProducerUids and uidBurRelationUntil is null",
         Map.of(
             "id", id,
             "dataProducerUids", dataProducerUids
@@ -52,43 +52,25 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
-  public List<ConsentRequestEntity> findActiveByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
+  public List<ConsentRequestEntity> findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs and uidBurRelationUntil is null",
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",
         Map.of(
             "dataRequestId", dataRequestId,
-            "dataProducerBurs", dataProducerBurs
+            "dataProducerUid", dataProducerUid
         )
     ).list();
   }
 
-  public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(
-      String dataConsumerUid,
-      String dataProducerUid,
-      UUID dataProductId
-  ) {
-    return entityManager.createQuery(
-            "SELECT cr.id "
-                + "FROM ConsentRequestEntity cr "
-                + "JOIN cr.dataRequest dr "
-                + "JOIN dr.dataProducts dp "
-                + "WHERE cr.dataProducerUid = :dataProducerUid "
-                + "AND cr.stateCode = 'GRANTED' "
-                + "AND dr.dataConsumerUid = :dataConsumerUid "
-                + "AND dp.dataProductId = :dataProductId", UUID.class
-        )
-        .setParameter("dataConsumerUid", dataConsumerUid)
-        .setParameter("dataProducerUid", dataProducerUid)
-        .setParameter("dataProductId", dataProductId)
-        .getResultList();
+  //endregion
 
+  //region "Only UID" based queries
+
+  public List<ConsentRequestEntity> findUidBasedByDataProducerUids(List<String> dataProducerUids) {
+    return find("dataProducerUid IN ?1 and dataProducerBur is null", dataProducerUids).list();
   }
 
-  /**
-   * Finds the UID-only consent request, i.e. the one without a BUR. BUR based consent requests share the same data request + UID and must
-   * not be returned here.
-   */
-  public Optional<ConsentRequestEntity> findNonBurByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+  public Optional<ConsentRequestEntity> findUidBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and dataProducerBur is null",
         Map.of(
@@ -98,9 +80,25 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
-  public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerUids(UUID dataRequestId, List<String> dataProducerUids) {
+  /**
+   * Loads the UID consent request (the {@code dataProducerBur is null} row) with a pessimistic write lock. Concurrent BUR status
+   * updates for the same (data request, UID) all sync through this single row, so locking it serializes them and prevents the
+   * write-skew that would otherwise let the last committer overwrite the UID state from a stale snapshot of its sibling BUR rows.
+   */
+  public Optional<ConsentRequestEntity> findAndLockUidBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids",
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and dataProducerBur is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerUid", dataProducerUid
+        )
+    ).withLock(LockModeType.PESSIMISTIC_WRITE).firstResultOptional();
+  }
+
+  public List<ConsentRequestEntity> findUidBasedByDataRequestIdAndDataProducerUids(UUID dataRequestId,
+                                                                                   List<String> dataProducerUids) {
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids and dataProducerBur is null",
         Sort.by("id"),
         Map.of(
             "dataRequestId", dataRequestId,
@@ -109,7 +107,22 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).list();
   }
 
-  public List<String> findGrantedConsentRequestUidsForProductOfConsumerSince(
+  //endregion
+
+  //region "Only BUR" based queries
+
+  public List<ConsentRequestEntity> findActiveBurBasedByDataRequestIdAndDataProducerBurs(UUID dataRequestId,
+                                                                                         List<String> dataProducerBurs) {
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs and uidBurRelationUntil is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerBurs", dataProducerBurs
+        )
+    ).list();
+  }
+
+  public List<String> findGrantedUidBasedUidsForProductOfConsumerSince(
       UUID productId,
       String dataConsumerUid,
       LocalDateTime since
@@ -122,7 +135,8 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
                 + "WHERE dr.dataConsumerUid = :dataConsumerUid "
                 + "AND dp.dataProductId = :productId "
                 + "AND cr.stateCode = :stateCode "
-                + "AND cr.lastStateChangeDate > :since", String.class
+                + "AND cr.lastStateChangeDate > :since "
+                + "AND cr.dataProducerBur IS NULL", String.class
         )
         .setParameter("dataConsumerUid", dataConsumerUid)
         .setParameter("productId", productId)
@@ -130,6 +144,10 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .setParameter("since", since)
         .getResultList();
   }
+
+  //endregion
+
+  //region Termination queries
 
   public List<UUID> findIdsToTerminateByDataProducerBurs(List<String> burs, int batchSize) {
     if (burs == null || burs.isEmpty()) {
@@ -251,4 +269,6 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   public record BurUidPair(String bur, String uid) {
   }
+
+  //endregion
 }

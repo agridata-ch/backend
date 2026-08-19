@@ -28,6 +28,7 @@ import static ch.agridata.auditing.api.EntityTypeEnum.DATA_REQUEST;
 
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
@@ -49,16 +50,14 @@ public class AuditingService {
 
   private final AuditingApi api;
 
-  public void logConsentRequestGranted(UUID entityId) {
-    api.logUserAction(CONSENT_REQUEST_GRANTED, CONSENT_REQUEST, entityId);
-  }
-
-  public void logConsentRequestDeclined(UUID entityId) {
-    api.logUserAction(CONSENT_REQUEST_DECLINED, CONSENT_REQUEST, entityId);
-  }
-
-  public void logConsentRequestReopened(UUID entityId) {
-    api.logUserAction(CONSENT_REQUEST_REOPENED, CONSENT_REQUEST, entityId);
+  public void logConsentRequestStateChange(ConsentRequestEntity consentRequest) {
+    var id = consentRequest.getId();
+    var newState = consentRequest.getStateCode();
+    switch (newState) {
+      case GRANTED -> api.logUserAction(CONSENT_REQUEST_GRANTED, CONSENT_REQUEST, id);
+      case DECLINED -> api.logUserAction(CONSENT_REQUEST_DECLINED, CONSENT_REQUEST, id);
+      case OPENED -> api.logUserAction(CONSENT_REQUEST_REOPENED, CONSENT_REQUEST, id);
+    }
   }
 
   public void logDataRequestSubmitted(UUID entityId) {

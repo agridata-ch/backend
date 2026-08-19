@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ConsentRequestMutationServiceTest {
+class ConsentRequestCreationServiceTest {
 
   static final String UID1 = "uid1";
   static final String UID2 = "uid2";
@@ -61,8 +62,6 @@ class ConsentRequestMutationServiceTest {
   private final ConsentRequestMapper consentRequestMapper = new ConsentRequestMapperImpl();
   @Mock
   private ConsentRequestRepository consentRequestRepository;
-  @Mock
-  private AuditingService auditingService;
   @Mock
   private DataRequestQueryService dataRequestQueryService;
   @Mock
@@ -77,12 +76,14 @@ class ConsentRequestMutationServiceTest {
   private DataProductApi dataProductApi;
   @Mock
   private SessionFactory sessionFactory;
+  @Mock
+  private ConsentRequestSyncService consentRequestSyncService;
   @InjectMocks
-  private ConsentRequestMutationService service;
+  private ConsentRequestCreationService service;
 
   @BeforeEach
   void setup() {
-    when(sessionFactory.fromTransaction(any())).thenAnswer(invocation -> {
+    lenient().when(sessionFactory.fromTransaction(any())).thenAnswer(invocation -> {
       Function<Object, List<ConsentRequestCreatedDto>> transactionFunction = invocation.getArgument(0);
       return transactionFunction.apply(null);
 
@@ -135,11 +136,11 @@ class ConsentRequestMutationServiceTest {
     when(agridataSecurityIdentity.getKtIdP()).thenReturn(ktIdP);
     when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(agateLoginId);
     when(userApi.getAuthorizedUids(ktIdP, agateLoginId)).thenReturn(uidDtos);
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
         .thenReturn(Optional.of(existingConsentRequest));
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
         .thenReturn(Optional.empty());
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
         .thenReturn(Optional.empty());
     doAnswer(invocation -> {
       ConsentRequestEntity e = invocation.getArgument(0);
@@ -219,7 +220,7 @@ class ConsentRequestMutationServiceTest {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.UID_BASED_PRE_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
 
     // When
     service.createConsentRequestForDataRequest(
@@ -234,17 +235,21 @@ class ConsentRequestMutationServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = FlowCodeEnum.class, names = {
-      "BUR_BASED_PRE_VALIDATION", "BUR_BASED_POST_VALIDATION", "UNBOUND_BUR_BASED_POST_VALIDATION"})
+  @EnumSource(
+      value = FlowCodeEnum.class, names = {
+      "BUR_BASED_PRE_VALIDATION", "BUR_BASED_POST_VALIDATION", "UNBOUND_BUR_BASED_POST_VALIDATION"
+  }
+  )
   void givenDataRequestWithBurProduct_whenCreateConsentRequestForDataRequest_thenBurConsentRequestsAreCreated(FlowCodeEnum flowCode) {
     // Given
     var dataRequest = activeDataRequestWithProduct(flowCode);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
         BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
-        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()));
-    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
+        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
+    ));
+    when(consentRequestRepository.findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
         .thenReturn(List.of());
 
     // When
@@ -272,16 +277,18 @@ class ConsentRequestMutationServiceTest {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_PRE_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
         .thenReturn(Optional.of(ConsentRequestEntity.builder().dataProducerUid(UID1).build()));
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
         BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
-        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()));
-    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
+        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
+    ));
+    when(consentRequestRepository.findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
         .thenReturn(List.of(
             ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).build(),
             // Active consent request of a former owner (different UID): must not block a new one for UID1.
-            ConsentRequestEntity.builder().dataProducerUid(UID2).dataProducerBur(BUR2).build()));
+            ConsentRequestEntity.builder().dataProducerUid(UID2).dataProducerBur(BUR2).build()
+        ));
 
     // When
     var result = service.createConsentRequestForDataRequest(
@@ -301,7 +308,7 @@ class ConsentRequestMutationServiceTest {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_POST_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findNonBurByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
+    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of());
 
     // When

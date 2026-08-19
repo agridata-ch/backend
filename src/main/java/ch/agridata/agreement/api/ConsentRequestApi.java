@@ -17,14 +17,6 @@ import java.util.UUID;
  */
 public interface ConsentRequestApi {
   @RolesAllowed(CONSUMER_ROLE)
-  List<UUID> getConsentRequestIdsOfCurrentConsumerGrantedByProducerForProductByBur(@Valid @NotNull String bur,
-                                                                                   @Valid @NotNull UUID productId);
-
-  @RolesAllowed(CONSUMER_ROLE)
-  List<UUID> getConsentRequestIdsOfCurrentConsumerGrantedByProducerForProductByUid(@Valid @NotNull String uid,
-                                                                                   @Valid @NotNull UUID productId);
-
-  @RolesAllowed(CONSUMER_ROLE)
   List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(@Valid @NotNull UUID productId,
                                                                             @Valid @NotNull LocalDateTime since);
 
