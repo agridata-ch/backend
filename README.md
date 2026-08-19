@@ -121,8 +121,8 @@ Role: `agridata.ch.Agridata_Datenanbieter`
 
 | Username   | UID                | loginid |
 |------------|--------------------|---------|
-| provider-1 | CHE146680598 (BLW) | 3477553 |
-| provider-2 | CHE146680598 (BLW) | 3477586 |
+| provider-1 | CHE113614519 (BLW) | 3477553 |
+| provider-2 | CHE113614519 (BLW) | 3477586 |
 
 ### Data Consumers
 
