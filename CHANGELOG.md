@@ -1,3 +1,13 @@
+## [1.15.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.16...v1.15.0-rc.17) (2026-08-19)
+
+### Features
+
+* **agreement:** update contract and agb ([378a207](https://github.com/agridata-ch/backend/commit/378a20765946212abc64541e19d10872dd72487c)), closes [DIGIB2-1594](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1594)
+
+### Bug Fixes
+
+* **test-data:** fix uid of BLW ([7f84c5c](https://github.com/agridata-ch/backend/commit/7f84c5c898e8c2285c5f25830e5b60b07c92bb17)), closes [DIGIB2-1634](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1634)
+
 ## [1.15.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.15...v1.15.0-rc.16) (2026-08-18)
 
 ### Features
