@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.14.0</version>
+    <version>1.15.0-rc.18</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -422,6 +422,8 @@
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                             <maven.home>${maven.home}</maven.home>
+                            <user.language>en</user.language>
+                            <user.country>US</user.country>
                         </systemPropertyVariables>
                         <argLine>@{argLine}</argLine>
                     </configuration>
@@ -443,6 +445,8 @@
                             </native.image.path>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                             <maven.home>${maven.home}</maven.home>
+                            <user.language>en</user.language>
+                            <user.country>US</user.country>
                         </systemPropertyVariables>
                         <argLine>@{argLine}</argLine>
                     </configuration>

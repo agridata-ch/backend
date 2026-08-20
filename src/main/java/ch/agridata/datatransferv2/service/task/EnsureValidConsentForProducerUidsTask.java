@@ -35,11 +35,9 @@ public class EnsureValidConsentForProducerUidsTask implements UnaryOperator<Agri
     log.debug("Checking consent for producerUids={}, dataRequestIds={}",
         producerUids, validDataRequestIds);
 
-    Set<String> producerUidsWithGrantedConsent = validDataRequestIds.stream()
-        .map(dataRequestId -> consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
-            dataRequestId,
-            producerUids.stream().toList()))
-        .flatMap(List::stream)
+    Set<String> producerUidsWithGrantedConsent = consentRequestApi
+        .getGrantedConsentRequestsOfDataRequestsAndProducersUids(validDataRequestIds, producerUids.stream().toList())
+        .stream()
         .map(ConsentRequestFundamentalViewDto::dataProducerUid)
         .collect(Collectors.toSet());
 

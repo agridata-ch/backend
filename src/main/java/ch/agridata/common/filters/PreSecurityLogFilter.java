@@ -25,7 +25,7 @@ import org.slf4j.event.Level;
 @Slf4j
 public class PreSecurityLogFilter {
   private static final String START_TIME_KEY = "request.startTime";
-  private static final List<String> URIS_TO_APPLY = List.of("/api");
+  private static final List<String> URIS_TO_APPLY = List.of("/api/", "/public/api/");
   private static final List<String> CONTENT_TYPE_LOG_BLACKLIST = List.of(
       "multipart/form-data",
       "text/event-stream",

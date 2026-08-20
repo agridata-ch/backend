@@ -1,7 +1,6 @@
 package ch.agridata.datatransferv2.service.task;
 
 import ch.agridata.agreement.api.DataRequestApi;
-import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -31,11 +30,8 @@ public class EnsureValidDataRequestTask implements UnaryOperator<AgridataContext
 
     log.debug("Checking data requests for consumerUid={}, productId={}", consumerUid, productId);
 
-    List<UUID> validDataRequestIds = dataRequestApi.getActiveDataRequestsOfConsumer(consumerUid).stream()
-        .filter(dr -> dr.products() != null)
-        .filter(dr -> dr.products().contains(productId))
-        .map(DataRequestDto::id)
-        .toList();
+    List<UUID> validDataRequestIds =
+        dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(consumerUid, productId);
 
     if (validDataRequestIds.isEmpty()) {
       log.warn("No valid data request found for consumerUid={}, productId={}",

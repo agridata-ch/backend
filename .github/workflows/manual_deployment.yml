@@ -31,7 +31,4 @@ jobs:
         }')[github.event.inputs.environment] }}
       image: 183295418748.dkr.ecr.eu-central-2.amazonaws.com/backend:${{ github.event.inputs.image-tag }}
       cluster: agridata-ecs-cluster
-      service: agridata-backend
-      task-definition-family: agridata-backend
-      container-name: agridata-backend-service
     secrets: inherit

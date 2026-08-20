@@ -9,6 +9,7 @@ import ch.agridata.product.dto.DataProductNameDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
+import ch.agridata.product.dto.PublicDataProductDto;
 import ch.agridata.product.persistence.DataProductEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -33,8 +34,11 @@ public interface DataProductMapper {
 
   PageResponseDto<DataProductDto> toPagedDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
 
+  PublicDataProductDto toPublicDto(DataProductEntity dataProductEntity);
+
+  PageResponseDto<PublicDataProductDto> toPagedPublicDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
+
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "name", source = "dataProductUpdateDto.name")
   @Mapping(target = "deprecatedSince", ignore = true)
   @Mapping(target = "archived", ignore = true)
   @Mapping(target = "createdBy", ignore = true)
@@ -53,6 +57,10 @@ public interface DataProductMapper {
   @Mapping(target = "restClientId", source = "restClient.id")
   DataProductUpdateDto toUpdateDto(DataProductEntity entity);
 
+  // NullValuePropertyMappingStrategy.IGNORE gives this PATCH mapping its partial-update semantics: a null property in the incoming DTO
+  // is skipped, leaving the entity's current value untouched. This is why PATCH cannot clear a field (null means "leave unchanged",
+  // not "set to null") and differs from updateEntity above, which overwrites every mapped property including with
+  // null (full replace, used for PUT).
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "deprecatedSince", ignore = true)

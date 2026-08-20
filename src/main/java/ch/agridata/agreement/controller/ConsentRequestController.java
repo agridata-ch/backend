@@ -60,6 +60,12 @@ public class ConsentRequestController {
   private final ConsentRequestQueryService consentRequestQueryService;
   private final ConsentRequestMutationService consentRequestMutationService;
 
+  /**
+   * This method is deprecated.
+   *
+   * @deprecated Replaced by {@link ConsentRequestAggregationController#getConsentRequestAggregations(String)()}
+   */
+  @Deprecated(since = "1.15.0")
   @GET
   @ApiSubset({MOBILE_APP, WEB_APP})
   @Operation(
@@ -86,6 +92,12 @@ public class ConsentRequestController {
     return consentRequestQueryService.getConsentRequestsAsCurrentDataProducer(dataProducerUid);
   }
 
+  /**
+   * This method is deprecated.
+   *
+   * @deprecated Replaced by {@link ConsentRequestAggregationController#getConsentRequestAggregation(UUID, String)()}
+   */
+  @Deprecated(since = "1.15.0")
   @Path("/{id}")
   @ApiSubset({WEB_APP})
   @GET()

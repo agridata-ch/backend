@@ -1,6 +1,7 @@
 package ch.agridata.product.service;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.product.api.DataSourceSystemApi;
 import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.mapper.DataSourceSystemMapper;
 import ch.agridata.product.persistence.DataProviderRepository;
@@ -21,11 +22,16 @@ import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class DataSourceSystemService {
+public class DataSourceSystemService implements DataSourceSystemApi {
   private final DataSourceSystemRepository dataSourceSystemRepository;
   private final DataSourceSystemMapper dataSourceSystemMapper;
   private final DataProviderRepository dataProviderRepository;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
+
+  @Override
+  public List<DataSourceSystemDto> getDataSourceSystems() {
+    return dataSourceSystemRepository.listAll().stream().map(dataSourceSystemMapper::toDto).toList();
+  }
 
   public List<DataSourceSystemDto> getByProviderIdAsAdmin(UUID dataProviderId) {
     dataProviderRepository.findByIdOptional(dataProviderId).orElseThrow(() -> new NotFoundException(dataProviderId.toString()));

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/uid-register/findByUid",
+    "bodyPatterns": [
+      {
+        "matchesXPath": "//*[local-name()='uidOrganisationId' and text()='113614519']"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "uid-register-api/CHE113614519-blw.xml",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8"
+    }
+  }
+}

@@ -7,7 +7,6 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.DataRequestDto;
@@ -150,41 +149,6 @@ public class DataRequestController {
         resourceQueryDto,
         dataRequestId,
         lastModifiedFrom);
-  }
-
-  /**
-   * This method is deprecated, because it does not return the name of the UIDs
-   *
-   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestAndKtIdPv2(UUID, String)}
-   */
-  @Deprecated(since = "1.5.0")
-  @GET
-  @ApiSubset({DATA_CONSUMER})
-  @Path(PATH_V1 + "/{id}/kt-id-p/{kt-id-p}/consent-requests")
-  @Operation(
-      operationId = "getConsentRequestsOfDataRequestAndKtIdP",
-      description =
-          "<strong>This endpoint is deprecated, because it does not return the name of the UIDs. Please use "
-              + "[/v2/data-requests/{id}/kt-id-p/{kt-id-p}/consent-requests](#/Data%20Requests/getConsentRequestsOfDataRequestAndKtIdPv2) "
-              + "instead.</strong><br><br>"
-              + "Retrieves all consent requests associated with a specific data request and kt-id-p. "
-              + "Accessible to the consumer who owns the data request."
-  )
-  @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed(CONSUMER_ROLE)
-  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestAndKtIdP(
-      @Parameter(
-          description = "The UUID of the data request",
-          example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
-      )
-      @PathParam("id") UUID dataRequestId,
-      @Parameter(
-          description = "The kt-id-p identifier of the producer",
-          example = "FLXXA0001"
-      )
-      @PathParam("kt-id-p") String ktIdP
-  ) {
-    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(dataRequestId, ktIdP);
   }
 
   @GET

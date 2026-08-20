@@ -13,10 +13,12 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * underlying data request.
  *
  * @CommentLastReviewed 2026-07-29
+ * @deprecated Replaced by {@link ConsentRequestProducerViewV2Dto}
  */
 
 @Schema(description = "Data transfer object representing a consent request")
 @Builder
+@Deprecated(since = "1.15")
 public record ConsentRequestProducerViewDto(
 
     @Schema(
@@ -38,6 +40,10 @@ public record ConsentRequestProducerViewDto(
     )
     String dataProducerBur,
 
+    @Schema(
+        description = "State of the consent request",
+        examples = {"GRANTED"}
+    )
     ConsentRequestStateEnum stateCode,
 
     @Schema(

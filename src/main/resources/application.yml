@@ -23,6 +23,9 @@ bit:
 quarkus:
   cache:
     caffeine:
+      health:
+        expire-after-write: 1M
+        maximum-size: 100
       agis-api-register:
         expire-after-write: 5M
         maximum-size: 100
@@ -36,6 +39,8 @@ quarkus:
     name: agridata.ch
   banner:
     path: banner.txt
+  jackson:
+    timezone: Europe/Zurich # Required for correct conversion of OffsetDateTime to LocalDateTime
   datasource:
     db-kind: postgresql
     jdbc:

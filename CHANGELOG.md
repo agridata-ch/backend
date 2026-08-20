@@ -1,3 +1,119 @@
+## [1.15.0-rc.18](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.17...v1.15.0-rc.18) (2026-08-19)
+
+### Features
+
+* **datatransfer:** remove deprecated endpoints ([0118c81](https://github.com/agridata-ch/backend/commit/0118c817dadb2056ca91bb70abc92353271760ac))
+
+## [1.15.0-rc.17](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.16...v1.15.0-rc.17) (2026-08-19)
+
+### Features
+
+* **agreement:** update contract and agb ([378a207](https://github.com/agridata-ch/backend/commit/378a20765946212abc64541e19d10872dd72487c)), closes [DIGIB2-1594](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1594)
+
+### Bug Fixes
+
+* **test-data:** fix uid of BLW ([7f84c5c](https://github.com/agridata-ch/backend/commit/7f84c5c898e8c2285c5f25830e5b60b07c92bb17)), closes [DIGIB2-1634](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1634)
+
+## [1.15.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.15...v1.15.0-rc.16) (2026-08-18)
+
+### Features
+
+* **bur:** Add BURs to consent request creation ([09b53ae](https://github.com/agridata-ch/backend/commit/09b53aed7cb085d6c43df6bf8a1b327df9ed9b49))
+
+## [1.15.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.14...v1.15.0-rc.15) (2026-08-18)
+
+### Features
+
+* **notification:** Fix email templates for data request notifications ([caf3064](https://github.com/agridata-ch/backend/commit/caf30642426825c1a2ee721f90a96a97752c4c28))
+
+### Bug Fixes
+
+* **product:** refactor DataProductMutationService ([8c81151](https://github.com/agridata-ch/backend/commit/8c8115160cc2565afb1e3872633a52ae6e83768c)), closes [DIGIB2-1606](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1606)
+
+## [1.15.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.13...v1.15.0-rc.14) (2026-08-18)
+
+### Features
+
+* **bur:** Split consent request aggregate endpoint into summary-list and details ([7d615a9](https://github.com/agridata-ch/backend/commit/7d615a912fb89e94daf717285b1ca4142761b818)), closes [DIGIB2-1600](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1600)
+
+## [1.15.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.12...v1.15.0-rc.13) (2026-08-14)
+
+### Bug Fixes
+
+* **datatransfer:** introduce ConsentRequestFundamentalViewEntity to speed up data transfers ([391dcc0](https://github.com/agridata-ch/backend/commit/391dcc06cf7c5c9791300970ed5bd71399b07527)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
+## [1.15.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.11...v1.15.0-rc.12) (2026-08-14)
+
+### Bug Fixes
+
+* **datatransfer:** improve performance of datatransfer ([2597265](https://github.com/agridata-ch/backend/commit/2597265b95357bf06d46a616b6dbc25d63e824e9)), closes [DIGIB2-1537](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1537)
+
+## [1.15.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.10...v1.15.0-rc.11) (2026-08-13)
+
+### Bug Fixes
+
+* **mdc:** fix userid mdc field ([12e378b](https://github.com/agridata-ch/backend/commit/12e378b8a8f97beb70210aeb4b2d4eb83b426440))
+
+## [1.15.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.9...v1.15.0-rc.10) (2026-08-13)
+
+### Bug Fixes
+
+* **pom:** Fix language for maven test runs ([a99a313](https://github.com/agridata-ch/backend/commit/a99a31384e0499f108bec84e62a89c54a127ee34))
+
+## [1.15.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.8...v1.15.0-rc.9) (2026-08-12)
+
+### Features
+
+* **product:** add consentRequired flag ([014ceb8](https://github.com/agridata-ch/backend/commit/014ceb8ed1ddfc1679ba0ebb9ee53c4e382ff050)), closes [DIGIB2-1553](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1553)
+
+## [1.15.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.7...v1.15.0-rc.8) (2026-08-12)
+
+### Bug Fixes
+
+* **health:** increase timeout because of identitas health check response latency ([69a1e8d](https://github.com/agridata-ch/backend/commit/69a1e8d776685a02ce9dba23822f67b24dcbdcb4)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
+## [1.15.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.6...v1.15.0-rc.7) (2026-08-12)
+
+### Bug Fixes
+
+* **health:** improve openapi description ([4c0df08](https://github.com/agridata-ch/backend/commit/4c0df085422e0bcef7edccf9e1fac65fd1c12357)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
+## [1.15.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.5...v1.15.0-rc.6) (2026-08-12)
+
+### Features
+
+* **health:** add public health endpoint ([1509f04](https://github.com/agridata-ch/backend/commit/1509f049148149ffb1fba7427738b3c9dc400ab5)), closes [DIGIB2-1533](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1533)
+
+## [1.15.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.4...v1.15.0-rc.5) (2026-08-11)
+
+### Features
+
+* **bur:** Get BUR from AGIS ([07bc150](https://github.com/agridata-ch/backend/commit/07bc150cbbf2c640e0c5c7e73463ec5b38782d09)), closes [DIGIB2-1574](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1574)
+
+## [1.15.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.3...v1.15.0-rc.4) (2026-08-10)
+
+### Features
+
+* **agreement:** add PDF/A-2a conformity and fix swapped party labels ([dae0cb3](https://github.com/agridata-ch/backend/commit/dae0cb305333b3870e3a56e531b0170f58c943e6)), closes [DIGIB2-1512](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1512)
+
+## [1.15.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.2...v1.15.0-rc.3) (2026-08-10)
+
+### Features
+
+* **cicd:** separate backend services ([37338bc](https://github.com/agridata-ch/backend/commit/37338bc2cf055eafac95429de971a05941334a49)), closes [DIGIB2-1586](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1586)
+
+## [1.15.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.15.0-rc.1...v1.15.0-rc.2) (2026-08-07)
+
+### Bug Fixes
+
+* **logging:** add logging for public routes ([ec2cf48](https://github.com/agridata-ch/backend/commit/ec2cf481e18765d5ac87a86b9046f09d36db2a5c)), closes [DIGIB2-1586](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1586)
+
+## [1.15.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.14.0...v1.15.0-rc.1) (2026-08-07)
+
+### Features
+
+* **data-product:** Add public endpoints for fetching all active data products. ([e60a218](https://github.com/agridata-ch/backend/commit/e60a21843b6e9c0a2a71df489042fff61681de67)), closes [DIGIB2-1585](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1585)
+
 ## [1.14.0](https://github.com/agridata-ch/backend/compare/v1.13.0...v1.14.0) (2026-08-06)
 
 ### Features

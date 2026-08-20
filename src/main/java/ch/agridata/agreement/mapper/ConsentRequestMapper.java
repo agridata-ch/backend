@@ -1,13 +1,14 @@
 package ch.agridata.agreement.mapper;
 
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestProducerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
+import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewEntity;
 import ch.agridata.common.dto.PageResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,9 +37,7 @@ public interface ConsentRequestMapper {
   @Mapping(target = "dataProducerBur", source = "entity.dataProducerBur")
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
 
-  ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestEntity entity);
-
-  ConsentRequestConsumerViewDto toConsentRequestConsumerViewDto(ConsentRequestConsumerViewV2Dto v2);
+  ConsentRequestProducerViewV2Dto toConsentRequestProducerViewV2Dto(ConsentRequestEntity entity);
 
   @Mapping(target = "name", source = "uidName")
   ConsentRequestConsumerViewV2Dto toConsentRequestConsumerViewV2Dto(ConsentRequestEntity entity, String uidName);
@@ -48,10 +47,9 @@ public interface ConsentRequestMapper {
 
   ConsentRequestCreatedDto toConsentRequestCreatedDto(ConsentRequestEntity entity, boolean isCreated);
 
-  @Mapping(target = "dataRequestId", source = "entity.dataRequest.id")
   @Mapping(target = "lastModifiedDateTime", source = "modifiedAt")
-  ConsentRequestFundamentalViewDto toConsentRequestFundamentalViewDto(ConsentRequestEntity entity);
+  ConsentRequestFundamentalViewDto toConsentRequestFundamentalViewDto(ConsentRequestFundamentalViewEntity entity);
 
   PageResponseDto<ConsentRequestFundamentalViewDto> toPagedConsentRequestFundamentalViewDto(
-      PageResponseDto<ConsentRequestEntity> pagedEntities);
+      PageResponseDto<ConsentRequestFundamentalViewEntity> pagedEntities);
 }

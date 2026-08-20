@@ -6,14 +6,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
-import ch.agridata.agreement.persistence.ConsentRequestRepository;
+import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewRepository;
 import ch.agridata.common.dto.PageResponseDto;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.ConsentRequest;
-import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +21,12 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class ConsentRequestsOfDataRequestProviderTest {
 
-  private final ConsentRequestRepository consentRequestRepository;
+  private final ConsentRequestFundamentalViewRepository consentRequestFundamentalViewRepository;
   private final ConsentRequestMapper consentRequestMapper;
 
   @Test
   void givenProvider_whenRequestingConsentRequestsOfOwnDataRequest_thenAllConsentRequestsReturned() {
-    // IP_SUISSE_01 belongs to the BLW/AGIS provider (uid=CHE146680598), which is the PROVIDER test user.
+    // IP_SUISSE_01 belongs to the BLW/AGIS provider (uid=CHE113614519), which is the PROVIDER test user.
     // It has 4 consent requests.
     PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
@@ -34,11 +34,11 @@ class ConsentRequestsOfDataRequestProviderTest {
         .extract().as(new TypeRef<>() {
         });
 
-    var expectedItems = TestDataLoader.of(consentRequestRepository).load(
-            ConsentRequest.IP_SUISSE_01_CHE101000001,
-            ConsentRequest.IP_SUISSE_01_CHE102000002,
-            ConsentRequest.IP_SUISSE_01_CHE103000001,
-            ConsentRequest.IP_SUISSE_01_CHE103000002).stream()
+    var expectedItems = consentRequestFundamentalViewRepository.findByIds(List.of(
+            ConsentRequest.IP_SUISSE_01_CHE101000001.uuid(),
+            ConsentRequest.IP_SUISSE_01_CHE102000002.uuid(),
+            ConsentRequest.IP_SUISSE_01_CHE103000001.uuid(),
+            ConsentRequest.IP_SUISSE_01_CHE103000002.uuid())).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
 
@@ -82,7 +82,7 @@ class ConsentRequestsOfDataRequestProviderTest {
   @Test
   void givenProvider_whenRequestingDataRequestOfDifferentProvider_thenNotFound() {
     // BLV_1 uses the TVD/IDENTITAS data source system (uid=CHE105031830).
-    // The PROVIDER test user is BLW (uid=CHE146680598) and must not see it.
+    // The PROVIDER test user is BLW (uid=CHE113614519) and must not see it.
     AuthTestUtils.requestAs(PROVIDER_1)
         .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.BLV_1 + "/consent-requests")
         .then().statusCode(404);

@@ -2,11 +2,8 @@ package ch.agridata.agreement.persistence;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 
-import ch.agridata.common.dto.PageResponseDto;
-import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.persistence.BaseSearchRepository;
-import ch.agridata.common.persistence.SearchField;
-import ch.agridata.common.persistence.SearchSpec;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -38,7 +35,8 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
-                + "WHERE cr.dataProducerUid IN :uids", ConsentRequestEntity.class
+                + "WHERE cr.dataProducerUid IN :uids "
+                + "ORDER BY cr.id", ConsentRequestEntity.class
         )
         .setParameter("uids", dataProducerUids)
         .getResultList();
@@ -52,6 +50,16 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
             "dataProducerUids", dataProducerUids
         )
     ).firstResultOptional();
+  }
+
+  public List<ConsentRequestEntity> findActiveByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs and uidBurRelationUntil is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerBurs", dataProducerBurs
+        )
+    ).list();
   }
 
   public List<UUID> findConsentRequestIdsOfConsumerGrantedByProducerForProduct(
@@ -76,33 +84,27 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   }
 
-  public Optional<ConsentRequestEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+  /**
+   * Finds the UID-only consent request, i.e. the one without a BUR. BUR based consent requests share the same data request + UID and must
+   * not be returned here.
+   */
+  public Optional<ConsentRequestEntity> findNonBurByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid",
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and dataProducerBur is null",
         Map.of(
             "dataRequestId", dataRequestId,
             "dataProducerUid", dataProducerUid
         )
     ).firstResultOptional();
-
   }
 
   public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerUids(UUID dataRequestId, List<String> dataProducerUids) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids",
+        Sort.by("id"),
         Map.of(
             "dataRequestId", dataRequestId,
             "dataProducerUids", dataProducerUids
-        )
-    ).list();
-  }
-
-  public List<ConsentRequestEntity> findByDataRequestIdAndDataProducerBurs(UUID dataRequestId, List<String> dataProducerBurs) {
-    return find(
-        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs",
-        Map.of(
-            "dataRequestId", dataRequestId,
-            "dataProducerBurs", dataProducerBurs
         )
     ).list();
   }
@@ -127,21 +129,6 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .setParameter("stateCode", GRANTED)
         .setParameter("since", since)
         .getResultList();
-  }
-
-  public PageResponseDto<ConsentRequestEntity> findByDataRequestIdAndLastModifiedFrom(
-      ResourceQueryDto resourceQueryDto,
-      UUID dataRequestId,
-      LocalDateTime lastModifiedFrom
-  ) {
-    return findPage(
-        resourceQueryDto,
-        SearchSpec.builder()
-            .baseWhere("dataRequest.id = :dataRequestId AND modifiedAt >= :lastModifiedFrom")
-            .baseParams(Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom))
-            .sortableFields(Map.of("modifiedAt", SearchField.simple("modifiedAt")))
-            .build()
-    );
   }
 
   public List<UUID> findIdsToTerminateByDataProducerBurs(List<String> burs, int batchSize) {

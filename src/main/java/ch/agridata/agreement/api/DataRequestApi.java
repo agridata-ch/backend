@@ -1,15 +1,15 @@
 package ch.agridata.agreement.api;
 
-import ch.agridata.agreement.dto.DataRequestDto;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Defines the API interface for managing data requests. It specifies the operations available to external clients.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-08-14
  */
 public interface DataRequestApi {
 
-  List<DataRequestDto> getActiveDataRequestsOfConsumer(String consumerUid);
+  List<UUID> getActiveDataRequestIdsForConsumerAndProduct(String consumerUid, UUID productId);
 
 }

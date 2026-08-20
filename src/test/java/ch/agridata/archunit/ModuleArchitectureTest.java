@@ -31,6 +31,7 @@ class ModuleArchitectureTest {
   static final String SERVICE = "service";
   static final String JOB = "job";
   static final String PERSISTENCE = "persistence";
+  static final String UTILS = "utils";
 
   /**
    * Intra-module: which layers may depend on which other layers within the same module.
@@ -41,9 +42,10 @@ class ModuleArchitectureTest {
       CONTROLLER, List.of(SERVICE, DTO),
       DTO, List.of(),
       MAPPER, List.of(PERSISTENCE, DTO),
-      SERVICE, List.of(SERVICE, API, PERSISTENCE, MAPPER, DTO),
+      SERVICE, List.of(SERVICE, API, PERSISTENCE, MAPPER, DTO, UTILS),
       JOB, List.of(SERVICE),
-      PERSISTENCE, List.of()
+      PERSISTENCE, List.of(),
+      UTILS, List.of(DTO)
   );
 
   /**
@@ -52,7 +54,8 @@ class ModuleArchitectureTest {
    */
   static final Map<String, List<String>> CROSS_MODULE_ALLOWED = Map.of(
       SERVICE, List.of(API, DTO),
-      MAPPER, List.of(DTO)
+      MAPPER, List.of(DTO),
+      UTILS, List.of(DTO)
   );
 
   /**

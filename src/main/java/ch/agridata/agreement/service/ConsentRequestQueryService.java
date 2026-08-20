@@ -8,20 +8,18 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agreement.api.ConsentRequestApi;
-import ch.agridata.agreement.dto.ConsentRequestConsumerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
-import ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum;
+import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewRepository;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import ch.agridata.product.api.DataProductApi;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.Nullable;
@@ -48,13 +46,13 @@ import lombok.RequiredArgsConstructor;
 public class ConsentRequestQueryService implements ConsentRequestApi {
 
   private final ConsentRequestRepository consentRequestRepository;
+  private final ConsentRequestFundamentalViewRepository consentRequestFundamentalViewRepository;
   private final ConsentRequestMapper consentRequestMapper;
   private final AgridataSecurityIdentity identity;
   private final UserApi userApi;
   private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestQueryService dataRequestQueryService;
-  private final DataProductApi dataProductApi;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
 
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
@@ -93,20 +91,6 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
         authorizedUids.stream().map(UidDto::uid).toList());
 
     return merge(existingConsentRequests, authorizedUids);
-  }
-
-  /**
-   * This method is deprecated, because it does not return the UIDs of equid owners. They don't have a KtIdP and need to be identified
-   * by their agateLoginId.
-   *
-   * @deprecated Replaced by {@link #getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(UUID, String, String)}
-   */
-  @Deprecated(since = "1.5.0")
-  @RolesAllowed(CONSUMER_ROLE)
-  public List<ConsentRequestConsumerViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerForKtIdP(UUID dataRequestId, String ktIdP) {
-    return getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(dataRequestId, ktIdP, null).stream()
-        .map(consentRequestMapper::toConsentRequestConsumerViewDto)
-        .toList();
   }
 
   @RolesAllowed(CONSUMER_ROLE)
@@ -163,7 +147,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     if (!dataRequestQueryService.isAssignedToCurrentProvider(dataRequestId)) {
       throw new NotFoundException(dataRequestId.toString());
     }
-    var pagedEntities = consentRequestRepository.findByDataRequestIdAndLastModifiedFrom(
+    var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
         lastModifiedFrom);
@@ -172,19 +156,17 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   }
 
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersUids(UUID dataRequestId,
-                                                                                                       List<String> producerUids) {
-    return consentRequestRepository.findByDataRequestIdAndDataProducerUids(dataRequestId, producerUids).stream()
-        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
+                                                                                                        List<String> producerUids) {
+    return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
 
   @Override
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestAndProducersBurs(UUID dataRequestId,
-                                                                                                       List<String> producerBurs) {
-    return consentRequestRepository.findByDataRequestIdAndDataProducerBurs(dataRequestId, producerBurs).stream()
-        .filter(consentRequest -> StateEnum.GRANTED.equals(consentRequest.getStateCode()))
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(List<UUID> dataRequestIds,
+                                                                                                        List<String> producerBurs) {
+    return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }

@@ -3,7 +3,6 @@ package ch.agridata.datatransferv2.service.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
@@ -40,8 +39,8 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+        any(), any()))
         .thenReturn(List.of(consent));
 
     var result = task.apply(context);
@@ -53,8 +52,8 @@ class EnsureValidConsentForProducerUidsTaskTest {
   void givenNoConsentGranted_whenApply_thenConsentNotGrantedExceptionIsThrown() {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1));
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+        any(), any()))
         .thenReturn(List.of());
 
     assertThatThrownBy(() -> task.apply(context))
@@ -71,8 +70,8 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var context = createContextWithProducers(List.of(PRODUCER_UID_1, PRODUCER_UID_2));
     var consent = createConsent(PRODUCER_UID_1);
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+        any(), any()))
         .thenReturn(List.of(consent));
 
     assertThatThrownBy(() -> task.apply(context))
@@ -89,8 +88,8 @@ class EnsureValidConsentForProducerUidsTaskTest {
     var consent1 = createConsent(PRODUCER_UID_1);
     var consent2 = createConsent(PRODUCER_UID_2);
 
-    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestAndProducersUids(
-        eq(DATA_REQUEST_ID), any()))
+    when(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+        any(), any()))
         .thenReturn(List.of(consent1, consent2));
 
     var result = task.apply(context);
