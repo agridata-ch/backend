@@ -1,3 +1,9 @@
+## [1.15.1](https://github.com/agridata-ch/backend/compare/v1.15.0...v1.15.1) (2026-08-20)
+
+### Bug Fixes
+
+* **product:** make restClientRequestTemplate optional ([970cda7](https://github.com/agridata-ch/backend/commit/970cda7918472c9634293e9b515a8f88f8a4a3ac))
+
 ## [1.15.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.15.0...v1.15.1-rc.1) (2026-08-20)
 
 ### Bug Fixes
