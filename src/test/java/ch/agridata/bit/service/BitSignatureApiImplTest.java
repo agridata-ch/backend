@@ -38,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class BitSignatureApiImplTest {
 
   private static final String TOKEN = "test-sign-process-token";
-  private static final String ADMIN_GLOBAL_ID = "admin-123";
   private static final String EMAIL = "test-email";
   private static final String KEY_BEARER = "test-key-bearer";
   private static final String PROFILE = "test-profile";
@@ -63,7 +62,7 @@ class BitSignatureApiImplTest {
     mockHappyPath();
 
     // when
-    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL);
+    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), EMAIL);
 
     // then
     assertThat(result).isNotEmpty();
@@ -101,7 +100,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("initSign failed");
 
@@ -117,7 +116,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("addHash failed");
 
@@ -134,7 +133,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("startSign failed");
 
@@ -151,7 +150,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("cancelled");
 
@@ -168,7 +167,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("unexpected state");
 
@@ -185,7 +184,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("maximum polling iterations");
 
@@ -206,7 +205,7 @@ class BitSignatureApiImplTest {
     when(restClient.getSignedHashes(any())).thenReturn(getSignedHashesOk());
 
     // when
-    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL);
+    byte[] result = bitSignatureApiImpl.sign(minimalPdf(), EMAIL);
 
     // then
     assertThat(result).isNotEmpty();
@@ -225,7 +224,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("getSignedHashes failed");
 
@@ -244,7 +243,7 @@ class BitSignatureApiImplTest {
 
     // when / then
     byte[] pdf = minimalPdf();
-    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, ADMIN_GLOBAL_ID, EMAIL))
+    assertThatThrownBy(() -> bitSignatureApiImpl.sign(pdf, EMAIL))
         .isInstanceOf(ExternalWebServiceException.class)
         .hasMessageContaining("no signatures");
 
@@ -258,7 +257,7 @@ class BitSignatureApiImplTest {
     doThrow(new RuntimeException("network error")).when(restClient).dropSign(any());
 
     // when / then – dropSign exception must not propagate
-    assertThat(bitSignatureApiImpl.sign(minimalPdf(), ADMIN_GLOBAL_ID, EMAIL)).isNotEmpty();
+    assertThat(bitSignatureApiImpl.sign(minimalPdf(), EMAIL)).isNotEmpty();
   }
 
   private void mockHappyPath() {
