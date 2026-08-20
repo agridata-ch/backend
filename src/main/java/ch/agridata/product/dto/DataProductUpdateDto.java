@@ -84,7 +84,6 @@ public record DataProductUpdateDto(
         examples = "{\"search\":{\"uid\":\"{{uid}}\"}}"
     )
     @Size(max = 1000)
-    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     String restClientRequestTemplate,
 
     @Schema(
