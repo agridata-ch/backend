@@ -1,3 +1,9 @@
+## [1.16.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.1...v1.16.0-rc.2) (2026-08-21)
+
+### Features
+
+* **bur:** Connect UID consentRequest to BUR consentRequest state on BUR products ([1e5f7d1](https://github.com/agridata-ch/backend/commit/1e5f7d18c506d04db817084c5d791a2db2fdaf9b))
+
 ## [1.16.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.15.1...v1.16.0-rc.1) (2026-08-21)
 
 ### Features
