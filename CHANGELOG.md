@@ -1,3 +1,9 @@
+## [1.16.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.15.1...v1.16.0-rc.1) (2026-08-21)
+
+### Features
+
+* **bit:** remove deprecated bit seal api ([3bdd791](https://github.com/agridata-ch/backend/commit/3bdd7912ecb9a5738af8bb82b0d8d2faa7730658)), closes [DIGIB2-1578](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1578)
+
 ## [1.15.1](https://github.com/agridata-ch/backend/compare/v1.15.0...v1.15.1) (2026-08-20)
 
 ### Bug Fixes
