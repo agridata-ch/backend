@@ -4,15 +4,19 @@ import ch.agridata.datatransferv2.service.AgridataContext;
 import com.google.common.collect.Range;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Extracts the requested date from the request parameters and sets it on the context.
  *
- * @CommentLastReviewed 2026-02-25
+ * @CommentLastReviewed 2026-08-24
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -21,18 +25,31 @@ public class ResolveRequestedDateTask implements UnaryOperator<AgridataContext> 
 
   @Override
   public AgridataContext apply(final AgridataContext context) {
-    var requestedDateRange = Range.closed(Optional.ofNullable(context.getRequestParameters().get("date"))
-            .or(() -> Optional.ofNullable(context.getRequestParameters().get("dateFrom")))
-            .map(LocalDate::parse)
-            .orElseGet(LocalDate::now),
-        Optional.ofNullable(context.getRequestParameters().get("date"))
-            .or(() -> Optional.ofNullable(context.getRequestParameters().get("dateTo")))
-            .map(LocalDate::parse)
-            .orElseGet(LocalDate::now));
+    var params = context.getRequestParameters();
+
+    var lower = Stream.of(date(params, "date"), date(params, "dateFrom"), dateTime(params, "dateTimeFrom"))
+        .flatMap(Optional::stream)
+        .min(Comparator.naturalOrder())
+        .orElseGet(LocalDate::now);
+    var upper = Stream.of(date(params, "date"), date(params, "dateTo"), dateTime(params, "dateTimeTo"))
+        .flatMap(Optional::stream)
+        .max(Comparator.naturalOrder())
+        .orElseGet(LocalDate::now);
+
+    var requestedDateRange = Range.closed(lower, upper);
     context.setRequestedDateRange(requestedDateRange);
 
     log.debug("Resolved requestedDateRange from request: {}", requestedDateRange);
 
     return context;
+  }
+
+  private static Optional<LocalDate> date(final Map<String, String> params, final String key) {
+    return Optional.ofNullable(params.get(key)).map(LocalDate::parse);
+  }
+
+  private static Optional<LocalDate> dateTime(final Map<String, String> params, final String key) {
+    return Optional.ofNullable(params.get(key))
+        .map(value -> LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(value)));
   }
 }
