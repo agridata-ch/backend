@@ -85,7 +85,7 @@ public class ConsentRequestStateService {
     consentRequest.setStateCode(targetState);
     auditingService.logConsentRequestStateChange(consentRequest);
 
-    consentRequestSyncService.syncUidConsentRequestWithBurConsentRequests(consentRequest.getDataRequest().getId(),
+    consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(consentRequest.getDataRequest().getId(),
         consentRequest.getDataProducerUid());
   }
 

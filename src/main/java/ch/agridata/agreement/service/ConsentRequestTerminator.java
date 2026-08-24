@@ -80,7 +80,7 @@ public class ConsentRequestTerminator {
       terminated.forEach(t -> {
         log.info("terminated consent request id={} bur={} uid={}", t.getId(), t.getDataProducerBur(), t.getDataProducerUid());
         auditingService.logDataRequestTerminated(t.getId());
-        consentRequestSyncService.syncUidConsentRequestWithBurConsentRequests(t.getDataRequest().getId(), t.getDataProducerUid());
+        consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(t.getDataRequest().getId(), t.getDataProducerUid());
       });
     }
 

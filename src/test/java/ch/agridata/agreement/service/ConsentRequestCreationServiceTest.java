@@ -1,5 +1,7 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -91,8 +93,9 @@ class ConsentRequestCreationServiceTest {
   }
 
   @Test
-  void givenActiveDataRequestAndAuthorizedUids_whenCreateConsentRequestForDataRequest_thenCreateConsentRequestsTransactional() {
+  void givenActiveDataRequestAndAuthorizedUids_whenCreateConsentRequests_thenCreateConsentRequestsTransactional() {
     // Given
+    UUID dataProductId = UUID.randomUUID();
     UUID dataRequestId = UUID.randomUUID();
     String ktIdP = "test-kt-id-p";
     String agateLoginId = "test-agateLoginId";
@@ -105,6 +108,7 @@ class ConsentRequestCreationServiceTest {
     DataRequestEntity dataRequest = DataRequestEntity.builder()
         .id(dataRequestId)
         .stateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE)
+        .dataProducts(List.of(DataRequestDataProductEntity.builder().dataProductId(dataProductId).build()))
         .build();
 
     // Mock existing consent requests (uid2 already has one)
@@ -130,18 +134,20 @@ class ConsentRequestCreationServiceTest {
         .isCreated(true)
         .build();
 
-
     // Mock interactions
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.of(dataRequest));
+    when(dataProductApi.getActiveProductsByIds(List.of(dataProductId)))
+        .thenReturn(List.of(DataProductDto.builder().id(dataProductId).flowCode(FlowCodeEnum.UID_BASED_PRE_VALIDATION)
+            .consentRequired(true).build()));
     when(agridataSecurityIdentity.getKtIdP()).thenReturn(ktIdP);
     when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(agateLoginId);
     when(userApi.getAuthorizedUids(ktIdP, agateLoginId)).thenReturn(uidDtos);
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
-        .thenReturn(Optional.of(existingConsentRequest));
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
-        .thenReturn(Optional.empty());
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
-        .thenReturn(Optional.empty());
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
+        .thenReturn(List.of());
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
+        .thenReturn(List.of(existingConsentRequest));
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
+        .thenReturn(List.of());
     doAnswer(invocation -> {
       ConsentRequestEntity e = invocation.getArgument(0);
       // behave based on e.getDataProducerUid()
@@ -154,17 +160,16 @@ class ConsentRequestCreationServiceTest {
     }).when(consentRequestRepository).persist(any(ConsentRequestEntity.class));
 
     // When
-    List<ConsentRequestCreatedDto> result = service.createConsentRequestForDataRequest(createConsentRequestDtos);
+    List<ConsentRequestCreatedDto> result = service.createConsentRequests(createConsentRequestDtos);
 
     // Then
     assertThat(result)
         .hasSize(3)
         .containsExactlyInAnyOrder(dto1, dto2, dto3);
-
   }
 
   @Test
-  void givenInactiveDataRequest_whenCreateConsentRequestForDataRequest_thenThrowIllegalStateException() {
+  void givenInactiveDataRequest_whenCreateConsentRequests_thenThrowIllegalStateException() {
     // Given
     UUID dataRequestId = UUID.randomUUID();
     DataRequestEntity inactiveDataRequest = DataRequestEntity.builder()
@@ -176,21 +181,21 @@ class ConsentRequestCreationServiceTest {
     when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
-    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+    assertThatThrownBy(() -> service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("test").build())))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining(dataRequestId.toString());
   }
 
   @Test
-  void givenNonExistentDataRequest_whenCreateConsentRequestForDataRequest_thenThrowNotFoundException() {
+  void givenNonExistentDataRequest_whenCreateConsentRequests_thenThrowNotFoundException() {
     // Given
     UUID dataRequestId = UUID.randomUUID();
     when(dataRequestRepository.findByIdOptional(dataRequestId)).thenReturn(Optional.empty());
     when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of(UidDto.builder().uid("test").build()));
 
     // When & Then
-    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+    assertThatThrownBy(() -> service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("test").build()))
     )
         .isInstanceOf(NotFoundException.class)
@@ -198,15 +203,14 @@ class ConsentRequestCreationServiceTest {
   }
 
   @Test
-  void givenNoAccessTouid_whenCreateConsentRequestForDataRequest_thenThrowIllegalArgumentException() {
+  void givenNoAccessTouid_whenCreateConsentRequests_thenThrowIllegalArgumentException() {
     // Given
     UUID dataRequestId = UUID.randomUUID();
-
 
     when(userApi.getAuthorizedUids(any(), any())).thenReturn(List.of());
 
     // When & Then
-    assertThatThrownBy(() -> service.createConsentRequestForDataRequest(
+    assertThatThrownBy(() -> service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequestId).uid("testuid").build())))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("testuid");
@@ -216,20 +220,20 @@ class ConsentRequestCreationServiceTest {
   }
 
   @Test
-  void givenDataRequestWithoutBurProducts_whenCreateConsentRequestForDataRequest_thenOnlyUidConsentRequestIsCreated() {
+  void givenDataRequestWithoutBurProducts_whenCreateConsentRequests_thenOnlyUidConsentRequestIsCreated() {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.UID_BASED_PRE_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
 
     // When
-    service.createConsentRequestForDataRequest(
+    service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
 
     // Then
     assertThat(persistedConsentRequests()).singleElement().satisfies(consentRequest -> {
       assertThat(consentRequest.getDataProducerUid()).isEqualTo(UID1);
       assertThat(consentRequest.getDataProducerBur()).isNull();
+      assertThat(consentRequest.getStateCode()).isEqualTo(OPENED);
     });
     verify(userApi, never()).getAuthorizedBurs(anyString());
   }
@@ -240,25 +244,22 @@ class ConsentRequestCreationServiceTest {
       "BUR_BASED_PRE_VALIDATION", "BUR_BASED_POST_VALIDATION", "UNBOUND_BUR_BASED_POST_VALIDATION"
   }
   )
-  void givenDataRequestWithBurProduct_whenCreateConsentRequestForDataRequest_thenBurConsentRequestsAreCreated(FlowCodeEnum flowCode) {
+  void givenDataRequestWithBurProduct_whenCreateConsentRequests_thenBurConsentRequestsAreCreated(FlowCodeEnum flowCode) {
     // Given
     var dataRequest = activeDataRequestWithProduct(flowCode);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
         BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
         BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
     ));
-    when(consentRequestRepository.findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
-        .thenReturn(List.of());
 
     // When
-    var result = service.createConsentRequestForDataRequest(
+    var result = service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
 
-    // Then: the response stays on UID level
-    assertThat(result).singleElement()
-        .satisfies(dto -> assertThat(dto.dataProducerUid()).isEqualTo(UID1));
+    // Then
+    assertThat(result).hasSize(3)
+        .allSatisfy(dto -> assertThat(dto.dataProducerUid()).isEqualTo(UID1));
 
     assertThat(persistedConsentRequests()).hasSize(3);
     assertThat(persistedConsentRequests())
@@ -266,36 +267,35 @@ class ConsentRequestCreationServiceTest {
         .allSatisfy(consentRequest -> {
           assertThat(consentRequest.getDataProducerUid()).isEqualTo(UID1);
           assertThat(consentRequest.getUidBurRelationUntil()).isNull();
-          assertThat(consentRequest.getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.OPENED);
+          assertThat(consentRequest.getStateCode()).isEqualTo(OPENED);
         })
         .extracting(ConsentRequestEntity::getDataProducerBur, ConsentRequestEntity::getUidBurRelationSince)
         .containsExactlyInAnyOrder(tuple(BUR1, RELATION_SINCE_1), tuple(BUR2, RELATION_SINCE_2));
+
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), UID1);
   }
 
   @Test
-  void givenExistingBurConsentRequest_whenCreateConsentRequestForDataRequest_thenOnlyMissingBurIsCreated() {
+  void givenExistingBurConsentRequest_whenCreateConsentRequests_thenOnlyMissingBurIsCreated() {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_PRE_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
-        .thenReturn(Optional.of(ConsentRequestEntity.builder().dataProducerUid(UID1).build()));
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
         BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
         BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
     ));
-    when(consentRequestRepository.findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), List.of(BUR1, BUR2)))
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
         .thenReturn(List.of(
-            ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).build(),
-            // Active consent request of a former owner (different UID): must not block a new one for UID1.
-            ConsentRequestEntity.builder().dataProducerUid(UID2).dataProducerBur(BUR2).build()
+            ConsentRequestEntity.builder().dataProducerUid(UID1).build(),
+            ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).build()
         ));
 
     // When
-    var result = service.createConsentRequestForDataRequest(
+    var result = service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
 
     // Then
-    assertThat(result).singleElement().satisfies(dto -> assertThat(dto.isCreated()).isFalse());
+    assertThat(result).hasSize(3);
     assertThat(persistedConsentRequests()).singleElement().satisfies(consentRequest -> {
       assertThat(consentRequest.getDataProducerUid()).isEqualTo(UID1);
       assertThat(consentRequest.getDataProducerBur()).isEqualTo(BUR2);
@@ -304,15 +304,14 @@ class ConsentRequestCreationServiceTest {
   }
 
   @Test
-  void givenNoBursForUid_whenCreateConsentRequestForDataRequest_thenOnlyUidConsentRequestIsCreated() {
+  void givenNoBursForUid_whenCreateConsentRequests_thenOnlyUidConsentRequestIsCreated() {
     // Given
     var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_POST_VALIDATION);
     givenAuthorizedProducer(dataRequest);
-    when(consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1)).thenReturn(Optional.empty());
     when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of());
 
     // When
-    service.createConsentRequestForDataRequest(
+    service.createConsentRequests(
         List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
 
     // Then
@@ -320,13 +319,61 @@ class ConsentRequestCreationServiceTest {
         .satisfies(consentRequest -> assertThat(consentRequest.getDataProducerBur()).isNull());
   }
 
+  @Test
+  void givenDataRequestNotRequiringConsent_whenCreateConsentRequests_thenUidConsentRequestIsLegallyPermitted() {
+    // Given
+    var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.UID_BASED_PRE_VALIDATION, false);
+    givenAuthorizedProducer(dataRequest);
+
+    // When
+    service.createConsentRequests(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
+
+    // Then
+    assertThat(persistedConsentRequests()).singleElement().satisfies(consentRequest -> {
+      assertThat(consentRequest.getDataProducerUid()).isEqualTo(UID1);
+      assertThat(consentRequest.getDataProducerBur()).isNull();
+      assertThat(consentRequest.getStateCode()).isEqualTo(LEGALLY_PERMITTED);
+    });
+    verify(userApi, never()).getAuthorizedBurs(anyString());
+    verify(consentRequestSyncService, never()).syncUidConsentRequestStateWithBurConsentRequests(any(), anyString());
+  }
+
+  @Test
+  void givenBurDataRequestNotRequiringConsent_whenCreateConsentRequests_thenAllConsentRequestsAreLegallyPermitted() {
+    // Given
+    var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_PRE_VALIDATION, false);
+    givenAuthorizedProducer(dataRequest);
+    when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
+        BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
+        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
+    ));
+
+    // When
+    var result = service.createConsentRequests(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
+
+    // Then
+    assertThat(result).hasSize(3);
+    assertThat(persistedConsentRequests()).hasSize(3)
+        .allSatisfy(consentRequest -> {
+          assertThat(consentRequest.getDataProducerUid()).isEqualTo(UID1);
+          assertThat(consentRequest.getStateCode()).isEqualTo(LEGALLY_PERMITTED);
+        });
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), UID1);
+  }
+
   private DataRequestEntity activeDataRequestWithProduct(FlowCodeEnum flowCode) {
+    return activeDataRequestWithProduct(flowCode, true);
+  }
+
+  private DataRequestEntity activeDataRequestWithProduct(FlowCodeEnum flowCode, boolean consentRequired) {
     var dataProductId = UUID.randomUUID();
     var dataProducts = new ArrayList<DataRequestDataProductEntity>();
     dataProducts.add(DataRequestDataProductEntity.builder().dataProductId(dataProductId).build());
 
     when(dataProductApi.getActiveProductsByIds(List.of(dataProductId)))
-        .thenReturn(List.of(DataProductDto.builder().id(dataProductId).flowCode(flowCode).build()));
+        .thenReturn(List.of(DataProductDto.builder().id(dataProductId).flowCode(flowCode).consentRequired(consentRequired).build()));
 
     return DataRequestEntity.builder()
         .id(UUID.randomUUID())

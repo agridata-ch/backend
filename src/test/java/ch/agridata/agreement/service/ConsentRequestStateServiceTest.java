@@ -204,7 +204,7 @@ class ConsentRequestStateServiceTest {
 
     assertEquals(GRANTED, burConsentRequest.getStateCode());
     verify(auditingService).logConsentRequestStateChange(burConsentRequest);
-    verify(consentRequestSyncService).syncUidConsentRequestWithBurConsentRequests(DATA_REQUEST_ID, UID);
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(DATA_REQUEST_ID, UID);
   }
 
   @Test
@@ -218,6 +218,6 @@ class ConsentRequestStateServiceTest {
 
     assertEquals(OPENED, burConsentRequest.getStateCode());
     verify(auditingService, never()).logConsentRequestStateChange(any());
-    verify(consentRequestSyncService, never()).syncUidConsentRequestWithBurConsentRequests(any(), any());
+    verify(consentRequestSyncService, never()).syncUidConsentRequestStateWithBurConsentRequests(any(), any());
   }
 }

@@ -65,11 +65,17 @@ class ConsentRequestLifecycleTest {
   void givenBurBasedDataRequest_whenCreatedUpdatedAndCleanedUp_thenRollupAndTerminationAreReflectedInAggregations() {
     // PHASE 1 — create: one UID row plus one BUR row per authorized BUR, all OPENED.
     var created = createAcontrolConsents();
-    assertThat(created).hasSize(2)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::isCreated)
+    assertThat(created).hasSize(5)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid,
+            ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated)
         .containsExactlyInAnyOrder(
-            tuple(Uid.CHE102000001.name(), true),
-            tuple(Uid.CHE102000002.name(), true));
+            tuple(Uid.CHE102000001.name(), null, true),
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920004.getCode(), true),
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920006.getCode(), true),
+            tuple(Uid.CHE102000002.name(), null, true),
+            tuple(Uid.CHE102000002.name(), Bur.CODE_99920005.getCode(), true));
 
     assertThat(rowStates(Uid.CHE102000001)).containsOnly(OPENED);
     assertThat(rowStates(Uid.CHE102000002)).containsOnly(OPENED);

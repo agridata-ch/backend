@@ -1,5 +1,7 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
@@ -15,18 +17,16 @@ import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.user.api.UserApi;
-import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
 
@@ -50,90 +50,94 @@ public class ConsentRequestCreationService {
   private final SessionFactory sessionFactory;
 
   @RolesAllowed(PRODUCER_ROLE)
-  public List<ConsentRequestCreatedDto> createConsentRequestForDataRequest(List<CreateConsentRequestDto> createConsentRequestDtos) {
+  public List<ConsentRequestCreatedDto> createConsentRequests(List<CreateConsentRequestDto> createConsentRequestDtos) {
     var uids = getAuthorizedUidsAsCurrentProducer();
-    // Memoized per batch so that repeated UIDs or data requests do not trigger the same lookup twice.
-    Map<UUID, Boolean> hasBurProductsByDataRequestId = new HashMap<>();
-    Map<String, List<BurDto>> bursByUid = new HashMap<>();
+    assertAllUidsAuthorized(createConsentRequestDtos, uids);
 
     return sessionFactory.fromTransaction(state ->
-        createConsentRequestDtos.stream().map(dto -> {
-          if (!uids.contains(dto.uid())) {
-            throw new IllegalArgumentException(
-                "Current user is not authorized to create consent request for data producer UID: " + dto.uid());
-          }
-
-          var dataRequest = dataRequestRepository.findByIdOptional(dto.dataRequestId())
-              .orElseThrow(() -> new NotFoundException(dto.dataRequestId().toString()));
-
-          if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
-            throw new IllegalStateException("Data request " + dto.dataRequestId()
-                + " must be in ACTIVE state to create a consent request.");
-          }
-
-          var uidConsentRequest = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUid(dto.dataRequestId(), dto.uid())
-              .map(existingRequest -> consentRequestMapper.toConsentRequestCreatedDto(existingRequest, false))
-              .orElseGet(() ->
-                  createConsentRequest(dto.uid(), null, null, dataRequest)
-              );
-
-          @NonNull var isAbsent = hasBurProductsByDataRequestId.computeIfAbsent(dto.dataRequestId(), id -> hasBurProducts(dataRequest));
-          if (isAbsent) {
-            createMissingBurConsentRequests(dto.uid(), dataRequest, bursByUid);
-            consentRequestSyncService.syncUidConsentRequestWithBurConsentRequests(dataRequest.getId(), dto.uid());
-          }
-
-          return uidConsentRequest;
-        }).toList()
-    );
+        createConsentRequestDtos.stream()
+            .map(dto -> processConsentRequest(dto.dataRequestId(), dto.uid()))
+            .flatMap(Collection::stream)
+            .toList());
   }
 
-  private boolean hasBurProducts(DataRequestEntity dataRequest) {
+  private void assertAllUidsAuthorized(List<CreateConsentRequestDto> createConsentRequestDtos, List<String> authorizedUids) {
+    var unauthorizedUids = createConsentRequestDtos.stream()
+        .map(CreateConsentRequestDto::uid)
+        .filter(uid -> !authorizedUids.contains(uid))
+        .toList();
+
+    if (!unauthorizedUids.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Current user is not authorized to create consent request for data producer uids: " + unauthorizedUids);
+    }
+  }
+
+  private List<ConsentRequestCreatedDto> processConsentRequest(UUID dataRequestId, String uid) {
+    var dataRequest = loadActiveDataRequest(dataRequestId);
+    var products = loadProducts(dataRequest);
+    var hasBurProducts = products.stream().map(DataProductDto::flowCode).anyMatch(FlowCodeEnum::isBurBased);
+    var isConsentRequired = products.stream().anyMatch(DataProductDto::consentRequired);
+    var consentRequestState = isConsentRequired ? OPENED : LEGALLY_PERMITTED;
+
+    List<ConsentRequestCreatedDto> createdConsentRequests = new ArrayList<>();
+    createdConsentRequests.add(createConsentRequestIfMissing(dataRequest, consentRequestState, uid, null, null));
+
+    if (hasBurProducts) {
+      userApi.getAuthorizedBurs(uid).stream()
+          .map(bur -> createConsentRequestIfMissing(dataRequest, consentRequestState, bur.uid(), bur.bur(), bur.relationSince()))
+          .forEach(createdConsentRequests::add);
+      consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), uid);
+    }
+
+    return createdConsentRequests;
+  }
+
+  private DataRequestEntity loadActiveDataRequest(UUID dataRequestId) {
+    var dataRequest = dataRequestRepository.findByIdOptional(dataRequestId)
+        .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
+
+    if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
+      throw new IllegalStateException("Data request " + dataRequestId + " must be in ACTIVE state to create a consent request.");
+    }
+    return dataRequest;
+  }
+
+  private List<DataProductDto> loadProducts(DataRequestEntity dataRequest) {
     var dataProductIds = dataRequest.getDataProducts().stream()
         .map(DataRequestDataProductEntity::getDataProductId)
         .toList();
 
-    return dataProductApi.getActiveProductsByIds(dataProductIds).stream()
-        .map(DataProductDto::flowCode)
-        .anyMatch(FlowCodeEnum::isBurBased);
-  }
-
-  /**
-   * Creates a consent request for every active BUR of the given UID that does not have one yet. A consent request is identified by
-   * (data request, UID, BUR and its active state ({@code uidBurRelationUntil == null})); only an active row blocks creation of a new one.
-   * A terminated row is historical and must not be rewritten, but active rows are made idempotently.
-   */
-  private void createMissingBurConsentRequests(String uid, DataRequestEntity dataRequest, Map<String, List<BurDto>> bursByUid) {
-    var burDtos = bursByUid.computeIfAbsent(uid, userApi::getAuthorizedBurs);
-    if (burDtos.isEmpty()) {
-      return;
+    var products = dataProductApi.getActiveProductsByIds(dataProductIds);
+    if (products.isEmpty()) {
+      throw new IllegalStateException("DataRequest with id=" + dataRequest.getId() + " has no active data products.");
     }
-
-    var burs = burDtos.stream().map(BurDto::bur).toList();
-    var activeBurs = consentRequestRepository
-        .findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequest.getId(), burs).stream()
-        .filter(consentRequest -> uid.equals(consentRequest.getDataProducerUid()))
-        .map(ConsentRequestEntity::getDataProducerBur)
-        .collect(Collectors.toSet());
-
-    burDtos.stream()
-        .filter(bur -> !activeBurs.contains(bur.bur()))
-        .forEach(bur -> createConsentRequest(uid, bur.bur(), bur.relationSince(), dataRequest));
+    return products;
   }
 
-  private ConsentRequestCreatedDto createConsentRequest(
+  private ConsentRequestCreatedDto createConsentRequestIfMissing(
+      DataRequestEntity dataRequest,
+      ConsentRequestEntity.StateEnum consentRequestState,
       String uid,
       String bur,
-      LocalDateTime uidBurRelationSince,
-      DataRequestEntity dataRequest
+      LocalDateTime uidBurRelationSince
   ) {
+    var existingConsentRequest =
+        consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid).stream()
+            .filter(cr -> (cr.getDataProducerUid().equals(uid) && Objects.equals(cr.getDataProducerBur(), bur)))
+            .findAny();
+
+    if (existingConsentRequest.isPresent()) {
+      return consentRequestMapper.toConsentRequestCreatedDto(existingConsentRequest.get(), false);
+    }
+
     var consentRequestEntity = ConsentRequestEntity.builder()
         .requestDate(LocalDateTime.now())
         .dataRequest(dataRequest)
         .dataProducerUid(uid)
         .dataProducerBur(bur)
         .uidBurRelationSince(uidBurRelationSince)
-        .stateCode(ConsentRequestEntity.StateEnum.OPENED)
+        .stateCode(consentRequestState)
         .build();
     consentRequestRepository.persist(consentRequestEntity);
     return consentRequestMapper.toConsentRequestCreatedDto(consentRequestEntity, true);

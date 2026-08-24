@@ -10,6 +10,7 @@ import ch.agridata.user.dto.FarmTypeEnum;
 import ch.agridata.user.utils.AgisPersonFarmTreeUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,14 @@ public class BurAuthorizationService {
   private final AgisApi agisApi;
 
   public List<BurDto> getAuthorizedBurs(@NonNull String uid) {
+    // AGIS returns an error if the uid does not start with "CHE". In our case,
+    // it may start with "ZZZ", because that is the uid Identitas assigns to equid owners.
+    // Equid owners have no authorized burs, so an empty list is returned.
+    if (uid.startsWith("ZZZ")) {
+      log.debug("No authorized burs were fetched from AGIS for uid={} "
+          + "because it belongs to an equid owner (uid starting with \"ZZZ\").", uid);
+      return new ArrayList<>();
+    }
     var personFarmResponse = agisApi.fetchRegisterDataForUid(uid);
 
     var personFarmTree = Optional.of(personFarmResponse)

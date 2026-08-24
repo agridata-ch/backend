@@ -65,7 +65,7 @@ class ConsentRequestSyncServiceTest {
   }
 
   private void sync() {
-    service.syncUidConsentRequestWithBurConsentRequests(DATA_REQUEST_ID, UID);
+    service.syncUidConsentRequestStateWithBurConsentRequests(DATA_REQUEST_ID, UID);
   }
 
   @Test

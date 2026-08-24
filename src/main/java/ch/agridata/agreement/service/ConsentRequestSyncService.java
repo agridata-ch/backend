@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.DECLINED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
 
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
@@ -25,7 +26,7 @@ public class ConsentRequestSyncService {
   private final ConsentRequestRepository consentRequestRepository;
   private final AuditingService auditingService;
 
-  public void syncUidConsentRequestWithBurConsentRequests(UUID dataRequestId, String uid) {
+  public void syncUidConsentRequestStateWithBurConsentRequests(UUID dataRequestId, String uid) {
     var uidConsentRequest = consentRequestRepository.findAndLockUidBasedByDataRequestIdAndDataProducerUid(dataRequestId, uid)
         .orElseThrow(
             () -> new IllegalStateException("no uid consent request found for dataRequestId=" + dataRequestId + " and uid=" + uid));
@@ -51,6 +52,9 @@ public class ConsentRequestSyncService {
         .map(ConsentRequestEntity::getStateCode)
         .collect(Collectors.toSet());
 
+    if (burStates.contains(LEGALLY_PERMITTED)) {
+      return LEGALLY_PERMITTED;
+    }
     if (burStates.contains(GRANTED)) {
       return GRANTED;
     }

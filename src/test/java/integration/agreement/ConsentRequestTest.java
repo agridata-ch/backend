@@ -18,9 +18,9 @@ import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.Bur;
 import integration.testutils.TestDataIdentifiers.Uid;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
-import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -36,10 +36,14 @@ import org.junit.jupiter.api.Test;
 class ConsentRequestTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  /** Start date of a direct farm-to-person relation in the AGIS stubs, see {@code BurAuthorizationTest}. */
+  /**
+   * Start date of a direct farm-to-person relation in the AGIS stubs, see {@code BurAuthorizationTest}.
+   */
   private static final LocalDateTime RELATION_SINCE = LocalDateTime.of(2025, 12, 11, 8, 23, 31);
 
-  /** Start date of a parent-child relation in the AGIS stubs, see {@code BurAuthorizationTest}. */
+  /**
+   * Start date of a parent-child relation in the AGIS stubs, see {@code BurAuthorizationTest}.
+   */
   private static final LocalDateTime PARENT_RELATION_SINCE = LocalDateTime.of(2025, 12, 11, 8, 23, 32);
 
   private final EntityManager entityManager;
@@ -125,11 +129,17 @@ class ConsentRequestTest {
     var createdConsentRequests = createConsentRequestsForAcontrolDataRequest();
 
     // The response stays on UID level, one entry per submitted DTO
-    assertThat(createdConsentRequests).hasSize(2)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::isCreated)
+    assertThat(createdConsentRequests).hasSize(5)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid,
+            ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated)
         .containsExactlyInAnyOrder(
-            tuple(Uid.CHE102000001.name(), true),
-            tuple(Uid.CHE102000002.name(), true));
+            tuple(Uid.CHE102000001.name(), null, true),
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920004.getCode(), true),
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920006.getCode(), true),
+            tuple(Uid.CHE102000002.name(), null, true),
+            tuple(Uid.CHE102000002.name(), Bur.CODE_99920005.getCode(), true));
 
     assertThat(consentRequestRowsOfProducerB(ACONTROL_BIO_SUISSE.uuid()))
         .extracting(row -> row[0], row -> row[1], row -> row[2], row -> row[3])
@@ -147,7 +157,7 @@ class ConsentRequestTest {
 
     var createdConsentRequests = createConsentRequestsForAcontrolDataRequest();
 
-    assertThat(createdConsentRequests).hasSize(2)
+    assertThat(createdConsentRequests).hasSize(5)
         .extracting(ConsentRequestCreatedDto::isCreated)
         .containsOnly(false);
     assertThat(consentRequestRowsOfProducerB(ACONTROL_BIO_SUISSE.uuid())).hasSize(5);

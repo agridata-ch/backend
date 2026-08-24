@@ -97,6 +97,7 @@ public class ConsentRequestEntity extends AuditableEntity {
   public enum StateEnum {
     GRANTED,
     OPENED,
-    DECLINED
+    DECLINED,
+    LEGALLY_PERMITTED
   }
 }

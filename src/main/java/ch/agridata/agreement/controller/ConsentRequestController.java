@@ -147,7 +147,7 @@ public class ConsentRequestController {
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   public List<ConsentRequestCreatedDto> createConsentRequests(
       @NotNull @RequestBody List<@Valid @NotNull CreateConsentRequestDto> createConsentRequestDtos) {
-    return consentRequestCreationService.createConsentRequestForDataRequest(createConsentRequestDtos);
+    return consentRequestCreationService.createConsentRequests(createConsentRequestDtos);
   }
 
 }
