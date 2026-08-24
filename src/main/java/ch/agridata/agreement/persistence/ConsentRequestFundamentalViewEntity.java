@@ -45,16 +45,16 @@ public class ConsentRequestFundamentalViewEntity extends AuditableEntity {
 
   @Formula("""
       CASE
-        WHEN state_code = 'GRANTED' AND data_producer_bur IS NULL THEN DATE '1970-01-01'
-        WHEN state_code = 'GRANTED' AND data_producer_bur IS NOT NULL THEN uid_bur_relation_since::date
+        WHEN state_code IN ('GRANTED', 'LEGALLY_PERMITTED') AND data_producer_bur IS NULL THEN DATE '1970-01-01'
+        WHEN state_code IN ('GRANTED', 'LEGALLY_PERMITTED') AND data_producer_bur IS NOT NULL THEN uid_bur_relation_since::date
       END
       """)
   private LocalDate grantedDataPeriodFrom;
 
   @Formula("""
       CASE
-        WHEN state_code = 'GRANTED' AND data_producer_bur IS NULL THEN DATE '9999-12-31'
-        WHEN state_code = 'GRANTED' AND data_producer_bur IS NOT NULL
+        WHEN state_code IN ('GRANTED', 'LEGALLY_PERMITTED') AND data_producer_bur IS NULL THEN DATE '9999-12-31'
+        WHEN state_code IN ('GRANTED', 'LEGALLY_PERMITTED') AND data_producer_bur IS NOT NULL
           THEN COALESCE(uid_bur_relation_until::date, DATE '9999-12-31')
       END
       """)

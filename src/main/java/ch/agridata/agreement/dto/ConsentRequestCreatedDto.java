@@ -30,6 +30,12 @@ public record ConsentRequestCreatedDto(
     @NotNull
     String dataProducerUid,
 
+    @Schema(
+        description = "BUR of the data producer",
+        examples = {"A12345678"}
+    )
+    String dataProducerBur,
+
     @JsonProperty("isCreated")
     boolean isCreated
 ) {
