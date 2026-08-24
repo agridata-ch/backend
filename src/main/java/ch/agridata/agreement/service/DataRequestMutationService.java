@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Implements mutations on data requests. It ensures consistent state changes and enforces validation.
@@ -129,41 +128,32 @@ public class DataRequestMutationService {
     Set<UUID> existingProductIds = entity.getDataProducts().stream()
         .map(DataRequestDataProductEntity::getDataProductId)
         .collect(Collectors.toSet());
-    dataRequestMapper.updateEntity(dataRequestDto, entity);
-    setDataSourceSystemId(dataRequestDto, entity, existingProductIds);
+    List<DataProductDto> products = loadProducts(dataRequestDto.products());
+    validateProducts(products, existingProductIds);
+    var dataSourceSystemId = resolveDataSourceSystemId(products);
+
+    dataRequestMapper.updateEntity(dataRequestDto, dataSourceSystemId, entity);
     dataRequestRepository.persist(entity);
     return dataRequestEnrichmentService.toEnrichedDto(entity);
   }
 
-  /**
-   * Verifies that all data products in the request exist and share the same Data Source System Code.
-   *
-   * @throws ValidationException if any product is not found
-   */
-  private void setDataSourceSystemId(@NotNull DataRequestUpdateDto dto, DataRequestEntity entity, Set<UUID> existingProductIds) {
-    var productIds = dto.products();
-    if (productIds == null || productIds.isEmpty()) {
-      entity.setDataSourceSystemId(null);
-      return;
-    }
-
-    List<DataProductDto> products = productIds.stream()
-        .map(this::getProductOrThrowValidation)
-        .toList();
-
+  private void validateProducts(List<DataProductDto> products, Set<UUID> existingProductIds) {
     products.forEach(product -> validateNotDeprecated(product, existingProductIds));
 
-    long uniqueDataSourceSystemCodeCount = products.stream()
-        .map(DataProductDto::dataSourceSystemCode)
-        .distinct()
-        .count();
-
-    if (uniqueDataSourceSystemCodeCount > 1) {
+    if (products.stream().map(DataProductDto::dataSourceSystemCode).distinct().count() > 1) {
       throw new ValidationException("Cannot process request: all products must share the same data source system");
     }
 
-    var dataSourceSystemId = dataProductApi.getDataSourceSystemIdOfActiveProduct(products.getFirst().id());
-    entity.setDataSourceSystemId(dataSourceSystemId);
+    if (products.stream().map(DataProductDto::consentRequired).distinct().count() > 1) {
+      throw new ValidationException("Cannot process request: all products must have the same consent requirement");
+    }
+  }
+
+  private UUID resolveDataSourceSystemId(List<DataProductDto> products) {
+    if (products.isEmpty()) {
+      return null;
+    }
+    return dataProductApi.getDataSourceSystemIdOfActiveProduct(products.getFirst().id());
   }
 
   private void validateNotDeprecated(DataProductDto product, Set<UUID> existingProductIds) {
@@ -171,6 +161,15 @@ public class DataRequestMutationService {
     if (product.deprecatedSince() != null && isNewProduct) {
       throw new ValidationException("Cannot process request: data product " + product.id() + " is deprecated");
     }
+  }
+
+  private List<DataProductDto> loadProducts(List<UUID> productIds) {
+    if (productIds == null || productIds.isEmpty()) {
+      return List.of();
+    }
+    return productIds.stream()
+        .map(this::getProductOrThrowValidation)
+        .toList();
   }
 
   private DataProductDto getProductOrThrowValidation(UUID id) {
