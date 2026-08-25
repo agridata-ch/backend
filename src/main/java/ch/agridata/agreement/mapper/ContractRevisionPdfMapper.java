@@ -18,9 +18,8 @@ import org.mapstruct.Named;
  * specific string formatting for PDF layout requirements, such as
  * inline address lines and combined Zip/City strings.
  *
- * @CommentLastReviewed: 2026-04-17
+ * @CommentLastReviewed 2026-04-17
  */
-
 @Mapper(componentModel = "jakarta")
 public interface ContractRevisionPdfMapper {
   @Mapping(target = "requestHumanFriendlyId", source = "dataRequestHumanFriendlyId")

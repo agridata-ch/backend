@@ -31,9 +31,8 @@ import org.apache.xmlgraphics.util.MimeConstants;
  * This service utilizes Apache FOP (Formatting Objects Processor) and XSLT to
  * render {@link ContractRevisionPdfDto} into a PDF byte stream.
  *
- * @CommentLastReviewed: 2026-04-23
+ * @CommentLastReviewed 2026-04-23
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ContractRevisionPdfService {

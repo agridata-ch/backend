@@ -24,9 +24,8 @@ import org.w3c.dom.Document;
  * fonts declared in {@code pdf/fop.xconf}. This is the exact path that failed in the packaged
  * (fast-jar) deployment while working locally.
  *
- * @CommentLastReviewed: 2026-07-15
+ * @CommentLastReviewed 2026-07-15
  */
-
 class ContractRevisionFopConfigTest {
 
   private static final String MINIMAL_FO = """

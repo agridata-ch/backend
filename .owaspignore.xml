@@ -14,27 +14,8 @@
         logic. Additionally, the project does not declare quarkus-opentelemetry, so no
         OTel exporter or instrumentation pipeline is active.
     -->
-    <suppress until="2026-08-31Z">
+    <suppress until="2026-09-30Z">
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-39883</cve>
-    </suppress>
-
-    <!--
-        netty-transport (transitive) - CPE false positive.
-
-        CVE-2026-56816 is an HTTP/3 DoS (CWE-400): an attacker sends HTTP/3 reserved frames
-        with large unvalidated payload lengths across many streams, causing memory exhaustion.
-        The advisory (GHSA-hpcc-26xq-25fv) lists a single affected artifact,
-        io.netty:netty-codec-http3 (< 4.2.16.Final), a 4.2.x/incubator-only module. It does
-        not reference netty-transport at all; the match here comes from the generic
-        cpe:2.3:a:netty:netty CPE.
-
-        netty-codec-http3 is not on the classpath (not in the dependency tree) and the app
-        uses no HTTP/3, so the vulnerable code path does not exist.
-        RE-EVALUATE if netty-codec-http3 / HTTP/3 is ever pulled in.
-    -->
-    <suppress until="2026-08-31Z">
-        <!-- started: 2026-08-03 | affected: NO (CPE false positive; vuln is in netty-codec-http3, not used) -->
-        <cve>CVE-2026-56816</cve>
     </suppress>
 </suppressions>

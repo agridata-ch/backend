@@ -22,9 +22,8 @@ import org.mapstruct.Named;
 /**
  * Maps contract revision entities and DTOs and creates initial contract revisions from data requests.
  *
- * @CommentLastReviewed: 2026-03-16
+ * @CommentLastReviewed 2026-03-16
  */
-
 @Mapper(componentModel = "jakarta", uses = DataRequestMapper.class)
 public interface ContractRevisionMapper {
   @Mapping(target = "dataRequestId", source = "dataRequest.id")

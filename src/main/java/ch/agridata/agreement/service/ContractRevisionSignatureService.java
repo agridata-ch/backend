@@ -23,9 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Provides business logic for contract revision signatures. It handles the signing process, verification, and persistence.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-03-19
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ContractRevisionSignatureService {
