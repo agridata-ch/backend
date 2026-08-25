@@ -8,8 +8,9 @@ import org.mapstruct.Mapper;
  * DTO-layer {@code TargetTypeCodeEnum} and the persistence-layer {@code TargetTypeCodeEnum}.
  * This is typically used to convert enum values when persisting or retrieving data regarding
  * notification targets.
+ *
+ * @CommentLastReviewed 2026-08-25
  */
-
 @Mapper(componentModel = "jakarta")
 public interface NotificationTargetTypeMapper {
 

@@ -29,9 +29,8 @@ import org.hibernate.type.SqlTypes;
  * Defines the persistence representation for contract revisions. It contains fields for storing values of
  * specific data request-fields at the time of contract revision initialization.
  *
- * @CommentLastReviewed: 2026-06-09
+ * @CommentLastReviewed 2026-06-09
  */
-
 @Entity
 @Table(name = "contract_revision")
 @SQLDelete(sql = "UPDATE contract_revision SET archived = true WHERE id = ?")

@@ -16,9 +16,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Handles OTP challenges for contract revision signatures. It generates challenges and manages their expiration.
  *
- * @CommentLastReviewed: 2026-06-09
+ * @CommentLastReviewed 2026-06-09
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ContractRevisionOtpChallengeService {

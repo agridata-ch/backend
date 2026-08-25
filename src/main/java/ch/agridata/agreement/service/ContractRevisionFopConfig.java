@@ -26,9 +26,8 @@ import org.apache.fop.configuration.DefaultConfigurationBuilder;
  * required for Apache FOP (Formatting Objects Processor) operations,
  * XML transformations, and JAXB marshalling.
  *
- * @CommentLastReviewed: 2026-07-15
+ * @CommentLastReviewed 2026-07-15
  */
-
 @ApplicationScoped
 public class ContractRevisionFopConfig {
 

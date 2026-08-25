@@ -9,9 +9,8 @@ import java.util.UUID;
 /**
  * Manages persistence operations for contract revisions. It allows querying contract revisions by their ID and data consumer UID.
  *
- * @CommentLastReviewed: 2026-03-16
+ * @CommentLastReviewed 2026-03-16
  */
-
 @ApplicationScoped
 public class ContractRevisionRepository implements PanacheRepositoryBase<ContractRevisionEntity, UUID> {
   public Optional<ContractRevisionEntity> findByIdAndDataConsumerUid(UUID id, String consumerUid) {

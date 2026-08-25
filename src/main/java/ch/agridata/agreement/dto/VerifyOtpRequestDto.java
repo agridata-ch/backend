@@ -7,9 +7,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents a request for verifying a one-time password (OTP).
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-03-19
  */
-
 public record VerifyOtpRequestDto(
     @Schema(
         description = "The 6-digit code to be verified.",
