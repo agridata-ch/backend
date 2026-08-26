@@ -1,3 +1,9 @@
+## [1.16.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.5...v1.16.0-rc.6) (2026-08-26)
+
+### Features
+
+* **agreement:** introduce legally permitted consents ([ced0c0f](https://github.com/agridata-ch/backend/commit/ced0c0ffe8a027ab27efc390e98b9ead15b7ad6c)), closes [DIGIB2-1555](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1555)
+
 ## [1.16.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.4...v1.16.0-rc.5) (2026-08-26)
 
 ### Bug Fixes
