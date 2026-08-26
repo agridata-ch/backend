@@ -3,6 +3,8 @@ package ch.agridata.user.service;
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agis.dto.AgisFarmType;
 import ch.agridata.agis.dto.AgisPersonFarmResponseType;
+import ch.agridata.agis.dto.AgisPersonType;
+import ch.agridata.agis.dto.AgisRelevantPersons;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.BurParentLinkDto;
@@ -11,6 +13,7 @@ import ch.agridata.user.utils.AgisPersonFarmTreeUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +52,24 @@ public class BurAuthorizationService {
         .orElseThrow(() -> new ExternalWebServiceException("invalid response from AGIS: no personFarmTree found", null));
 
     var farms = AgisPersonFarmTreeUtils.getRelevantFarms(personFarmTree);
+    // Normally the UID alone is enough to match farm-to-person relations. But AGIS sometimes omits the UID on the person object,
+    // so we also need the KT_ID_P as a second identifier. We therefore resolve the person from relevantPersons and read its KT_ID_P.
+    // Since AGIS was queried by this UID, we assume the returned person is the one with that UID: we match on the UID and accept the
+    // person whose UID is missing.
+    var person = Optional.ofNullable(personFarmTree.getRelevantPersons())
+        .map(AgisRelevantPersons::getPerson)
+        .stream()
+        .flatMap(List::stream)
+        // Safety net only: since AGIS was queried by this UID, the response should contain exactly this one person and nothing here
+        // should ever be filtered out. The filter merely guards against unexpected data.
+        .filter(p -> p.getUid() == null || p.getUid().equals(uid))
+        .findFirst();
     var resolutionContext = new ResolutionContext(
         uid,
+        person.map(AgisPersonType::getKtIdP),
         AgisPersonFarmTreeUtils.indexFarmsByBer(farms),
         AgisPersonFarmTreeUtils.indexParentsByChildBer(farms),
-        AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(personFarmTree, uid)
+        person.map(AgisPersonFarmTreeUtils::indexPersonToFarmValidSince).orElseGet(HashMap::new)
     );
 
     return farms.stream()
@@ -96,10 +112,10 @@ public class BurAuthorizationService {
   }
 
   /**
-   * Rule 1: Sometimes not set due to a current (2026) AGIS but, likely fix early 2027
+   * Rule 1: Sometimes not set due to a current (2026) AGIS bug, likely fix early 2027
    */
   private Optional<LocalDateTime> findFarmToPersonDate(AgisFarmType farm, ResolutionContext context) {
-    return AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, context.targetUid());
+    return AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, context.targetUid(), context.targetKtIdP().orElse(null));
   }
 
   /**
@@ -136,6 +152,7 @@ public class BurAuthorizationService {
    */
   private record ResolutionContext(
       String targetUid,
+      Optional<String> targetKtIdP,
       Map<String, AgisFarmType> farmsByBer,
       Map<String, BurParentLinkDto> parentByChildBer,
       Map<String, LocalDateTime> personToFarmValidSince
