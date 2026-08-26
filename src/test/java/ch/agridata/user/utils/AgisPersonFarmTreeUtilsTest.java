@@ -126,57 +126,36 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenPersonToFarmRelationForTargetUid_whenIndexPersonToFarmValidSince_thenIndexedByBer() {
-    var tree = personFarmTree(List.of(), List.of(person(UID, farmRelation("99910002", VALID_SINCE))));
+    var person = person(UID, farmRelation("99910002", VALID_SINCE));
 
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
+    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
     assertThat(result).containsEntry("99910002", LOCAL_VALID_SINCE);
   }
 
   @Test
-  void givenPersonToFarmRelationForOtherUid_whenIndexPersonToFarmValidSince_thenNotIndexed() {
-    var tree = personFarmTree(List.of(), List.of(person(OTHER_UID, farmRelation("99910002", VALID_SINCE))));
-
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
-
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void givenNoRelevantPersons_whenIndexPersonToFarmValidSince_thenResultIsEmpty() {
-    var tree = new AgisPersonFarmTreeType();
-
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
-
-    assertThat(result).isEmpty();
-  }
-
-  @Test
   void givenPersonWithoutPersonToFarmRelations_whenIndexPersonToFarmValidSince_thenResultIsEmpty() {
-    var tree = personFarmTree(List.of(), List.of(new AgisPersonType().uid(UID)));
+    var person = new AgisPersonType().uid(UID);
 
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
+    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
     assertThat(result).isEmpty();
   }
 
   @Test
   void givenRelationWithNullBerOrValidSince_whenIndexPersonToFarmValidSince_thenRelationIsSkipped() {
-    var tree = personFarmTree(List.of(), List.of(person(UID, farmRelation(null, VALID_SINCE), farmRelation("99910002", null))));
+    var person = person(UID, farmRelation(null, VALID_SINCE), farmRelation("99910002", null));
 
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
+    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
     assertThat(result).isEmpty();
   }
 
   @Test
   void givenTwoRelationsForSameBer_whenIndexPersonToFarmValidSince_thenFirstOneWins() {
-    var tree = personFarmTree(
-        List.of(),
-        List.of(person(UID, farmRelation("99910002", VALID_SINCE), farmRelation("99910002", OTHER_VALID_SINCE)))
-    );
+    var person = person(UID, farmRelation("99910002", VALID_SINCE), farmRelation("99910002", OTHER_VALID_SINCE));
 
-    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(tree, UID);
+    var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
     assertThat(result).containsEntry("99910002", LOCAL_VALID_SINCE);
   }
@@ -203,19 +182,19 @@ class AgisPersonFarmTreeUtilsTest {
   void givenFarmToPersonRelationForUid_whenGetFarmToPersonRelationValidSince_thenValidSinceReturned() {
     var farm = farm("99910002").farmToPersonRelations(farmToPersonRelations(relation(UID, VALID_SINCE)));
 
-    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID)).contains(LOCAL_VALID_SINCE);
+    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).contains(LOCAL_VALID_SINCE);
   }
 
   @Test
   void givenFarmToPersonRelationForOtherUid_whenGetFarmToPersonRelationValidSince_thenEmpty() {
     var farm = farm("99910002").farmToPersonRelations(farmToPersonRelations(relation(OTHER_UID, VALID_SINCE)));
 
-    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID)).isEmpty();
+    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).isEmpty();
   }
 
   @Test
   void givenFarmWithoutFarmToPersonRelations_whenGetFarmToPersonRelationValidSince_thenEmpty() {
-    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm("99910002"), UID)).isEmpty();
+    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm("99910002"), UID, null)).isEmpty();
   }
 
   @Test
@@ -223,7 +202,7 @@ class AgisPersonFarmTreeUtilsTest {
     var farm = farm("99910002")
         .farmToPersonRelations(farmToPersonRelations(relation(UID, null), relation(UID, VALID_SINCE)));
 
-    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID)).contains(LOCAL_VALID_SINCE);
+    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).contains(LOCAL_VALID_SINCE);
   }
 
   private static AgisPersonFarmTreeType personFarmTree(List<AgisFarmType> farms, List<AgisPersonType> persons) {

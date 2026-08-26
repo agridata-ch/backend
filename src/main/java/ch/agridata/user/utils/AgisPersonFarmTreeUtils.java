@@ -10,8 +10,8 @@ import ch.agridata.agis.dto.AgisPersonFarmTreeType;
 import ch.agridata.agis.dto.AgisPersonToFarmRelations;
 import ch.agridata.agis.dto.AgisPersonType;
 import ch.agridata.agis.dto.AgisRelevantFarms;
-import ch.agridata.agis.dto.AgisRelevantPersons;
 import ch.agridata.user.dto.BurParentLinkDto;
+import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Utils for navigating {@link AgisPersonFarmTreeType} and {@link AgisFarmType}
@@ -28,7 +29,8 @@ import java.util.Optional;
  */
 public class AgisPersonFarmTreeUtils {
 
-  private AgisPersonFarmTreeUtils() {}
+  private AgisPersonFarmTreeUtils() {
+  }
 
   public static Map<String, AgisFarmType> indexFarmsByBer(List<AgisFarmType> farms) {
     var farmsByBer = new LinkedHashMap<String, AgisFarmType>();
@@ -62,18 +64,12 @@ public class AgisPersonFarmTreeUtils {
     }
   }
 
-  public static Map<String, LocalDateTime> indexPersonToFarmValidSince(AgisPersonFarmTreeType personFarmTree, String uid) {
+  public static Map<String, LocalDateTime> indexPersonToFarmValidSince(AgisPersonType person) {
     var validSinceByBer = new HashMap<String, LocalDateTime>();
 
-    Optional.ofNullable(personFarmTree.getRelevantPersons())
-        .map(AgisRelevantPersons::getPerson)
-        .stream()
-        .flatMap(List::stream)
-        .filter(person -> person != null && uid.equals(person.getUid()))
-        .map(AgisPersonType::getPersonToFarmRelations)
-        .filter(Objects::nonNull)
+    Optional.ofNullable(person.getPersonToFarmRelations())
         .map(AgisPersonToFarmRelations::getPersonToFarmRelation)
-        .filter(Objects::nonNull)
+        .stream()
         .flatMap(List::stream)
         .forEach(relation -> {
           if (relation.getBer() != null && relation.getValidSince() != null) {
@@ -84,9 +80,12 @@ public class AgisPersonFarmTreeUtils {
     return validSinceByBer;
   }
 
-  public static Optional<LocalDateTime> getFarmToPersonRelationValidSince(AgisFarmType farm, String uid) {
+  public static Optional<LocalDateTime> getFarmToPersonRelationValidSince(AgisFarmType farm, String uid, @Nullable String ktIdP) {
+    Predicate<AgisKtIdPRelationType> filterPredicate = ktIdP != null
+        ? relation -> uid.equals(relation.getUid()) || ktIdP.equals(relation.getKtIdP())
+        : relation -> uid.equals(relation.getUid());
     return AgisPersonFarmTreeUtils.getFarmToPersonRelations(farm).stream()
-        .filter(relation -> uid.equals(relation.getUid()))
+        .filter(filterPredicate)
         .map(AgisKtIdPRelationType::getValidSince)
         .filter(Objects::nonNull)
         .map(OffsetDateTime::toLocalDateTime)
