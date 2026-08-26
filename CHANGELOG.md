@@ -1,3 +1,9 @@
+## [1.16.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.4...v1.16.0-rc.5) (2026-08-26)
+
+### Bug Fixes
+
+* **datatransfer:** allow datetime for data transfer ([4533186](https://github.com/agridata-ch/backend/commit/45331860d33aec93887c73ab4564f865c93c0b78))
+
 ## [1.16.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.3...v1.16.0-rc.4) (2026-08-26)
 
 ### Bug Fixes
