@@ -1,3 +1,9 @@
+## [1.16.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.6...v1.16.0-rc.7) (2026-08-27)
+
+### Features
+
+* **product:** Increase allowed size for extended product description to 10'000. ([d444cc6](https://github.com/agridata-ch/backend/commit/d444cc6347eef50ee36e95c333c90e77861faf9a)), closes [DIGIB2-1644](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1644)
+
 ## [1.16.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.5...v1.16.0-rc.6) (2026-08-26)
 
 ### Features
