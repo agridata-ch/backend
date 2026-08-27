@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Builder
 public record DataProductExtendedDescriptionDto(
-    @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
+    @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "German extended description of the data product",
         examples = {
@@ -25,7 +25,7 @@ public record DataProductExtendedDescriptionDto(
     )
     String de,
 
-    @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
+    @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "French extended description of the data product",
         examples = {
@@ -36,7 +36,7 @@ public record DataProductExtendedDescriptionDto(
     )
     String fr,
 
-    @Size(max = 1000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
+    @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "Italian extended description of the data product",
         examples = {
