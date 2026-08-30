@@ -18,4 +18,18 @@
         <!-- started: 2026-05-04 | affected: NO (constants-only lib, OTel not enabled) -->
         <cve>CVE-2026-39883</cve>
     </suppress>
+
+    <!--
+        netty-codec-socks 4.1.136.Final (transitive via quarkus-netty -> netty-handler-proxy)
+        Injection (null byte / CRLF / credential) in the SOCKS4/5 CLIENT encoders.
+        Fixed in Netty 4.1.137.Final; awaiting a Quarkus platform bump.
+
+        Not reachable: the app opens no outbound connections through a SOCKS proxy and
+        feeds no attacker-controlled host/credentials into a SOCKS client. The codec is
+        present only as a transitive dependency of netty-handler-proxy.
+    -->
+    <suppress until="2026-09-30Z">
+        <!-- started: 2026-08-30 | affected: NO (SOCKS client encoder unused, no SOCKS proxying) -->
+        <cve>CVE-2026-62380</cve>
+    </suppress>
 </suppressions>
