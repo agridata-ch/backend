@@ -83,10 +83,11 @@ public interface ConsentRequestAggregationMapper {
                 Collectors.counting()
             ));
 
-    long total = group.size();
-    long granted = counts.getOrDefault(ConsentRequestEntity.StateEnum.GRANTED, 0L);
-    long opened = counts.getOrDefault(ConsentRequestEntity.StateEnum.OPENED, 0L);
-    long declined = counts.getOrDefault(ConsentRequestEntity.StateEnum.DECLINED, 0L);
+    final long total = group.size();
+    final long granted = counts.getOrDefault(ConsentRequestEntity.StateEnum.GRANTED, 0L);
+    final long opened = counts.getOrDefault(ConsentRequestEntity.StateEnum.OPENED, 0L);
+    final long declined = counts.getOrDefault(ConsentRequestEntity.StateEnum.DECLINED, 0L);
+    final long legallyPermitted = counts.getOrDefault(ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED, 0L);
 
     if (granted == total) {
       return ConsentRequestAggregationStateEnum.GRANTED;
@@ -96,6 +97,9 @@ public interface ConsentRequestAggregationMapper {
     }
     if (declined == total) {
       return ConsentRequestAggregationStateEnum.DECLINED;
+    }
+    if (legallyPermitted == total) {
+      return ConsentRequestAggregationStateEnum.LEGALLY_PERMITTED;
     }
     if (opened > 0) {
       return ConsentRequestAggregationStateEnum.PARTIALLY_OPENED;
