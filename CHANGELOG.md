@@ -1,3 +1,9 @@
+## [1.16.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.8...v1.16.0-rc.9) (2026-08-31)
+
+### Features
+
+* **product:** Add legally permitted state to consent aggregate ([1e49a13](https://github.com/agridata-ch/backend/commit/1e49a130a3543817e5a7e4906f71c53bc7811624)), closes [DIGIB2-1557](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1557)
+
 ## [1.16.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.7...v1.16.0-rc.8) (2026-08-31)
 
 ### Features
