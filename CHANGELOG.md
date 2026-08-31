@@ -1,3 +1,9 @@
+## [1.16.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.7...v1.16.0-rc.8) (2026-08-31)
+
+### Features
+
+* **deps:** Update owaspignore. ([f725707](https://github.com/agridata-ch/backend/commit/f7257076d78a374f53d6e1db591ef0c3a6c3e44a)), closes [DIGIB2-XXXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXXX)
+
 ## [1.16.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.6...v1.16.0-rc.7) (2026-08-27)
 
 ### Features
