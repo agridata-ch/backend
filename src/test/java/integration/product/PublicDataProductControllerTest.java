@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import ch.agridata.aws.api.PdfStorageApi;
@@ -111,6 +112,42 @@ class PublicDataProductControllerTest {
         .then()
         .statusCode(200)
         .body("totalItems", equalTo(0));
+  }
+
+  @Test
+  void givenActiveProduct_whenGetPublicProduct_thenReturnsProduct() {
+    String uniqueName = "PublicSingleActive-" + UUID.randomUUID();
+    UUID productId = createActiveDataProduct(PROVIDER_1, uniqueName);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .body("id", equalTo(productId.toString()))
+        .body("stateCode", equalTo("ACTIVE"))
+        .body("name.de", equalTo(uniqueName))
+        .body("consentRequired", notNullValue());
+  }
+
+  @Test
+  void givenDraftProduct_whenGetPublicProduct_thenNotFound() {
+    UUID productId = createNamedDraft(PROVIDER_1, "PublicSingleDraft-" + UUID.randomUUID());
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenGetPublicProduct_thenNotFound() {
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + UUID.randomUUID())
+        .then()
+        .statusCode(404);
   }
 
   @Test

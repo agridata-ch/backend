@@ -67,7 +67,14 @@ public record PublicDataProductDto(
         examples = {"ACTIVE"}
     )
     @NotNull
-    DataProductStateEnum stateCode
+    DataProductStateEnum stateCode,
+
+    @Schema(
+        description = "If a consent is required for this data product",
+        examples = "true"
+    )
+    @NotNull
+    Boolean consentRequired
 )
 
     implements Serializable {
