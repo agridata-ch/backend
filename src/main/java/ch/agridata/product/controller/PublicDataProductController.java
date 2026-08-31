@@ -66,6 +66,21 @@ public class PublicDataProductController {
 
   @GET
   @ApiSubset({WEB_APP})
+  @Path("/{id}")
+  @Operation(
+      operationId = "getPublicDataProduct",
+      description = "Retrieves a single publicly available data product. Publicly accessible."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll
+  public PublicDataProductDto getPublicDataProduct(
+      @PathParam("id") UUID dataProductId
+  ) {
+    return dataProductQueryService.getPublicDataProduct(dataProductId);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
   @Path("/{id}/documents")
   @Operation(
       operationId = "getPublicDataProductDocumentsMetadata",

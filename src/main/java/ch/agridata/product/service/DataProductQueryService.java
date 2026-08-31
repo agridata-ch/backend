@@ -65,6 +65,12 @@ public class DataProductQueryService implements DataProductApi {
     return dataProductMapper.toPagedPublicDataProductDto(pagedEntities);
   }
 
+  public PublicDataProductDto getPublicDataProduct(UUID dataProductId) {
+    return dataProductRepository.findActiveByIdOptional(dataProductId)
+        .map(dataProductMapper::toPublicDto)
+        .orElseThrow(() -> new NotFoundException(dataProductId.toString()));
+  }
+
   public PageResponseDto<DataProductDto> getDataProductsPagedAsAdmin(ResourceQueryDto resourceQueryDto) {
     var pagedEntities = dataProductRepository.findPaged(resourceQueryDto);
 
