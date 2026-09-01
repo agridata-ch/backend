@@ -260,7 +260,8 @@ class NotificationSubmitEmailServiceTest {
     verify(emailApi).submitEmail(
         anyString(),
         eq("Objet"),
-        argThat(body -> body.contains("<p>FR text</p>") && !body.contains("<p>DE text</p>") && !body.contains("<hr"))
+        argThat(body -> body.contains("<p>FR text</p>") && !body.contains("<p>DE text</p>") && !body.contains("<hr")
+            && body.contains("<html lang=\"fr\">"))
     );
   }
 
@@ -279,7 +280,8 @@ class NotificationSubmitEmailServiceTest {
     verify(emailApi).submitEmail(
         anyString(),
         eq("Betreff"),
-        argThat(body -> body.contains("<p>DE text</p>") && !body.contains("<p>FR text</p>") && !body.contains("<hr"))
+        argThat(body -> body.contains("<p>DE text</p>") && !body.contains("<p>FR text</p>") && !body.contains("<hr")
+            && body.contains("<html lang=\"de\">"))
     );
   }
 
@@ -299,6 +301,25 @@ class NotificationSubmitEmailServiceTest {
         anyString(),
         eq("Betreff"),
         argThat(body -> body.contains("<p>DE text</p>") && !body.contains("<hr"))
+    );
+  }
+
+  @Test
+  void givenRecipientWithLanguageIt_whenDispatch_thenHtmlLangIsIt() {
+    var resolved = new ResolvedNotificationTextsDto(
+        null,
+        null,
+        TranslationDto.builder().de("Betreff").fr("Objet").it("Oggetto").build(),
+        TranslationDto.builder().de("<p>DE text</p>").fr("<p>FR text</p>").it("<p>IT text</p>").build(),
+        null
+    );
+
+    service.dispatch(recipientWithLanguage(SupportedLanguage.IT), resolved);
+
+    verify(emailApi).submitEmail(
+        anyString(),
+        eq("Oggetto"),
+        argThat(body -> body.contains("<p>IT text</p>") && body.contains("<html lang=\"it\">"))
     );
   }
 
