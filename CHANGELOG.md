@@ -1,3 +1,9 @@
+## [1.16.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.9...v1.16.0-rc.10) (2026-09-01)
+
+### Bug Fixes
+
+* **bur:** update bur authorization service ([1e99088](https://github.com/agridata-ch/backend/commit/1e9908883845fa32676bb50bfe53ffca56a406cd)), closes [DIGIB2-1648](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1648)
+
 ## [1.16.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.8...v1.16.0-rc.9) (2026-08-31)
 
 ### Features
