@@ -182,7 +182,7 @@ class ProductFetchingTest {
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
-        // BLV Acontrol Data Products
+        // BLW Acontrol Data Products
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,
             DataProduct.UUID_96787125.uuid().toString(),

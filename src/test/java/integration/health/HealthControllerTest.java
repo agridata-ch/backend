@@ -75,10 +75,6 @@ class HealthControllerTest {
         new DataProviderStatus(
             new TranslationDto("BLW", "OFAG", "UFAG"),
             new TranslationDto("Acontrol", "Acontrol", "Acontrol"),
-            HealthStatus.HEALTH_CHECK_NOT_IMPLEMENTED),
-        new DataProviderStatus(
-            new TranslationDto("BLV", "OSAV", "USAV"),
-            new TranslationDto("Acontrol", "Acontrol", "Acontrol"),
             HealthStatus.HEALTH_CHECK_NOT_IMPLEMENTED));
   }
 }
