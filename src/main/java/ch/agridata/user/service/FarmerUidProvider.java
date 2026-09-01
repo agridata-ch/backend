@@ -20,6 +20,9 @@ import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import ch.agridata.user.dto.LegalFormEnum;
 import ch.agridata.user.dto.UidDto;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
@@ -37,14 +41,19 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 /**
  * Resolves UIDs authorized for a given KtIdP. It traverses relationships in register data, identifies linked farms and persons, and
  * enriches UIDs with name and legal form.
+ * To bridge a temporary AGIS/BFS UID-mapping error window after a farmer change, a farmToPersonRelation is only considered once its
+ * validSince is at least {@code agridata.user.uid-authorization.min-relation-age} old.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-09-01
  */
 
 @ApplicationScoped
 @RequiredArgsConstructor
 @Slf4j
 public class FarmerUidProvider {
+
+  @ConfigProperty(name = "agridata.user.uid-authorization.min-relation-age", defaultValue = "P14D")
+  Duration minRelationAge;
 
   private final AgisApi agisApi;
 
@@ -160,8 +169,25 @@ public class FarmerUidProvider {
         .map(AgisFarmToPersonRelations::getFarmToPersonRelation)
         .stream()
         .flatMap(List::stream)
-        .map(AgisKtIdPRelationType::getKtIdP)
-        .anyMatch(ktIdP::equals);
+        .filter(relation -> ktIdP.equals(relation.getKtIdP()))
+        .anyMatch(this::isRelationOldEnough);
+  }
+
+  private boolean isRelationOldEnough(@NonNull AgisKtIdPRelationType relation) {
+    var validSince = relation.getValidSince();
+    if (validSince == null) {
+      return true;
+    }
+
+    var threshold = OffsetDateTime.now(ZoneId.of("Europe/Zurich")).minus(minRelationAge);
+    var isOldEnough = !validSince.isAfter(threshold);
+    if (!isOldEnough) {
+      log.debug(
+          "Skipping farmToPersonRelation for ktIdP {} because validSince {} is within waiting period {}",
+          relation.getKtIdP(), validSince, minRelationAge
+      );
+    }
+    return isOldEnough;
   }
 
   private Optional<String> findNameOfUid(

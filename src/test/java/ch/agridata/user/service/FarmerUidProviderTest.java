@@ -6,14 +6,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agis.api.AgisApi;
+import ch.agridata.agis.dto.AgisFarmToPersonRelations;
+import ch.agridata.agis.dto.AgisFarmType;
+import ch.agridata.agis.dto.AgisKtIdPRelationType;
 import ch.agridata.agis.dto.AgisPersonFarmResponseType;
 import ch.agridata.agis.dto.AgisPersonFarmTreeType;
 import ch.agridata.agis.dto.AgisPersonType;
+import ch.agridata.agis.dto.AgisRelevantFarms;
 import ch.agridata.agis.dto.AgisRelevantPersons;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +35,11 @@ class FarmerUidProviderTest {
 
   @InjectMocks
   FarmerUidProvider farmerUidProvider;
+
+  @BeforeEach
+  void setUp() {
+    farmerUidProvider.minRelationAge = Duration.ofDays(14);
+  }
 
   @Test
   void givenResponseWithoutPersonFarmTree_whenGetAuthorizedUids_thenReturnEmptyList() {
@@ -70,6 +82,55 @@ class FarmerUidProviderTest {
     var result = farmerUidProvider.getAuthorizedUids("FLXXE0005");
 
     assertThat(result).isEmpty();
+  }
+
+  @Test
+  void givenFarmToPersonRelationWithinWaitingPeriod_whenGetAuthorizedUids_thenUidIsNotReturned() {
+    var response = buildResponseWithFarm(OffsetDateTime.now().minusDays(1));
+
+    when(agisApi.fetchRegisterDataForKtIdP("FLXXE0006")).thenReturn(response);
+
+    var result = farmerUidProvider.getAuthorizedUids("FLXXE0006");
+
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void givenFarmToPersonRelationOlderThanWaitingPeriod_whenGetAuthorizedUids_thenUidIsReturned() {
+    var response = buildResponseWithFarm(OffsetDateTime.now().minusDays(15));
+
+    when(agisApi.fetchRegisterDataForKtIdP("FLXXE0007")).thenReturn(response);
+
+    var result = farmerUidProvider.getAuthorizedUids("FLXXE0007");
+
+    assertThat(result).extracting("uid").containsExactly("CHE123456789");
+  }
+
+  @Test
+  void givenFarmToPersonRelationWithNullValidSince_whenGetAuthorizedUids_thenUidIsReturned() {
+    var response = buildResponseWithFarm(null);
+
+    when(agisApi.fetchRegisterDataForKtIdP("FLXXE0008")).thenReturn(response);
+
+    var result = farmerUidProvider.getAuthorizedUids("FLXXE0008");
+
+    assertThat(result).extracting("uid").containsExactly("CHE123456789");
+  }
+
+  private AgisPersonFarmResponseType buildResponseWithFarm(OffsetDateTime farmToPersonRelationValidSince) {
+    var person = new AgisPersonType().ktIdP("FLXXE0006");
+    var relation = new AgisKtIdPRelationType()
+        .ktIdP("FLXXE0006")
+        .validSince(farmToPersonRelationValidSince);
+    var farm = new AgisFarmType()
+        .uid("CHE123456789")
+        .farmToPersonRelations(new AgisFarmToPersonRelations().farmToPersonRelation(List.of(relation)));
+
+    var personFarmTree = new AgisPersonFarmTreeType()
+        .relevantPersons(new AgisRelevantPersons().person(List.of(person)))
+        .relevantFarms(new AgisRelevantFarms().farm(List.of(farm)));
+
+    return new AgisPersonFarmResponseType().personFarmTree(personFarmTree);
   }
 
   @Test

@@ -16,6 +16,9 @@ agridata:
   product:
     scan-recovery:
       pending-timeout: PT15M
+  user:
+    uid-authorization:
+      min-relation-age: P14D
 bit:
   signature:
     key-bearer: "BLW-Agridata"
