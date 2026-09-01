@@ -2,6 +2,7 @@ package ch.agridata.product.service;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
+import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
@@ -10,9 +11,9 @@ import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.dto.PublicDataProductDto;
 import ch.agridata.product.mapper.DataProductMapper;
 import ch.agridata.product.mapper.DataSourceSystemMapper;
+import ch.agridata.product.persistence.DataProductEntity;
 import ch.agridata.product.persistence.DataProductRepository;
 import ch.agridata.product.persistence.DataProductStateEnum;
-import ch.agridata.product.persistence.DataProviderEntity;
 import ch.agridata.product.persistence.DataProviderRepository;
 import ch.agridata.product.persistence.DataSourceSystemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,7 +21,6 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,23 +68,32 @@ public class DataProductQueryService implements DataProductApi {
   public PageResponseDto<DataProductDto> getDataProductsPagedAsAdmin(ResourceQueryDto resourceQueryDto) {
     var pagedEntities = dataProductRepository.findPaged(resourceQueryDto);
 
-    return dataProductMapper.toPagedDataProductDto(pagedEntities);
+    return dataProductMapper.toPagedDataProductDto(pagedEntities, providerNamesByUid(pagedEntities));
   }
 
   public PageResponseDto<DataProductDto> getDataProductsPagedAsProvider(
       ResourceQueryDto resourceQueryDto,
       String providerUid
   ) {
+    dataProviderRepository.findByUidOptional(providerUid)
+        .orElseThrow(() -> new NotFoundException(providerUid));
 
-    Optional<DataProviderEntity> optionalProvider = dataProviderRepository.findByUidOptional(providerUid);
+    var pagedEntities = dataProductRepository.findPagedByProviderUid(
+        providerUid,
+        resourceQueryDto
+    );
 
-    if (optionalProvider.isEmpty()) {
-      throw new NotFoundException(providerUid);
-    }
+    return dataProductMapper.toPagedDataProductDto(pagedEntities, providerNamesByUid(pagedEntities));
+  }
 
-    var pagedEntities = dataProductRepository.findPagedByProviderUid(optionalProvider.get().getUid(), resourceQueryDto);
+  private Map<String, TranslationPersistenceDto> providerNamesByUid(PageResponseDto<DataProductEntity> pagedEntities) {
+    var uids = pagedEntities.items().stream()
+        .map(DataProductEntity::getDataProviderUid)
+        .filter(Objects::nonNull)
+        .distinct()
+        .toList();
 
-    return dataProductMapper.toPagedDataProductDto(pagedEntities);
+    return dataProviderRepository.findNamesByUids(uids);
   }
 
   @Override

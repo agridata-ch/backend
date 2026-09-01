@@ -95,7 +95,8 @@ class DataProductControllerV2Test {
         .body("currentPage", equalTo(0))
         .body("pageSize", greaterThanOrEqualTo(1))
         .body("items[0].id?.toString().length() > 0", is(true))
-        .body("items[0].name?.toString().length() > 0", is(true));
+        .body("items[0].name?.toString().length() > 0", is(true))
+        .body("items[0].dataProviderName.de?.toString().length() > 0", is(true));
   }
 
   @Test
@@ -109,7 +110,8 @@ class DataProductControllerV2Test {
         .body("items", is(org.hamcrest.Matchers.notNullValue()))
         .body("totalItems", greaterThanOrEqualTo(0))
         .body("totalPages", greaterThanOrEqualTo(0))
-        .body("currentPage", equalTo(0));
+        .body("currentPage", equalTo(0))
+        .body("items[0].dataProviderName.de?.toString().length() > 0", is(true));
   }
 
   @Test

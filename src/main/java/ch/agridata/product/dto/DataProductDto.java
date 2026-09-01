@@ -37,6 +37,11 @@ public record DataProductDto(
     DataSourceSystemDto dataSourceSystem,
 
     @Schema(
+        description = "Localized name of the owning data provider"
+    )
+    TranslationDto dataProviderName,
+
+    @Schema(
         description = "Rest client used to fetch the data product"
     )
     RestClientDto restClient,

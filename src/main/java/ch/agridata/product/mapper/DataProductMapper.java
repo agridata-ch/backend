@@ -11,6 +11,7 @@ import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.PublicDataProductDto;
 import ch.agridata.product.persistence.DataProductEntity;
+import java.util.Map;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,11 +29,32 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface DataProductMapper {
 
   @Mapping(target = "dataSourceSystemCode", source = "dataSourceSystem.code")
+  @Mapping(target = "dataProviderName", ignore = true)
   DataProductDto toDto(DataProductEntity dataProductEntity);
+
+  @Mapping(target = "dataSourceSystemCode", source = "dataProductEntity.dataSourceSystem.code")
+  @Mapping(target = "dataProviderName", source = "dataProviderName")
+  DataProductDto toDto(DataProductEntity dataProductEntity, TranslationPersistenceDto dataProviderName);
 
   DataProductProviderConfigurationDto toProviderConfigurationDto(DataProductEntity dataProductEntity);
 
-  PageResponseDto<DataProductDto> toPagedDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
+  default PageResponseDto<DataProductDto> toPagedDataProductDto(
+      PageResponseDto<DataProductEntity> pagedEntities,
+      Map<String, TranslationPersistenceDto> providerNamesByUid
+  ) {
+    var dataProductDtos = pagedEntities.items().stream()
+        .map(entity ->
+            toDto(entity, providerNamesByUid.get(entity.getDataProviderUid()))
+        ).toList();
+    
+    return new PageResponseDto<>(
+        dataProductDtos,
+        pagedEntities.totalItems(),
+        pagedEntities.totalPages(),
+        pagedEntities.currentPage(),
+        pagedEntities.pageSize()
+    );
+  }
 
   PublicDataProductDto toPublicDto(DataProductEntity dataProductEntity);
 

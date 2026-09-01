@@ -44,7 +44,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
 
   private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "productName", FIELD_PRODUCT_NAME,
-      "providerName", FIELD_PROVIDER_NAME,
+      "dataProviderName", FIELD_PROVIDER_NAME,
       "systemName", FIELD_SYSTEM_NAME
   );
 
