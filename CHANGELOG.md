@@ -1,3 +1,9 @@
+## [1.16.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.10...v1.16.0-rc.11) (2026-09-01)
+
+### Bug Fixes
+
+* **notifications:** Update email html lang attribute based on language ([b1cd33d](https://github.com/agridata-ch/backend/commit/b1cd33df03b80bb71e027d5f4ec5c0a3f1d2f626))
+
 ## [1.16.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.9...v1.16.0-rc.10) (2026-09-01)
 
 ### Bug Fixes
