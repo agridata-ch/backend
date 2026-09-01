@@ -1,3 +1,9 @@
+## [1.16.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.11...v1.16.0-rc.12) (2026-09-01)
+
+### Features
+
+* **data-product:** Move data products from BLV to BLW ([5dfd350](https://github.com/agridata-ch/backend/commit/5dfd35040707b01098dc6b9df5e14598fe08f812)), closes [DIGIB2-1651](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1651)
+
 ## [1.16.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.10...v1.16.0-rc.11) (2026-09-01)
 
 ### Bug Fixes
