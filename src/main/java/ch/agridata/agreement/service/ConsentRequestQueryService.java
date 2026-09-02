@@ -134,6 +134,22 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
   }
 
+  @RolesAllowed(CONSUMER_ROLE)
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerAndLastModifiedFrom(
+      ResourceQueryDto resourceQueryDto,
+      UUID dataRequestId,
+      LocalDateTime lastModifiedFrom) {
+    if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
+        resourceQueryDto,
+        dataRequestId,
+        lastModifiedFrom);
+
+    return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
+  }
+
   @Override
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
                                                                                                         List<String> producerUids) {
