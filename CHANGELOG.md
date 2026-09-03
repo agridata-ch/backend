@@ -1,3 +1,9 @@
+## [1.17.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.1...v1.17.0-rc.2) (2026-09-03)
+
+### Features
+
+* **product:** Add public endpoint for retrieval of a single data product ([9b51dc4](https://github.com/agridata-ch/backend/commit/9b51dc4f410641156f4db21c26ed4441bc6222fb)), closes [DIGIB2-1443](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1443)
+
 ## [1.17.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.16.0...v1.17.0-rc.1) (2026-09-03)
 
 ### Features
