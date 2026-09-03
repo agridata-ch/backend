@@ -2,6 +2,7 @@ package ch.agridata.datatransferv2.service.task;
 
 import ch.agridata.datatransferv2.service.AgridataContext;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -10,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Validates that all required request parameters are present for the given flow type.
+ * For consent-free products (consentRequired = false), the dataRequestId parameter is additionally required
+ * so that the auto-created LEGALLY_PERMITTED consent request can be attached to it.
  * Throws IllegalArgumentException if required parameters are missing or blank.
  *
- * @CommentLastReviewed 2026-02-26
+ * @CommentLastReviewed 2026-08-31
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -23,7 +26,10 @@ public class EnsureValidConsumerRequestTask implements UnaryOperator<AgridataCon
   public AgridataContext apply(final AgridataContext context) {
     var requestParameters = context.getRequestParameters();
     var flowEnum = context.getFlowEnum();
-    var requiredParams = flowEnum != null ? flowEnum.getRequiredRequestParameters() : Set.<String>of();
+    var requiredParams = new HashSet<>(flowEnum != null ? flowEnum.getRequiredRequestParameters() : Set.of());
+    if (!context.getProductProviderConfiguration().consentRequired()) {
+      requiredParams.add(AgridataContext.DATA_REQUEST_ID_PARAMETER);
+    }
 
     log.debug("Validating request parameters for flow={}, required={}", flowEnum, requiredParams);
 

@@ -36,9 +36,11 @@ public class TestDataIdentifiers {
     public static final Identifier<DataRequestEntity> IP_SUISSE_01 = id("98a35e61-0162-4986-9e9e-ee5c65f86316");
     public static final Identifier<DataRequestEntity> IP_SUISSE_02 = id("341f558a-781c-4eb5-bab7-c2f39216b9f2");
     public static final Identifier<DataRequestEntity> BLV_1 = id("218bca06-e792-4855-bcd9-e3559cea3d18");
-    /**
-     * Acontrol data request of Bio Suisse, contains BUR based data products only.
-     */
+    /** BLV ZO API data request, contains consent-free products only. */
+    public static final Identifier<DataRequestEntity> BLV_ZO_CONSENT_FREE = id("67c6d36b-f4a9-43f8-becb-a040ccd41996");
+    /** BLV ZO API data request with consent-required products. */
+    public static final Identifier<DataRequestEntity> BLV_ZO = id("dc7dbc72-084c-451f-aaf9-7db7561d157d");
+    /** Acontrol data request of Bio Suisse, contains BUR based data products only. */
     public static final Identifier<DataRequestEntity> ACONTROL_BIO_SUISSE = id("9b013372-a0cc-4193-928f-129c9402f415");
   }
 
@@ -101,6 +103,11 @@ public class TestDataIdentifiers {
     public static final Identifier<DataProductEntity> UUID_720AA209 = id("720aa209-7aa8-4faf-8b1a-013a041084f2");
     public static final Identifier<DataProductEntity> UUID_B0A4FF29 = id("b0a4ff29-cac4-4413-b8fb-7ff61f4ff2ac");
     public static final Identifier<DataProductEntity> UUID_E6128E10 = id("e6128e10-5d2b-4096-8356-b6523cb30e92");
+    // ZO API (consent-free)
+    public static final Identifier<DataProductEntity> UUID_4176737B = id("4176737b-95b3-40b0-a73b-d03c45ebd632");
+    public static final Identifier<DataProductEntity> UUID_481372C6 = id("481372c6-d4f9-4a67-9a53-8d25c3cfcbe5");
+    public static final Identifier<DataProductEntity> UUID_A28B7CDE = id("a28b7cde-1d56-43a9-802c-aad6adbfdca3");
+    public static final Identifier<DataProductEntity> UUID_9C9D82E8 = id("9c9d82e8-90f2-42ba-b388-ff5a3171ddd3");
     // Acontrol BLV
     public static final Identifier<DataProductEntity> UUID_96787125 = id("96787125-3de0-4b5f-b9c7-8f1e5b3db516");
     public static final Identifier<DataProductEntity> UUID_DF72EB69 = id("df72eb69-fa78-4b52-8649-7068940019fe");

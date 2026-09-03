@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/sheep/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_Public_SheepDetailV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "9c9d82e8-90f2-42ba-b388-ff5a3171ddd3"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "99920004"
+    }
+  }
+}

@@ -29,7 +29,10 @@ import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static integration.testutils.TestUserEnum.PROVIDER_2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.notNullValue;
 
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.DataRequestAdvantageDto;
@@ -50,7 +53,6 @@ import integration.testutils.TestDataIdentifiers.DataRequest;
 import integration.testutils.TestDataLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -78,7 +80,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(8));
+        .body("size()", equalTo(9));
   }
 
   @Test
@@ -375,28 +377,28 @@ class DataRequestTest {
   void givenTooManyAdvantages_whenSubmit_thenReturnBadRequest() {
     List<DataRequestAdvantageDto> advantages = Collections.nCopies(6, new DataRequestAdvantageDto("Test DE", "Test FR", "Test IT"));
     DataRequestUpdateDto invalidDto = getDataRequestDtoBuilder()
-            .advantages(advantages).build();
+        .advantages(advantages).build();
     String id = createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
-            .statusCode(201).extract().path("id");
+        .statusCode(201).extract().path("id");
 
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE)
-            .then()
-            .statusCode(400)
-            .body(containsString("advantages: size must be between"));
+        .then()
+        .statusCode(400)
+        .body(containsString("advantages: size must be between"));
   }
 
   @Test
   void givenAdvantagesWithTooFewLetters_whenSubmit_thenReturnBadRequest() {
     List<DataRequestAdvantageDto> advantages = Collections.nCopies(5, new DataRequestAdvantageDto("Test DE", "Tes", "Test IT"));
     DataRequestUpdateDto invalidDto = getDataRequestDtoBuilder()
-            .advantages(advantages).build();
+        .advantages(advantages).build();
     String id = createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
-            .statusCode(201).extract().path("id");
+        .statusCode(201).extract().path("id");
 
     setStatusAs(id, DataRequestStateEnum.IN_REVIEW, CONSUMER_BIO_SUISSE)
-            .then()
-            .statusCode(400)
-            .body(containsString("advantages[0].fr"));
+        .then()
+        .statusCode(400)
+        .body(containsString("advantages[0].fr"));
   }
 
   @Test

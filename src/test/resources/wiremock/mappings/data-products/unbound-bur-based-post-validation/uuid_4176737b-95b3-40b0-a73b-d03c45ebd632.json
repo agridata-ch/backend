@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/shared-data/cattle/slaughter",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_CattleSlaughterV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "4176737b-95b3-40b0-a73b-d03c45ebd632"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "99920004"
+    }
+  }
+}

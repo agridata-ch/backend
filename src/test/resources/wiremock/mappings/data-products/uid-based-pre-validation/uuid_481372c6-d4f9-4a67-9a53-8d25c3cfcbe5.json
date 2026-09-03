@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/uid/[^/]+/cattle/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_Public_CattleDetailV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "481372c6-d4f9-4a67-9a53-8d25c3cfcbe5"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

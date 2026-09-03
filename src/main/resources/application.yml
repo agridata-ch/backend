@@ -5,6 +5,8 @@ agridata:
     otp:
       validation:
         enabled: true
+    legally-permitted-consent:
+      queue-capacity: 10000
   aws:
     send-sms:
       enabled: true

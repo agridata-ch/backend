@@ -27,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 @Slf4j
 public final class AgridataContext {
+
+  public static final String DATA_REQUEST_ID_PARAMETER = "dataRequestId";
+
   private String dataTransferRequestId;
   private UUID productId;
   private FlowEnum flowEnum;
