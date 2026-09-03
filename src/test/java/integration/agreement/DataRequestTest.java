@@ -87,7 +87,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER_1).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(5));
+        .body("size()", equalTo(6));
   }
 
   @Test

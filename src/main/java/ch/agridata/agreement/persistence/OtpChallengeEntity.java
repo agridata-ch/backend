@@ -21,9 +21,8 @@ import org.hibernate.annotations.SQLRestriction;
 /**
  * Defines the persistent entity for OTP challenges.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-03-19
  */
-
 @Entity
 @Table(name = "otp_challenge")
 @SQLDelete(sql = "UPDATE otp_challenge SET archived = true WHERE id = ?")
@@ -69,9 +68,8 @@ public class OtpChallengeEntity extends AuditableEntity {
   /**
    * Lists the possible signature slots.
    *
-   * @CommentLastReviewed: 2026-03-20
+   * @CommentLastReviewed 2026-03-20
    */
-
   public enum SignatureSlotCodeEnum {
     DATA_CONSUMER_01,
     DATA_CONSUMER_02,

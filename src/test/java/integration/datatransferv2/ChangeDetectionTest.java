@@ -1,6 +1,6 @@
 package integration.datatransferv2;
 
-import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000001;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_C661EA48;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE101000001;
@@ -40,7 +40,9 @@ import org.junit.jupiter.api.Test;
  * <p>Available consent requests in test data:
  * <ul>
  *   <li>BIO_SUISSE_01_CHE102000001 (OPENED) – PRODUCER_B can grant</li>
- *   <li>BIO_SUISSE_01_CHE101000001 (DECLINED) – PRODUCER_A can reopen and grant</li>
+ *   <li>BIO_SUISSE_01_CHE101000001 (DECLINED) – PRODUCER_A can reopen and grant; also has an active BUR sibling
+ *   (BIO_SUISSE_01_CHE101000001_99910003), so it can only be granted by granting that BUR consent request, which cascades
+ *   the UID consent request to GRANTED</li>
  * </ul>
  *
  * @CommentLastReviewed 2026-03-18
@@ -120,11 +122,11 @@ class ChangeDetectionTest {
 
   @Test
   void givenTwoGrantedConsents_andProviderReportsOnlyOne_thenBothChannelsMergedCorrectly() {
-    // CHE101000001: currently DECLINED → GRANTED
+    // CHE101000001: currently DECLINED → GRANTED (via its BUR consent request, which cascades the UID one to GRANTED)
     // CHE102000001: currently OPENED → GRANTED
     // Provider reports only CHE101000001 as changed data
     // → CHE101000001 comes from provider channel, CHE102000001 comes from new-consent channel
-    grantConsent(BIO_SUISSE_01_CHE101000001, PRODUCER_A);
+    grantConsent(BIO_SUISSE_01_CHE101000001_99910003, PRODUCER_A);
     grantConsent(BIO_SUISSE_01_CHE102000001, PRODUCER_B);
     mockProviderReturning(List.of(CHE101000001.name()));
 

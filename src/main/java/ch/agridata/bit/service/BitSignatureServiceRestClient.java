@@ -9,7 +9,6 @@ import ch.agridata.bit.dto.BitDropSignResponse;
 import ch.agridata.bit.dto.BitGetSignedHashesRequest;
 import ch.agridata.bit.dto.BitGetSignedHashesResponse;
 import ch.agridata.bit.dto.BitInitSignRequest;
-import ch.agridata.bit.dto.BitInitSignRequestDeprecated;
 import ch.agridata.bit.dto.BitInitSignResponse;
 import ch.agridata.bit.dto.BitStartSignRequest;
 import ch.agridata.bit.dto.BitStartSignResponse;
@@ -37,11 +36,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BitSignatureServiceRestClient {
-
-  @POST
-  @Path("/initSign")
-  @Deprecated
-  BitInitSignResponse initSign(BitInitSignRequestDeprecated request);
 
   @POST
   @Path("/initSign")

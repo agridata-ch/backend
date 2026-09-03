@@ -28,11 +28,9 @@ public class DataRequestEnrichmentService {
     }
 
     UUID dataSourceSystemId = entity.getDataSourceSystemId(); // adapt getter name to your entity
-    if (dataSourceSystemId == null) {
-      return dataRequestMapper.toDto(entity, null);
-    }
-
-    var dataSourceSystem = dataProductApi.getDataSourceSystem(dataSourceSystemId);
+    var dataSourceSystem = dataSourceSystemId == null
+        ? null
+        : dataProductApi.getDataSourceSystem(dataSourceSystemId);
 
     return dataRequestMapper.toDto(entity, dataSourceSystem);
   }

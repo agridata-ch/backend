@@ -35,6 +35,7 @@ public class NotificationSubmitEmailService {
 
   private static final String EMAIL_TEMPLATE_PATH = "notification/email-template.html";
   private static final String CONTENT_PLACEHOLDER = "{{content}}";
+  private static final String LANG_PLACEHOLDER = "{{lang}}";
 
   public boolean dispatch(NotificationRecipientEntity recipient, ResolvedNotificationTextsDto resolvedNotificationTexts) {
 
@@ -76,7 +77,8 @@ public class NotificationSubmitEmailService {
 
   private String buildLanguageBody(ResolvedNotificationTextsDto text, SupportedLanguage language) {
     String part = selectTranslation(text.emailText(), language);
-    return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, part != null ? part : "");
+    String lang = language != null ? language.name().toLowerCase() : "de";
+    return emailHtmlTemplate.replace(CONTENT_PLACEHOLDER, part != null ? part : "").replace(LANG_PLACEHOLDER, lang);
   }
 
   /**

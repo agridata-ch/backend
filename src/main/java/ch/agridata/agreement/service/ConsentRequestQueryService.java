@@ -6,7 +6,6 @@ import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
-import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
@@ -25,7 +24,6 @@ import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
@@ -50,7 +48,6 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   private final ConsentRequestMapper consentRequestMapper;
   private final AgridataSecurityIdentity identity;
   private final UserApi userApi;
-  private final AgisApi agisApi;
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestQueryService dataRequestQueryService;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
@@ -62,7 +59,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
             .map(UidDto::uid)
             .filter(uid -> dataProducerUid == null || uid.equals(dataProducerUid))
             .toList();
-    var consentRequestEntities = consentRequestRepository.findByDataProducerUids(uids);
+    var consentRequestEntities = consentRequestRepository.findUidBasedByDataProducerUids(uids);
     return consentRequestEntities.stream()
         .map(this::toConsentRequestProducerViewDto)
         .toList();
@@ -74,7 +71,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
         userApi.getAuthorizedUids(identity.getKtIdpOrImpersonatedKtIdP(), identity.getAgateLoginIdOrImpersonatedAgateLoginId()).stream()
             .map(UidDto::uid)
             .toList();
-    return consentRequestRepository.findByDataProducerUids(uids).stream()
+    return consentRequestRepository.findUidBasedByDataProducerUids(uids).stream()
         .filter(consentRequests -> consentRequests.getId().equals(id))
         .map(this::toConsentRequestProducerViewDto)
         .findFirst()
@@ -86,7 +83,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
                                                                                           String ktIdP,
                                                                                           String producerAgateLoginId) {
     var authorizedUids = userApi.getAuthorizedUids(ktIdP, producerAgateLoginId);
-    var existingConsentRequests = consentRequestRepository.findByDataRequestIdAndDataProducerUids(
+    var existingConsentRequests = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUids(
         dataRequestId,
         authorizedUids.stream().map(UidDto::uid).toList());
 
@@ -106,7 +103,7 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     }
 
     var authorizedUids = userApi.getAuthorizedUids(ktIdP, producerAgateLoginId);
-    var existingConsentRequests = consentRequestRepository.findByDataRequestIdAndDataProducerUids(
+    var existingConsentRequests = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUids(
         dataRequestId,
         authorizedUids.stream().map(UidDto::uid).toList());
 
@@ -115,28 +112,10 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
 
   @RolesAllowed(CONSUMER_ROLE)
   @Override
-  public List<UUID> getConsentRequestIdsOfCurrentConsumerGrantedByProducerForProductByBur(@Valid @NotNull String bur,
-                                                                                          @Valid @NotNull
-                                                                                          UUID productId) {
-    var consumerUid = identity.getUidOrElseThrow();
-    var farm = agisApi.fetchFarmForBur(bur).orElseThrow(() -> new NotFoundException(bur));
-    return consentRequestRepository.findConsentRequestIdsOfConsumerGrantedByProducerForProduct(consumerUid, farm.getUid(), productId);
-  }
-
-  @RolesAllowed(CONSUMER_ROLE)
-  @Override
-  public List<UUID> getConsentRequestIdsOfCurrentConsumerGrantedByProducerForProductByUid(@Valid @NotNull String uid,
-                                                                                          @Valid @NotNull UUID productId) {
-    var consumerUid = identity.getUidOrElseThrow();
-    return consentRequestRepository.findConsentRequestIdsOfConsumerGrantedByProducerForProduct(consumerUid, uid, productId);
-  }
-
-  @RolesAllowed(CONSUMER_ROLE)
-  @Override
   public List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(UUID productId, LocalDateTime since) {
     var dataConsumerUid = identity.getUidOrElseThrow();
 
-    return consentRequestRepository.findGrantedConsentRequestUidsForProductOfConsumerSince(productId, dataConsumerUid, since);
+    return consentRequestRepository.findGrantedUidBasedUidsForProductOfConsumerSince(productId, dataConsumerUid, since);
   }
 
   @RolesAllowed(PROVIDER_ROLE)

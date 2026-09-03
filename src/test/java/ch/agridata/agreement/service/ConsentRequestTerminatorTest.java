@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
+import ch.agridata.agreement.persistence.DataRequestEntity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ class ConsentRequestTerminatorTest {
   private Clock clock;
   @Mock
   private AuditingService auditingService;
+  @Mock
+  private ConsentRequestSyncService consentRequestSyncService;
   @InjectMocks
   private ConsentRequestTerminator terminator;
 
@@ -38,6 +41,7 @@ class ConsentRequestTerminatorTest {
     UUID id1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
     UUID id2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
     UUID id3 = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    UUID id4 = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     var ownershipPairs = List.of(new ConsentRequestRepository.BurUidPair("BUR1", "UID1"));
     var deletedBurs = List.of("BUR9");
@@ -53,10 +57,12 @@ class ConsentRequestTerminatorTest {
     when(consentRequestRepository.findIdsToTerminateByDataProducerBurs(deletedBurs, BATCH_SIZE))
         .thenReturn(List.of(id2, id3));
 
+    var dataRequest = DataRequestEntity.builder().id(id4).build();
+
     var terminatedRows = List.of(
-        ConsentRequestEntity.builder().id(id1).dataProducerBur("BUR1").dataProducerUid("UID1").build(),
-        ConsentRequestEntity.builder().id(id2).dataProducerBur("BUR2").dataProducerUid("UID2").build(),
-        ConsentRequestEntity.builder().id(id3).dataProducerBur("BUR3").dataProducerUid("UID3").build()
+        ConsentRequestEntity.builder().id(id1).dataProducerBur("BUR1").dataProducerUid("UID1").dataRequest(dataRequest).build(),
+        ConsentRequestEntity.builder().id(id2).dataProducerBur("BUR2").dataProducerUid("UID2").dataRequest(dataRequest).build(),
+        ConsentRequestEntity.builder().id(id3).dataProducerBur("BUR3").dataProducerUid("UID3").dataRequest(dataRequest).build()
     );
 
     when(consentRequestRepository.terminateByIdsReturningPairs(List.of(id1, id2, id3), BATCH_SIZE, terminatedAt))

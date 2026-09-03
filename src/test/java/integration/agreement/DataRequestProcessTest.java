@@ -62,7 +62,6 @@ class DataRequestProcessTest {
   private final ObjectMapper mapper = new ObjectMapper();
   private final AuditLogTestUtils auditLogTestUtils;
 
-  private static final String ADMIN_GLOBAL_ID = "test-admin-global-id";
   private static final String PDF_PATH = ContractRevisionController.PATH + "/{id}/pdf";
   private static final String SEALS_PATH = ContractRevisionController.PATH + "/{id}/seals";
   private static final String SEAL_STATUS_PATH = ContractRevisionController.PATH + "/{id}/seals/status";
@@ -253,7 +252,6 @@ class DataRequestProcessTest {
     // Step 20: As Admin initiate the seal process
     requestAs(ADMIN)
         .pathParam("id", revisionId5)
-        .queryParam("adminGlobalID", ADMIN_GLOBAL_ID)
         .when().post(SEALS_PATH)
         .then().statusCode(202);
 

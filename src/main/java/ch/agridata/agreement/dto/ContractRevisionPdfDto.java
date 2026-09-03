@@ -12,9 +12,8 @@ import lombok.Builder;
  * for Apache FOP and XSL-FO templates. It contains flattened address data
  * for both the Consumer and Provider, along with signature details.
  *
- * @CommentLastReviewed: 2026-04-17
+ * @CommentLastReviewed 2026-04-17
  */
-
 @XmlRootElement(name = "ContractRevision")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Builder

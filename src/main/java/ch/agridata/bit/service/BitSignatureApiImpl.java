@@ -7,7 +7,6 @@ import ch.agridata.bit.dto.BitCheckSignStateResponse;
 import ch.agridata.bit.dto.BitDropSignRequest;
 import ch.agridata.bit.dto.BitGetSignedHashesRequest;
 import ch.agridata.bit.dto.BitInitSignRequest;
-import ch.agridata.bit.dto.BitInitSignRequestDeprecated;
 import ch.agridata.bit.dto.BitInitSignResponse;
 import ch.agridata.bit.dto.BitSignReturnStatusCode;
 import ch.agridata.bit.dto.BitSignState;
@@ -83,11 +82,8 @@ public class BitSignatureApiImpl implements BitSignatureApi {
   @ConfigProperty(name = "bit.signature.profile")
   String profile;
 
-  @ConfigProperty(name = "bit.signature.use-deprecated-mode", defaultValue = "false")
-  boolean useDeprecatedMode;
-
   @Override
-  public byte[] sign(byte @NonNull [] documentBytes, @NonNull String adminGlobalId, @NonNull String authUserId) {
+  public byte[] sign(byte @NonNull [] documentBytes, @NonNull String authUserId) {
     try (var document = Loader.loadPDF(documentBytes);
          var output = new ByteArrayOutputStream();
          var signatureOptions = new SignatureOptions()) {
@@ -98,7 +94,7 @@ public class BitSignatureApiImpl implements BitSignatureApi {
       var externalSigning = document.saveIncrementalForExternalSigning(output);
       var hashBase64 = computeHashBase64(externalSigning.getContent());
 
-      byte[] signatureBytes = signHash(hashBase64, adminGlobalId, authUserId);
+      byte[] signatureBytes = signHash(hashBase64, authUserId);
 
       externalSigning.setSignature(signatureBytes);
       return output.toByteArray();
@@ -108,8 +104,8 @@ public class BitSignatureApiImpl implements BitSignatureApi {
     }
   }
 
-  private byte[] signHash(String hashBase64, String adminGlobalId, String authUserId) {
-    var initResponse = initSign(adminGlobalId, authUserId);
+  private byte[] signHash(String hashBase64, String authUserId) {
+    var initResponse = initSign(authUserId);
     String signProcessToken = initResponse.signProcessToken();
     String tag = UUID.randomUUID().toString();
     log.debug("BIT sign process correlation tag: token={}, tag={}", signProcessToken, tag);
@@ -147,20 +143,14 @@ public class BitSignatureApiImpl implements BitSignatureApi {
     }
   }
 
-  private BitInitSignResponse initSign(String adminGlobalId, String authUserId) {
+  private BitInitSignResponse initSign(String authUserId) {
     BitInitSignResponse response;
 
-    if (useDeprecatedMode) {
-      var request = new BitInitSignRequestDeprecated(keyBearer, profile, "DE", null, AUTH_TYPE_MOBILE_ID, adminGlobalId);
-      log.debug("BIT initSign request (deprecated mode): keyBearer={}, profile={}, lang={}, authType={}, adminGlobalId={}",
-          request.keyBearer(), request.profile(), request.lang(), request.authType(), request.adminGlobalId());
-      response = restClient.initSign(request);
-    } else {
-      var request = new BitInitSignRequest(keyBearer, profile, "DE", null, AUTH_TYPE_MOBILE_ID, authUserId);
-      log.debug("BIT initSign request: keyBearer={}, profile={}, lang={}, authType={}, authUserId={}",
-          request.keyBearer(), request.profile(), request.lang(), request.authType(), request.authUserId());
-      response = restClient.initSign(request);
-    }
+    var request = new BitInitSignRequest(keyBearer, profile, "DE", null, AUTH_TYPE_MOBILE_ID, authUserId);
+    log.debug("BIT initSign request: keyBearer={}, profile={}, lang={}, authType={}, authUserId={}",
+        request.keyBearer(), request.profile(), request.lang(), request.authType(), request.authUserId());
+    response = restClient.initSign(request);
+
     log.debug("BIT initSign response: status={}, logId={}, token={}",
         response.status(), response.logId(), response.signProcessToken());
     if (response.status() != BitSignReturnStatusCode.OK) {

@@ -10,8 +10,9 @@ import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
-import ch.agridata.agreement.service.ConsentRequestMutationService;
+import ch.agridata.agreement.service.ConsentRequestCreationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
+import ch.agridata.agreement.service.ConsentRequestStateService;
 import ch.agridata.common.openapi.ApiSubset;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
@@ -58,7 +59,8 @@ public class ConsentRequestController {
 
   public static final String PATH = "/api/agreement/v1/consent-requests";
   private final ConsentRequestQueryService consentRequestQueryService;
-  private final ConsentRequestMutationService consentRequestMutationService;
+  private final ConsentRequestCreationService consentRequestCreationService;
+  private final ConsentRequestStateService consentRequestStateService;
 
   /**
    * This method is deprecated.
@@ -131,7 +133,7 @@ public class ConsentRequestController {
       @RequestBody(description = "New status of the consent request")
       ConsentRequestStateEnum newStatus
   ) {
-    consentRequestMutationService.updateConsentRequestStateAsCurrentDataProducer(id, newStatus);
+    consentRequestStateService.updateConsentRequestStateAsCurrentDataProducer(id, newStatus);
   }
 
   @POST
@@ -145,7 +147,7 @@ public class ConsentRequestController {
   @ResponseStatus(RestResponse.StatusCode.CREATED)
   public List<ConsentRequestCreatedDto> createConsentRequests(
       @NotNull @RequestBody List<@Valid @NotNull CreateConsentRequestDto> createConsentRequestDtos) {
-    return consentRequestMutationService.createConsentRequestForDataRequest(createConsentRequestDtos);
+    return consentRequestCreationService.createConsentRequests(createConsentRequestDtos);
   }
 
 }

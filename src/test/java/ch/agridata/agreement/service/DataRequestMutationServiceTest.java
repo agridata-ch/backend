@@ -1,6 +1,6 @@
 package ch.agridata.agreement.service;
 
-import static ch.agridata.agreement.service.ConsentRequestMutationServiceTest.UID1;
+import static ch.agridata.agreement.service.ConsentRequestCreationServiceTest.UID1;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.PRODUCT_ID;
 import static ch.agridata.agreement.utils.DataRequestTestUtils.USER_UID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -201,6 +201,34 @@ class DataRequestMutationServiceTest {
     assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
         .isInstanceOf(ValidationException.class)
         .hasMessage("Cannot process request: all products must share the same data source system");
+  }
+
+  @Test
+  void givenDataProductsWithMixedConsentRequirement_whenCreateDataRequestDraft_thenThrowValidationException() {
+    var publicLawProductId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+    var consentProductId = UUID.fromString("00000000-0000-0000-0000-000000000003");
+    DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
+        .products(List.of(publicLawProductId, consentProductId))
+        .build();
+    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(dataRequestRepository.countByDataConsumerUidAndState(
+        uidSearchResult.uid(),
+        DataRequestEntity.DataRequestStateEnum.DRAFT
+    )).thenReturn(0L);
+    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
+    when(dataProductApi.getActiveProductById(publicLawProductId))
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(publicLawProductId)
+            .dataSourceSystemCode("AGIS").consentRequired(false).build());
+    when(dataProductApi.getActiveProductById(consentProductId))
+        .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(consentProductId)
+            .dataSourceSystemCode("AGIS").consentRequired(true).build());
+
+    assertThatThrownBy(() -> dataRequestMutationService.createDataRequestDraft(updateDto))
+        .isInstanceOf(ValidationException.class)
+        .hasMessage("Cannot process request: all products must have the same consent requirement");
   }
 
   @Test

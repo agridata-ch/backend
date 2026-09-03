@@ -64,7 +64,6 @@ public class ContractRevisionSealService {
   }
 
   public void sealAsync(UUID contractRevisionId) {
-    String adminGlobalId = agridataSecurityIdentity.getAdminGlobalIdOrElseThrow();
     String email = agridataSecurityIdentity.getUserInfoOrElseThrow().getEmail();
     QuarkusTransaction.requiringNew().run(() -> {
       ContractRevisionEntity entity = contractRevisionRepository.findByIdOptional(contractRevisionId)
@@ -79,7 +78,7 @@ public class ContractRevisionSealService {
       entity.setSealState(SealAttemptState.IN_PROGRESS);
       entity.setSealStartedAt(LocalDateTime.now());
     });
-    runAsyncAsUser(agridataSecurityIdentity.getUserId(), () -> performSeal(contractRevisionId, adminGlobalId, email));
+    runAsyncAsUser(agridataSecurityIdentity.getUserId(), () -> performSeal(contractRevisionId, email));
   }
 
   /**
@@ -110,10 +109,10 @@ public class ContractRevisionSealService {
         && entity.getSealStartedAt().isAfter(LocalDateTime.now().minus(STUCK_TIMEOUT));
   }
 
-  private void performSeal(UUID contractRevisionId, String adminGlobalId, String email) {
+  private void performSeal(UUID contractRevisionId, String email) {
     try {
       byte[] unsealedPdf = contractRevisionStorageService.download(contractRevisionId);
-      byte[] sealedPdf = bitSignatureApi.sign(unsealedPdf, adminGlobalId, email);
+      byte[] sealedPdf = bitSignatureApi.sign(unsealedPdf, email);
       contractRevisionStorageService.upload(contractRevisionId, sealedPdf);
       updateSealState(contractRevisionId, SealAttemptState.COMPLETED);
       auditingService.logContractPdfElectronicallySigned(contractRevisionId);

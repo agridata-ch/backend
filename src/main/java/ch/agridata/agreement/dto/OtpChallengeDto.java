@@ -7,9 +7,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents an OTP challenge.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-03-19
  */
-
 public record OtpChallengeDto(
     @Schema(
         description = "Unique identifier of the challenge",

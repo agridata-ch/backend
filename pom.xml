@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.15.1</version>
+    <version>1.16.0-rc.12</version>
 
     <properties>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
@@ -21,9 +21,9 @@
         <lombok.version>1.18.42</lombok.version>
         <assertj.version>3.27.7</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
-        <archunit-junit5.version>1.4.1</archunit-junit5.version>
-        <wiremock.version>1.6.1</wiremock.version>
-        <guava.version>33.6.0-jre</guava.version>
+        <archunit-junit5.version>1.5.0</archunit-junit5.version>
+        <wiremock.version>1.7.0</wiremock.version>
+        <guava.version>33.7.1-jre</guava.version>
         <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.42</swagger-parser.version>
@@ -34,9 +34,9 @@
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
         <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>13.8.0</checkstyle.version>
-        <dependency-check-maven.version>12.2.0</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.24.0</openapi-generator-maven-plugin.version>
+        <checkstyle.version>14.0.0</checkstyle.version>
+        <dependency-check-maven.version>13.0.0</dependency-check-maven.version>
+        <openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>

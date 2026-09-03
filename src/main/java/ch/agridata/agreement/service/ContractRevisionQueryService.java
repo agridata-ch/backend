@@ -19,9 +19,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Provides query operations for contract revisions.
  *
- * @CommentLastReviewed: 2026-03-16
+ * @CommentLastReviewed 2026-03-16
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ContractRevisionQueryService {

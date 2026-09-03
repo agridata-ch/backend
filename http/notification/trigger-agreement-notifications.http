@@ -4,10 +4,10 @@ Authorization: Bearer {{$auth.token("admin")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load admin user", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body !== null, "Expected Response results to contain products")
-  })
+    client.test("Load admin user", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+    })
 %}
 
 ### Locally load consumer 1 into user cache (if not already loaded)
@@ -16,11 +16,11 @@ Authorization: Bearer {{$auth.token("consumer-blv-1")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load consumer 1 user", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body !== null, "Expected Response results to contain products")
-    client.global.set("consumerUid", response.body.uid)
-  })
+    client.test("Load consumer 1 user", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+        client.global.set("consumerUid", response.body.uid)
+    })
 %}
 
 ### Locally load consumer 2 into user cache (if not already loaded)
@@ -29,11 +29,11 @@ Authorization: Bearer {{$auth.token("consumer-blv-2")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load consumer 2 user", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body !== null, "Expected Response results to contain products")
-    client.global.set("consumerUid", response.body.uid)
-  })
+    client.test("Load consumer 2 user", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+        client.global.set("consumerUid", response.body.uid)
+    })
 %}
 
 
@@ -43,11 +43,11 @@ Authorization: Bearer {{$auth.token("provider-1")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load provider 1 user", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body !== null, "Expected Response results to contain products")
-    client.global.set("consumerUid", response.body.uid)
-  })
+    client.test("Load provider 1 user", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+        client.global.set("consumerUid", response.body.uid)
+    })
 %}
 
 
@@ -57,11 +57,11 @@ Authorization: Bearer {{$auth.token("provider-2")}}
 Content-Type: application/json
 
 > {%
-  client.test("Load provider 2 user", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body !== null, "Expected Response results to contain products")
-    client.global.set("consumerUid", response.body.uid)
-  })
+    client.test("Load provider 2 user", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body !== null, "Expected Response results to contain products")
+        client.global.set("consumerUid", response.body.uid)
+    })
 %}
 
 ### Create a new data request draft
@@ -87,11 +87,11 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Create data request", function () {
-    client.assert(response.status === 201, "Expected Response status is 201, got: " + response.status)
-    client.assert(response.body.id !== null, "Expected Response results to contain an id")
-    client.global.set("dataRequestId", response.body.id)
-  })
+    client.test("Create data request", function () {
+        client.assert(response.status === 201, "Expected Response status is 201, got: " + response.status)
+        client.assert(response.body.id !== null, "Expected Response results to contain an id")
+        client.global.set("dataRequestId", response.body.id)
+    })
 %}
 
 ### GET products
@@ -100,13 +100,13 @@ Authorization: Bearer {{$auth.token("consumer-blv-1")}}
 Content-Type: application/json
 
 > {%
-  client.test("Get products", function () {
-    client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
-    client.assert(response.body.length > 0, "Expected more than one products")
-    client.global.set("productId", response.body
-        .find(p => p.dataSourceSystemCode === "AGIS").id
-    )
-  })
+    client.test("Get products", function () {
+        client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
+        client.assert(response.body.length > 0, "Expected more than one products")
+        client.global.set("productId", response.body
+            .find(p => p.dataSourceSystemCode === "AGIS").id
+        )
+    })
 %}
 
 ### PUT data request with complete data
@@ -152,9 +152,9 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Update data request", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Update data request", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Set data request to IN_REVIEW
@@ -165,9 +165,9 @@ Content-Type: application/json
 "IN_REVIEW"
 
 > {%
-  client.test("Set data request to IN_REVIEW", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request to IN_REVIEW", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Set data request back to DRAFT after reviewing
@@ -178,9 +178,9 @@ Content-Type: application/json
 "DRAFT"
 
 > {%
-  client.test("Set data request back to DRAFT", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request back to DRAFT", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Set data request to IN_REVIEW again
@@ -191,9 +191,9 @@ Content-Type: application/json
 "IN_REVIEW"
 
 > {%
-  client.test("Set data request to IN_REVIEW again", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request to IN_REVIEW again", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Set data request to TO_BE_SIGNED_BY_CONSUMER after reviewing
@@ -204,10 +204,10 @@ Content-Type: application/json
 "TO_BE_SIGNED_BY_CONSUMER"
 
 > {%
-  client.test("Set data request to TO_BE_SIGNED_BY_CONSUMER", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("contractRevisionId", response.body.currentContractRevisionId)
-  })
+    client.test("Set data request to TO_BE_SIGNED_BY_CONSUMER", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("contractRevisionId", response.body.currentContractRevisionId)
+    })
 %}
 
 ### Initiate OTP challenge for consumer 1 signature (DATA_CONSUMER_01)
@@ -215,10 +215,10 @@ POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/signatur
 Authorization: Bearer {{$auth.token("consumer-blv-1")}}
 
 > {%
-  client.test("Initiate OTP challenge for consumer 1", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("challengeId", response.body.challengeId)
-  })
+    client.test("Initiate OTP challenge for consumer 1", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("challengeId", response.body.challengeId)
+    })
 %}
 
 ### Verify OTP and sign as consumer 1 (DATA_CONSUMER_01)
@@ -231,10 +231,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Sign as consumer 1", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("contractRevisionId", response.body.id)
-  })
+    client.test("Sign as consumer 1", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("contractRevisionId", response.body.id)
+    })
 %}
 
 ### Initiate OTP challenge for consumer 2 signature (DATA_CONSUMER_02)
@@ -242,10 +242,10 @@ POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/signatur
 Authorization: Bearer {{$auth.token("consumer-blv-2")}}
 
 > {%
-  client.test("Initiate OTP challenge for consumer 2", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("challengeId", response.body.challengeId)
-  })
+    client.test("Initiate OTP challenge for consumer 2", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("challengeId", response.body.challengeId)
+    })
 %}
 
 ### Verify OTP and sign as consumer 2 (DATA_CONSUMER_02)
@@ -258,10 +258,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Sign as consumer 2", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("contractRevisionId", response.body.id)
-  })
+    client.test("Sign as consumer 2", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("contractRevisionId", response.body.id)
+    })
 %}
 
 ### Set data request to TO_BE_SIGNED_BY_PROVIDER (consumer releases after signing)
@@ -272,9 +272,9 @@ Content-Type: application/json
 "TO_BE_SIGNED_BY_PROVIDER"
 
 > {%
-  client.test("Set data request to TO_BE_SIGNED_BY_PROVIDER", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request to TO_BE_SIGNED_BY_PROVIDER", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Initiate OTP challenge for provider 1 signature (DATA_PROVIDER_01)
@@ -282,10 +282,10 @@ POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/signatur
 Authorization: Bearer {{$auth.token("provider-1")}}
 
 > {%
-  client.test("Initiate OTP challenge for provider 1", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("challengeId", response.body.challengeId)
-  })
+    client.test("Initiate OTP challenge for provider 1", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("challengeId", response.body.challengeId)
+    })
 %}
 
 ### Verify OTP and sign as provider 1 (DATA_PROVIDER_01)
@@ -298,10 +298,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Sign as provider 1", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("contractRevisionId", response.body.id)
-  })
+    client.test("Sign as provider 1", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("contractRevisionId", response.body.id)
+    })
 %}
 
 ### Initiate OTP challenge for provider 2 signature (DATA_PROVIDER_02)
@@ -309,10 +309,10 @@ POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/signatur
 Authorization: Bearer {{$auth.token("provider-2")}}
 
 > {%
-  client.test("Initiate OTP challenge for provider 2", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("challengeId", response.body.challengeId)
-  })
+    client.test("Initiate OTP challenge for provider 2", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("challengeId", response.body.challengeId)
+    })
 %}
 
 ### Verify OTP and sign as provider 2 (DATA_PROVIDER_02)
@@ -325,10 +325,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("Sign as provider 2", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.global.set("contractRevisionId", response.body.id)
-  })
+    client.test("Sign as provider 2", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.global.set("contractRevisionId", response.body.id)
+    })
 %}
 
 ### Set data request to TO_BE_ACTIVATED (provider releases after signing)
@@ -339,19 +339,19 @@ Content-Type: application/json
 "TO_BE_ACTIVATED"
 
 > {%
-  client.test("Set data request to TO_BE_ACTIVATED", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request to TO_BE_ACTIVATED", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}
 
 ### Initiate seal of the final contract revision (admin)
-POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/seals?adminGlobalId=test-admin-global-id
+POST {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/seals
 Authorization: Bearer {{$auth.token("admin")}}
 
 > {%
-  client.test("Initiate seal", function () {
-    client.assert(response.status === 202, "Expected 202, got: " + response.status)
-  })
+    client.test("Initiate seal", function () {
+        client.assert(response.status === 202, "Expected 202, got: " + response.status)
+    })
 %}
 
 ### Poll seal status (long polling — waits until seal completes)
@@ -359,10 +359,10 @@ GET {{baseUrl}}/agreement/v1/contract-revisions/{{contractRevisionId}}/seals/sta
 Authorization: Bearer {{$auth.token("admin")}}
 
 > {%
-  client.test("Seal completed", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-    client.assert(response.body === "COMPLETED", "Expected seal status COMPLETED, got: " + response.body)
-  })
+    client.test("Seal completed", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+        client.assert(response.body === "COMPLETED", "Expected seal status COMPLETED, got: " + response.body)
+    })
 %}
 
 ### Set data request to ACTIVE
@@ -373,7 +373,7 @@ Content-Type: application/json
 "ACTIVE"
 
 > {%
-  client.test("Set data request to ACTIVE", function () {
-    client.assert(response.status === 200, "Expected 200, got: " + response.status)
-  })
+    client.test("Set data request to ACTIVE", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
 %}

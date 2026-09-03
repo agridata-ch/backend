@@ -9,9 +9,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents a complete contract revision.
  *
- * @CommentLastReviewed: 2026-03-17
+ * @CommentLastReviewed 2026-03-17
  */
-
 @Builder
 public record ContractRevisionDto(
     @Schema(

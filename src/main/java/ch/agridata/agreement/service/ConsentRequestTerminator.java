@@ -49,6 +49,7 @@ public class ConsentRequestTerminator {
   private final ConsentRequestRepository consentRequestRepository;
   private final Clock clock;
   private final AuditingService auditingService;
+  private final ConsentRequestSyncService consentRequestSyncService;
 
   @Transactional
   public long terminateFor(
@@ -79,6 +80,7 @@ public class ConsentRequestTerminator {
       terminated.forEach(t -> {
         log.info("terminated consent request id={} bur={} uid={}", t.getId(), t.getDataProducerBur(), t.getDataProducerUid());
         auditingService.logDataRequestTerminated(t.getId());
+        consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(t.getDataRequest().getId(), t.getDataProducerUid());
       });
     }
 

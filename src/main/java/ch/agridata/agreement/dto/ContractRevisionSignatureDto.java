@@ -8,9 +8,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents a signature on a contract revision.
  *
- * @CommentLastReviewed: 2026-03-19
+ * @CommentLastReviewed 2026-03-19
  */
-
 public record ContractRevisionSignatureDto(
     @Schema(
         description = "Slot in which the signature is stored",

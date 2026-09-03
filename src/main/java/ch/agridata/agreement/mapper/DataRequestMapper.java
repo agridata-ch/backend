@@ -77,7 +77,6 @@ public interface DataRequestMapper {
   @Mapping(target = "dataConsumerUid", ignore = true)
   @Mapping(target = "dataConsumerLegalName", ignore = true)
   @Mapping(target = "validRedirectUriRegex", ignore = true)
-  @Mapping(target = "dataSourceSystemId", ignore = true)
   @Mapping(target = "consumerSignatureType", ignore = true)
   @Mapping(target = "providerSignatureType", ignore = true)
   // This will be handled in the AfterMapping method
@@ -89,12 +88,13 @@ public interface DataRequestMapper {
   @Mapping(target = "modifiedBy", ignore = true)
   @Mapping(target = "modifiedAt", ignore = true)
   @Mapping(target = "stateCode", ignore = true)
-  @Mapping(target = "contactEmailAddress", source = "contactEmailAddress", qualifiedByName = "toLowerCase")
+  @Mapping(target = "contactEmailAddress", source = "dataRequestUpdateDto.contactEmailAddress", qualifiedByName = "toLowerCase")
   @Mapping(target = "dataConsumerLogo", ignore = true)
   @Mapping(target = "dataConsumerLogoType", ignore = true)
   @Mapping(target = "currentContractRevisionId", ignore = true)
   void updateEntity(
       DataRequestUpdateDto dataRequestUpdateDto,
+      UUID dataSourceSystemId,
       @MappingTarget DataRequestEntity entity
   );
 

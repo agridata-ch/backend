@@ -3,9 +3,8 @@ package ch.agridata.agreement.dto;
 /**
  * Lists the possible signature slots.
  *
- * @CommentLastReviewed: 2026-03-20
+ * @CommentLastReviewed 2026-03-20
  */
-
 public enum SignatureSlotCodeEnum {
   DATA_CONSUMER_01,
   DATA_CONSUMER_02,
