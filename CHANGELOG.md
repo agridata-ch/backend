@@ -1,3 +1,9 @@
+## [1.17.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.16.0...v1.17.0-rc.1) (2026-09-03)
+
+### Features
+
+* **authorization:** Add farm change bridge period for uid authorization validSince ([3780bde](https://github.com/agridata-ch/backend/commit/3780bde0dfc2aa6eac47178f59faf6bbdf3a6baf)), closes [DIGIB2-1650](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1650)
+
 ## [1.16.0](https://github.com/agridata-ch/backend/compare/v1.15.1...v1.16.0) (2026-09-03)
 
 ### Features
