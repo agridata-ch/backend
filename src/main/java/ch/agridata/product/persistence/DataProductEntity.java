@@ -14,6 +14,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ import org.hibernate.type.SqlTypes;
  * Declares operations for retrieving a product or its provider configuration by identifier. It ensures a stable contract for other
  * modules.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-09-02
  */
 @Entity
 @Table(name = "data_product",
@@ -59,10 +60,12 @@ public class DataProductEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
+  @Valid
   private TranslationPersistenceDto name;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "description")
+  @Valid
   private TranslationPersistenceDto description;
 
   @ManyToOne()
@@ -105,6 +108,7 @@ public class DataProductEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "extended_description")
+  @Valid
   private TranslationPersistenceDto extendedDescription;
 
   @Builder.Default

@@ -32,7 +32,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Models a data request for persistence. It aligns DTO structures with stored records.
  *
- * @CommentLastReviewed 2025-12-09
+ * @CommentLastReviewed 2026-09-02
  */
 @Entity
 @Table(name = "data_request",
@@ -143,7 +143,7 @@ public class DataRequestEntity extends AuditableEntity {
   @NotNull
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  private List<TranslationPersistenceDto> advantages;
+  private List<@Valid TranslationPersistenceDto> advantages;
 
   /**
    * Lists the possible states of a data request.

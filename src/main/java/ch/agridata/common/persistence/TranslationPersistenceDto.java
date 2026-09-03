@@ -6,10 +6,18 @@ import lombok.Builder;
 /**
  * Models translation content for persistence. It enables storage and retrieval of multilingual values.
  *
- * @CommentLastReviewed 2025-08-25
+ * <p>The {@link #MAX_LENGTH} ceiling is a persistence-level safety net that applies uniformly to every multilingual field. The precise,
+ * field-specific business limits remain declared on the respective API DTOs.
+ *
+ * @CommentLastReviewed 2026-09-02
  */
 @Builder
-public record TranslationPersistenceDto(@Size(max = 4000) String de, @Size(max = 4000) String fr,
-                                        @Size(max = 4000) String it) {
+public record TranslationPersistenceDto(@Size(max = MAX_LENGTH) String de, @Size(max = MAX_LENGTH) String fr,
+                                        @Size(max = MAX_LENGTH) String it) {
+
+  /**
+   * Maximum length enforced per language at persistence level.
+   */
+  public static final int MAX_LENGTH = 10000;
 
 }
