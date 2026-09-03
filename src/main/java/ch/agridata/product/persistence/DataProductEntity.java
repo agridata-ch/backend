@@ -114,4 +114,12 @@ public class DataProductEntity extends AuditableEntity {
   @Builder.Default
   @Column(name = "consent_required", nullable = false)
   private boolean consentRequired = true;
+
+  @Column(name = "payment_required")
+  private boolean paymentRequired;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "pricing_basis")
+  @Valid
+  private TranslationPersistenceDto pricingBasis;
 }

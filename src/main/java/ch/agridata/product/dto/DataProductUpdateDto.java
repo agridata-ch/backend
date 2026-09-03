@@ -3,6 +3,7 @@ package ch.agridata.product.dto;
 import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
@@ -127,7 +128,30 @@ public record DataProductUpdateDto(
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsProvider.class)
     @Null(groups = ValidationSchemaGenerator.PatchAsAdmin.class)
-    Boolean consentRequired
+    Boolean consentRequired,
+
+    @Schema(
+        description = "If a payment is required for this data product",
+        examples = "true"
+    )
+    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    Boolean paymentRequired,
+
+    @Schema(
+        description = "Pricing basis of the data product"
+    )
+    @Valid
+    DataProductDescriptionDto pricingBasis
+
 ) {
 
+  @AssertTrue(groups = ValidationSchemaGenerator.Submit.class, message = "pricingBasis must not be null when paymentRequired is true")
+  public boolean isPricingBasisPresentWhenPaymentRequired() {
+    return !Boolean.TRUE.equals(paymentRequired) || pricingBasis != null;
+  }
+
+  @AssertTrue(groups = ValidationSchemaGenerator.Submit.class, message = "pricingBasis must be null when paymentRequired is not true")
+  public boolean isPricingBasisAbsentWhenPaymentNotRequired() {
+    return Boolean.TRUE.equals(paymentRequired) || pricingBasis == null;
+  }
 }

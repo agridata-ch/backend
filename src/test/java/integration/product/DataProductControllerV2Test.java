@@ -261,6 +261,36 @@ class DataProductControllerV2Test {
     assertThat(responseDataProductDto.consentRequired()).isEqualTo(consentRequired);
   }
 
+  @SneakyThrows
+  @ParameterizedTest
+  @CsvSource({"PROVIDER_1, true", "PROVIDER_1, false", "ADMIN, true", "ADMIN, false"})
+  void givenPaymentRequired_whenAddDataProductDraft_thenValuePersisted(TestUserEnum user, boolean paymentRequired) {
+    DataProductDescriptionDto pricingBasis = paymentRequired
+        ? new DataProductDescriptionDto("Gebühren Deutsch", "Redevances Francais", "Tassazione Italiano")
+        : null;
+    DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
+        .paymentRequired(paymentRequired)
+        .pricingBasis(pricingBasis)
+        .build();
+
+    DataProductDto responseDataProductDto = AuthTestUtils.requestAs(user)
+        .given()
+        .contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(requestDataProductUpdate))
+        .when()
+        .post(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(201)
+        .extract().as(DataProductDto.class);
+
+    assertThat(responseDataProductDto.paymentRequired()).isEqualTo(paymentRequired);
+    if (paymentRequired) {
+      assertThat(responseDataProductDto.pricingBasis().de()).isEqualTo(pricingBasis.de());
+    } else {
+      assertThat(responseDataProductDto.pricingBasis()).isNull();
+    }
+  }
+
   private static DataProductUpdateDto getDataProductUpdateDto(UUID dataSourceSystemId, UUID restClientId) {
     return DataProductUpdateDto.builder()
         .dataSourceSystemId(dataSourceSystemId)
@@ -1009,6 +1039,33 @@ class DataProductControllerV2Test {
         .patch(DataProductControllerV2.PATH + "/" + productId)
         .then()
         .statusCode(400);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProductWithoutPayment_whenPatchPaymentRequiredAndPricingBasis_thenReturnDto(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren", "Redevances", "Tassazione");
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .paymentRequired(true)
+        .pricingBasis(pricingBasis)
+        .build();
+
+    var resultingDataProduct = AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .as(DataProductDto.class);
+
+    assertThat(resultingDataProduct.paymentRequired()).isTrue();
+    assertThat(resultingDataProduct.pricingBasis().de()).isEqualTo(pricingBasis.de());
   }
 
   @SneakyThrows
