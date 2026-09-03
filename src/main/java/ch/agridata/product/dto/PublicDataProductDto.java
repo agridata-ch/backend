@@ -74,7 +74,19 @@ public record PublicDataProductDto(
         examples = "true"
     )
     @NotNull
-    Boolean consentRequired
+    Boolean consentRequired,
+
+    @Schema(
+        description = "If a payment is required for this data product",
+        examples = "true"
+    )
+    @NotNull
+    Boolean paymentRequired,
+
+    @Schema(
+        description = "Legal basis for the pricing of this data product, if payment is required"
+    )
+    TranslationDto pricingBasis
 )
 
     implements Serializable {
