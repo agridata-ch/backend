@@ -33,7 +33,7 @@ import org.hibernate.SessionFactory;
 /**
  * Provides business logic for consent requests. It coordinates creation, validation, and updates across related entities.
  *
- * @CommentLastReviewed 2026-08-17
+ * @CommentLastReviewed 2026-08-31
  */
 
 @ApplicationScoped
@@ -56,9 +56,22 @@ public class ConsentRequestCreationService {
 
     return sessionFactory.fromTransaction(state ->
         createConsentRequestDtos.stream()
-            .map(dto -> processConsentRequest(dto.dataRequestId(), dto.uid()))
+            .map(dto -> createConsentRequestForUidAndAllBurs(dto.dataRequestId(), dto.uid()))
             .flatMap(Collection::stream)
             .toList());
+  }
+
+  public void createLegallyPermittedConsentRequestIfMissing(UUID dataRequestId,
+                                                            String uid,
+                                                            String bur,
+                                                            LocalDateTime uidBurRelationSince) {
+    sessionFactory.inTransaction(session -> {
+      var dataRequest = loadActiveDataRequest(dataRequestId);
+      createConsentRequestIfMissing(dataRequest, LEGALLY_PERMITTED, uid, null, null);
+      if (bur != null && uidBurRelationSince != null) {
+        createConsentRequestIfMissing(dataRequest, LEGALLY_PERMITTED, uid, bur, uidBurRelationSince);
+      }
+    });
   }
 
   private void assertAllUidsAuthorized(List<CreateConsentRequestDto> createConsentRequestDtos, List<String> authorizedUids) {
@@ -73,7 +86,7 @@ public class ConsentRequestCreationService {
     }
   }
 
-  private List<ConsentRequestCreatedDto> processConsentRequest(UUID dataRequestId, String uid) {
+  private List<ConsentRequestCreatedDto> createConsentRequestForUidAndAllBurs(UUID dataRequestId, String uid) {
     var dataRequest = loadActiveDataRequest(dataRequestId);
     var products = loadProducts(dataRequest);
     var hasBurProducts = products.stream().map(DataProductDto::flowCode).anyMatch(FlowCodeEnum::isBurBased);

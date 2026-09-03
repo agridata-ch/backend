@@ -3,6 +3,7 @@ package ch.agridata.datatransferv2.service.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
@@ -11,6 +12,7 @@ import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
+import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -97,10 +99,29 @@ class EnsureValidConsentForProducerUidsTaskTest {
     assertThat(result).isSameAs(context);
   }
 
+  @Test
+  void givenConsentFreeProduct_whenApply_thenNoExceptionAndCreationIsEnqueued() {
+    var context = createContextWithProducers(List.of(PRODUCER_UID_1, PRODUCER_UID_2), false);
+
+    var result = task.apply(context);
+
+    assertThat(result).isSameAs(context);
+    verify(consentRequestApi).enqueueLegallyPermittedUidBasedConsentRequest(DATA_REQUEST_ID, PRODUCER_UID_1);
+    verify(consentRequestApi).enqueueLegallyPermittedUidBasedConsentRequest(DATA_REQUEST_ID, PRODUCER_UID_2);
+  }
+
   private AgridataContext createContextWithProducers(List<String> producerUids) {
+    return createContextWithProducers(producerUids, true);
+  }
+
+  private AgridataContext createContextWithProducers(List<String> producerUids, boolean consentRequired) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
         .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
+        .productProviderConfiguration(DataProductProviderConfigurationDto.builder()
+            .id(PRODUCT_ID)
+            .consentRequired(consentRequired)
+            .build())
         .producerUids(producerUids)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
         .build();
