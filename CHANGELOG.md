@@ -1,3 +1,23 @@
+## [1.16.0](https://github.com/agridata-ch/backend/compare/v1.15.1...v1.16.0) (2026-09-03)
+
+### Features
+
+* **agreement:** add consent requirement validation for data products ([166a9b6](https://github.com/agridata-ch/backend/commit/166a9b6a66469687411b61316a941556bd26ff39)), closes [DIGIB2-1554](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1554)
+* **agreement:** introduce legally permitted consents ([ced0c0f](https://github.com/agridata-ch/backend/commit/ced0c0ffe8a027ab27efc390e98b9ead15b7ad6c)), closes [DIGIB2-1555](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1555)
+* **bit:** remove deprecated bit seal api ([3bdd791](https://github.com/agridata-ch/backend/commit/3bdd7912ecb9a5738af8bb82b0d8d2faa7730658)), closes [DIGIB2-1578](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1578)
+* **bur:** Connect UID consentRequest to BUR consentRequest state on BUR products ([1e5f7d1](https://github.com/agridata-ch/backend/commit/1e5f7d18c506d04db817084c5d791a2db2fdaf9b))
+* **data-product:** Move data products from BLV to BLW ([5dfd350](https://github.com/agridata-ch/backend/commit/5dfd35040707b01098dc6b9df5e14598fe08f812)), closes [DIGIB2-1651](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1651)
+* **deps:** Update owaspignore. ([f725707](https://github.com/agridata-ch/backend/commit/f7257076d78a374f53d6e1db591ef0c3a6c3e44a)), closes [DIGIB2-XXXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXXX)
+* **product:** Add legally permitted state to consent aggregate ([1e49a13](https://github.com/agridata-ch/backend/commit/1e49a130a3543817e5a7e4906f71c53bc7811624)), closes [DIGIB2-1557](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1557)
+* **product:** Increase allowed size for extended product description to 10'000. ([d444cc6](https://github.com/agridata-ch/backend/commit/d444cc6347eef50ee36e95c333c90e77861faf9a)), closes [DIGIB2-1644](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1644)
+
+### Bug Fixes
+
+* **bur:** update bur authorization service ([1e99088](https://github.com/agridata-ch/backend/commit/1e9908883845fa32676bb50bfe53ffca56a406cd)), closes [DIGIB2-1648](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1648)
+* **datatransfer:** allow datetime for data transfer ([4533186](https://github.com/agridata-ch/backend/commit/45331860d33aec93887c73ab4564f865c93c0b78))
+* **deps:** update dependencies ([5de14a0](https://github.com/agridata-ch/backend/commit/5de14a03bf8dbe90f981a4d18dc172c026be460d)), closes [DIGIB2-1607](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1607)
+* **notifications:** Update email html lang attribute based on language ([b1cd33d](https://github.com/agridata-ch/backend/commit/b1cd33df03b80bb71e027d5f4ec5c0a3f1d2f626))
+
 ## [1.16.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.16.0-rc.11...v1.16.0-rc.12) (2026-09-01)
 
 ### Features
