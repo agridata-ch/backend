@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import org.hibernate.type.SqlTypes;
  * that supplies one or more data source systems and serves as a stable reference point for products
  * and configurations.
  *
- * @CommentLastReviewed 2026-02-06
+ * @CommentLastReviewed 2026-09-02
  */
 
 @Entity
@@ -61,6 +62,7 @@ public class DataProviderEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
+  @Valid
   private TranslationPersistenceDto name;
 
   @Builder.Default
