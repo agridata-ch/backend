@@ -1,3 +1,9 @@
+## [1.17.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.4...v1.17.0-rc.5) (2026-09-04)
+
+### Features
+
+* **datatransfer:** create legally permitted consent requests automatically ([32cb2b5](https://github.com/agridata-ch/backend/commit/32cb2b54d1ba2724705a48bc6709a59e369f3340)), closes [DIGIB2-1649](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1649)
+
 ## [1.17.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.3...v1.17.0-rc.4) (2026-09-04)
 
 ### Features
