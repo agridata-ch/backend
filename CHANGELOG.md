@@ -1,3 +1,9 @@
+## [1.17.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.3...v1.17.0-rc.4) (2026-09-04)
+
+### Features
+
+* **product:** Allow consumers to fetch all consent requests for a given data request ([3ffc606](https://github.com/agridata-ch/backend/commit/3ffc60681f7b7fe42581a5bbdacd990be0acf150)), closes [DIGIB2-1668](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1668)
+
 ## [1.17.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.2...v1.17.0-rc.3) (2026-09-03)
 
 ### Features
