@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 /**
  * Service class for managing and mutating data product entities. Provides functionality for adding,
@@ -53,8 +54,8 @@ public class DataProductMutationService {
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
   public DataProductDto addDataProductDraftAsProvider(DataProductUpdateDto updateDto) {
-    var dataSourceSystem = asCurrentProvider().dataSourceSystem().apply(updateDto.dataSourceSystemId());
-    var restClient = asCurrentProvider().restClient().apply(updateDto.restClientId());
+    var dataSourceSystem = asCurrentProvider().dataSourceSystem().apply(orNull(updateDto.dataSourceSystemId()));
+    var restClient = asCurrentProvider().restClient().apply(orNull(updateDto.restClientId()));
 
     var entity = DataProductEntity.builder()
         .dataSourceSystem(dataSourceSystem)
@@ -69,8 +70,8 @@ public class DataProductMutationService {
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
   public DataProductDto addDataProductDraftAsAdmin(DataProductUpdateDto updateDto) {
-    var dataSourceSystem = asAdmin().dataSourceSystem().apply(updateDto.dataSourceSystemId());
-    var restClient = asAdmin().restClient().apply(updateDto.restClientId());
+    var dataSourceSystem = asAdmin().dataSourceSystem().apply(orNull(updateDto.dataSourceSystemId()));
+    var restClient = asAdmin().restClient().apply(orNull(updateDto.restClientId()));
 
     var entity = DataProductEntity.builder()
         .dataSourceSystem(dataSourceSystem)
@@ -112,8 +113,10 @@ public class DataProductMutationService {
     var entity = resolver.dataProduct().apply(dataProductId);
     verifyState(entity, DataProductStateEnum.ACTIVE);
 
-    if (updateDto.restClientId() != null) {
-      entity.setRestClient(resolver.restClient().apply(updateDto.restClientId()));
+    // Only touch the rest client when the field is present: an omitted restClientId leaves the current association untouched,
+    // while an explicit null clears it (the resolver returns null for a null id).
+    if (isPresent(updateDto.restClientId())) {
+      entity.setRestClient(resolver.restClient().apply(updateDto.restClientId().get()));
     }
 
     return patch(updateDto, entity);
@@ -123,8 +126,8 @@ public class DataProductMutationService {
     var entity = resolver.dataProduct().apply(dataProductId);
     verifyState(entity, DataProductStateEnum.DRAFT);
 
-    var dataSourceSystem = resolver.dataSourceSystem().apply(updateDto.dataSourceSystemId());
-    var restClient = resolver.restClient().apply(updateDto.restClientId());
+    var dataSourceSystem = resolver.dataSourceSystem().apply(orNull(updateDto.dataSourceSystemId()));
+    var restClient = resolver.restClient().apply(orNull(updateDto.restClientId()));
 
     entity.setDataSourceSystem(dataSourceSystem);
 
@@ -221,5 +224,15 @@ public class DataProductMutationService {
       return null;
     }
     return finder.apply(id).orElseThrow(() -> new NotFoundException(id.toString()));
+  }
+
+  // Unwraps a JsonNullable to its value, treating both an omitted field and an explicit null as null. Null-safe for DTOs built
+  // directly (e.g. in unit tests) where an unset field is a null reference rather than JsonNullable.undefined().
+  private static <T> T orNull(JsonNullable<T> value) {
+    return value != null && value.isPresent() ? value.get() : null;
+  }
+
+  private static boolean isPresent(JsonNullable<?> value) {
+    return value != null && value.isPresent();
   }
 }

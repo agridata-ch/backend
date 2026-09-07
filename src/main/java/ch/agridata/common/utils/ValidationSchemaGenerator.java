@@ -20,12 +20,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 /**
  * Generates JSON Schemas from annotated Java DTOs using Jakarta Validation metadata. It supports nested objects, collections, and common
  * validation constraints like {@code @NotNull}, {@code @NotEmpty}, {@code @Size}, {@code @Pattern}, {@code @Min}, and {@code @Max}.
+ * Fields wrapped in {@link org.openapitools.jackson.nullable.JsonNullable} are unwrapped so the schema describes the wrapped value.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-09-07
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -50,9 +52,9 @@ public class ValidationSchemaGenerator {
     ObjectNode rootSchema = objectMapper.createObjectNode();
     ObjectNode propertiesNode = objectMapper.createObjectNode();
     ArrayNode requiredFields = objectMapper.createArrayNode();
-    Set<String> visitedPaths = new HashSet<>();
+    TraversalContext context = new TraversalContext(groups, new HashSet<>());
 
-    processClass(rootClass, groups, propertiesNode, requiredFields, visitedPaths,
+    processClass(rootClass, context, propertiesNode, requiredFields,
         rootClass.getSimpleName());
 
     rootSchema.put("type", JSON_TYPE_OBJECT);
@@ -68,18 +70,17 @@ public class ValidationSchemaGenerator {
    * Recursively processes a class and its fields to generate JSON Schema nodes.
    *
    * @param clazz          The current class to process.
-   * @param groups         The validation groups to apply.
+   * @param context        The traversal context (validation groups and visited paths).
    * @param propertiesNode JSON object to populate with field schemas.
    * @param requiredFields JSON array of required field names.
-   * @param visited        Tracks already visited paths to avoid infinite recursion.
    * @param path           Fully qualified field path for current processing depth.
    */
-  private void processClass(Class<?> clazz, Set<Class<?>> groups, ObjectNode propertiesNode,
-                            ArrayNode requiredFields, Set<String> visited, String path) {
+  private void processClass(Class<?> clazz, TraversalContext context, ObjectNode propertiesNode,
+                            ArrayNode requiredFields, String path) {
     if (clazz == null || clazz.getName().startsWith(JAVA_PACKAGE_PREFIX)) {
       return;
     }
-    if (!visited.add(path)) {
+    if (!context.visited().add(path)) {
       return;
     }
 
@@ -88,8 +89,7 @@ public class ValidationSchemaGenerator {
     for (Field field : clazz.getDeclaredFields()) {
       ObjectNode fieldSchema = objectMapper.createObjectNode();
       String newPath = path + "." + field.getName();
-      processField(clazz, field, fieldSchema, beanDescriptor, groups, requiredFields, visited,
-          newPath);
+      processField(clazz, field, fieldSchema, beanDescriptor, context, requiredFields, newPath);
       propertiesNode.set(field.getName(), fieldSchema);
     }
   }
@@ -101,20 +101,27 @@ public class ValidationSchemaGenerator {
    * @param field          The field to process. May be null for anonymous nested items.
    * @param fieldSchema    Output JSON schema node for the field.
    * @param beanDescriptor Validation metadata for the declaring class.
-   * @param groups         Active validation groups.
+   * @param context        The traversal context (validation groups and visited paths).
    * @param requiredFields List of required field names for the parent class.
-   * @param visited        Visited field paths.
    * @param path           Fully qualified field path.
    */
   private void processField(Class<?> declaringClass, Field field, ObjectNode fieldSchema,
-                            BeanDescriptor beanDescriptor, Set<Class<?>> groups,
-                            ArrayNode requiredFields, Set<String> visited, String path) {
+                            BeanDescriptor beanDescriptor, TraversalContext context,
+                            ArrayNode requiredFields, String path) {
     if (field == null) {
-      processAnonymousNestedObject(declaringClass, fieldSchema, groups, visited, path);
+      processAnonymousNestedObject(declaringClass, fieldSchema, context, path);
       return;
     }
 
+    // A JsonNullable<X> field is described by the schema of its wrapped value X, not the wrapper itself; unwrap so a
+    // JsonNullable<List<..>> is treated as an array and a JsonNullable<SomePojo> as its nested object.
     Class<?> fieldType = field.getType();
+    Type genericType = field.getGenericType();
+    if (JsonNullable.class.equals(fieldType) && genericType instanceof ParameterizedType parameterizedType) {
+      genericType = parameterizedType.getActualTypeArguments()[0];
+      fieldType = rawClass(genericType);
+    }
+
     String fieldName = field.getName();
     PropertyDescriptor descriptor = beanDescriptor.getConstraintsForProperty(fieldName);
 
@@ -128,18 +135,31 @@ public class ValidationSchemaGenerator {
       fieldSchema.set("enum", enumValues);
 
       if (descriptor != null) {
-        applyConstraints(descriptor, fieldName, fieldSchema, groups, requiredFields);
+        applyConstraints(descriptor, fieldName, fieldSchema, context.groups(), requiredFields);
       }
       return;
     }
 
     if (Collection.class.isAssignableFrom(fieldType)) {
-      processCollectionField(field, fieldSchema, groups, requiredFields, visited, beanDescriptor,
+      processCollectionField(field, genericType, fieldSchema, context, requiredFields, beanDescriptor,
           path);
     } else {
-      processScalarOrNestedField(field, fieldSchema, beanDescriptor, groups, requiredFields,
-          visited, path);
+      processScalarOrNestedField(field, fieldType, fieldSchema, beanDescriptor, context, requiredFields,
+          path);
     }
+  }
+
+  /**
+   * Resolves the raw {@link Class} of a possibly parameterized type (e.g. {@code List<LinkDto>} -> {@code List}).
+   */
+  private static Class<?> rawClass(Type type) {
+    if (type instanceof Class<?> clazz) {
+      return clazz;
+    }
+    if (type instanceof ParameterizedType parameterizedType && parameterizedType.getRawType() instanceof Class<?> rawType) {
+      return rawType;
+    }
+    return Object.class;
   }
 
   /**
@@ -147,20 +167,17 @@ public class ValidationSchemaGenerator {
    *
    * @param field          Field representing the collection.
    * @param fieldSchema    Output schema for the field.
-   * @param groups         Validation groups.
+   * @param context        The traversal context (validation groups and visited paths).
    * @param requiredFields List of required field names.
-   * @param visited        Visited paths.
    * @param beanDescriptor Descriptor for constraints.
    * @param path           Fully qualified path to the field.
    */
-  private void processCollectionField(Field field, ObjectNode fieldSchema,
-                                      Set<Class<?>> groups, ArrayNode requiredFields,
-                                      Set<String> visited, BeanDescriptor beanDescriptor,
-                                      String path) {
+  private void processCollectionField(Field field, Type genericType, ObjectNode fieldSchema,
+                                      TraversalContext context, ArrayNode requiredFields,
+                                      BeanDescriptor beanDescriptor, String path) {
     String fieldName = field.getName();
     fieldSchema.put("type", ARRAY_TYPE);
 
-    Type genericType = field.getGenericType();
     if (genericType instanceof ParameterizedType parameterizedType) {
       Type actualType = parameterizedType.getActualTypeArguments()[0];
       if (actualType instanceof Class<?> itemClass) {
@@ -173,8 +190,8 @@ public class ValidationSchemaGenerator {
           itemSchema.put("type", mapTypeToJsonType(itemClass));
         } else {
           processField(itemClass, null, itemSchema,
-              validator.getConstraintsForClass(itemClass), groups,
-              objectMapper.createArrayNode(), visited, path + "[]");
+              validator.getConstraintsForClass(itemClass), context,
+              objectMapper.createArrayNode(), path + "[]");
         }
         fieldSchema.set("items", itemSchema);
       }
@@ -182,29 +199,27 @@ public class ValidationSchemaGenerator {
 
     PropertyDescriptor descriptor = beanDescriptor.getConstraintsForProperty(fieldName);
     if (descriptor != null) {
-      applyConstraints(descriptor, fieldName, fieldSchema, groups, requiredFields);
+      applyConstraints(descriptor, fieldName, fieldSchema, context.groups(), requiredFields);
     }
   }
 
   /**
    * Processes primitive or nested POJO fields.
    */
-  private void processScalarOrNestedField(Field field, ObjectNode fieldSchema,
-                                          BeanDescriptor beanDescriptor, Set<Class<?>> groups,
-                                          ArrayNode requiredFields, Set<String> visited,
-                                          String path) {
+  private void processScalarOrNestedField(Field field, Class<?> fieldType, ObjectNode fieldSchema,
+                                          BeanDescriptor beanDescriptor, TraversalContext context,
+                                          ArrayNode requiredFields, String path) {
     String fieldName = field.getName();
-    Class<?> fieldType = field.getType();
 
     fieldSchema.put("type", mapTypeToJsonType(fieldType));
 
     PropertyDescriptor descriptor = beanDescriptor.getConstraintsForProperty(fieldName);
     if (descriptor != null) {
-      applyConstraints(descriptor, fieldName, fieldSchema, groups, requiredFields);
+      applyConstraints(descriptor, fieldName, fieldSchema, context.groups(), requiredFields);
     }
 
     if (hasConstraints(fieldType) || isCustomPojo(fieldType)) {
-      handleNestedPojo(fieldType, fieldSchema, groups, visited, path);
+      handleNestedPojo(fieldType, fieldSchema, context, path);
     }
   }
 
@@ -212,11 +227,11 @@ public class ValidationSchemaGenerator {
    * Recursively processes a nested POJO and embeds its schema.
    */
   private void handleNestedPojo(Class<?> fieldType, ObjectNode fieldSchema,
-                                Set<Class<?>> groups, Set<String> visited, String path) {
+                                TraversalContext context, String path) {
     ObjectNode nestedProps = objectMapper.createObjectNode();
     ArrayNode nestedRequired = objectMapper.createArrayNode();
 
-    processClass(fieldType, groups, nestedProps, nestedRequired, visited, path);
+    processClass(fieldType, context, nestedProps, nestedRequired, path);
 
     fieldSchema.put("type", JSON_TYPE_OBJECT);
     fieldSchema.set(PROPERTIES, nestedProps);
@@ -229,14 +244,13 @@ public class ValidationSchemaGenerator {
    * Processes nested object types passed without a field (e.g., array items).
    */
   private void processAnonymousNestedObject(Class<?> clazz, ObjectNode fieldSchema,
-                                            Set<Class<?>> groups, Set<String> visited,
-                                            String path) {
+                                            TraversalContext context, String path) {
     fieldSchema.put("type", JSON_TYPE_OBJECT);
 
     ObjectNode nestedProps = objectMapper.createObjectNode();
     ArrayNode nestedRequired = objectMapper.createArrayNode();
 
-    processClass(clazz, groups, nestedProps, nestedRequired, visited, path);
+    processClass(clazz, context, nestedProps, nestedRequired, path);
 
     fieldSchema.set(PROPERTIES, nestedProps);
     if (!nestedRequired.isEmpty()) {
@@ -446,6 +460,17 @@ public class ValidationSchemaGenerator {
    * @CommentLastReviewed 2026-07-21
    */
   public interface PatchAsAdmin extends Default {
+  }
+
+  /**
+   * Carries the state that is threaded unchanged through the recursive schema traversal: the active validation groups and the set of
+   * already visited paths used to guard against infinite recursion.
+   *
+   * @param groups  the active validation groups
+   * @param visited the paths already visited during traversal
+   * @CommentLastReviewed 2026-09-09
+   */
+  private record TraversalContext(Set<Class<?>> groups, Set<String> visited) {
   }
 
   /**
