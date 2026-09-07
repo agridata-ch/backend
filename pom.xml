@@ -29,6 +29,7 @@
         <swagger-parser.version>2.1.42</swagger-parser.version>
         <pdfbox.version>3.0.7</pdfbox.version>
         <fop-core.version>2.11</fop-core.version>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 
         <!-- plugin versions -->
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
@@ -106,6 +107,11 @@
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>fop-core</artifactId>
                 <version>${fop-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openapitools</groupId>
+                <artifactId>jackson-databind-nullable</artifactId>
+                <version>${jackson-databind-nullable.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.parser.v3</groupId>
@@ -210,6 +216,10 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

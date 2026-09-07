@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openapitools.jackson.nullable.JsonNullableModule;
 
 /**
  * Verifies the public data product endpoints. The paginated list exposes only ACTIVE products, and the documents endpoints
@@ -55,7 +57,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 class PublicDataProductControllerTest {
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new JsonNullableModule());
   private static final byte[] SAMPLE_PDF = "%PDF-1.4\npublic-documents-test\n".getBytes(StandardCharsets.UTF_8);
 
   @InjectMock
@@ -360,17 +362,18 @@ class PublicDataProductControllerTest {
 
   private static DataProductUpdateDto getDataProductUpdateDto(UUID dataSourceSystemId, UUID restClientId, String name) {
     return DataProductUpdateDto.builder()
-        .dataSourceSystemId(dataSourceSystemId)
-        .name(new DataProductNameDto(name, name, name))
-        .description(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano"))
-        .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
-        .extendedDescription(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano"))
-        .restClientId(restClientId)
-        .flowCode(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION)
-        .restClientPathTemplate("path/template")
-        .restClientChangeDetectionPathTemplate("change/detection/path/template")
-        .restClientMethodCode(RestClientMethodCodeEnum.GET)
-        .restClientRequestTemplate("{\"someKey\":\"someValue\"}")
+        .dataSourceSystemId(JsonNullable.of(dataSourceSystemId))
+        .name(JsonNullable.of(new DataProductNameDto(name, name, name)))
+        .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
+        .links(JsonNullable.of(
+            List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .restClientId(JsonNullable.of(restClientId))
+        .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
+        .restClientPathTemplate(JsonNullable.of("path/template"))
+        .restClientChangeDetectionPathTemplate(JsonNullable.of("change/detection/path/template"))
+        .restClientMethodCode(JsonNullable.of(RestClientMethodCodeEnum.GET))
+        .restClientRequestTemplate(JsonNullable.of("{\"someKey\":\"someValue\"}"))
         .build();
   }
 }

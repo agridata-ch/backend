@@ -58,13 +58,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openapitools.jackson.nullable.JsonNullableModule;
 
 @QuarkusTest
 class DataProductControllerV2Test {
   @ConfigProperty(name = "quarkus.rest-client.agis-api.url")
   String agisApiUrl;
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new JsonNullableModule());
   private static final byte[] SAMPLE_PDF = "%PDF-1.4\ndocument-actions-test\n".getBytes(StandardCharsets.UTF_8);
 
   // The GuardDutyScanSimulator is local-profile only and scans on a 3s schedule, so it is unsuitable for tests.
@@ -227,17 +229,17 @@ class DataProductControllerV2Test {
         .extract().as(DataProductDto.class);
 
     assertThat(responseDataProductDto.id()).isNotNull();
-    assertThat(responseDataProductDto.dataSourceSystem().id()).isEqualTo(requestDataProductUpdate.dataSourceSystemId());
-    assertThat(responseDataProductDto.name().de()).isEqualTo(requestDataProductUpdate.name().de());
-    assertThat(responseDataProductDto.description().de()).isEqualTo(requestDataProductUpdate.description().de());
-    assertThat(responseDataProductDto.links()).isEqualTo(requestDataProductUpdate.links());
-    assertThat(responseDataProductDto.extendedDescription().it()).isEqualTo(requestDataProductUpdate.extendedDescription().it());
+    assertThat(responseDataProductDto.dataSourceSystem().id()).isEqualTo(requestDataProductUpdate.dataSourceSystemId().get());
+    assertThat(responseDataProductDto.name().de()).isEqualTo(requestDataProductUpdate.name().get().de());
+    assertThat(responseDataProductDto.description().de()).isEqualTo(requestDataProductUpdate.description().get().de());
+    assertThat(responseDataProductDto.links()).isEqualTo(requestDataProductUpdate.links().get());
+    assertThat(responseDataProductDto.extendedDescription().it()).isEqualTo(requestDataProductUpdate.extendedDescription().get().it());
     assertThat(responseDataProductDto.stateCode()).isEqualTo(DataProductStateEnum.DRAFT);
-    assertThat(responseDataProductDto.flowCode()).isEqualTo(requestDataProductUpdate.flowCode());
-    assertThat(responseDataProductDto.restClient().id()).isEqualTo(requestDataProductUpdate.restClientId());
-    assertThat(responseDataProductDto.restClientMethodCode()).isEqualTo(requestDataProductUpdate.restClientMethodCode());
-    assertThat(responseDataProductDto.restClientPathTemplate()).isEqualTo(requestDataProductUpdate.restClientPathTemplate());
-    assertThat(responseDataProductDto.restClientRequestTemplate()).isEqualTo(requestDataProductUpdate.restClientRequestTemplate());
+    assertThat(responseDataProductDto.flowCode()).isEqualTo(requestDataProductUpdate.flowCode().get());
+    assertThat(responseDataProductDto.restClient().id()).isEqualTo(requestDataProductUpdate.restClientId().get());
+    assertThat(responseDataProductDto.restClientMethodCode()).isEqualTo(requestDataProductUpdate.restClientMethodCode().get());
+    assertThat(responseDataProductDto.restClientPathTemplate()).isEqualTo(requestDataProductUpdate.restClientPathTemplate().get());
+    assertThat(responseDataProductDto.restClientRequestTemplate()).isEqualTo(requestDataProductUpdate.restClientRequestTemplate().get());
   }
 
   @SneakyThrows
@@ -245,7 +247,7 @@ class DataProductControllerV2Test {
   @CsvSource({"PROVIDER_1, true", "PROVIDER_1, false", "ADMIN, true", "ADMIN, false"})
   void givenConsentRequired_whenAddDataProductDraft_thenValuePersisted(TestUserEnum user, boolean consentRequired) {
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
-        .consentRequired(consentRequired)
+        .consentRequired(JsonNullable.of(consentRequired))
         .build();
 
     DataProductDto responseDataProductDto = AuthTestUtils.requestAs(user)
@@ -269,8 +271,8 @@ class DataProductControllerV2Test {
         ? new DataProductDescriptionDto("Gebühren Deutsch", "Redevances Francais", "Tassazione Italiano")
         : null;
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
-        .paymentRequired(paymentRequired)
-        .pricingBasis(pricingBasis)
+        .paymentRequired(JsonNullable.of(paymentRequired))
+        .pricingBasis(JsonNullable.of(pricingBasis))
         .build();
 
     DataProductDto responseDataProductDto = AuthTestUtils.requestAs(user)
@@ -293,17 +295,18 @@ class DataProductControllerV2Test {
 
   private static DataProductUpdateDto getDataProductUpdateDto(UUID dataSourceSystemId, UUID restClientId) {
     return DataProductUpdateDto.builder()
-        .dataSourceSystemId(dataSourceSystemId)
-        .name(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano"))
-        .description(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano"))
-        .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
-        .extendedDescription(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano"))
-        .restClientId(restClientId)
-        .flowCode(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION)
-        .restClientPathTemplate("path/template")
-        .restClientChangeDetectionPathTemplate("change/detection/path/template")
-        .restClientMethodCode(RestClientMethodCodeEnum.GET)
-        .restClientRequestTemplate("{\"someKey\":\"someValue\"}")
+        .dataSourceSystemId(JsonNullable.of(dataSourceSystemId))
+        .name(JsonNullable.of(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano")))
+        .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
+        .links(JsonNullable.of(
+            List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .restClientId(JsonNullable.of(restClientId))
+        .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
+        .restClientPathTemplate(JsonNullable.of("path/template"))
+        .restClientChangeDetectionPathTemplate(JsonNullable.of("change/detection/path/template"))
+        .restClientMethodCode(JsonNullable.of(RestClientMethodCodeEnum.GET))
+        .restClientRequestTemplate(JsonNullable.of("{\"someKey\":\"someValue\"}"))
         .build();
   }
 
@@ -326,7 +329,7 @@ class DataProductControllerV2Test {
   void givenProviderAndDataSourceSystemOfAnotherProvider_whenAddNewDataProductDraft_thenReturnNotFound() {
     var tvdDataSourceSystemId = UUID_4CCBfA06.uuid();
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
-        .dataSourceSystemId(tvdDataSourceSystemId)
+        .dataSourceSystemId(JsonNullable.of(tvdDataSourceSystemId))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -344,7 +347,7 @@ class DataProductControllerV2Test {
   void givenProviderAndRestClientOfAnotherProvider_whenAddNewDataProductDraft_thenReturnNotFound() {
     var tvdRestClientId = UUID_1C438FA1.uuid();
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
-        .restClientId(tvdRestClientId)
+        .restClientId(JsonNullable.of(tvdRestClientId))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -363,8 +366,8 @@ class DataProductControllerV2Test {
     var agisDataSourceSystemId = UUID_5335D715.uuid();
     var tvdRestClientId = UUID_1C438FA1.uuid();
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
-        .dataSourceSystemId(agisDataSourceSystemId)
-        .restClientId(tvdRestClientId)
+        .dataSourceSystemId(JsonNullable.of(agisDataSourceSystemId))
+        .restClientId(JsonNullable.of(tvdRestClientId))
         .build();
 
     AuthTestUtils.requestAs(ADMIN)
@@ -402,13 +405,13 @@ class DataProductControllerV2Test {
         .body(MAPPER.writeValueAsString(existingDataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
     DataProductUpdateDto updateRequest = DataProductUpdateDto.builder()
-        .name(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano"))
+        .name(JsonNullable.of(new DataProductNameDto("Name Deutsch", "Nom Francais", "Nome Italiano")))
         .build();
     DataProductDto updatedDataProduct = AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
         .body(MAPPER.writeValueAsString(updateRequest)).when().put(DataProductControllerV2.PATH + "/" + existingDataProduct.id()).then()
         .statusCode(200).extract().as(DataProductDto.class);
 
-    assertThat(updatedDataProduct.name().de()).isEqualTo(updateRequest.name().de());
+    assertThat(updatedDataProduct.name().de()).isEqualTo(updateRequest.name().get().de());
   }
 
   @SneakyThrows
@@ -418,7 +421,7 @@ class DataProductControllerV2Test {
     UUID existingProductId = createEmptyDraft(user);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .links(Collections.nCopies(6, new LinkDto("https://test", "test")))
+        .links(JsonNullable.of(Collections.nCopies(6, new LinkDto("https://test", "test"))))
         .build();
 
     AuthTestUtils.requestAs(user).given().contentType(ContentType.JSON)
@@ -503,7 +506,8 @@ class DataProductControllerV2Test {
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenAccessibleDraftDataProduct_whenGetDataProduct_thenReturnDataProduct(TestUserEnum user) {
     DataProductUpdateDto dataProductRequest =
-        DataProductUpdateDto.builder().restClientPathTemplate("/test").restClientId(UUID_B1398C9D.uuid()).build();
+        DataProductUpdateDto.builder().restClientPathTemplate(JsonNullable.of("/test")).restClientId(JsonNullable.of(UUID_B1398C9D.uuid()))
+            .build();
     DataProductDto existingDataProduct = AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
@@ -517,7 +521,7 @@ class DataProductControllerV2Test {
   @SneakyThrows
   @Test
   void givenProviderAndInaccessibleDataProduct_whenGetDataProduct_thenReturnNotFound() {
-    DataProductUpdateDto dataProductRequest = DataProductUpdateDto.builder().restClientPathTemplate("/test").build();
+    DataProductUpdateDto dataProductRequest = DataProductUpdateDto.builder().restClientPathTemplate(JsonNullable.of("/test")).build();
     DataProductDto existingDataProduct = AuthTestUtils.requestAs(ADMIN).given().contentType(ContentType.JSON)
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
@@ -916,7 +920,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientPathTemplate("/test")
+        .restClientPathTemplate(JsonNullable.of("/test"))
         .build();
 
     var dataProduct = AuthTestUtils.requestAs(user)
@@ -930,9 +934,9 @@ class DataProductControllerV2Test {
         .as(DataProductDto.class);
 
     assertThat(dataProduct.restClient().id()).isEqualTo(UUID_B1398C9D.uuid());
-    assertThat(dataProduct.name().fr()).isEqualTo(existingProduct.name().fr());
-    assertThat(dataProduct.dataSourceSystem().id()).isEqualTo(existingProduct.dataSourceSystemId());
-    assertThat(dataProduct.restClientPathTemplate()).isEqualTo(updateDto.restClientPathTemplate());
+    assertThat(dataProduct.name().fr()).isEqualTo(existingProduct.name().get().fr());
+    assertThat(dataProduct.dataSourceSystem().id()).isEqualTo(existingProduct.dataSourceSystemId().get());
+    assertThat(dataProduct.restClientPathTemplate()).isEqualTo(updateDto.restClientPathTemplate().get());
   }
 
   @SneakyThrows
@@ -943,7 +947,7 @@ class DataProductControllerV2Test {
     UUID productId = createDraft(user, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientPathTemplate("/test")
+        .restClientPathTemplate(JsonNullable.of("/test"))
         .build();
 
     AuthTestUtils.requestAs(user)
@@ -962,9 +966,9 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .name(new DataProductNameDto("DE", "FR", "IT"))
-        .description(new DataProductDescriptionDto("DE", "FR", "IT"))
-        .restClientPathTemplate("/test")
+        .name(JsonNullable.of(new DataProductNameDto("DE", "FR", "IT")))
+        .description(JsonNullable.of(new DataProductDescriptionDto("DE", "FR", "IT")))
+        .restClientPathTemplate(JsonNullable.of("/test"))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -987,9 +991,9 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(ADMIN, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .name(new DataProductNameDto("DE", "FR", "IT"))
-        .description(new DataProductDescriptionDto("DE", "FR", "IT"))
-        .restClientPathTemplate("/test")
+        .name(JsonNullable.of(new DataProductNameDto("DE", "FR", "IT")))
+        .description(JsonNullable.of(new DataProductDescriptionDto("DE", "FR", "IT")))
+        .restClientPathTemplate(JsonNullable.of("/test"))
         .build();
 
     AuthTestUtils.requestAs(ADMIN)
@@ -1009,7 +1013,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .dataSourceSystemId(UUID_4CCBfA06.uuid())
+        .dataSourceSystemId(JsonNullable.of(UUID_4CCBfA06.uuid()))
         .build();
 
     AuthTestUtils.requestAs(user)
@@ -1029,7 +1033,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .consentRequired(false)
+        .consentRequired(JsonNullable.of(false))
         .build();
 
     AuthTestUtils.requestAs(user)
@@ -1050,8 +1054,8 @@ class DataProductControllerV2Test {
 
     DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren", "Redevances", "Tassazione");
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .paymentRequired(true)
-        .pricingBasis(pricingBasis)
+        .paymentRequired(JsonNullable.of(true))
+        .pricingBasis(JsonNullable.of(pricingBasis))
         .build();
 
     var resultingDataProduct = AuthTestUtils.requestAs(user)
@@ -1076,7 +1080,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientId(UUID_5D3A4A87.uuid())
+        .restClientId(JsonNullable.of(UUID_5D3A4A87.uuid()))
         .build();
 
     var resultingDataProduct = AuthTestUtils.requestAs(user)
@@ -1093,6 +1097,44 @@ class DataProductControllerV2Test {
   }
 
   @SneakyThrows
+  @Test
+  void givenActiveProductAndAdmin_whenPatchAllEditableFieldsToNull_thenFieldsCleared() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(ADMIN, existingProduct);
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .name(JsonNullable.of(null))
+        .description(JsonNullable.of(null))
+        .restClientId(JsonNullable.of(null))
+        .restClientPathTemplate(JsonNullable.of(null))
+        .restClientRequestTemplate(JsonNullable.of(null))
+        .restClientMethodCode(JsonNullable.of(null))
+        .flowCode(JsonNullable.of(null))
+        .restClientChangeDetectionPathTemplate(JsonNullable.of(null))
+        .extendedDescription(JsonNullable.of(null))
+        .pricingBasis(JsonNullable.of(null))
+        .build();
+    var dataProduct = AuthTestUtils.requestAs(ADMIN)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .as(DataProductDto.class);
+    assertThat(dataProduct.name()).isNull();
+    assertThat(dataProduct.description()).isNull();
+    assertThat(dataProduct.restClient()).isNull();
+    assertThat(dataProduct.restClientPathTemplate()).isNull();
+    assertThat(dataProduct.restClientRequestTemplate()).isNull();
+    assertThat(dataProduct.restClientMethodCode()).isNull();
+    assertThat(dataProduct.flowCode()).isNull();
+    assertThat(dataProduct.restClientChangeDetectionPathTemplate()).isNull();
+    assertThat(dataProduct.extendedDescription()).isNull();
+    assertThat(dataProduct.pricingBasis()).isNull();
+  }
+
+  @SneakyThrows
   @ParameterizedTest
   @CsvSource({
       "PROVIDER_1, 404",
@@ -1103,7 +1145,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientId(TestDataIdentifiers.RestClient.UUID_CADF12A3.uuid())
+        .restClientId(JsonNullable.of(TestDataIdentifiers.RestClient.UUID_CADF12A3.uuid()))
         .build();
 
     AuthTestUtils.requestAs(user)
@@ -1121,7 +1163,7 @@ class DataProductControllerV2Test {
     var productId = createEmptyDraft(PROVIDER_1);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientId(UUID_B1398C9D.uuid())
+        .restClientId(JsonNullable.of(UUID_B1398C9D.uuid()))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -1158,10 +1200,10 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .links(Collections.nCopies(
+        .links(JsonNullable.of(Collections.nCopies(
             6,
             new LinkDto("https://test", "test")
-        ))
+        )))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -1179,10 +1221,10 @@ class DataProductControllerV2Test {
     UUID productId = UUID_5335D715.uuid();
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .links(Collections.nCopies(
+        .links(JsonNullable.of(Collections.nCopies(
             3,
             new LinkDto("test", "test")
-        ))
+        )))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
@@ -1201,7 +1243,7 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .restClientChangeDetectionPathTemplate("a".repeat(1001))
+        .restClientChangeDetectionPathTemplate(JsonNullable.of("a".repeat(1001)))
         .build();
 
     AuthTestUtils.requestAs(PROVIDER_1)
