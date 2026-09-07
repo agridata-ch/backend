@@ -1,3 +1,9 @@
+## [1.17.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.5...v1.17.0-rc.6) (2026-09-07)
+
+### Bug Fixes
+
+* **deps:** set DautoUpdate=false for owasp check. Was temporarily true because of dependency update ([4451e60](https://github.com/agridata-ch/backend/commit/4451e60dcf20653ecce9e835fe8385422b866a73)), closes [DIGIB2-1607](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1607)
+
 ## [1.17.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.4...v1.17.0-rc.5) (2026-09-04)
 
 ### Features
