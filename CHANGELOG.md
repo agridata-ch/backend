@@ -1,3 +1,9 @@
+## [1.17.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.7...v1.17.0-rc.8) (2026-09-08)
+
+### Features
+
+* **consent-requests:** Add manual admin trigger for consent-request cleanup job ([dac57e0](https://github.com/agridata-ch/backend/commit/dac57e0572721778afa351bf4a2a660d517a7436)), closes [DIGIB2-1263](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1263)
+
 ## [1.17.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.6...v1.17.0-rc.7) (2026-09-08)
 
 ### Bug Fixes
