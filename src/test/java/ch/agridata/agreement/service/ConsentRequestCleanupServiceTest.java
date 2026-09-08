@@ -9,10 +9,7 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agis.dto.AgisFarmOwnershipDto;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ConsentRequestCleanupServiceTest {
 
-  private static final ZoneId ZURICH = ZoneId.of("Europe/Zurich");
   private static final int BATCH_SIZE = 1000;
+  private static final LocalDate FROM = LocalDate.of(2026, 2, 17);
+  private static final LocalDate TO = LocalDate.of(2026, 2, 18);
 
   private ConsentRequestCleanupService consentRequestCleanupService;
 
@@ -36,56 +34,58 @@ class ConsentRequestCleanupServiceTest {
 
   @BeforeEach
   void setUp() {
-    // "today" = 2026-02-19 (Zurich), so fromInclusive=2026-02-17, toInclusive=2026-02-18
-    Instant fixedNow = LocalDate.of(2026, 2, 19).atStartOfDay(ZURICH).toInstant();
-    Clock clock = Clock.fixed(fixedNow, ZURICH);
-
-    consentRequestCleanupService =
-        new ConsentRequestCleanupService(agisApi, consentRequestTerminator, clock);
+    consentRequestCleanupService = new ConsentRequestCleanupService(agisApi, consentRequestTerminator);
   }
 
   @Test
-  void givenFixedClock_whenCleanupConsentRequestsFromYesterdayAndDayBefore_thenUsesExpectedDateRangeForAgisCalls() {
-    LocalDate expectedFrom = LocalDate.of(2026, 2, 17);
-    LocalDate expectedTo = LocalDate.of(2026, 2, 18);
-
-    when(agisApi.fetchFarmMutations(expectedFrom, expectedTo)).thenReturn(List.of());
-    when(agisApi.fetchFarmDeletions(expectedFrom, expectedTo)).thenReturn(List.of());
+  void givenExplicitWindow_whenCleanup_thenUsesThatWindowForAgisCalls() {
+    when(agisApi.fetchFarmMutations(FROM, TO)).thenReturn(List.of());
+    when(agisApi.fetchFarmDeletions(FROM, TO)).thenReturn(List.of());
     when(consentRequestTerminator.terminateFor(List.of(), List.of(), BATCH_SIZE)).thenReturn(0L);
 
-    consentRequestCleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+    consentRequestCleanupService.cleanup(FROM, TO);
 
-    verify(agisApi).fetchFarmMutations(expectedFrom, expectedTo);
-    verify(agisApi).fetchFarmDeletions(expectedFrom, expectedTo);
+    verify(agisApi).fetchFarmMutations(FROM, TO);
+    verify(agisApi).fetchFarmDeletions(FROM, TO);
   }
 
   @Test
-  void givenNoMutationsAndNoDeletions_whenCleanupConsentRequestsFromYesterdayAndDayBefore_thenTerminatesEmptyLists() {
+  void givenTerminatedConsentRequests_whenCleanup_thenReportsWindowAndCount() {
+    when(agisApi.fetchFarmMutations(FROM, TO)).thenReturn(List.of());
+    when(agisApi.fetchFarmDeletions(FROM, TO)).thenReturn(List.of());
+    when(consentRequestTerminator.terminateFor(List.of(), List.of(), BATCH_SIZE)).thenReturn(8L);
+
+    var outcome = consentRequestCleanupService.cleanup(FROM, TO);
+
+    assertThat(outcome.fromInclusive()).isEqualTo(FROM);
+    assertThat(outcome.toInclusive()).isEqualTo(TO);
+    assertThat(outcome.terminatedConsentRequestCount()).isEqualTo(8L);
+  }
+
+  @Test
+  void givenNoMutationsAndNoDeletions_whenCleanup_thenTerminatesEmptyLists() {
     when(agisApi.fetchFarmMutations(any(), any())).thenReturn(List.of());
     when(agisApi.fetchFarmDeletions(any(), any())).thenReturn(List.of());
     when(consentRequestTerminator.terminateFor(List.of(), List.of(), BATCH_SIZE)).thenReturn(0L);
 
-    consentRequestCleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+    consentRequestCleanupService.cleanup(FROM, TO);
 
     verify(consentRequestTerminator).terminateFor(List.of(), List.of(), BATCH_SIZE);
   }
 
   @Test
-  void givenMutations_whenCleanupConsentRequestsFromYesterdayAndDayBefore_thenMapsMutationsToBurUidPairsInOrder() {
-    LocalDate from = LocalDate.of(2026, 2, 17);
-    LocalDate to = LocalDate.of(2026, 2, 18);
-
+  void givenMutations_whenCleanup_thenMapsMutationsToBurUidPairsInOrder() {
     var mutations = List.of(
         new AgisFarmOwnershipDto("BUR1", "UID1"),
         new AgisFarmOwnershipDto("BUR2", "UID2")
     );
 
-    when(agisApi.fetchFarmMutations(from, to)).thenReturn(mutations);
-    when(agisApi.fetchFarmDeletions(from, to)).thenReturn(List.of());
+    when(agisApi.fetchFarmMutations(FROM, TO)).thenReturn(mutations);
+    when(agisApi.fetchFarmDeletions(FROM, TO)).thenReturn(List.of());
     when(consentRequestTerminator.terminateFor(any(), any(), eq(BATCH_SIZE)))
         .thenReturn(0L);
 
-    consentRequestCleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+    consentRequestCleanupService.cleanup(FROM, TO);
 
     @SuppressWarnings("unchecked")
     ArgumentCaptor<List<ConsentRequestRepository.BurUidPair>> captor =
@@ -101,16 +101,13 @@ class ConsentRequestCleanupServiceTest {
   }
 
   @Test
-  void givenDeletedBurs_whenCleanupConsentRequestsFromYesterdayAndDayBefore_thenPassesDeletedBursWithBatchSize() {
-    LocalDate from = LocalDate.of(2026, 2, 17);
-    LocalDate to = LocalDate.of(2026, 2, 18);
-
-    when(agisApi.fetchFarmMutations(from, to)).thenReturn(List.of());
-    when(agisApi.fetchFarmDeletions(from, to)).thenReturn(List.of("BUR3", "BUR4"));
+  void givenDeletedBurs_whenCleanup_thenPassesDeletedBursWithBatchSize() {
+    when(agisApi.fetchFarmMutations(FROM, TO)).thenReturn(List.of());
+    when(agisApi.fetchFarmDeletions(FROM, TO)).thenReturn(List.of("BUR3", "BUR4"));
 
     when(consentRequestTerminator.terminateFor(List.of(), List.of("BUR3", "BUR4"), BATCH_SIZE)).thenReturn(0L);
 
-    consentRequestCleanupService.cleanupConsentRequestsFromYesterdayAndDayBefore();
+    consentRequestCleanupService.cleanup(FROM, TO);
 
     verify(consentRequestTerminator).terminateFor(List.of(), List.of("BUR3", "BUR4"), BATCH_SIZE);
   }

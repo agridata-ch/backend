@@ -1,6 +1,6 @@
 package integration.agreement;
 
-import static ch.agridata.agreement.job.ConsentRequestCleanupJob.USER_ID_SCHEDULED_CLEANUP_JOB;
+import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;

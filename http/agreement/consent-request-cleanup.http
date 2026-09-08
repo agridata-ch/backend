@@ -1,0 +1,19 @@
+### Trigger consent request cleanup with default window (last two completed days)
+POST {{baseUrl}}/agreement/v1/consent-requests/cleanup
+Authorization: Bearer {{$auth.token("admin")}}
+
+> {%
+    client.test("Cleanup runs with default window", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
+
+### Trigger consent request cleanup for an explicit window (e.g. to catch up after an outage)
+POST {{baseUrl}}/agreement/v1/consent-requests/cleanup?fromInclusive=2025-01-01&toInclusive=2030-01-01
+Authorization: Bearer {{$auth.token("admin")}}
+
+> {%
+    client.test("Cleanup runs with explicit window", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}
