@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/uid/[^/]+/cattle/[^/]+",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/cattle/[^/]+",
     "queryParameters": {
       "dataPackage": {
         "equalTo": "ZOAPI_Public_CattleDetailV1"
@@ -14,7 +14,8 @@
       "dataOfProduct": "481372c6-d4f9-4a67-9a53-8d25c3cfcbe5"
     },
     "headers": {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "99920004"
     }
   }
 }

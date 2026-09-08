@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 class LegallyPermittedConsentTest {
 
   private static final Identifier<DataProductEntity> BUR_BASED_CONSENT_FREE_PRODUCT = DataProduct.UUID_4176737B;
-  private static final Identifier<DataProductEntity> UID_BASED_CONSENT_FREE_PRODUCT = DataProduct.UUID_481372C6;
+  private static final Identifier<DataProductEntity> UID_BASED_CONSENT_FREE_PRODUCT = DataProduct.UUID_0DDA0D97;
   private static final Uid PRODUCER_UID = Uid.CHE102000001;
   private static final Uid UID_BASED_PRODUCER_UID = Uid.CHE102000002;
   private static final String PRODUCER_BUR = TestDataIdentifiers.Bur.CODE_99920004.getCode();
@@ -159,8 +159,8 @@ class LegallyPermittedConsentTest {
     var request = AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", BUR_BASED_CONSENT_FREE_PRODUCT.uuid())
         .queryParam("eartagNumber", "CH120030812345")
-        .queryParam("dateFrom", "2026-09-01")
-        .queryParam("dateTo", "2026-09-01")
+        .queryParam("dateTimeFrom", "2026-09-01T00:00:00")
+        .queryParam("dateTimeTo", "2026-09-01T00:00:00")
         .queryParam("recipientUid", "CHE123456789");
     if (dataRequestId != null) {
       request.queryParam("dataRequestId", dataRequestId.toString());
@@ -172,8 +172,6 @@ class LegallyPermittedConsentTest {
     return AuthTestUtils.requestAs(CONSUMER_BLV_1)
         .pathParam("productId", UID_BASED_CONSENT_FREE_PRODUCT.uuid())
         .queryParam("uid", UID_BASED_PRODUCER_UID.name())
-        .queryParam("eartagNumber", "CH120030812345")
-        .queryParam("recipientUid", "CHE123456789")
         .queryParam("dataRequestId", dataRequestId.toString())
         .when().get(DataTransferController.PATH + "/product/{productId}/data");
   }
