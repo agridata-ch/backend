@@ -1,6 +1,7 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
+import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_CLEANUP_TRIGGERED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
@@ -87,6 +88,15 @@ public class AuditingService {
         entityId,
         SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB
     );
+  }
+
+  /**
+   * Records that a user manually triggered the consent request cleanup. The consent requests that
+   * are terminated by the run itself are audited separately via {@link #logDataRequestTerminated}
+   * with the system actor, so this entry only captures who started the run.
+   */
+  public void logConsentRequestCleanupTriggered() {
+    api.logUserAction(CONSENT_REQUEST_CLEANUP_TRIGGERED, CONSENT_REQUEST, null);
   }
 
   public void logContractRevisionSigned(UUID contractRevisionId, SignatureSlotCodeEnum signatureSlotCodeEnum) {
