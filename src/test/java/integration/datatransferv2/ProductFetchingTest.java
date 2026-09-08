@@ -12,6 +12,7 @@ import integration.testutils.TestDataIdentifiers.Uid;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -188,8 +189,8 @@ class ProductFetchingTest {
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_4176737B.uuid().toString(),
             Map.of("dataRequestId", TestDataIdentifiers.DataRequest.BLV_ZO_CONSENT_FREE.toString(),
-                "dateFrom", LocalDate.now().toString(),
-                "dateTo", LocalDate.now().toString(),
+                "dateTimeFrom", LocalDateTime.now().toString(),
+                "dateTimeTo", LocalDateTime.now().toString(),
                 "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
