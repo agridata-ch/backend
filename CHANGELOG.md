@@ -1,3 +1,9 @@
+## [1.17.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.6...v1.17.0-rc.7) (2026-09-08)
+
+### Bug Fixes
+
+* **test-data:** minor adjustment in test data ([2561d65](https://github.com/agridata-ch/backend/commit/2561d65a8c23eccea294016e22177fc8eede4d58)), closes [DIGIB2-1649](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1649)
+
 ## [1.17.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.5...v1.17.0-rc.6) (2026-09-07)
 
 ### Bug Fixes
