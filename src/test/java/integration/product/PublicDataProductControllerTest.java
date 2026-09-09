@@ -4,12 +4,16 @@ import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_53
 import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import ch.agridata.aws.api.PdfStorageApi;
 import ch.agridata.common.dto.LinkDto;
@@ -43,10 +47,10 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
 /**
- * Verifies the public data product endpoints. The paginated list exposes only ACTIVE products, and the documents endpoint
- * exposes only documents of an ACTIVE product whose virus scan succeeded (scan status AVAILABLE).
+ * Verifies the public data product endpoints. The paginated list exposes only ACTIVE products, and the documents endpoints
+ * expose only documents of an ACTIVE product whose virus scan succeeded (scan status AVAILABLE).
  *
- * @CommentLastReviewed 2026-08-06
+ * @CommentLastReviewed 2026-09-09
  */
 @QuarkusTest
 class PublicDataProductControllerTest {
@@ -229,6 +233,71 @@ class PublicDataProductControllerTest {
     given()
         .when()
         .get(PublicDataProductController.PATH + "/" + UUID.randomUUID() + "/documents")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenActiveProductWithAvailableDocument_whenGetPublicDocument_thenReturnsContent() {
+    when(pdfStorageApi.download(anyString(), anyString())).thenReturn(SAMPLE_PDF);
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.AVAILABLE);
+
+    byte[] content = given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(200)
+        .header("Content-Disposition", containsString("report.pdf"))
+        .extract().asByteArray();
+
+    assertThat(new String(content, StandardCharsets.UTF_8)).isEqualTo(new String(SAMPLE_PDF, StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void givenActiveProductWithNonAvailableDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "pending.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.PENDING_SCAN);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenNonActiveProductWithAvailableDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createDraft(PROVIDER_1, DataProductUpdateDto.builder().build());
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "available.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.AVAILABLE);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenGetPublicDocument_thenNotFound() {
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + UUID.randomUUID() + "/documents/" + UUID.randomUUID() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + UUID.randomUUID() + "/download")
         .then()
         .statusCode(404);
   }

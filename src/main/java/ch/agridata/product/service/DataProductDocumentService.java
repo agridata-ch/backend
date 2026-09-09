@@ -23,6 +23,8 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +40,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  * {@link DataProductDocumentScanService}; this class only triggers the scan polling via
  * identity-propagating async execution on virtual threads (see {@link #runAsyncAsUser}).
  *
- * @CommentLastReviewed 2026-07-10
+ * @CommentLastReviewed 2026-09-09
  */
 
 @Slf4j
@@ -249,6 +251,19 @@ public class DataProductDocumentService {
         .toList();
   }
 
+  @PermitAll
+  public DocumentDownloadDto getPublicDataProductDocument(UUID dataProductId, UUID documentId) {
+    dataProductRepository.findActiveByIdOptional(dataProductId)
+        .orElseThrow(() -> new NotFoundException(dataProductId.toString()));
+
+    var entity = dataProductDocumentRepository.findByDataProductIdAndDocumentId(dataProductId, documentId)
+        .filter(e -> e.getScanStatus() == DocumentScanStatusEnum.AVAILABLE)
+        .orElseThrow(() -> new NotFoundException(documentId.toString()));
+
+    byte[] document = dataProductDocumentStorageService.download(entity.getId());
+    return new DocumentDownloadDto(entity.getOriginalFilename(), document);
+  }
+
   @RolesAllowed({PROVIDER_ROLE})
   public DataProductDocumentMetadataDto getDataProductDocumentMetadataAsProvider(UUID dataProductId, UUID documentId, boolean longPolling) {
     dataProductAccessGuard.verifyOwnedByCurrentProvider(dataProductId);
@@ -259,6 +274,14 @@ public class DataProductDocumentService {
   public DataProductDocumentMetadataDto getDataProductDocumentMetadataAsAdmin(UUID dataProductId, UUID documentId, boolean longPolling) {
     dataProductAccessGuard.verifyExists(dataProductId);
     return getDataProductDocumentMetadata(dataProductId, documentId, longPolling);
+  }
+
+  public static String contentDisposition(String fileName) {
+    // ASCII fallback for older clients
+    var asciiFallback = fileName.replaceAll("[^\\x20-\\x7E]", "_").replace("\"", "");
+    // RFC 5987 UTF-8 form for everything else
+    var encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+    return "attachment; filename=\"" + asciiFallback + "\"; filename*=UTF-8''" + encoded;
   }
 
   private DataProductDocumentMetadataDto getDataProductDocumentMetadata(UUID dataProductId, UUID documentId, boolean longPolling) {

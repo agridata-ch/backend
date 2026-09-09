@@ -7,6 +7,7 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDocumentMetadataDto;
+import ch.agridata.product.dto.DocumentDownloadDto;
 import ch.agridata.product.dto.PublicDataProductDto;
 import ch.agridata.product.service.DataProductDocumentService;
 import ch.agridata.product.service.DataProductQueryService;
@@ -18,6 +19,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
@@ -26,13 +28,14 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestResponse;
 
 /**
  * Controller for managing public access to data products.
  * Provides endpoints to retrieve information about publicly available data products.
  * This controller is accessible to all users.
  *
- * @CommentLastReviewed 2026-08-03
+ * @CommentLastReviewed 2026-09-09
  */
 
 @Path(PATH)
@@ -93,5 +96,25 @@ public class PublicDataProductController {
       @PathParam("id") UUID dataProductId
   ) {
     return dataProductDocumentService.getPublicDataProductDocumentsMetadata(dataProductId);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path("/{id}/documents/{documentId}/download")
+  @Operation(
+      operationId = "getPublicDataProductDocument",
+      description = "Downloads the content of a successfully virus-scanned document of a publicly available data product."
+  )
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  @PermitAll
+  public RestResponse<byte[]> getPublicDataProductDocument(
+      @PathParam("id") UUID dataProductId,
+      @PathParam("documentId") UUID documentId
+  ) {
+    DocumentDownloadDto document = dataProductDocumentService.getPublicDataProductDocument(dataProductId, documentId);
+    return RestResponse.ResponseBuilder
+        .ok(document.content(), MediaType.APPLICATION_OCTET_STREAM_TYPE)
+        .header(HttpHeaders.CONTENT_DISPOSITION, DataProductDocumentService.contentDisposition(document.fileName()))
+        .build();
   }
 }
