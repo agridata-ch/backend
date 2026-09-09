@@ -1,3 +1,9 @@
+## [1.17.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.11...v1.17.0-rc.12) (2026-09-09)
+
+### Bug Fixes
+
+* **contract:** minor adjustment in contract ([d5b7261](https://github.com/agridata-ch/backend/commit/d5b7261091005727823a3ef8e6eaad2f86fe34ab)), closes [DIGIB2-1696](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1696)
+
 ## [1.17.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.10...v1.17.0-rc.11) (2026-09-09)
 
 ### Features
