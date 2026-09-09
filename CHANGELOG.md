@@ -1,3 +1,9 @@
+## [1.17.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.12...v1.17.0-rc.13) (2026-09-09)
+
+### Features
+
+* **agbs:** Rework agb control to be BE based with UserEntity field ([8907260](https://github.com/agridata-ch/backend/commit/890726093d413d54dbcc9d5b37a2b213247a5452)), closes [DIGIB2-1285](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1285)
+
 ## [1.17.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.11...v1.17.0-rc.12) (2026-09-09)
 
 ### Bug Fixes
