@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ public class UserInitializerFilter implements ContainerRequestFilter {
   private final UserRepository userRepository;
   private final EntityManager entityManager;
   private final UserService userService;
+  private final Clock clock;
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
@@ -43,6 +45,7 @@ public class UserInitializerFilter implements ContainerRequestFilter {
         .id(agridataSecurityIdentity.getUserId())
         .agateLoginId(agridataSecurityIdentity.getAgateLoginId())
         .rolesAtLastLogin(agridataSecurityIdentity.getRoles())
+        .enforceAgbAcceptanceFrom(LocalDateTime.now(clock))
         .build();
 
     persist(newUser);
@@ -57,17 +60,18 @@ public class UserInitializerFilter implements ContainerRequestFilter {
   @Transactional
   void persist(UserEntity user) {
     entityManager.createNativeQuery("""
-            INSERT INTO users (id, archived, modified_at, created_at, created_by, modified_by, agate_login_id)
-            VALUES (:id, :archived, :modifiedAt, :createdAt, :createdBy, :modifiedBy, :agateLoginId)
+            INSERT INTO users (id, archived, modified_at, created_at, created_by, modified_by, agate_login_id, enforce_agb_acceptance_from)
+            VALUES (:id, :archived, :modifiedAt, :createdAt, :createdBy, :modifiedBy, :agateLoginId, :enforceAgbAcceptanceFrom)
             ON CONFLICT (id) DO NOTHING
             """)
         .setParameter("id", user.getId())
         .setParameter("archived", false)
-        .setParameter("modifiedAt", LocalDateTime.now())
-        .setParameter("createdAt", LocalDateTime.now())
+        .setParameter("modifiedAt", LocalDateTime.now(clock))
+        .setParameter("createdAt", LocalDateTime.now(clock))
         .setParameter("createdBy", user.getId())
         .setParameter("modifiedBy", user.getId())
         .setParameter("agateLoginId", user.getAgateLoginId())
+        .setParameter("enforceAgbAcceptanceFrom", user.getEnforceAgbAcceptanceFrom())
         .executeUpdate();
   }
 }
