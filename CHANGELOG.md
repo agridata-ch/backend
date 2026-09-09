@@ -1,3 +1,9 @@
+## [1.17.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.9...v1.17.0-rc.10) (2026-09-09)
+
+### Features
+
+* **products:** expose public single-document download endpoint ([164407a](https://github.com/agridata-ch/backend/commit/164407aad2818415b33968d698afd87af00d1b9f)), closes [DIGIB2-1682](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1682)
+
 ## [1.17.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.8...v1.17.0-rc.9) (2026-09-09)
 
 ### Bug Fixes
