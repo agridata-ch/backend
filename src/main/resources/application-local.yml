@@ -75,11 +75,6 @@ quarkus:
     client-id: agridata-ui
     token:
       audience: agridata-backend
-  oidc-client:
-    agis-api:
-      token-path: http://localhost:8050/agate/token
-    acontrol-api:
-      token-path: http://localhost:8050/agate/token
   rest-client:
     uid-register:
       url: http://localhost:8050/uid-register/findByUid
