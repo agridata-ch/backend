@@ -1,3 +1,9 @@
+## [1.17.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.8...v1.17.0-rc.9) (2026-09-09)
+
+### Bug Fixes
+
+* **deps:** update quarkus ([936430a](https://github.com/agridata-ch/backend/commit/936430ab7f1892577953b617858b1da548cec116))
+
 ## [1.17.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.7...v1.17.0-rc.8) (2026-09-08)
 
 ### Features
