@@ -119,6 +119,14 @@ public record UserInfoDto(
         description = "Unique identifier of the AGB revision the user last accepted.",
         examples = {"3fa85f64-5717-4562-b3fc-2c963f66afa6"}
     )
-    UUID lastAcceptedAgbRevisionId
+    UUID lastAcceptedAgbRevisionId,
+
+    @Schema(
+        description = "Date and time from which the user must accept the current AGB. NULL means no acceptance is currently pending; "
+            + "a value in the future indicates an optional, dismissible reminder until that date; a value in the past or present "
+            + "indicates acceptance must be enforced immediately.",
+        examples = {"2026-09-09T14:35:00"}
+    )
+    LocalDateTime enforceAgbAcceptanceFrom
 ) {
 }

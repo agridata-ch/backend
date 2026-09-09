@@ -109,6 +109,7 @@ public class UserService {
 
     user.setLastAcceptedAgbDate(LocalDateTime.now(clock));
     user.setLastAcceptedAgbRevisionId(revision.id());
+    user.setEnforceAgbAcceptanceFrom(null);
 
     auditingApi.logUserAction(AGBS_ACCEPTED, AGB_REVISION, revision.id());
   }

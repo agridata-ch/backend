@@ -151,6 +151,7 @@ class UserServiceTest {
   void whenAcceptCurrentAgb_thenUserFieldsStampedAndActionAudited() {
     var userId = UUID.randomUUID();
     var user = new UserEntity();
+    user.setEnforceAgbAcceptanceFrom(LocalDateTime.now(clock));
     var revisionId = UUID.randomUUID();
     var revision = AgbRevisionDto.builder().id(revisionId).build();
 
@@ -162,6 +163,7 @@ class UserServiceTest {
 
     assertThat(user.getLastAcceptedAgbDate()).isEqualTo(LocalDateTime.now(clock));
     assertThat(user.getLastAcceptedAgbRevisionId()).isEqualTo(revisionId);
+    assertThat(user.getEnforceAgbAcceptanceFrom()).isNull();
     verify(auditingApi).logUserAction(AGBS_ACCEPTED, AGB_REVISION, revisionId);
   }
 

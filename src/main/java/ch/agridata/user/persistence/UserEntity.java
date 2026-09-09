@@ -104,4 +104,7 @@ public class UserEntity extends AuditableEntity {
 
   @Column(name = "last_accepted_agb_revision_id")
   private UUID lastAcceptedAgbRevisionId;
+
+  @Column(name = "enforce_agb_acceptance_from")
+  private LocalDateTime enforceAgbAcceptanceFrom;
 }

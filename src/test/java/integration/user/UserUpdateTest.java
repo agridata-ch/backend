@@ -45,7 +45,7 @@ class UserUpdateTest {
     assertThat(actualResult)
         .usingRecursiveComparison()
         .ignoringCollectionOrder()
-        .ignoringFields("userId", "lastLoginDate")
+        .ignoringFields("userId", "lastLoginDate", "enforceAgbAcceptanceFrom")
         .isEqualTo(UserInfoDto.builder()
             .agateLoginId(ADMIN.getAgateLoginId())
             .ktIdP(null)
@@ -67,6 +67,10 @@ class UserUpdateTest {
     assertThat(actualResult.lastLoginDate())
         .isAfter(LocalDateTime.now().minusMinutes(2))
         .isBefore(LocalDateTime.now().plusMinutes(1));
+
+    assertThat(actualResult.enforceAgbAcceptanceFrom())
+        .isAfter(LocalDateTime.now().minusMinutes(2))
+        .isBefore(LocalDateTime.now().plusMinutes(1));
   }
 
   @Test
@@ -80,7 +84,7 @@ class UserUpdateTest {
     assertThat(actualResult)
         .usingRecursiveComparison()
         .ignoringCollectionOrder()
-        .ignoringFields("userId", "lastLoginDate")
+        .ignoringFields("userId", "lastLoginDate", "enforceAgbAcceptanceFrom")
         .isEqualTo(UserInfoDto.builder()
             .agateLoginId(CONSUMER_BIO_SUISSE.getAgateLoginId())
             .ktIdP(null)
@@ -100,6 +104,10 @@ class UserUpdateTest {
     assertThat(actualResult.userId()).isNotNull();
 
     assertThat(actualResult.lastLoginDate())
+        .isAfter(LocalDateTime.now().minusMinutes(2))
+        .isBefore(LocalDateTime.now().plusMinutes(1));
+
+    assertThat(actualResult.enforceAgbAcceptanceFrom())
         .isAfter(LocalDateTime.now().minusMinutes(2))
         .isBefore(LocalDateTime.now().plusMinutes(1));
   }

@@ -57,6 +57,7 @@ class AcceptAgbTest {
 
     assertThat(userInfo.lastAcceptedAgbRevisionId()).isEqualTo(CURRENT_AGB_REVISION_ID);
     assertThat(userInfo.lastAcceptedAgbDate()).isNotNull();
+    assertThat(userInfo.enforceAgbAcceptanceFrom()).isNull();
 
     AuditLogEntity latest = auditLogTestUtils.getLatestAuditLogEntry();
     assertThat(latest.getActionCode()).isEqualTo(AGBS_ACCEPTED.name());
