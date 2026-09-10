@@ -70,7 +70,8 @@ public interface DataRequestMapper {
   @Mapping(target = "dataConsumerLogoBase64", source = "entity", qualifiedByName = "convertLogoToBase64")
   @Mapping(target = "dataProviderId", source = "dataSourceSystemDto.dataProvider.id")
   @Mapping(target = "dataSourceSystem", source = "dataSourceSystemDto")
-  DataRequestDto toDto(DataRequestEntity entity, DataSourceSystemDto dataSourceSystemDto);
+  @Mapping(target = "burPresent", source = "burPresent")
+  DataRequestDto toDto(DataRequestEntity entity, DataSourceSystemDto dataSourceSystemDto, boolean burPresent);
 
   @Mapping(target = "humanFriendlyId", ignore = true)
   @Mapping(target = "submissionDate", ignore = true)

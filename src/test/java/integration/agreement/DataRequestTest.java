@@ -231,6 +231,24 @@ class DataRequestTest {
   }
 
   @Test
+  void givenDataRequestWithUidBasedProductsOnly_whenGetDataRequest_thenBurPresentIsFalse() {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.BIO_SUISSE_01)
+        .then()
+        .statusCode(200)
+        .body("burPresent", equalTo(false));
+  }
+
+  @Test
+  void givenDataRequestWithBurBasedProducts_whenGetDataRequest_thenBurPresentIsTrue() {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + DataRequest.ACONTROL_BIO_SUISSE)
+        .then()
+        .statusCode(200)
+        .body("burPresent", equalTo(true));
+  }
+
+  @Test
   void givenValidDraft_whenPost_thenReturnCreated() {
     createDataRequest()
         .then()

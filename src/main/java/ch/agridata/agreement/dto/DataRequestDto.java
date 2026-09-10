@@ -178,7 +178,15 @@ public record DataRequestDto(
         description = "A list of advantages to the producer for sharing their data"
     )
     @NotNull
-    List<DataRequestAdvantageDto> advantages
+    List<DataRequestAdvantageDto> advantages,
+
+    @Schema(
+        description = "Whether this data request also has BUR based consent requests in addition to the purely UID based ones. "
+            + "Derived from the flow codes of the requested data products.",
+        examples = "true"
+    )
+    @NotNull
+    Boolean burPresent
 ) {
 
 }
