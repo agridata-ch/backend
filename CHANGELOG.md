@@ -1,3 +1,9 @@
+## [1.17.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.13...v1.17.0-rc.14) (2026-09-10)
+
+### Features
+
+* **product:** Make all technical fields optional ([29488b2](https://github.com/agridata-ch/backend/commit/29488b2a09aba228eff4c7e3130057784c83063e)), closes [DIGIB2-1680](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1680)
+
 ## [1.17.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.12...v1.17.0-rc.13) (2026-09-09)
 
 ### Features
