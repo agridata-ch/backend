@@ -1,3 +1,27 @@
+## [1.17.0](https://github.com/agridata-ch/backend/compare/v1.16.0...v1.17.0) (2026-09-11)
+
+### Features
+
+* **agbs:** Rework agb control to be BE based with UserEntity field ([8907260](https://github.com/agridata-ch/backend/commit/890726093d413d54dbcc9d5b37a2b213247a5452)), closes [DIGIB2-1285](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1285)
+* **agreement:** Add burPresent-Field to data request ([05ee3db](https://github.com/agridata-ch/backend/commit/05ee3db59914b452512101ecdbeb561f6eb52128)), closes [DIGIB2-617](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-617)
+* **authorization:** Add farm change bridge period for uid authorization validSince ([3780bde](https://github.com/agridata-ch/backend/commit/3780bde0dfc2aa6eac47178f59faf6bbdf3a6baf)), closes [DIGIB2-1650](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1650)
+* **consent-requests:** Add manual admin trigger for consent-request cleanup job ([dac57e0](https://github.com/agridata-ch/backend/commit/dac57e0572721778afa351bf4a2a660d517a7436)), closes [DIGIB2-1263](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1263)
+* **data-product:** add payment requirement and pricing basis fields to data product ([7d87093](https://github.com/agridata-ch/backend/commit/7d87093332d3b300e9e3bdadf7cd8010068958e2)), closes [DIGIB2-1604](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1604)
+* **datatransfer:** create legally permitted consent requests automatically ([32cb2b5](https://github.com/agridata-ch/backend/commit/32cb2b54d1ba2724705a48bc6709a59e369f3340)), closes [DIGIB2-1649](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1649)
+* **persistence:** Require TranslationPersistenceDto size validation with ArchUnitTest ([a3a1ef8](https://github.com/agridata-ch/backend/commit/a3a1ef8b1055ac2b4b9a8ae463a7583134255e25)), closes [DIGIB2-1675](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1675)
+* **product:** Add public endpoint for retrieval of a single data product ([9b51dc4](https://github.com/agridata-ch/backend/commit/9b51dc4f410641156f4db21c26ed4441bc6222fb)), closes [DIGIB2-1443](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1443)
+* **product:** Allow consumers to fetch all consent requests for a given data request ([3ffc606](https://github.com/agridata-ch/backend/commit/3ffc60681f7b7fe42581a5bbdacd990be0acf150)), closes [DIGIB2-1668](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1668)
+* **product:** Make all technical fields optional ([29488b2](https://github.com/agridata-ch/backend/commit/29488b2a09aba228eff4c7e3130057784c83063e)), closes [DIGIB2-1680](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1680)
+* **products:** expose public single-document download endpoint ([164407a](https://github.com/agridata-ch/backend/commit/164407aad2818415b33968d698afd87af00d1b9f)), closes [DIGIB2-1682](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1682)
+
+### Bug Fixes
+
+* **contract:** minor adjustment in contract ([d5b7261](https://github.com/agridata-ch/backend/commit/d5b7261091005727823a3ef8e6eaad2f86fe34ab)), closes [DIGIB2-1696](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1696)
+* **deps:** set DautoUpdate=false for owasp check. Was temporarily true because of dependency update ([4451e60](https://github.com/agridata-ch/backend/commit/4451e60dcf20653ecce9e835fe8385422b866a73)), closes [DIGIB2-1607](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1607)
+* **deps:** update quarkus ([936430a](https://github.com/agridata-ch/backend/commit/936430ab7f1892577953b617858b1da548cec116))
+* **products:** add null check ([d444873](https://github.com/agridata-ch/backend/commit/d4448739e95ad81d5bf6649fdbf039aaf1bf6461))
+* **test-data:** minor adjustment in test data ([2561d65](https://github.com/agridata-ch/backend/commit/2561d65a8c23eccea294016e22177fc8eede4d58)), closes [DIGIB2-1649](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1649)
+
 ## [1.17.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.15...v1.17.0-rc.16) (2026-09-11)
 
 ### Bug Fixes
