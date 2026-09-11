@@ -1,3 +1,9 @@
+## [1.17.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.15...v1.17.0-rc.16) (2026-09-11)
+
+### Bug Fixes
+
+* **products:** add null check ([d444873](https://github.com/agridata-ch/backend/commit/d4448739e95ad81d5bf6649fdbf039aaf1bf6461))
+
 ## [1.17.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.14...v1.17.0-rc.15) (2026-09-11)
 
 ### Features
