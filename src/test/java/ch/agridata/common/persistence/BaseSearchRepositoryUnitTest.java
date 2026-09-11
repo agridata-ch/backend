@@ -1,6 +1,7 @@
 package ch.agridata.common.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -9,9 +10,11 @@ import static org.mockito.Mockito.when;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.dto.SupportedLanguage;
+import ch.agridata.common.exceptions.SearchSpecificationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,10 +32,17 @@ class BaseSearchRepositoryUnitTest {
       "code", SearchField.simple("code")
   );
 
+  private static final Map<String, FilterField> FILTERABLE_FIELDS = Map.of(
+      "providerId", FilterField.uuid("p.id"),
+      "code", FilterField.text("dp.code")
+  );
+
   private static final List<SearchField> SEARCHABLE_FIELDS = List.of(
       SearchField.translated("dp.name"),
       SearchField.simple("code")
   );
+
+  private static final String PROVIDER_ID = "61404b83-078e-4b4f-a6d6-2aa3990f429c";
 
   private TestableRepository repository;
 
@@ -48,6 +58,14 @@ class BaseSearchRepositoryUnitTest {
         .sortParams(sortParams)
         .searchTerm(searchTerm)
         .language(language != null ? language.code() : null)
+        .build();
+  }
+
+  private static ResourceQueryDto queryWithFilters(List<String> filters) {
+    return ResourceQueryDto.builder()
+        .page(0)
+        .size(20)
+        .columnFilters(filters)
         .build();
   }
 
@@ -186,6 +204,98 @@ class BaseSearchRepositoryUnitTest {
         .endsWith(", id");
   }
 
+  // --- Column filter building -------------------------------------------------------------------
+
+  @Test
+  @DisplayName("Values of one column are combined with OR, filters on different columns with AND")
+  void filtersAreCombinedWithOrWithinAndAndAcrossColumns() {
+    repository.searchWithFilters(queryWithFilters(List.of("code:a,b", "providerId:" + PROVIDER_ID)));
+
+    assertThat(repository.capturedQuery)
+        .contains("(dp.code in :columnFilter0 and p.id in :columnFilter1)");
+    assertThat(repository.capturedParams)
+        .containsEntry("columnFilter0", List.of("a", "b"))
+        .containsEntry("columnFilter1", List.of(UUID.fromString(PROVIDER_ID)));
+  }
+
+  @Test
+  @DisplayName("Repeating the same column merges its values into one OR group")
+  void repeatedColumnIsMergedIntoOneGroup() {
+    repository.searchWithFilters(queryWithFilters(List.of("code:a", "code:b")));
+
+    assertThat(repository.capturedQuery).contains("dp.code in :columnFilter0");
+    assertThat(repository.capturedParams).containsEntry("columnFilter0", List.of("a", "b"));
+  }
+
+  @Test
+  @DisplayName("No filters leave the query without a filter clause")
+  void noFiltersProduceNoFilterClause() {
+    repository.searchWithFilters(queryWithFilters(null));
+
+    assertThat(repository.capturedQuery).doesNotContain(":columnFilter0");
+  }
+
+  @Test
+  @DisplayName("Unknown filter field is rejected and no query is executed")
+  void unknownFilterFieldIsRejected() {
+    var q = queryWithFilters(List.of("createdBy:x"));
+
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> repository.searchWithFilters(q))
+        .withMessageContaining("Unsupported filter field: createdBy");
+
+    assertThat(repository.capturedQuery).isNull();
+  }
+
+  @Test
+  @DisplayName("A value that does not fit the column type is rejected")
+  void invalidFilterValueIsRejected() {
+    var q = queryWithFilters(List.of("providerId:not-a-uuid"));
+
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> repository.searchWithFilters(q))
+        .withMessageContaining("Invalid filter value");
+  }
+
+  @Test
+  @DisplayName("A filter without a column separator or without values is rejected")
+  void malformedFilterIsRejected() {
+    var withoutSeparator = queryWithFilters(List.of("code"));
+    var withoutValue = queryWithFilters(List.of("code: , "));
+
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> repository.searchWithFilters(withoutSeparator))
+        .withMessageContaining("Invalid filter");
+    assertThatIllegalArgumentException()
+        .isThrownBy(() -> repository.searchWithFilters(withoutValue))
+        .withMessageContaining("Filter without value");
+  }
+
+  @Test
+  @DisplayName("Duplicate values of a column are bound only once")
+  void duplicateFilterValuesAreIgnored() {
+    repository.searchWithFilters(queryWithFilters(List.of("code:a,b,a", "code:b")));
+
+    assertThat(repository.capturedParams).containsEntry("columnFilter0", List.of("a", "b"));
+  }
+
+  @Test
+  @DisplayName("A base parameter colliding with a generated filter parameter fails fast")
+  void collidingParameterNameIsRejected() {
+    var spec = SearchSpec.builder()
+        .baseSelect("select dp from DataProductEntity dp")
+        .baseWhere("dp.code = :columnFilter0")
+        .baseParams(Map.of("columnFilter0", "X"))
+        .filterableFields(FILTERABLE_FIELDS)
+        .sortableFields(SORTABLE_FIELDS)
+        .build();
+    var q = queryWithFilters(List.of("code:a"));
+
+    assertThatExceptionOfType(SearchSpecificationException.class)
+        .isThrownBy(() -> repository.search(q, spec))
+        .withMessageContaining("Duplicate query parameter name: columnFilter0");
+  }
+
   // --- Result assembly --------------------------------------------------------------------------
 
   @Test
@@ -248,6 +358,17 @@ class BaseSearchRepositoryUnitTest {
           query, SearchSpec.builder()
               .searchableFields(SEARCHABLE_FIELDS)
               .sortableFields(sortableFields)
+              .build()
+      );
+    }
+
+    PageResponseDto<Object> searchWithFilters(ResourceQueryDto query) {
+      return findPage(
+          query, SearchSpec.builder()
+              .baseSelect(BASE_SELECT)
+              .filterableFields(FILTERABLE_FIELDS)
+              .sortableFields(SORTABLE_FIELDS)
+              .sortTieBreaker("dp.id")
               .build()
       );
     }

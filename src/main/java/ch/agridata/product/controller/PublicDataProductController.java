@@ -52,7 +52,9 @@ public class PublicDataProductController {
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getPublicDataProductsPaginated",
-      description = "Retrieves a paginated list of all publicly available data products. Publicly accessible."
+      description = "Retrieves a paginated list of all publicly available data products. Publicly accessible. "
+          + "Supports pagination, sorting, search and column filtering on 'dataSourceSystemId' and 'dataProviderId', "
+          + "e.g. filter=dataProviderId:<uuid>,<uuid>;dataSourceSystemId:<uuid>."
   )
   @Parameter(
       name = "resourceQueryDto",

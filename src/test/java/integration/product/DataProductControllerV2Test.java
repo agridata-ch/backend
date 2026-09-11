@@ -1,5 +1,7 @@
 package integration.product;
 
+import static integration.testutils.TestDataIdentifiers.DataProvider.UUID_61404B83;
+import static integration.testutils.TestDataIdentifiers.DataProvider.UUID_E37B148B;
 import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_4CCBfA06;
 import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_5335D715;
 import static integration.testutils.TestDataIdentifiers.RestClient.UUID_1C438FA1;
@@ -11,6 +13,7 @@ import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
@@ -58,6 +61,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 
@@ -208,6 +212,118 @@ class DataProductControllerV2Test {
         .get(DataProductControllerV2.PATH)
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  void givenAdmin_whenFilterByDataSourceSystemId_thenReturnsOnlyProductsOfThatSystem() {
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("items.size()", greaterThan(0))
+        .body("items.dataSourceSystem.id", everyItem(equalTo(UUID_5335D715.toString())));
+  }
+
+  @Test
+  void givenAdmin_whenFilterByTwoDataSourceSystemIds_thenCombinesThemWithOr() {
+    int agisCount = countFilteredProducts("dataSourceSystemId:" + UUID_5335D715);
+    int tvdCount = countFilteredProducts("dataSourceSystemId:" + UUID_4CCBfA06);
+
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715 + "," + UUID_4CCBfA06)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(agisCount + tvdCount));
+  }
+
+  @Test
+  void givenAdmin_whenFilterByDataProviderId_thenReturnsOnlyProductsOfThatProvider() {
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataProviderId:" + UUID_E37B148B)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("items.size()", greaterThan(0))
+        .body("items.dataSourceSystem.dataProvider.id", everyItem(equalTo(UUID_E37B148B.toString())));
+  }
+
+  @Test
+  void givenAdmin_whenFilterOnTwoColumns_thenCombinesThemWithAnd() {
+    // The AGIS source system belongs to this provider, so the second filter does not narrow the result.
+    int agisCount = countFilteredProducts("dataSourceSystemId:" + UUID_5335D715);
+    assertThat(agisCount).isPositive();
+
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715 + ";dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(agisCount));
+
+    // The TVD source system belongs to another provider, so the two filters together match nothing.
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_4CCBfA06 + ";dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(0));
+  }
+
+  @Test
+  void givenAdmin_whenFilterParamIsRepeated_thenCombinesThemWithAnd() {
+    int agisCount = countFilteredProducts("dataSourceSystemId:" + UUID_5335D715);
+
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715)
+        .queryParam("filter", "dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(agisCount));
+
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_4CCBfA06)
+        .queryParam("filter", "dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(0));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "unsupportedColumn:" + "5335d715-e95c-4777-a424-ab73f2ff5618",
+      "dataSourceSystemId",
+      "dataSourceSystemId:",
+      "dataSourceSystemId:not-a-uuid"
+  })
+  void givenAdmin_whenFilterIsInvalid_thenReturnsBadRequest(String filter) {
+    AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", filter)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(400);
+  }
+
+  private static int countFilteredProducts(String filter) {
+    return AuthTestUtils.requestAs(ADMIN)
+        .queryParam("filter", filter)
+        .when()
+        .get(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(200)
+        .extract()
+        .path("totalItems");
   }
 
   @SneakyThrows
