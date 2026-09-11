@@ -74,9 +74,9 @@ public interface DataProductMapper {
   /**
    * Partial-update mapping used by PATCH. Identical to {@link #updateEntity} except for
    * {@link NullValuePropertyMappingStrategy#IGNORE}: an omitted field leaves the current value untouched (no {@code else set(null)}
-   * branch is generated), while a field present with an explicit {@code null} clears it. {@code consentRequired} is a primitive on the
-   * entity, so a present-{@code null} would unbox to a NPE; that never happens because it is {@code @Null} in both PATCH groups and is
-   * rejected by validation before this mapper runs.
+   * branch is generated), while a field present with an explicit {@code null} clears it. {@code consentRequired} and
+   * {@code paymentRequired} are primitives on the entity, so a present-{@code null} would unbox to a NPE; that never happens because
+   * both carry an ungrouped {@code @NotNull} that rejects a present {@code null} before this mapper runs, on every verb.
    */
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @InheritConfiguration(name = "updateEntity")
