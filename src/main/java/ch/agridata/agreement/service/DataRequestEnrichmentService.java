@@ -8,6 +8,7 @@ import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -49,6 +50,7 @@ public class DataRequestEnrichmentService {
 
     return dataProductApi.getActiveProductsByIds(dataProductIds).stream()
         .map(DataProductDto::flowCode)
+        .filter(Objects::nonNull)
         .anyMatch(FlowCodeEnum::isBurBased);
   }
 }
