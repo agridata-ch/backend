@@ -3,6 +3,7 @@ package ch.agridata.datatransferv2.service;
 import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.datatransferv2.dto.ProducerIdentifier;
+import ch.agridata.datatransferv2.service.utils.ProductConfigurationValidator;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.api.DataProviderRestClient;
 import ch.agridata.product.api.DataProviderRestClientProviderApi;
@@ -48,6 +49,7 @@ public class ChangeDetectionService {
     if (config.restClientChangeDetectionPathTemplate() == null) {
       throw new IllegalArgumentException("Change detection is not supported for product=" + productId);
     }
+    ProductConfigurationValidator.requireChangeDetectionConfiguration(config);
 
     return switch (FlowEnum.valueOf(config.flowCode())) {
       case UID_BASED_PRE_VALIDATION,

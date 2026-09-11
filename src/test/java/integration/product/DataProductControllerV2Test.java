@@ -325,6 +325,64 @@ class DataProductControllerV2Test {
   }
 
   @SneakyThrows
+  @ParameterizedTest
+  @CsvSource({
+      "PROVIDER_1, consentRequired",
+      "PROVIDER_1, paymentRequired",
+      "ADMIN, consentRequired",
+      "ADMIN, paymentRequired"
+  })
+  void givenBooleanFieldExplicitlyNull_whenAddNewDataProductDraft_thenBadRequest(TestUserEnum user, String field) {
+    // Both map to a boolean primitive on the entity. Omitting them on a draft is fine, but sending an explicit null must not reach the
+    // mapper, where it would unbox into a NullPointerException.
+    var builder = DataProductUpdateDto.builder();
+    if ("consentRequired".equals(field)) {
+      builder.consentRequired(JsonNullable.of(null));
+    } else {
+      builder.paymentRequired(JsonNullable.of(null));
+    }
+
+    AuthTestUtils.requestAs(user)
+        .given()
+        .contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(builder.build()))
+        .when()
+        .post(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString(field));
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @CsvSource({
+      "PROVIDER_1, consentRequired",
+      "PROVIDER_1, paymentRequired",
+      "ADMIN, consentRequired",
+      "ADMIN, paymentRequired"
+  })
+  void givenBooleanFieldExplicitlyNull_whenUpdateDataProductDraft_thenBadRequest(TestUserEnum user, String field) {
+    UUID productId = createDraft(user, getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid()));
+
+    var builder = DataProductUpdateDto.builder();
+    if ("consentRequired".equals(field)) {
+      builder.consentRequired(JsonNullable.of(null));
+    } else {
+      builder.paymentRequired(JsonNullable.of(null));
+    }
+
+    AuthTestUtils.requestAs(user)
+        .given()
+        .contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(builder.build()))
+        .when()
+        .put(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString(field));
+  }
+
+  @SneakyThrows
   @Test
   void givenProviderAndDataSourceSystemOfAnotherProvider_whenAddNewDataProductDraft_thenReturnNotFound() {
     var tvdDataSourceSystemId = UUID_4CCBfA06.uuid();
@@ -986,13 +1044,39 @@ class DataProductControllerV2Test {
 
   @SneakyThrows
   @Test
+  void givenActiveProductAndProvider_whenPatchNameAndDescriptionToNull_thenBadRequest() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(PROVIDER_1, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .name(JsonNullable.of(null))
+        .description(JsonNullable.of(null))
+        .restClientPathTemplate(JsonNullable.of("/test"))
+        .build();
+
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("message", equalTo("Validation failed"))
+        .body("debugMessage", containsString("name"))
+        .body("debugMessage", containsString("description"))
+        .body("debugMessage", not(containsString("restClientPathTemplate")));
+  }
+
+  @SneakyThrows
+  @Test
   void givenActiveProductAndAdmin_whenPatchNameAndDescription_thenOk() {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(ADMIN, existingProduct);
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .name(JsonNullable.of(new DataProductNameDto("DE", "FR", "IT")))
-        .description(JsonNullable.of(new DataProductDescriptionDto("DE", "FR", "IT")))
+        .name(JsonNullable.of(new DataProductNameDto("Neuer Name", "Nouveau nom", "Nuovo nome")))
+        .description(JsonNullable.of(
+            new DataProductDescriptionDto("Neue Beschreibung", "Nouvelle description", "Nuova descrizione")))
         .restClientPathTemplate(JsonNullable.of("/test"))
         .build();
 
@@ -1028,6 +1112,27 @@ class DataProductControllerV2Test {
   @SneakyThrows
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatchDataSourceSystemToNull_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .dataSourceSystemId(JsonNullable.of(null))
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("dataSourceSystemId"));
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenActiveProduct_whenPatchConsentRequired_thenBadRequest(TestUserEnum user) {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(user, existingProduct);
@@ -1048,11 +1153,84 @@ class DataProductControllerV2Test {
   @SneakyThrows
   @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatchConsentRequiredToNull_thenBadRequest(TestUserEnum user) {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .consentRequired(JsonNullable.of(null))
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("consentRequired"));
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProduct_whenPatchPaymentRequiredToNull_thenBadRequest(TestUserEnum user) {
+    // paymentRequired stays editable while active, so it carries no @Absent. It maps to a boolean primitive on the entity, which an
+    // explicit null would unbox into a NullPointerException, so the ungrouped @NotNull has to reject it before the mapper runs.
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .paymentRequired(JsonNullable.of(null))
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("paymentRequired"));
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
+  void givenActiveProductWithPayment_whenPatchPricingBasisToNull_thenBadRequest(TestUserEnum user) {
+    // Clearing the pricing basis while payment stays required would leave the active product violating the Submit invariant; the
+    // post-patch validation has to catch it.
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(user, existingProduct);
+    patchExpectingOk(user, productId, DataProductUpdateDto.builder()
+        .paymentRequired(JsonNullable.of(true))
+        .pricingBasis(JsonNullable.of(new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
+            "Tassazione per chiamata")))
+        .build());
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .pricingBasis(JsonNullable.of(null))
+        .build();
+
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("pricingBasis"));
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenActiveProductWithoutPayment_whenPatchPaymentRequiredAndPricingBasis_thenReturnDto(TestUserEnum user) {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(user, existingProduct);
 
-    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren", "Redevances", "Tassazione");
+    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
+        "Tassazione per chiamata");
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(true))
         .pricingBasis(JsonNullable.of(pricingBasis))
@@ -1098,12 +1276,10 @@ class DataProductControllerV2Test {
 
   @SneakyThrows
   @Test
-  void givenActiveProductAndAdmin_whenPatchAllEditableFieldsToNull_thenFieldsCleared() {
+  void givenActiveProductAndAdmin_whenPatchOptionalFieldsToNull_thenFieldsCleared() {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(ADMIN, existingProduct);
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .name(JsonNullable.of(null))
-        .description(JsonNullable.of(null))
         .restClientId(JsonNullable.of(null))
         .restClientPathTemplate(JsonNullable.of(null))
         .restClientRequestTemplate(JsonNullable.of(null))
@@ -1122,8 +1298,6 @@ class DataProductControllerV2Test {
         .statusCode(200)
         .extract()
         .as(DataProductDto.class);
-    assertThat(dataProduct.name()).isNull();
-    assertThat(dataProduct.description()).isNull();
     assertThat(dataProduct.restClient()).isNull();
     assertThat(dataProduct.restClientPathTemplate()).isNull();
     assertThat(dataProduct.restClientRequestTemplate()).isNull();
@@ -1132,6 +1306,29 @@ class DataProductControllerV2Test {
     assertThat(dataProduct.restClientChangeDetectionPathTemplate()).isNull();
     assertThat(dataProduct.extendedDescription()).isNull();
     assertThat(dataProduct.pricingBasis()).isNull();
+  }
+
+  @SneakyThrows
+  @Test
+  void givenActiveProductAndAdmin_whenPatchNameAndDescriptionToNull_thenBadRequest() {
+    DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
+    UUID productId = createActiveDataProduct(ADMIN, existingProduct);
+
+    DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
+        .name(JsonNullable.of(null))
+        .description(JsonNullable.of(null))
+        .build();
+
+    AuthTestUtils.requestAs(ADMIN)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(updateDto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(400)
+        .body("message", equalTo("Validation failed"))
+        .body("debugMessage", containsString("name"))
+        .body("debugMessage", containsString("description"));
   }
 
   @SneakyThrows
@@ -1292,6 +1489,17 @@ class DataProductControllerV2Test {
     var id = createDraft(user, dto);
     activateDataProduct(user, id);
     return id;
+  }
+
+  @SneakyThrows
+  private void patchExpectingOk(TestUserEnum user, UUID productId, DataProductUpdateDto dto) {
+    AuthTestUtils.requestAs(user)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(dto))
+        .patch(DataProductControllerV2.PATH + "/" + productId)
+        .then()
+        .statusCode(200);
   }
 
   @SneakyThrows

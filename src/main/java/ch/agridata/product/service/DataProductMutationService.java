@@ -151,8 +151,10 @@ public class DataProductMutationService {
 
   private DataProductDto patch(DataProductUpdateDto updateDto, DataProductEntity entity) {
     verifyRestClientOwnership(entity);
-    validate(dataProductMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
     dataProductMapper.patchEntity(updateDto, entity);
+    // Validated after the patch is applied: an active product must still be complete once the client's changes are in. A violation
+    // throws ConstraintViolationException, which rolls back the transaction and discards the mutations made to the managed entity.
+    validate(dataProductMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
     // No .persist() called, because the entity is already managed by the persistence context.
     return dataProductMapper.toDto(entity);
   }

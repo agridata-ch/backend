@@ -6,6 +6,7 @@ import ch.agridata.datatransferv2.service.flows.UidBasedPostValidationFlow;
 import ch.agridata.datatransferv2.service.flows.UidBasedPreValidationFlow;
 import ch.agridata.datatransferv2.service.flows.UnboundBurBasedPostValidationFlow;
 import ch.agridata.datatransferv2.service.flows.UnboundUidBasedPostValidationFlow;
+import ch.agridata.datatransferv2.service.utils.ProductConfigurationValidator;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,9 +40,7 @@ public class FlowProvider {
 
   public FlowWithProductProviderConfiguration getFlowByProduct(UUID productId) {
     var productProviderConfiguration = dataProductApi.getProviderConfigurationById(productId);
-    if (productProviderConfiguration.restClientIdentifierCode() == null) {
-      throw new IllegalStateException("Product " + productId + " has no rest client configured and cannot be transferred");
-    }
+    ProductConfigurationValidator.requireTransferConfiguration(productProviderConfiguration);
     var flowEnum = FlowEnum.valueOf(productProviderConfiguration.flowCode());
 
     Flowable flowable = switch (flowEnum) {

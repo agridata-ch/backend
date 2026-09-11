@@ -75,6 +75,22 @@ class ChangeDetectionServiceTest {
         .hasMessageContaining("Change detection is not supported for product=" + PRODUCT_ID);
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"restClient", "flowCode"})
+  void givenIncompleteConfiguration_whenGetModifiedProducers_thenThrowsIllegalStateExceptionNamingTheField(String missingField) {
+    var config = configBuilder()
+        .flowCode("flowCode".equals(missingField) ? null : "UID_BASED_PRE_VALIDATION")
+        .restClientIdentifierCode("restClient".equals(missingField) ? null : "AGIS_API")
+        .restClientChangeDetectionPathTemplate("/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}")
+        .build();
+    when(dataProductQueryService.getProviderConfigurationById(PRODUCT_ID)).thenReturn(config);
+
+    assertThatThrownBy(() -> service.getModifiedProducers(PRODUCT_ID, LAST_MODIFIED_FROM))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining(PRODUCT_ID.toString())
+        .hasMessageContaining(missingField);
+  }
+
   @Test
   void givenBurBasedFlow_whenGetModifiedProducers_thenThrowsIllegalArgumentException() {
     var config = configBuilder()

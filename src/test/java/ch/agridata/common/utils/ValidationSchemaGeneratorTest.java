@@ -80,4 +80,38 @@ class ValidationSchemaGeneratorTest {
 
     assertTrue(schema.get("required").toString().contains("description"));
   }
+
+  @Test
+  void testJsonNullableFieldsAreDescribedByTheirWrappedValue() {
+    JsonNode schema = generator.generateJsonSchema(TestDto.class, Set.of());
+
+    JsonNode description = schema.at("/properties/wrappedDescription");
+    assertEquals("string", description.get("type").asText());
+    assertEquals(100, description.get("maxLength").asInt());
+
+    assertEquals("boolean", schema.at("/properties/wrappedActive/type").asText());
+
+    JsonNode status = schema.at("/properties/wrappedStatus");
+    assertEquals("string", status.get("type").asText());
+    assertThat(status.get("enum").toString()).contains("DRAFT", "PUBLISHED", "ARCHIVED");
+
+    // A JsonNullable<List<..>> must stay an array with its item schema and size bounds, not collapse into a bare object.
+    JsonNode items = schema.at("/properties/wrappedItems");
+    assertEquals("array", items.get("type").asText());
+    assertEquals(2, items.get("minItems").asInt());
+    assertEquals(5, items.get("maxItems").asInt());
+    assertEquals("string", schema.at("/properties/wrappedItems/items/properties/id/type").asText());
+
+    JsonNode metadata = schema.at("/properties/wrappedMetadata");
+    assertEquals("object", metadata.get("type").asText());
+    assertEquals(2, metadata.at("/properties/name/minLength").asInt());
+    assertEquals(10, metadata.at("/properties/name/maxLength").asInt());
+  }
+
+  @Test
+  void testJsonNullableFieldIsMarkedRequiredByItsGroupedNotNull() {
+    JsonNode schema = generator.generateJsonSchema(TestDto.class, Set.of(TestDto.OnSubmit.class));
+
+    assertThat(schema.get("required").toString()).contains("wrappedActive", "wrappedStatus");
+  }
 }

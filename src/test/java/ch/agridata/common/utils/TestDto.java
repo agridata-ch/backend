@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 public class TestDto {
 
@@ -37,6 +38,21 @@ public class TestDto {
 
   @Valid
   private NestedDto metadata;
+
+  // JsonNullable-wrapped variants: the generator must describe the wrapped value, not the wrapper.
+  @Size(max = 100)
+  private JsonNullable<String> wrappedDescription;
+
+  @NotNull(groups = OnSubmit.class)
+  private JsonNullable<Boolean> wrappedActive;
+
+  @NotNull(groups = OnSubmit.class)
+  private JsonNullable<Status> wrappedStatus;
+
+  @Size(min = 2, max = 5)
+  private JsonNullable<List<@Valid NestedDto>> wrappedItems;
+
+  private JsonNullable<@Valid NestedDto> wrappedMetadata;
 
   public interface OnCreate {
   }
