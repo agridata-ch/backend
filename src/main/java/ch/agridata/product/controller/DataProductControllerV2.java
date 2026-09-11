@@ -102,7 +102,8 @@ public class DataProductControllerV2 {
   @Operation(
       operationId = "getDataProductsPaginated",
       description = "Retrieves a paginated list of all available data products. Accessible to users with the "
-          + "producer, and admin. Supports pagination.")
+          + "producer, and admin. Supports pagination, sorting and column filtering on 'dataSourceSystemId' and "
+          + "'dataProviderId', e.g. filter=dataProviderId:<uuid>,<uuid>;dataSourceSystemId:<uuid>.")
   @Parameter(name = "resourceQueryDto",
       description = "Query parameters",
       schema = @Schema(implementation = ResourceQueryDto.class))

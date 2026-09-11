@@ -1,5 +1,8 @@
 package integration.product;
 
+import static integration.testutils.TestDataIdentifiers.DataProvider.UUID_61404B83;
+import static integration.testutils.TestDataIdentifiers.DataProvider.UUID_E37B148B;
+import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_4CCBfA06;
 import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_5335D715;
 import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
@@ -45,6 +48,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 
@@ -181,6 +186,124 @@ class PublicDataProductControllerTest {
         .get(PublicDataProductController.PATH)
         .then()
         .statusCode(400);
+  }
+
+  @Test
+  void givenFilterByDataSourceSystemId_whenGetPublicProducts_thenReturnsOnlyProductsOfThatSystem() {
+    given()
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("items.size()", greaterThan(0))
+        .body("items.dataSourceSystem.id", everyItem(equalTo(UUID_5335D715.toString())));
+  }
+
+  @Test
+  void givenFilterByTwoDataSourceSystemIds_whenGetPublicProducts_thenCombinesThemWithOr() {
+    int agisCount = countFilteredProducts("dataSourceSystemId:" + UUID_5335D715);
+    int tvdCount = countFilteredProducts("dataSourceSystemId:" + UUID_4CCBfA06);
+
+    given()
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715 + "," + UUID_4CCBfA06)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(agisCount + tvdCount));
+  }
+
+  @Test
+  void givenFilterByDataProviderId_whenGetPublicProducts_thenReturnsOnlyProductsOfThatProvider() {
+    given()
+        .queryParam("filter", "dataProviderId:" + UUID_E37B148B)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("items.size()", greaterThan(0))
+        .body("items.dataSourceSystem.dataProvider.id", everyItem(equalTo(UUID_E37B148B.toString())));
+  }
+
+  @Test
+  void givenFilterOnTwoColumns_whenGetPublicProducts_thenCombinesThemWithAnd() {
+    // The AGIS source system belongs to this provider, so the second filter does not narrow the result.
+    int agisCount = countFilteredProducts("dataSourceSystemId:" + UUID_5335D715);
+    assertThat(agisCount).isPositive();
+
+    given()
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715)
+        .queryParam("filter", "dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(agisCount));
+
+    // The TVD source system belongs to another provider, so the two filters together match nothing.
+    given()
+        .queryParam("filter", "dataSourceSystemId:" + UUID_4CCBfA06)
+        .queryParam("filter", "dataProviderId:" + UUID_61404B83)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(0));
+  }
+
+  @Test
+  void givenFilterAndSearchTerm_whenGetPublicProducts_thenBothAreApplied() {
+    String uniqueName = "PublicFilterAndSearch-" + UUID.randomUUID();
+    createActiveDataProduct(PROVIDER_1, uniqueName);
+
+    // The created product belongs to the AGIS source system: the search term alone finds it, the
+    // non-matching source system filter removes it again.
+    given()
+        .queryParam("searchTerm", uniqueName)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_5335D715)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(1))
+        .body("items[0].name.de", equalTo(uniqueName));
+
+    given()
+        .queryParam("searchTerm", uniqueName)
+        .queryParam("filter", "dataSourceSystemId:" + UUID_4CCBfA06)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .body("totalItems", equalTo(0));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "unsupportedColumn:5335d715-e95c-4777-a424-ab73f2ff5618",
+      "dataSourceSystemId",
+      "dataSourceSystemId:",
+      "dataSourceSystemId:not-a-uuid"
+  })
+  void givenInvalidFilter_whenGetPublicProducts_thenBadRequest(String filter) {
+    given()
+        .queryParam("filter", filter)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(400);
+  }
+
+  private static int countFilteredProducts(String filter) {
+    return given()
+        .queryParam("filter", filter)
+        .when()
+        .get(PublicDataProductController.PATH)
+        .then()
+        .statusCode(200)
+        .extract()
+        .path("totalItems");
   }
 
   @Test

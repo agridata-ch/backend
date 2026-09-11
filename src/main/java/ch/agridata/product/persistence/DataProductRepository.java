@@ -3,6 +3,7 @@ package ch.agridata.product.persistence;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.persistence.BaseSearchRepository;
+import ch.agridata.common.persistence.FilterField;
 import ch.agridata.common.persistence.SearchField;
 import ch.agridata.common.persistence.SearchSpec;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -48,6 +49,11 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
       "systemName", FIELD_SYSTEM_NAME
   );
 
+  private static final Map<String, FilterField> FILTERABLE_FIELDS = Map.of(
+      "dataSourceSystemId", FilterField.uuid("ds.id"),
+      "dataProviderId", FilterField.uuid("p.id")
+  );
+
   private static final List<SearchField> SEARCHABLE_FIELDS = List.of(FIELD_PRODUCT_NAME, FIELD_PROVIDER_NAME, FIELD_SYSTEM_NAME);
 
   public Optional<DataProductEntity> findByIdAndDataProviderUidOptional(UUID id, String dataProviderUid) {
@@ -91,6 +97,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
         query, SearchSpec.builder()
             .baseSelect(BASE_QUERY)
             .sortableFields(SORTABLE_FIELDS)
+            .filterableFields(FILTERABLE_FIELDS)
             .sortTieBreaker(DP_ID)
             .build()
     );
@@ -104,6 +111,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
             .baseParams(Map.of(PARAM_STATE, DataProductStateEnum.ACTIVE))
             .sortableFields(SORTABLE_FIELDS)
             .searchableFields(SEARCHABLE_FIELDS)
+            .filterableFields(FILTERABLE_FIELDS)
             .sortTieBreaker(DP_ID)
             .build()
     );
@@ -116,6 +124,7 @@ public class DataProductRepository extends BaseSearchRepository<DataProductEntit
             .baseWhere(BY_PROVIDER_UID)
             .baseParams(Map.of(PARAM_PROVIDER_UID, providerUid))
             .sortableFields(SORTABLE_FIELDS)
+            .filterableFields(FILTERABLE_FIELDS)
             .sortTieBreaker(DP_ID)
             .build()
     );

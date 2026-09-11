@@ -7,11 +7,12 @@ import jakarta.ws.rs.QueryParam;
 import java.util.List;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.jboss.resteasy.reactive.Separator;
 
 /**
- * Data transfer object for resource query parameters including pagination, sorting, and searching.
+ * Data transfer object for resource query parameters including pagination, sorting, filtering and searching.
  *
- * @CommentLastReviewed 2025-09-11
+ * @CommentLastReviewed 2026-09-14
  */
 @Builder
 
@@ -33,6 +34,11 @@ public record ResourceQueryDto(
 
     @Schema(description = "string to search for in the resource")
     @QueryParam("searchTerm") String searchTerm,
+
+    @Schema(description = "Column filters in the form '<column>:<value>[,<value>]', multiple filters separated by ';'. Values of the "
+        + "same column are combined with OR, filters on different columns with AND. Duplicate values are ignored. "
+        + "The filterable columns are documented per endpoint.")
+    @QueryParam("filter") @Separator(";") List<String> columnFilters,
 
     @Schema(description = "language code for multilingual fields. Must be supported by application.")
     @QueryParam("language") String language
