@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/uid/[^/]+"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "0dda0d97-bd48-4a3d-b66e-417ac31ee4f5"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

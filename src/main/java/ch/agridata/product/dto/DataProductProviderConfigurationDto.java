@@ -10,7 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * Encapsulates provider-specific configuration for retrieving a product. It includes client identifiers, HTTP method, path, and request
  * templates for integration with provider systems.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-08-31
  */
 @Builder
 public record DataProductProviderConfigurationDto(
@@ -64,7 +64,13 @@ public record DataProductProviderConfigurationDto(
         description = "Path template for detecting changes",
         examples = {"/farm-data/changes?since={{LAST_CHANGED_SINCE_DATE_TIME}}"}
     )
-    String restClientChangeDetectionPathTemplate)
+    String restClientChangeDetectionPathTemplate,
+
+    @Schema(
+        description = "Whether producer consent is required to fetch this product",
+        examples = {"true"}
+    )
+    boolean consentRequired)
 
     implements Serializable {
 }

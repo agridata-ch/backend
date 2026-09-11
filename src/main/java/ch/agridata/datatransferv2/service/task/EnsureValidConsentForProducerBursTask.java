@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,10 @@ import org.jetbrains.annotations.NotNull;
  * Verifies that consent has been granted for all producer BURs in the request payload.
  * Checks against the valid data requests and additionally validates that
  * the union of all granted consent periods covers the entire requested date range without gaps.
+ * For consent-free products the check is skipped; instead the asynchronous
+ * creation of LEGALLY_PERMITTED consent requests is enqueued for each producer BUR.
  *
- * @CommentLastReviewed 2026-03-09
+ * @CommentLastReviewed 2026-08-31
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -43,6 +46,19 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
     log.debug("Checking consent for producerBurs={}, dataRequestIds={}, requestedDateRange={}",
         producerBurs, validDataRequestIds, requestedDateRange);
 
+    Set<String> bursWithMissingConsent =
+        findBursWithMissingConsent(producerBurs, validDataRequestIds, requestedDateRange);
+
+    if (!bursWithMissingConsent.isEmpty()) {
+      return handleMissingConsent(context, producerBurs, bursWithMissingConsent);
+    }
+
+    log.debug("Consent verified for all {} producer BUR(s)", producerBurs.size());
+    return context;
+  }
+
+  private Set<String> findBursWithMissingConsent(Set<String> producerBurs, List<UUID> validDataRequestIds,
+                                                 Range<@NotNull LocalDate> requestedDateRange) {
     Map<String, List<ConsentRequestFundamentalViewDto>> grantedConsentsByBur =
         consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
                 validDataRequestIds, producerBurs.stream().toList()).stream()
@@ -54,14 +70,21 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
 
     Set<String> bursWithMissingConsent = new TreeSet<>(producerBurs);
     bursWithMissingConsent.removeAll(bursWithSufficientConsent);
+    return bursWithMissingConsent;
+  }
 
-    if (!bursWithMissingConsent.isEmpty()) {
-      log.warn("Consent not granted for producerBurs={}", bursWithMissingConsent);
-      throw new ConsentNotGrantedException(bursWithMissingConsent);
+  private AgridataContext handleMissingConsent(AgridataContext context, Set<String> producerBurs,
+                                               Set<String> bursWithMissingConsent) {
+    if (!context.getProductProviderConfiguration().consentRequired()) {
+      var dataRequestId = context.getValidDataRequestIds().getFirst();
+      log.debug("Product is consent-free, enqueueing legally permitted consent requests for dataRequestId={}, producerBurs={}",
+          dataRequestId, producerBurs);
+      bursWithMissingConsent.forEach(bur -> consentRequestApi.enqueueLegallyPermittedBurBasedConsentRequest(dataRequestId, bur));
+      return context;
     }
 
-    log.debug("Consent verified for all {} producer BUR(s)", producerBurs.size());
-    return context;
+    log.warn("Consent not granted for producerBurs={}", bursWithMissingConsent);
+    throw new ConsentNotGrantedException(bursWithMissingConsent);
   }
 
   private boolean isRangeFullyCovered(List<ConsentRequestFundamentalViewDto> consents, Range<@NotNull LocalDate> requestedRange) {

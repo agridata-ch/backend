@@ -57,7 +57,7 @@ class DataRequestQueryServiceTest {
     when(repository.findByDataConsumerUid(USER_UID)).thenReturn(List.of(dataConsumer));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null, false));
 
     var result = service.getAllDataRequestsOfCurrentConsumer();
 
@@ -76,7 +76,7 @@ class DataRequestQueryServiceTest {
     when(repository.findAllByStates(PROVIDER_ACCESSIBLE_STATES)).thenReturn(List.of(dataRequest));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto, false));
 
     var result = service.getRelevantDataRequestsForCurrentProvider();
 
@@ -88,7 +88,7 @@ class DataRequestQueryServiceTest {
     var entity = buildEntity();
     when(repository.findAllNotDraft()).thenReturn(List.of(entity));
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null, false));
 
     var result = service.getAllNonDraftDataRequests();
 
@@ -101,7 +101,7 @@ class DataRequestQueryServiceTest {
     var entity = buildEntity();
     entity.setStateCode(DataRequestEntity.DataRequestStateEnum.IN_REVIEW);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null, false));
 
     when(repository.findByIdAndStateCodeNotDraft(id)).thenReturn(Optional.of(entity));
 
@@ -127,7 +127,7 @@ class DataRequestQueryServiceTest {
     when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), null, false));
 
     var result = service.getDataRequestOfCurrentConsumer(id);
 
@@ -158,7 +158,7 @@ class DataRequestQueryServiceTest {
     when(repository.findByIdAndStates(id, PROVIDER_ACCESSIBLE_STATES)).thenReturn(Optional.of(entity));
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
-        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto));
+        .thenAnswer(inv -> mapper.toDto(inv.getArgument(0), dataSourceSystemDto, false));
 
     var result = service.getDataRequestForCurrentProvider(id);
 

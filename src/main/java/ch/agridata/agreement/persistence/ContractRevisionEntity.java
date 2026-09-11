@@ -29,7 +29,7 @@ import org.hibernate.type.SqlTypes;
  * Defines the persistence representation for contract revisions. It contains fields for storing values of
  * specific data request-fields at the time of contract revision initialization.
  *
- * @CommentLastReviewed 2026-06-09
+ * @CommentLastReviewed 2026-09-02
  */
 @Entity
 @Table(name = "contract_revision")
@@ -116,6 +116,7 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "system_name", nullable = false)
+  @Valid
   private TranslationPersistenceDto systemName;
 
   @JdbcTypeCode(SqlTypes.JSON)
@@ -125,7 +126,7 @@ public class ContractRevisionEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "data_product", nullable = false)
-  private List<TranslationPersistenceDto> dataProducts;
+  private List<@Valid TranslationPersistenceDto> dataProducts;
 
   // Signature information
 

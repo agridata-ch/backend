@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/tvd/zo/api-zo/v1.0/public-data/goat/[^/]+",
+    "queryParameters": {
+      "dataPackage": {
+        "equalTo": "ZOAPI_Public_GoatDetailV1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "dataOfProduct": "a28b7cde-1d56-43a9-802c-aad6adbfdca3"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "AGRIDATA-RESPONSE-PRODUCER-BURS": "99920004"
+    }
+  }
+}

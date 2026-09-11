@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 @ExtendWith(MockitoExtension.class)
 class DataProductMutationServiceTest {
@@ -48,7 +49,7 @@ class DataProductMutationServiceTest {
     UUID dataSourceId = UUID.randomUUID();
     String providerUid = "CH000000001";
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
-        .dataSourceSystemId(dataSourceId)
+        .dataSourceSystemId(JsonNullable.of(dataSourceId))
         .build();
     DataProductEntity dataProductEntity = spy(DataProductEntity.builder().stateCode(DataProductStateEnum.DRAFT).build());
     DataProviderEntity dataProviderEntity = mock(DataProviderEntity.class);

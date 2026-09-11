@@ -5,6 +5,8 @@ agridata:
     otp:
       validation:
         enabled: true
+    legally-permitted-consent:
+      queue-capacity: 10000
   aws:
     send-sms:
       enabled: true
@@ -16,6 +18,9 @@ agridata:
   product:
     scan-recovery:
       pending-timeout: PT15M
+  user:
+    uid-authorization:
+      min-relation-age: P14D
 bit:
   signature:
     key-bearer: "BLW-Agridata"

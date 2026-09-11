@@ -6,7 +6,6 @@ import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
-import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
@@ -41,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
-public class ConsentRequestQueryService implements ConsentRequestApi {
+public class ConsentRequestQueryService {
 
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestFundamentalViewRepository consentRequestFundamentalViewRepository;
@@ -111,7 +110,6 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
   }
 
   @RolesAllowed(CONSUMER_ROLE)
-  @Override
   public List<String> getGrantedConsentRequestUidsForProductOfCurrentConsumerSince(UUID productId, LocalDateTime since) {
     var dataConsumerUid = identity.getUidOrElseThrow();
 
@@ -134,7 +132,22 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
   }
 
-  @Override
+  @RolesAllowed(CONSUMER_ROLE)
+  public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerAndLastModifiedFrom(
+      ResourceQueryDto resourceQueryDto,
+      UUID dataRequestId,
+      LocalDateTime lastModifiedFrom) {
+    if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
+        resourceQueryDto,
+        dataRequestId,
+        lastModifiedFrom);
+
+    return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
+  }
+
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
                                                                                                         List<String> producerUids) {
     return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
@@ -142,7 +155,6 @@ public class ConsentRequestQueryService implements ConsentRequestApi {
         .toList();
   }
 
-  @Override
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(List<UUID> dataRequestIds,
                                                                                                         List<String> producerBurs) {
     return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()

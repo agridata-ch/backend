@@ -3,6 +3,7 @@ package ch.agridata.datatransferv2.service.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.api.ConsentRequestApi;
@@ -11,6 +12,7 @@ import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
+import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import com.google.common.collect.Range;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -160,10 +162,29 @@ class EnsureValidConsentForProducerBursTaskTest {
     return Arrays.asList(ranges);
   }
 
+  @Test
+  void givenConsentFreeProduct_whenApply_thenNoExceptionAndCreationIsEnqueued() {
+    var context = createContextWithProducerBurs(List.of(PRODUCER_BUR_1, PRODUCER_BUR_2), false);
+
+    var result = task.apply(context);
+
+    assertThat(result).isSameAs(context);
+    verify(consentRequestApi).enqueueLegallyPermittedBurBasedConsentRequest(DATA_REQUEST_ID, PRODUCER_BUR_1);
+    verify(consentRequestApi).enqueueLegallyPermittedBurBasedConsentRequest(DATA_REQUEST_ID, PRODUCER_BUR_2);
+  }
+
   private AgridataContext createContextWithProducerBurs(List<String> producerBurs) {
+    return createContextWithProducerBurs(producerBurs, true);
+  }
+
+  private AgridataContext createContextWithProducerBurs(List<String> producerBurs, boolean consentRequired) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
         .flowEnum(FlowEnum.BUR_BASED_POST_VALIDATION)
+        .productProviderConfiguration(DataProductProviderConfigurationDto.builder()
+            .id(PRODUCT_ID)
+            .consentRequired(consentRequired)
+            .build())
         .producerBurs(producerBurs)
         .validDataRequestIds(List.of(DATA_REQUEST_ID))
         .requestedDateRange(REQUESTED_DATE_RANGE)

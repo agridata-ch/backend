@@ -4,11 +4,16 @@ import static integration.testutils.TestDataIdentifiers.DataSourceSystem.UUID_53
 import static integration.testutils.TestDataIdentifiers.RestClient.UUID_B1398C9D;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import ch.agridata.aws.api.PdfStorageApi;
 import ch.agridata.common.dto.LinkDto;
@@ -40,17 +45,19 @@ import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openapitools.jackson.nullable.JsonNullableModule;
 
 /**
- * Verifies the public data product endpoints. The paginated list exposes only ACTIVE products, and the documents endpoint
- * exposes only documents of an ACTIVE product whose virus scan succeeded (scan status AVAILABLE).
+ * Verifies the public data product endpoints. The paginated list exposes only ACTIVE products, and the documents endpoints
+ * expose only documents of an ACTIVE product whose virus scan succeeded (scan status AVAILABLE).
  *
- * @CommentLastReviewed 2026-08-06
+ * @CommentLastReviewed 2026-09-09
  */
 @QuarkusTest
 class PublicDataProductControllerTest {
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new JsonNullableModule());
   private static final byte[] SAMPLE_PDF = "%PDF-1.4\npublic-documents-test\n".getBytes(StandardCharsets.UTF_8);
 
   @InjectMock
@@ -111,6 +118,42 @@ class PublicDataProductControllerTest {
         .then()
         .statusCode(200)
         .body("totalItems", equalTo(0));
+  }
+
+  @Test
+  void givenActiveProduct_whenGetPublicProduct_thenReturnsProduct() {
+    String uniqueName = "PublicSingleActive-" + UUID.randomUUID();
+    UUID productId = createActiveDataProduct(PROVIDER_1, uniqueName);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId)
+        .then()
+        .statusCode(200)
+        .body("id", equalTo(productId.toString()))
+        .body("stateCode", equalTo("ACTIVE"))
+        .body("name.de", equalTo(uniqueName))
+        .body("consentRequired", notNullValue());
+  }
+
+  @Test
+  void givenDraftProduct_whenGetPublicProduct_thenNotFound() {
+    UUID productId = createNamedDraft(PROVIDER_1, "PublicSingleDraft-" + UUID.randomUUID());
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenGetPublicProduct_thenNotFound() {
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + UUID.randomUUID())
+        .then()
+        .statusCode(404);
   }
 
   @Test
@@ -196,6 +239,71 @@ class PublicDataProductControllerTest {
         .statusCode(404);
   }
 
+  @Test
+  void givenActiveProductWithAvailableDocument_whenGetPublicDocument_thenReturnsContent() {
+    when(pdfStorageApi.download(anyString(), anyString())).thenReturn(SAMPLE_PDF);
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.AVAILABLE);
+
+    byte[] content = given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(200)
+        .header("Content-Disposition", containsString("report.pdf"))
+        .extract().asByteArray();
+
+    assertThat(new String(content, StandardCharsets.UTF_8)).isEqualTo(new String(SAMPLE_PDF, StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void givenActiveProductWithNonAvailableDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "pending.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.PENDING_SCAN);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenNonActiveProductWithAvailableDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createDraft(PROVIDER_1, DataProductUpdateDto.builder().build());
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "available.pdf");
+    forceScanStatus(document.id(), DocumentScanStatusEnum.AVAILABLE);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownProduct_whenGetPublicDocument_thenNotFound() {
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + UUID.randomUUID() + "/documents/" + UUID.randomUUID() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void givenUnknownDocument_whenGetPublicDocument_thenNotFound() {
+    UUID productId = createActiveDataProduct(PROVIDER_1);
+
+    given()
+        .when()
+        .get(PublicDataProductController.PATH + "/" + productId + "/documents/" + UUID.randomUUID() + "/download")
+        .then()
+        .statusCode(404);
+  }
+
   private UUID createActiveDataProduct(TestUserEnum user) {
     return createActiveDataProduct(user, "Product Name");
   }
@@ -254,17 +362,18 @@ class PublicDataProductControllerTest {
 
   private static DataProductUpdateDto getDataProductUpdateDto(UUID dataSourceSystemId, UUID restClientId, String name) {
     return DataProductUpdateDto.builder()
-        .dataSourceSystemId(dataSourceSystemId)
-        .name(new DataProductNameDto(name, name, name))
-        .description(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano"))
-        .links(List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2")))
-        .extendedDescription(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano"))
-        .restClientId(restClientId)
-        .flowCode(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION)
-        .restClientPathTemplate("path/template")
-        .restClientChangeDetectionPathTemplate("change/detection/path/template")
-        .restClientMethodCode(RestClientMethodCodeEnum.GET)
-        .restClientRequestTemplate("{\"someKey\":\"someValue\"}")
+        .dataSourceSystemId(JsonNullable.of(dataSourceSystemId))
+        .name(JsonNullable.of(new DataProductNameDto(name, name, name)))
+        .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
+        .links(JsonNullable.of(
+            List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .restClientId(JsonNullable.of(restClientId))
+        .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
+        .restClientPathTemplate(JsonNullable.of("path/template"))
+        .restClientChangeDetectionPathTemplate(JsonNullable.of("change/detection/path/template"))
+        .restClientMethodCode(JsonNullable.of(RestClientMethodCodeEnum.GET))
+        .restClientRequestTemplate(JsonNullable.of("{\"someKey\":\"someValue\"}"))
         .build();
   }
 }

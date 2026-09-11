@@ -5,12 +5,14 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import ch.agridata.datatransferv2.controller.DataTransferController;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.Bur;
 import integration.testutils.TestDataIdentifiers.DataProduct;
 import integration.testutils.TestDataIdentifiers.Uid;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -182,6 +184,33 @@ class ProductFetchingTest {
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_E6128E10.uuid().toString(),
             Map.of("bur", Bur.CODE_99910002.getCode(), "recipientUid", "CHE123456789")),
+        // ZO API consent-free Data Products
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_4176737B.uuid().toString(),
+            Map.of("dataRequestId", TestDataIdentifiers.DataRequest.BLV_ZO_CONSENT_FREE.toString(),
+                "dateTimeFrom", LocalDateTime.now().toString(),
+                "dateTimeTo", LocalDateTime.now().toString(),
+                "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_481372C6.uuid().toString(),
+            Map.of("dataRequestId", TestDataIdentifiers.DataRequest.BLV_ZO_CONSENT_FREE.toString(),
+                "uid", Uid.CHE101000001.name(),
+                "eartagNumber", "123456",
+                "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_A28B7CDE.uuid().toString(),
+            Map.of("dataRequestId", TestDataIdentifiers.DataRequest.BLV_ZO_CONSENT_FREE.toString(),
+                "eartagNumber", "123456",
+                "recipientUid", "CHE123456789")),
+        Arguments.of(
+            TestUserEnum.CONSUMER_BLV_1,
+            DataProduct.UUID_9C9D82E8.uuid().toString(),
+            Map.of("dataRequestId", TestDataIdentifiers.DataRequest.BLV_ZO_CONSENT_FREE.toString(),
+                "eartagNumber", "123456",
+                "recipientUid", "CHE123456789")),
         // BLW Acontrol Data Products
         Arguments.of(
             TestUserEnum.CONSUMER_BIO_SUISSE,

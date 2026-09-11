@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Defines reusable message templates keyed to a notification event type.
  *
- * @CommentLastReviewed 2026-05-18
+ * @CommentLastReviewed 2026-09-02
  */
 @Entity
 @Table(name = "notification_template",
@@ -52,21 +53,26 @@ public class NotificationTemplateEntity extends AuditableEntity {
 
   @Column(name = "email_subject")
   @JdbcTypeCode(SqlTypes.JSON)
+  @Valid
   private TranslationPersistenceDto emailSubject;
 
   @Column(name = "email_text")
   @JdbcTypeCode(SqlTypes.JSON)
+  @Valid
   private TranslationPersistenceDto emailText;
 
   @Column(name = "webapp_title")
   @JdbcTypeCode(SqlTypes.JSON)
+  @Valid
   private TranslationPersistenceDto webappTitle;
 
   @Column(name = "webapp_text")
   @JdbcTypeCode(SqlTypes.JSON)
+  @Valid
   private TranslationPersistenceDto webappText;
 
   @Column(name = "mobile_text")
   @JdbcTypeCode(SqlTypes.JSON)
+  @Valid
   private TranslationPersistenceDto mobileText;
 }

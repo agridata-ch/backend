@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ import org.hibernate.type.SqlTypes;
  * Defines the persistence representation of a data source system. It models a concrete technical
  * system operated by a data provider and acts as the grouping entity for related data products.
  *
- * @CommentLastReviewed 2026-02-06
+ * @CommentLastReviewed 2026-09-02
  */
 
 @Entity
@@ -57,9 +58,11 @@ public class DataSourceSystemEntity extends AuditableEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "name")
+  @Valid
   private TranslationPersistenceDto name;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "legal_basis", nullable = false)
+  @Valid
   private TranslationPersistenceDto legalBasis;
 }

@@ -59,7 +59,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 /**
  * Provides endpoints for creating, updating, and querying data requests. It orchestrates validation and delegates processing to services.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-09-02
  */
 
 @Slf4j
@@ -125,14 +125,16 @@ public class DataRequestController {
   }
 
   @GET
-  @ApiSubset({DATA_PROVIDER})
+  @ApiSubset({WEB_APP, DATA_PROVIDER})
   @Path(PATH_V1 + "/{id}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequest",
-      description = "Retrieves the consent requests of a specific data request. Accessible to the provider who owns the data request."
+      description = "Retrieves the consent requests of a specific data request. "
+          + "Accessible to the provider who owns the data request and to the consumer who owns the data request."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({PROVIDER_ROLE})
+  @RolesAllowed({PROVIDER_ROLE, CONSUMER_ROLE})
+  @EnableActingRoleHolder
   public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequest(
       @PathParam("id") UUID dataRequestId,
       @Parameter(
@@ -142,13 +144,34 @@ public class DataRequestController {
       )
       @QueryParam("lastModifiedFrom") @DefaultValue("1970-01-01T00:00:00") @Valid LocalDateTime lastModifiedFrom,
       @QueryParam("page") @DefaultValue("0") @Min(0) int page,
-      @QueryParam("size") @DefaultValue("100") @Min(1) @Max(1000) int size) {
+      @QueryParam("size") @DefaultValue("100") @Min(1) @Max(1000) int size,
+      @Parameter(
+          name = "sortBy",
+          description = "Field names to sort by. Ascending by default; prefix with - for descending. "
+              + "Defaults to -modifiedAt."
+      )
+      @QueryParam("sortBy") List<String> sortBy,
+      @QueryParam("searchTerm") String searchTerm) {
 
-    var resourceQueryDto = ResourceQueryDto.builder().sortParams(List.of("-modifiedAt")).page(page).size(size).build();
-    return consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
-        resourceQueryDto,
-        dataRequestId,
-        lastModifiedFrom);
+    var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-modifiedAt") : sortBy;
+    var resourceQueryDto = ResourceQueryDto.builder()
+        .page(page)
+        .size(size)
+        .sortParams(sortParams)
+        .searchTerm(searchTerm)
+        .build();
+
+    return switch (actingRoleHolder.getRole()) {
+      case PROVIDER -> consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
+          resourceQueryDto,
+          dataRequestId,
+          lastModifiedFrom);
+      case CONSUMER -> consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndLastModifiedFrom(
+          resourceQueryDto,
+          dataRequestId,
+          lastModifiedFrom);
+      default -> throw new ForbiddenException();
+    };
   }
 
   @GET

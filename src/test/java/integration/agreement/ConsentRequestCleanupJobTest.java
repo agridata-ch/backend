@@ -1,6 +1,6 @@
 package integration.agreement;
 
-import static ch.agridata.agreement.job.ConsentRequestCleanupJob.USER_ID_SCHEDULED_CLEANUP_JOB;
+import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
@@ -41,7 +41,7 @@ class ConsentRequestCleanupJobTest {
         .getResultList();
 
     assertThat(rows)
-        .hasSize(7)
+        .hasSize(8)
         .allSatisfy(row -> {
           assertThat(row[0]).isInstanceOf(UUID.class);
           assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination));
@@ -60,7 +60,8 @@ class ConsentRequestCleanupJobTest {
         auditLogTestUtils.getLatestAuditLogEntry(3),
         auditLogTestUtils.getLatestAuditLogEntry(4),
         auditLogTestUtils.getLatestAuditLogEntry(5),
-        auditLogTestUtils.getLatestAuditLogEntry(6)
+        auditLogTestUtils.getLatestAuditLogEntry(6),
+        auditLogTestUtils.getLatestAuditLogEntry(7)
     );
 
     assertThat(latestLogs)
@@ -72,7 +73,7 @@ class ConsentRequestCleanupJobTest {
         .toList())
         .containsExactlyInAnyOrderElementsOf(affectedIds);
 
-    assertThat(auditLogTestUtils.getLatestAuditLogEntry(7)).isNull();
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry(8)).isNull();
   }
 
   private void assertTerminationAuditEntry(AuditLogEntity log) {

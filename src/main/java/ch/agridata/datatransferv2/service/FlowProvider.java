@@ -39,6 +39,9 @@ public class FlowProvider {
 
   public FlowWithProductProviderConfiguration getFlowByProduct(UUID productId) {
     var productProviderConfiguration = dataProductApi.getProviderConfigurationById(productId);
+    if (productProviderConfiguration.restClientIdentifierCode() == null) {
+      throw new IllegalStateException("Product " + productId + " has no rest client configured and cannot be transferred");
+    }
     var flowEnum = FlowEnum.valueOf(productProviderConfiguration.flowCode());
 
     Flowable flowable = switch (flowEnum) {

@@ -9,6 +9,7 @@ import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,11 +56,51 @@ class EnsureValidDataRequestTaskTest {
         .hasMessageContaining("No active data request found");
   }
 
+  @Test
+  void givenValidSuppliedDataRequestId_whenApply_thenIdsAreNarrowedToSuppliedId() {
+    var context = createContext(Map.of("dataRequestId", DATA_REQUEST_ID_2.toString()));
+
+    when(dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(CONSUMER_UID, PRODUCT_ID))
+        .thenReturn(List.of(DATA_REQUEST_ID_1, DATA_REQUEST_ID_2));
+
+    var result = task.apply(context);
+
+    assertThat(result.getValidDataRequestIds()).containsExactly(DATA_REQUEST_ID_2);
+  }
+
+  @Test
+  void givenForeignSuppliedDataRequestId_whenApply_thenConsentNotGrantedExceptionIsThrown() {
+    var context = createContext(Map.of("dataRequestId", UUID.randomUUID().toString()));
+
+    when(dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(CONSUMER_UID, PRODUCT_ID))
+        .thenReturn(List.of(DATA_REQUEST_ID_1, DATA_REQUEST_ID_2));
+
+    assertThatThrownBy(() -> task.apply(context))
+        .isInstanceOf(ConsentNotGrantedException.class)
+        .hasMessageContaining("No valid data request found");
+  }
+
+  @Test
+  void givenMalformedSuppliedDataRequestId_whenApply_thenIllegalArgumentExceptionIsThrown() {
+    var context = createContext(Map.of("dataRequestId", "not-a-uuid"));
+
+    when(dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(CONSUMER_UID, PRODUCT_ID))
+        .thenReturn(List.of(DATA_REQUEST_ID_1));
+
+    assertThatThrownBy(() -> task.apply(context))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
   private AgridataContext createContext() {
+    return createContext(Map.of());
+  }
+
+  private AgridataContext createContext(Map<String, String> requestParameters) {
     return AgridataContext.builder()
         .productId(PRODUCT_ID)
         .flowEnum(FlowEnum.UID_BASED_PRE_VALIDATION)
         .consumerUid(CONSUMER_UID)
+        .requestParameters(requestParameters)
         .build();
   }
 }

@@ -1,10 +1,12 @@
 package ch.agridata.datatransferv2.service.task;
 
+import static ch.agridata.datatransferv2.service.AgridataContext.DATA_REQUEST_ID_PARAMETER;
+
 import ch.agridata.agreement.api.DataRequestApi;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Verifies that the consumer has an active data request that includes the requested product.
  * A data request must be active and contain the productId in its product list.
+ * If the consumer supplied a dataRequestId parameter, it must be one of those data requests
+ * (trust boundary: a consumer must not attach consent requests to foreign data requests);
+ * the narrowing to that id happens in {@link AgridataContext#getValidDataRequestIds()}.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-08-31
  */
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -30,18 +35,30 @@ public class EnsureValidDataRequestTask implements UnaryOperator<AgridataContext
 
     log.debug("Checking data requests for consumerUid={}, productId={}", consumerUid, productId);
 
-    List<UUID> validDataRequestIds =
-        dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(consumerUid, productId);
+    var activeDataRequestIds = dataRequestApi.getActiveDataRequestIdsForConsumerAndProduct(consumerUid, productId);
 
-    if (validDataRequestIds.isEmpty()) {
-      log.warn("No valid data request found for consumerUid={}, productId={}",
-          consumerUid, productId);
+    if (activeDataRequestIds.isEmpty()) {
+      log.warn("No active data request found for consumerUid={}, productId={}", consumerUid, productId);
       throw new ConsentNotGrantedException("No active data request found for the requested product");
     }
 
+    var requestedDataRequestId = Optional.ofNullable(context.getRequestParameters().get(DATA_REQUEST_ID_PARAMETER))
+        .map(UUID::fromString);
+    var validDataRequestIds = requestedDataRequestId
+        .map(requested -> activeDataRequestIds.stream().filter(requested::equals).toList())
+        .orElse(activeDataRequestIds);
+
+    if (validDataRequestIds.isEmpty()) {
+      log.warn("No valid data request found for consumerUid={}, productId={}, requestedDataRequestId={}",
+          consumerUid,
+          productId,
+          requestedDataRequestId);
+      throw new ConsentNotGrantedException("No valid data request found for the requested product");
+    }
+
     context.setValidDataRequestIds(validDataRequestIds);
-    log.debug("Found {} valid data request(s) for productId={}",
-        validDataRequestIds.size(), productId);
+
+    log.debug("Found {} valid data request(s) for productId={}", validDataRequestIds.size(), productId);
 
     return context;
   }

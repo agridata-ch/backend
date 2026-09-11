@@ -40,11 +40,6 @@ quarkus:
     category:
       ch.agridata.common.filters:
         level: WARN
-  oidc-client:
-    agis-api:
-      token-path: http://localhost:8051/agate/token
-    acontrol-api:
-      token-path: http://localhost:8051/agate/token
   rest-client:
     uid-register:
       url: http://localhost:8051/uid-register/findByUid

@@ -40,8 +40,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +59,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  * the status of data products. Additionally, it provides operations for uploading, retrieving and deleting documents. The controller
  * supports role-based access control and different functionalities for users with admin and provider roles.
  *
- * @CommentLastReviewed 2026-07-10
+ * @CommentLastReviewed 2026-09-09
  */
 
 @Path(PATH)
@@ -321,16 +319,8 @@ public class DataProductControllerV2 {
     };
     return RestResponse.ResponseBuilder
         .ok(document.content(), MediaType.APPLICATION_OCTET_STREAM_TYPE)
-        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(document.fileName()))
+        .header(HttpHeaders.CONTENT_DISPOSITION, DataProductDocumentService.contentDisposition(document.fileName()))
         .build();
-  }
-
-  private static String contentDisposition(String fileName) {
-    // ASCII fallback for older clients
-    var asciiFallback = fileName.replaceAll("[^\\x20-\\x7E]", "_").replace("\"", "");
-    // RFC 5987 UTF-8 form for everything else
-    var encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
-    return "attachment; filename=\"" + asciiFallback + "\"; filename*=UTF-8''" + encoded;
   }
 
   @DELETE

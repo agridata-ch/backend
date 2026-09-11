@@ -277,7 +277,7 @@
             </fo:block>
 
             <fo:block xsl:use-attribute-sets="body-text">
-                Der im Antrag definierte Titel des Datenanbieters
+                Es gilt der im Antrag definierte Titel des Datenbezügers
             </fo:block>
 
             <fo:block xsl:use-attribute-sets="section-heading">
