@@ -1,3 +1,9 @@
+## [1.17.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.14...v1.17.0-rc.15) (2026-09-11)
+
+### Features
+
+* **agreement:** Add burPresent-Field to data request ([05ee3db](https://github.com/agridata-ch/backend/commit/05ee3db59914b452512101ecdbeb561f6eb52128)), closes [DIGIB2-617](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-617)
+
 ## [1.17.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.17.0-rc.13...v1.17.0-rc.14) (2026-09-10)
 
 ### Features
