@@ -1,3 +1,9 @@
+## [1.17.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.17.0...v1.17.1-rc.1) (2026-09-14)
+
+### Bug Fixes
+
+* **product:** Tighten data product validation ([21fefd1](https://github.com/agridata-ch/backend/commit/21fefd1dea62ed62356bc38347e5cedfbcbe02de)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
 ## [1.17.0](https://github.com/agridata-ch/backend/compare/v1.16.0...v1.17.0) (2026-09-11)
 
 ### Features
