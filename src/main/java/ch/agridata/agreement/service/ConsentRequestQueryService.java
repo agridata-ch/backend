@@ -10,6 +10,7 @@ import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
+import ch.agridata.agreement.dto.ConsentRequestStatusSummaryDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewRepository;
@@ -27,7 +28,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -78,24 +81,30 @@ public class ConsentRequestQueryService {
   }
 
   @RolesAllowed(ADMIN_ROLE)
-  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndProducer(UUID dataRequestId,
-                                                                                          String ktIdP,
-                                                                                          String producerAgateLoginId) {
+  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestAndProducer(
+      UUID dataRequestId,
+      String ktIdP,
+      String producerAgateLoginId
+  ) {
     var authorizedUids = userApi.getAuthorizedUids(ktIdP, producerAgateLoginId);
     var existingConsentRequests = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUids(
         dataRequestId,
-        authorizedUids.stream().map(UidDto::uid).toList());
+        authorizedUids.stream().map(UidDto::uid).toList()
+    );
 
     return merge(existingConsentRequests, authorizedUids);
   }
 
   @RolesAllowed(CONSUMER_ROLE)
-  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(UUID dataRequestId,
-                                                                                                           String ktIdP,
-                                                                                                           String producerAgateLoginId) {
+  public List<ConsentRequestConsumerViewV2Dto> getConsentRequestsOfDataRequestOfCurrentConsumerAndProducer(
+      UUID dataRequestId,
+      String ktIdP,
+      String producerAgateLoginId
+  ) {
     var dataRequest = dataRequestRepository.findByIdAndDataConsumerUid(
         dataRequestId,
-        identity.getUidOrElseThrow());
+        identity.getUidOrElseThrow()
+    );
 
     if (dataRequest.isEmpty()) {
       return new ArrayList<>();
@@ -104,7 +113,8 @@ public class ConsentRequestQueryService {
     var authorizedUids = userApi.getAuthorizedUids(ktIdP, producerAgateLoginId);
     var existingConsentRequests = consentRequestRepository.findUidBasedByDataRequestIdAndDataProducerUids(
         dataRequestId,
-        authorizedUids.stream().map(UidDto::uid).toList());
+        authorizedUids.stream().map(UidDto::uid).toList()
+    );
 
     return merge(existingConsentRequests, authorizedUids);
   }
@@ -120,14 +130,16 @@ public class ConsentRequestQueryService {
   public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
       ResourceQueryDto resourceQueryDto,
       UUID dataRequestId,
-      LocalDateTime lastModifiedFrom) {
+      LocalDateTime lastModifiedFrom
+  ) {
     if (!dataRequestQueryService.isAssignedToCurrentProvider(dataRequestId)) {
       throw new NotFoundException(dataRequestId.toString());
     }
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom);
+        lastModifiedFrom
+    );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
   }
@@ -136,40 +148,76 @@ public class ConsentRequestQueryService {
   public PageResponseDto<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerAndLastModifiedFrom(
       ResourceQueryDto resourceQueryDto,
       UUID dataRequestId,
-      LocalDateTime lastModifiedFrom) {
+      LocalDateTime lastModifiedFrom
+  ) {
     if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
       throw new NotFoundException(dataRequestId.toString());
     }
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom);
+        lastModifiedFrom
+    );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
   }
 
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(List<UUID> dataRequestIds,
-                                                                                                        List<String> producerUids) {
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+      List<UUID> dataRequestIds,
+      List<String> producerUids
+  ) {
     return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerUids(dataRequestIds, producerUids).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
 
-  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(List<UUID> dataRequestIds,
-                                                                                                        List<String> producerBurs) {
+  public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+      List<UUID> dataRequestIds,
+      List<String> producerBurs
+  ) {
     return consentRequestFundamentalViewRepository.findGrantedByDataRequestIdsAndDataProducerBurs(dataRequestIds, producerBurs).stream()
         .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
         .toList();
   }
 
+  @RolesAllowed(CONSUMER_ROLE)
+  public ConsentRequestStatusSummaryDto getConsentRequestStatusSummaryOfDataRequestOfCurrentConsumer(UUID dataRequestId) {
+    if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    var uidCounts = consentRequestFundamentalViewRepository.countUidBasedByDataRequestIdGroupedByState(dataRequestId);
+    var burCounts = consentRequestFundamentalViewRepository.countBurBasedByDataRequestIdGroupedByState(dataRequestId);
+
+    return ConsentRequestStatusSummaryDto.builder()
+        .uid(toStateCountsDto(uidCounts))
+        .bur(burCounts.isEmpty() ? null : toStateCountsDto(burCounts))
+        .build();
+  }
+
+  private @NonNull ConsentRequestStatusSummaryDto.StateCountsDto toStateCountsDto(Map<ConsentRequestEntity.StateEnum, Long> counts) {
+    return new ConsentRequestStatusSummaryDto.StateCountsDto(
+        sumStates(counts, ConsentRequestEntity.StateEnum.values()),
+        sumStates(counts, ConsentRequestEntity.StateEnum.OPENED),
+        sumStates(counts, ConsentRequestEntity.StateEnum.GRANTED, ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED),
+        sumStates(counts, ConsentRequestEntity.StateEnum.DECLINED)
+    );
+  }
+
+  private long sumStates(Map<ConsentRequestEntity.StateEnum, Long> counts, ConsentRequestEntity.StateEnum... states) {
+    return Arrays.stream(states).mapToLong(state -> counts.getOrDefault(state, 0L)).sum();
+  }
+
   private ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity) {
-    return consentRequestMapper.toConsentRequestProducerViewDto(entity,
-        dataRequestEnrichmentService.toEnrichedDto(entity.getDataRequest()));
+    return consentRequestMapper.toConsentRequestProducerViewDto(
+        entity,
+        dataRequestEnrichmentService.toEnrichedDto(entity.getDataRequest())
+    );
   }
 
   private List<ConsentRequestConsumerViewV2Dto> merge(
       @NonNull List<ConsentRequestEntity> existingConsentRequests,
-      @NonNull List<UidDto> authorizedUids) {
+      @NonNull List<UidDto> authorizedUids
+  ) {
 
     return authorizedUids.stream()
         .map(uidDto -> existingConsentRequests.stream()

@@ -9,6 +9,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
+import ch.agridata.agreement.dto.ConsentRequestStatusSummaryDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
@@ -69,7 +70,8 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
     name = "Data Requests",
     description = "Provides access to data requests for consumers and admins. "
         + "Consumers can create, update, submit, and retrieve their own data requests, "
-        + "while admins have full access to all data requests and their associated consent requests.")
+        + "while admins have full access to all data requests and their associated consent requests."
+)
 @RunOnVirtualThread
 public class DataRequestController {
 
@@ -151,7 +153,8 @@ public class DataRequestController {
               + "Defaults to -modifiedAt."
       )
       @QueryParam("sortBy") List<String> sortBy,
-      @QueryParam("searchTerm") String searchTerm) {
+      @QueryParam("searchTerm") String searchTerm
+  ) {
 
     var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-modifiedAt") : sortBy;
     var resourceQueryDto = ResourceQueryDto.builder()
@@ -165,11 +168,13 @@ public class DataRequestController {
       case PROVIDER -> consentRequestQueryService.getConsentRequestsOfDataRequestAndCurrentProviderAndLastModifiedFrom(
           resourceQueryDto,
           dataRequestId,
-          lastModifiedFrom);
+          lastModifiedFrom
+      );
       case CONSUMER -> consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndLastModifiedFrom(
           resourceQueryDto,
           dataRequestId,
-          lastModifiedFrom);
+          lastModifiedFrom
+      );
       default -> throw new ForbiddenException();
     };
   }
@@ -331,4 +336,17 @@ public class DataRequestController {
     };
   }
 
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/consent-requests/status-summary")
+  @Operation(
+      operationId = "getConsentRequestStatusSummaryOfDataRequest",
+      description = "Retrieves KPI counts (total/open/granted/declined) of consent requests for a data request, "
+          + "broken down by UID/BUR mode. Accessible to the consumer who owns the data request."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  public ConsentRequestStatusSummaryDto getConsentRequestStatusSummaryOfDataRequest(@PathParam("id") UUID dataRequestId) {
+    return consentRequestQueryService.getConsentRequestStatusSummaryOfDataRequestOfCurrentConsumer(dataRequestId);
+  }
 }
