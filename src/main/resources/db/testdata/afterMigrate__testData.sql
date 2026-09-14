@@ -114,9 +114,9 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     INSERT INTO consent_request (id, archived, created_at, modified_at, data_producer_uid, data_producer_bur, state_code, data_request_id, request_date, last_state_change_date, uid_bur_relation_since, uid_bur_relation_until) VALUES
     -- Data Request: 3da3a459-d3c2-48af-b8d0-02bc95146468
     ('07813a3a-7b8d-4b68-847b-f34ce7037397'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('1d2025b5-424b-489d-a3c1-30464661f723'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910003', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, '2004-05-08 14:25:00'::timestamp, NULL::timestamp),
+    ('1d2025b5-424b-489d-a3c1-30464661f723'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910003', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, '2004-05-08 14:25:00'::timestamp, NULL::timestamp),
     ('94e4f8e3-70b1-43ae-bdfa-78b27f86958e'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
-    ('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
+    ('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, '2025-07-03 08:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
 
     -- Data Request: 81ae8571-9497-413a-99c5-237e72621ca7
     ('2643cbd7-8077-4378-8c47-27d2b31dd554'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'DECLINED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-01-25 13:20:15'::timestamp, '2025-01-30 09:35:00'::timestamp, NULL::timestamp, NULL::timestamp),
@@ -139,10 +139,10 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- Data Request: 218bca06-e792-4855-bcd9-e3559cea3d18
     ('1f954fad-f355-46b6-973a-e98813206e7c'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('cf212412-b1e5-4e9c-a963-b50e26b00632'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910002', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
-    ('3d30f8b7-6be3-487f-ba13-4ad52ca1ef05'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910003', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
+    ('cf212412-b1e5-4e9c-a963-b50e26b00632'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910002', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
+    ('3d30f8b7-6be3-487f-ba13-4ad52ca1ef05'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910003', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
     ('fc19eb4e-b576-4900-8df7-c510f59fc526'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('7d7f5e00-785a-4bbe-9904-28256fc516ca'::uuid, false, NOW(), NOW(), 'CHE103000001', '99930004', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
+    ('7d7f5e00-785a-4bbe-9904-28256fc516ca'::uuid, false, NOW(), NOW(), 'CHE103000001', 'A99930004', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-18 12:42:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
     ('13c7d008-ae5b-4774-aea7-8b6d90208d5f'::uuid, false, NOW(), NOW(), 'ZZZ100000006', null, 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
     ('66ae53a3-a685-4c1f-afa7-792b4e8d1513'::uuid, false, NOW(), NOW(), 'ZZZ100000006', 'Z10000205', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
     ('cc57ec61-a62c-4161-814c-0433a2df27b5'::uuid, false, NOW(), NOW(), 'ZZZ100000006', 'Z10000210', 'GRANTED', '218bca06-e792-4855-bcd9-e3559cea3d18'::uuid, '2026-02-18 12:12:12'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
@@ -164,14 +164,14 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- Data Request: 9b013372-a0cc-4193-928f-129c9402f415
     ('b0cc1e17-038d-4a29-9cbc-901b2abe8aef'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', '9b013372-a0cc-4193-928f-129c9402f415'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('367b1e87-87a1-489e-8dac-32b7443f03b2'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910002', 'GRANTED', '9b013372-a0cc-4193-928f-129c9402f415'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
+    ('367b1e87-87a1-489e-8dac-32b7443f03b2'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910002', 'GRANTED', '9b013372-a0cc-4193-928f-129c9402f415'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
 
     -- Data Request: dc7dbc72-084c-451f-aaf9-7db7561d157d
     ('d937a706-6946-4dde-83a9-e8160ee5dcaf'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('42a3e19e-f7aa-4676-a93f-0edd5c9f0636'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910002', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
-    ('f177b62b-6a68-4d00-9e80-369b5aea5aa5'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910003', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
+    ('42a3e19e-f7aa-4676-a93f-0edd5c9f0636'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910002', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
+    ('f177b62b-6a68-4d00-9e80-369b5aea5aa5'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910003', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
     ('ad96d0f0-ed86-41fc-aa8a-8eaa563e4bbf'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('b4fde21a-f9ba-4849-b100-3b1e5b58b79d'::uuid, false, NOW(), NOW(), 'CHE103000001', '99930004', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
+    ('b4fde21a-f9ba-4849-b100-3b1e5b58b79d'::uuid, false, NOW(), NOW(), 'CHE103000001', 'A99930004', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2021-05-08 08:25:00'::timestamp, NULL::timestamp),
     ('961a5264-caf3-4103-9170-89242f906d20'::uuid, false, NOW(), NOW(), 'ZZZ100000006', null, 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
     ('6b5e07b3-0db9-404e-a312-1643b7ddba47'::uuid, false, NOW(), NOW(), 'ZZZ100000006', 'Z10000205', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
     ('a6314bd1-c8f1-46ec-b2f8-0ea1544c9193'::uuid, false, NOW(), NOW(), 'ZZZ100000006', 'Z10000210', 'GRANTED', 'dc7dbc72-084c-451f-aaf9-7db7561d157d'::uuid, '2026-02-25 14:30:00'::timestamp, '2026-02-25 15:00:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
@@ -193,13 +193,13 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
 
     -- Data Request: 552ade2e-c5e3-4054-ab78-e64cd4c221c0
     ('64525ccf-a4cb-4ec7-b147-91e71a5f356a'::uuid, false, NOW(), NOW(), 'CHE101000001',null,'GRANTED', '552ade2e-c5e3-4054-ab78-e64cd4c221c0'::uuid, '2026-05-26 14:33:06'::timestamp,'2026-05-26 14:48:50'::timestamp,NULL::timestamp,NULL::timestamp),
-    ('ef044657-5060-4f06-aa8f-79baedba45a7'::uuid, false, NOW(), NOW(), 'CHE101000001','99910002','GRANTED', '552ade2e-c5e3-4054-ab78-e64cd4c221c0'::uuid, '2026-05-26 14:33:06'::timestamp,'2026-05-26 14:48:50'::timestamp,'2000-01-01 00:00:00'::timestamp,NULL::timestamp),
+    ('ef044657-5060-4f06-aa8f-79baedba45a7'::uuid, false, NOW(), NOW(), 'CHE101000001','A99910002','GRANTED', '552ade2e-c5e3-4054-ab78-e64cd4c221c0'::uuid, '2026-05-26 14:33:06'::timestamp,'2026-05-26 14:48:50'::timestamp,'2000-01-01 00:00:00'::timestamp,NULL::timestamp),
 
     -- Data Request: 67c6d36b-f4a9-43f8-becb-a040ccd41996
     ('529ae225-9326-4730-a7f9-376c96ed027a'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('030ce625-3fe7-4360-893e-9a95356cd222'::uuid, false, NOW(), NOW(), 'CHE101000001', '99910002', 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
+    ('030ce625-3fe7-4360-893e-9a95356cd222'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910002', 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp),
     ('f2225be9-f6e7-49d7-a7a6-048368e54e82'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('b3bc0b2b-9101-4dcf-bae6-3d654a34dffd'::uuid, false, NOW(), NOW(), 'CHE103000002', '99930005', 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp);
+    ('b3bc0b2b-9101-4dcf-bae6-3d654a34dffd'::uuid, false, NOW(), NOW(), 'CHE103000002', 'A99930005', 'LEGALLY_PERMITTED', '67c6d36b-f4a9-43f8-becb-a040ccd41996'::uuid, '2026-06-15 12:00:00'::timestamp, '2026-06-15 12:30:00'::timestamp, '2000-01-01 00:00:00'::timestamp, NULL::timestamp);
 
     -- ===============================================
     -- set migrated_from_maf for BioSuisse consent-requests

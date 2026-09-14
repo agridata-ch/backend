@@ -56,7 +56,7 @@ class ConsentRequestCleanupEndpointTest {
     List<Object[]> rows = em.createNativeQuery("""
             SELECT id, uid_bur_relation_until, modified_by
             FROM consent_request
-            WHERE data_producer_bur IN ('99910002', '99910003')
+            WHERE data_producer_bur IN ('A99910002', 'A99910003')
             ORDER BY id
             """)
         .getResultList();

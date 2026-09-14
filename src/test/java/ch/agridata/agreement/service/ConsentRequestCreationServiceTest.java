@@ -56,8 +56,8 @@ class ConsentRequestCreationServiceTest {
   static final String UID1 = "uid1";
   static final String UID2 = "uid2";
   static final String UID3 = "uid3";
-  static final String BUR1 = "99910001";
-  static final String BUR2 = "99910002";
+  static final String BUR1 = "A99910001";
+  static final String BUR2 = "A99910002";
   static final LocalDateTime RELATION_SINCE_1 = LocalDateTime.of(2020, 1, 1, 0, 0);
   static final LocalDateTime RELATION_SINCE_2 = LocalDateTime.of(2021, 6, 30, 12, 0);
   @Spy

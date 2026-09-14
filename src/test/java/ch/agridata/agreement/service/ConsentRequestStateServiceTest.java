@@ -46,7 +46,7 @@ class ConsentRequestStateServiceTest {
 
   private static final UUID DATA_REQUEST_ID = UUID.randomUUID();
   private static final String UID = "CHE123456789";
-  private static final String BUR1 = "99910001";
+  private static final String BUR1 = "A99910001";
   private static final Instant FIXED_NOW = Instant.parse("2026-08-19T10:00:00Z");
   private static final LocalDateTime FIXED_LOCAL_NOW = LocalDateTime.ofInstant(FIXED_NOW, ZoneOffset.UTC);
 
