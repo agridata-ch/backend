@@ -1,3 +1,9 @@
+## [1.17.1-rc.2](https://github.com/agridata-ch/backend/compare/v1.17.1-rc.1...v1.17.1-rc.2) (2026-09-14)
+
+### Bug Fixes
+
+* **test-data:** prefix test burs with 'A' ([5883523](https://github.com/agridata-ch/backend/commit/5883523e0574794e19afed8c9ef2d6a22a3d50e6))
+
 ## [1.17.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.17.0...v1.17.1-rc.1) (2026-09-14)
 
 ### Bug Fixes
