@@ -44,8 +44,8 @@ class BurAuthorizationServiceTest {
 
   private static final String UID = "CHE101000001";
   private static final String OTHER_UID = "CHE999999999";
-  private static final String PARENT_BER = "99910002";
-  private static final String CHILD_BER = "99910003";
+  private static final String PARENT_BER = "A99910002";
+  private static final String CHILD_BER = "A99910003";
 
   private static final OffsetDateTime VALID_SINCE = offsetDateTime(8, 23, 31);
   private static final OffsetDateTime LATER = offsetDateTime(9, 0, 0);
@@ -152,8 +152,8 @@ class BurAuthorizationServiceTest {
 
   @Test
   void givenMultiLevelChain_whenGetAuthorizedBurs_thenLatestDateAlongChainWins() {
-    var grandParent = farm("99910001").farmToPersonRelations(farmToPersonRelations(relation(UID, VALID_SINCE)));
-    var parent = farm(PARENT_BER).farmParentRelations(parentRelations(farmRelation("99910001", LATER)));
+    var grandParent = farm("A99910001").farmToPersonRelations(farmToPersonRelations(relation(UID, VALID_SINCE)));
+    var parent = farm(PARENT_BER).farmParentRelations(parentRelations(farmRelation("A99910001", LATER)));
     var child = farm(CHILD_BER).farmParentRelations(parentRelations(farmRelation(PARENT_BER, VALID_SINCE)));
     when(agisApi.fetchRegisterDataForUid(UID)).thenReturn(response(List.of(grandParent, parent, child), null));
 

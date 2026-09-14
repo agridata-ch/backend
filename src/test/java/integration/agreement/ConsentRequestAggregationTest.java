@@ -196,7 +196,7 @@ class ConsentRequestAggregationTest {
                 (id, archived, created_at, modified_at, data_producer_uid, data_producer_bur, state_code, data_request_id)
               VALUES
                 (:uidBasedId, false, NOW(), NOW(), :uid, NULL, 'LEGALLY_PERMITTED', :dataRequestId),
-                (:burBasedId, false, NOW(), NOW(), :uid, '99910099', 'LEGALLY_PERMITTED', :dataRequestId)
+                (:burBasedId, false, NOW(), NOW(), :uid, 'A99910099', 'LEGALLY_PERMITTED', :dataRequestId)
               """)
           .setParameter("uidBasedId", UUID.randomUUID())
           .setParameter("burBasedId", UUID.randomUUID())

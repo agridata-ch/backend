@@ -42,12 +42,12 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenFarmsWithDistinctBers_whenIndexFarmsByBer_thenAllIndexed() {
-    var farmA = farm("99910002");
-    var farmB = farm("99910003");
+    var farmA = farm("A99910002");
+    var farmB = farm("A99910003");
 
     var result = AgisPersonFarmTreeUtils.indexFarmsByBer(List.of(farmA, farmB));
 
-    assertThat(result).containsOnly(Map.entry("99910002", farmA), Map.entry("99910003", farmB));
+    assertThat(result).containsOnly(Map.entry("A99910002", farmA), Map.entry("A99910003", farmB));
   }
 
   @Test
@@ -59,47 +59,47 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenTwoFarmsWithSameBer_whenIndexFarmsByBer_thenFirstOneWins() {
-    var first = farm("99910002");
-    var second = farm("99910002");
+    var first = farm("A99910002");
+    var second = farm("A99910002");
 
     var result = AgisPersonFarmTreeUtils.indexFarmsByBer(List.of(first, second));
 
-    assertThat(result.get("99910002")).isSameAs(first);
+    assertThat(result.get("A99910002")).isSameAs(first);
   }
 
   // indexParentsByChildBer
 
   @Test
   void givenFarmWithFarmParentRelation_whenIndexParentsByChildBer_thenChildMapsToParent() {
-    var child = farm("99910003").farmParentRelations(parentRelations(farmRelation("99910002", VALID_SINCE)));
+    var child = farm("A99910003").farmParentRelations(parentRelations(farmRelation("A99910002", VALID_SINCE)));
 
     var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(child));
 
-    assertThat(result).containsEntry("99910003", new BurParentLinkDto("99910002", LOCAL_VALID_SINCE));
+    assertThat(result).containsEntry("A99910003", new BurParentLinkDto("A99910002", LOCAL_VALID_SINCE));
   }
 
   @Test
   void givenFarmWithFarmChildRelation_whenIndexParentsByChildBer_thenChildMapsToParent() {
-    var parent = farm("99910002").farmChildRelations(childRelations(farmRelation("99910003", VALID_SINCE)));
+    var parent = farm("A99910002").farmChildRelations(childRelations(farmRelation("A99910003", VALID_SINCE)));
 
     var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(parent));
 
-    assertThat(result).containsEntry("99910003", new BurParentLinkDto("99910002", LOCAL_VALID_SINCE));
+    assertThat(result).containsEntry("A99910003", new BurParentLinkDto("A99910002", LOCAL_VALID_SINCE));
   }
 
   @Test
   void givenBothDirectionsForSameEdge_whenIndexParentsByChildBer_thenResultHasSingleConsistentEntry() {
-    var parent = farm("99910002").farmChildRelations(childRelations(farmRelation("99910003", VALID_SINCE)));
-    var child = farm("99910003").farmParentRelations(parentRelations(farmRelation("99910002", VALID_SINCE)));
+    var parent = farm("A99910002").farmChildRelations(childRelations(farmRelation("A99910003", VALID_SINCE)));
+    var child = farm("A99910003").farmParentRelations(parentRelations(farmRelation("A99910002", VALID_SINCE)));
 
     var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(parent, child));
 
-    assertThat(result).containsEntry("99910003", new BurParentLinkDto("99910002", LOCAL_VALID_SINCE));
+    assertThat(result).containsEntry("A99910003", new BurParentLinkDto("A99910002", LOCAL_VALID_SINCE));
   }
 
   @Test
   void givenRelationWithNullBer_whenIndexParentsByChildBer_thenRelationIsSkipped() {
-    var child = farm("99910003").farmParentRelations(parentRelations(farmRelation(null, VALID_SINCE)));
+    var child = farm("A99910003").farmParentRelations(parentRelations(farmRelation(null, VALID_SINCE)));
 
     var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(child));
 
@@ -108,7 +108,7 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenRelationWithNullValidSince_whenIndexParentsByChildBer_thenRelationIsSkipped() {
-    var child = farm("99910003").farmParentRelations(parentRelations(farmRelation("99910002", null)));
+    var child = farm("A99910003").farmParentRelations(parentRelations(farmRelation("A99910002", null)));
 
     var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(child));
 
@@ -117,7 +117,7 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenFarmWithoutParentOrChildRelations_whenIndexParentsByChildBer_thenResultIsEmpty() {
-    var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(farm("99910002")));
+    var result = AgisPersonFarmTreeUtils.indexParentsByChildBer(List.of(farm("A99910002")));
 
     assertThat(result).isEmpty();
   }
@@ -126,11 +126,11 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenPersonToFarmRelationForTargetUid_whenIndexPersonToFarmValidSince_thenIndexedByBer() {
-    var person = person(UID, farmRelation("99910002", VALID_SINCE));
+    var person = person(UID, farmRelation("A99910002", VALID_SINCE));
 
     var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
-    assertThat(result).containsEntry("99910002", LOCAL_VALID_SINCE);
+    assertThat(result).containsEntry("A99910002", LOCAL_VALID_SINCE);
   }
 
   @Test
@@ -144,7 +144,7 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenRelationWithNullBerOrValidSince_whenIndexPersonToFarmValidSince_thenRelationIsSkipped() {
-    var person = person(UID, farmRelation(null, VALID_SINCE), farmRelation("99910002", null));
+    var person = person(UID, farmRelation(null, VALID_SINCE), farmRelation("A99910002", null));
 
     var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
@@ -153,19 +153,19 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenTwoRelationsForSameBer_whenIndexPersonToFarmValidSince_thenFirstOneWins() {
-    var person = person(UID, farmRelation("99910002", VALID_SINCE), farmRelation("99910002", OTHER_VALID_SINCE));
+    var person = person(UID, farmRelation("A99910002", VALID_SINCE), farmRelation("A99910002", OTHER_VALID_SINCE));
 
     var result = AgisPersonFarmTreeUtils.indexPersonToFarmValidSince(person);
 
-    assertThat(result).containsEntry("99910002", LOCAL_VALID_SINCE);
+    assertThat(result).containsEntry("A99910002", LOCAL_VALID_SINCE);
   }
 
   // getRelevantFarms
 
   @Test
   void givenRelevantFarms_whenGetRelevantFarms_thenAllReturned() {
-    var farmA = farm("99910002");
-    var farmB = farm("99910003");
+    var farmA = farm("A99910002");
+    var farmB = farm("A99910003");
     var tree = personFarmTree(List.of(farmA, farmB), List.of());
 
     assertThat(AgisPersonFarmTreeUtils.getRelevantFarms(tree)).containsExactly(farmA, farmB);
@@ -180,26 +180,26 @@ class AgisPersonFarmTreeUtilsTest {
 
   @Test
   void givenFarmToPersonRelationForUid_whenGetFarmToPersonRelationValidSince_thenValidSinceReturned() {
-    var farm = farm("99910002").farmToPersonRelations(farmToPersonRelations(relation(UID, VALID_SINCE)));
+    var farm = farm("A99910002").farmToPersonRelations(farmToPersonRelations(relation(UID, VALID_SINCE)));
 
     assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).contains(LOCAL_VALID_SINCE);
   }
 
   @Test
   void givenFarmToPersonRelationForOtherUid_whenGetFarmToPersonRelationValidSince_thenEmpty() {
-    var farm = farm("99910002").farmToPersonRelations(farmToPersonRelations(relation(OTHER_UID, VALID_SINCE)));
+    var farm = farm("A99910002").farmToPersonRelations(farmToPersonRelations(relation(OTHER_UID, VALID_SINCE)));
 
     assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).isEmpty();
   }
 
   @Test
   void givenFarmWithoutFarmToPersonRelations_whenGetFarmToPersonRelationValidSince_thenEmpty() {
-    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm("99910002"), UID, null)).isEmpty();
+    assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm("A99910002"), UID, null)).isEmpty();
   }
 
   @Test
   void givenRelationWithNullValidSince_whenGetFarmToPersonRelationValidSince_thenSkippedInFavorOfNextMatch() {
-    var farm = farm("99910002")
+    var farm = farm("A99910002")
         .farmToPersonRelations(farmToPersonRelations(relation(UID, null), relation(UID, VALID_SINCE)));
 
     assertThat(AgisPersonFarmTreeUtils.getFarmToPersonRelationValidSince(farm, UID, null)).contains(LOCAL_VALID_SINCE);

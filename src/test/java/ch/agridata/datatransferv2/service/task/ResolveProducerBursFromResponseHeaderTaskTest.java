@@ -23,8 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ResolveProducerBursFromResponseHeaderTaskTest {
 
   private static final String BUR_HEADER = "AGRIDATA-RESPONSE-PRODUCER-BURS";
-  private static final String BUR_1 = "99910002";
-  private static final String BUR_2 = "99910003";
+  private static final String BUR_1 = "A99910002";
+  private static final String BUR_2 = "A99910003";
 
   @InjectMocks
   ResolveProducerBursFromResponseHeaderTask task;
@@ -82,13 +82,13 @@ class ResolveProducerBursFromResponseHeaderTaskTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-      "999/10002",
-      "999-10002",
-      "999 10002",
-      "[\"99910002\"]",
-      "\"99910002\"",
-      "99910002;99910003",
-      "99910002,999-10003"
+      "A999/10002",
+      "A999-10002",
+      "A999 10002",
+      "[\"A99910002\"]",
+      "\"A99910002\"",
+      "A99910002;99910003",
+      "A99910002,999-10003"
   })
   void givenNonAlphanumericValueInBursHeader_whenApply_thenExternalWebServiceExceptionThrown(String invalidValue) {
     var context = createContext(Map.of(BUR_HEADER, invalidValue));

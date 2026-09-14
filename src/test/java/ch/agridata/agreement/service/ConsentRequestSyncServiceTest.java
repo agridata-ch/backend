@@ -32,8 +32,8 @@ class ConsentRequestSyncServiceTest {
 
   private static final UUID DATA_REQUEST_ID = UUID.randomUUID();
   private static final String UID = "CHE123456789";
-  private static final String BUR1 = "99910001";
-  private static final String BUR2 = "99910002";
+  private static final String BUR1 = "A99910001";
+  private static final String BUR2 = "A99910002";
 
   @Mock
   private ConsentRequestRepository consentRequestRepository;
