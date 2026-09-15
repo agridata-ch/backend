@@ -1,3 +1,9 @@
+## [1.18.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.17.1-rc.2...v1.18.0-rc.1) (2026-09-15)
+
+### Features
+
+* **data-request:** Add data requests kpi summary ([5883012](https://github.com/agridata-ch/backend/commit/588301236198495b89ea9633c99f53fbb4fb6eb3)), closes [DIGIB2-1683](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1683)
+
 ## [1.17.1-rc.2](https://github.com/agridata-ch/backend/compare/v1.17.1-rc.1...v1.17.1-rc.2) (2026-09-14)
 
 ### Bug Fixes
