@@ -1,3 +1,9 @@
+## [1.18.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.2...v1.18.0-rc.3) (2026-09-16)
+
+### Features
+
+* **product:** Add column based filtering ([07040e0](https://github.com/agridata-ch/backend/commit/07040e0f0b72caa7ccda05cc9ffc173c09fb1398)), closes [DIGIB2-1673](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1673)
+
 ## [1.18.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.1...v1.18.0-rc.2) (2026-09-16)
 
 ### Features
