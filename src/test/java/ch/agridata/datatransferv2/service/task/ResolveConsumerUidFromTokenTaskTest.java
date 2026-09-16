@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-import ch.agridata.common.exceptions.UidMissingException;
+import ch.agridata.common.exceptions.UidClaimMissingException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.datatransferv2.service.AgridataContext;
 import ch.agridata.datatransferv2.service.FlowEnum;
@@ -37,13 +37,13 @@ class ResolveConsumerUidFromTokenTaskTest {
   }
 
   @Test
-  void givenTokenWithoutUid_whenApply_thenUidMissingExceptionIsThrown() {
+  void givenTokenWithoutUid_whenApply_thenUidClaimMissingExceptionIsThrown() {
     var context = createContext();
     when(agridataSecurityIdentity.getUidOrElseThrow())
-        .thenThrow(new UidMissingException("User has no UID assigned"));
+        .thenThrow(new UidClaimMissingException("User has no UID assigned"));
 
     assertThatThrownBy(() -> task.apply(context))
-        .isInstanceOf(UidMissingException.class)
+        .isInstanceOf(UidClaimMissingException.class)
         .hasMessageContaining("no UID assigned");
   }
 

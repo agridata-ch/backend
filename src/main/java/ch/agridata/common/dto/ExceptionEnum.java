@@ -8,6 +8,7 @@ package ch.agridata.common.dto;
 public enum ExceptionEnum {
   GENERIC,
   UID_MISSING,
+  UID_CLAIM_MISSING,
   EXTERNAL_SERVICE_ERROR,
   CONSENT_NOT_GRANTED,
   OTP_INVALID,

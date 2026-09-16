@@ -16,6 +16,7 @@ import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
 import ch.agridata.common.exceptions.OtpLockedException;
 import ch.agridata.common.exceptions.OtpResendCooldownException;
+import ch.agridata.common.exceptions.UidClaimMissingException;
 import ch.agridata.common.exceptions.UidMissingException;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -303,6 +304,22 @@ class ExceptionHandlerTest {
     assertThat(dto.type()).isEqualTo(ExceptionEnum.UID_MISSING);
     assertThat(dto.requestId()).isEqualTo("test-request-id");
     assertThat(dto.debugMessage()).isEqualTo(debug ? "uid missing for producer" : null);
+  }
+
+  @ParameterizedTest(name = "handleUidClaimMissingException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleUidClaimMissingException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    UidClaimMissingException ex = new UidClaimMissingException("uid claim missing for consumer");
+
+    Response response = exceptionHandler.handleUidClaimMissingException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.FORBIDDEN.getStatusCode());
+    assertThat(dto.message()).isEqualTo("An error occurred");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.UID_CLAIM_MISSING);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "uid claim missing for consumer" : null);
   }
 
   @ParameterizedTest(name = "handleExternalWebServiceException, debug={0}")
