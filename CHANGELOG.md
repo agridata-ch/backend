@@ -1,3 +1,9 @@
+## [1.18.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.3...v1.18.0-rc.4) (2026-09-16)
+
+### Features
+
+* **data-request:** Increase size limits for DataRequestPurposeDto and TranslationDto fields ([f716d08](https://github.com/agridata-ch/backend/commit/f716d089ea29384f5c4d3d5f8f591d02cb414513)), closes [DIGIB2-1706](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1706)
+
 ## [1.18.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.2...v1.18.0-rc.3) (2026-09-16)
 
 ### Features
