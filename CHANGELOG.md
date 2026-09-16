@@ -1,3 +1,9 @@
+## [1.18.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.1...v1.18.0-rc.2) (2026-09-16)
+
+### Features
+
+* **data-request:** Validate country codes in the backend ([1bc8c1c](https://github.com/agridata-ch/backend/commit/1bc8c1ce75af348e424d256e19ed0e679d376ff7)), closes [DIGIB2-1707](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1707)
+
 ## [1.18.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.17.1-rc.2...v1.18.0-rc.1) (2026-09-15)
 
 ### Features
