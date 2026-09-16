@@ -1,6 +1,7 @@
 package ch.agridata.agreement.dto;
 
 import ch.agridata.common.utils.ValidationSchemaGenerator;
+import ch.agridata.common.validation.IsoCountryCode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -80,12 +81,13 @@ public record DataRequestUpdateDto(
     String dataConsumerStreet,
 
     @Schema(
-        description = "2 letter country code of the data consumer",
+        description = "2 letter valid ISO 3166-1 alpha-2 country code of the data consumer",
         examples = {"CH"}
     )
     @Size(max = 2)
     @Size(min = 2, max = 2, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
+    @IsoCountryCode
     String dataConsumerCountry,
 
     @Schema(
