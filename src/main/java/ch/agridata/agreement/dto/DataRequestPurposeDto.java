@@ -16,24 +16,24 @@ public record DataRequestPurposeDto(
     @Schema(
         examples = {"Bewertung der Bodenqualität"}
     )
-    @Size(max = 1000)
-    @Size(min = 10, max = 1000, groups = ValidationSchemaGenerator.Submit.class)
+    @Size(max = 5000)
+    @Size(min = 10, max = 5000, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     String de,
 
     @Schema(
         examples = {"Évaluation de la qualité du sol"}
     )
-    @Size(max = 1000)
-    @Size(min = 10, max = 1000, groups = ValidationSchemaGenerator.Submit.class)
+    @Size(max = 5000)
+    @Size(min = 10, max = 5000, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     String fr,
 
     @Schema(
         examples = {"Valutazione della qualità del suolo"}
     )
-    @Size(max = 1000)
-    @Size(min = 10, max = 1000, groups = ValidationSchemaGenerator.Submit.class)
+    @Size(max = 5000)
+    @Size(min = 10, max = 5000, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     String it
 ) {

@@ -10,7 +10,10 @@ import lombok.Builder;
  */
 
 @Builder
-public record TranslationDto(@Size(max = 4000) String de, @Size(max = 4000) String fr,
-                             @Size(max = 4000) String it) {
+public record TranslationDto(
+    @Size(max = 4000) String de,
+    @Size(max = 4000) String fr,
+    @Size(max = 4000) String it
+) {
 
 }
