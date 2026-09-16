@@ -13,6 +13,7 @@ import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
 import ch.agridata.common.exceptions.OtpLockedException;
 import ch.agridata.common.exceptions.OtpResendCooldownException;
+import ch.agridata.common.exceptions.UidClaimMissingException;
 import ch.agridata.common.exceptions.UidMissingException;
 import ch.agridata.common.exceptions.UidProviderUnavailableException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -34,7 +35,7 @@ import org.slf4j.MDC;
 /**
  * Handles exceptions throughout the application and returns appropriate HTTP responses with detailed messages.
  *
- * @CommentLastReviewed 2026-05-08
+ * @CommentLastReviewed 2026-09-16
  */
 
 @ApplicationScoped
@@ -97,6 +98,15 @@ public class ExceptionHandler {
     return Response.status(Status.BAD_GATEWAY)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_MISSING))
+        .build();
+  }
+
+  @ServerExceptionMapper(UidClaimMissingException.class)
+  public Response handleUidClaimMissingException(UidClaimMissingException ex) {
+    log.warn("UidClaimMissingException: {}", ex.getMessage(), ex);
+    return Response.status(Status.FORBIDDEN)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_CLAIM_MISSING))
         .build();
   }
 

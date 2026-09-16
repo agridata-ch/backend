@@ -2725,25 +2725,25 @@
           "20154600"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
-          "Testfallgasse 9"
+          "Peter Merian-Strasse 34"
         ],
         "locality": [
-          "Thun"
+          "Basel"
         ],
         "postal_code": [
-          "3600"
+          "4052"
         ],
         "country": [
           "CH"
         ],
         "phoneNumber": [
-          "+4133123456789"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+4179123456789"
+          "+41 12 345 67 89"
         ],
         "uid": "CHE101708094"
       },
@@ -2758,13 +2758,13 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "lea.consumer@blw.admin.ch",
+      "email": "bio_suisse.consumer@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
-      "firstName": "Lea",
+      "firstName": "Emilia",
       "groups": [
       ],
-      "lastName": "Consumer",
+      "lastName": "Bio Suisse",
       "notBefore": 0,
       "realmRoles": [
         "default-roles-agate",
@@ -2781,7 +2781,7 @@
           "900000"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "uid": "CHE110013660"
       },
@@ -2796,7 +2796,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "tim.consumer@blw.admin.ch",
+      "email": "tim.consumer@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Tim",
@@ -2819,13 +2819,25 @@
           "3477588"
         ],
         "locale": [
-          "de"
+          "DE"
+        ],
+        "street": [
+          "Musterweg 2"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ],
         "uid": "CHE403244345"
       },
@@ -2840,7 +2852,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "maria.blv@blw.admin.ch",
+      "email": "maria.consumer@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Maria",
@@ -2863,13 +2875,25 @@
           "3477589"
         ],
         "locale": [
-          "fr"
+          "FR"
+        ],
+        "street": [
+          "Musterweg 2"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3001"
+        ],
+        "country": [
+          "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ],
         "uid": "CHE403244345"
       },
@@ -2884,7 +2908,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "thomas.blv@blw.admin.ch",
+      "email": "thomas.consumer@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Thomas",
@@ -2907,7 +2931,25 @@
           "3477590"
         ],
         "locale": [
-          "it"
+          "IT"
+        ],
+        "street": [
+          "Dorfstrasse 1"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3002"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ],
+        "mobileNumber": [
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -2921,7 +2963,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "sandra.blv@blw.admin.ch",
+      "email": "sandra.consumer@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Sandra",
@@ -2930,7 +2972,8 @@
       "lastName": "BLV",
       "notBefore": 0,
       "realmRoles": [
-        "default-roles-agate"
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger"
       ],
       "requiredActions": [
       ],
@@ -2943,25 +2986,25 @@
           "3477553"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
-          "Nullnummerweg 55"
+          "Schwarzenburgstrasse 165"
         ],
         "locality": [
-          "Schaffhausen"
+          "Bern"
         ],
         "postal_code": [
-          "8200"
+          "3003"
         ],
         "country": [
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ],
         "uid": [
           "CHE113614519"
@@ -2978,10 +3021,10 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "teo.provider@blw.admin.ch",
+      "email": "anna.provider@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
-      "firstName": "Teo",
+      "firstName": "Anna",
       "groups": [
       ],
       "lastName": "Provider",
@@ -3001,25 +3044,25 @@
           "3477586"
         ],
         "locale": [
-          "fr"
+          "FR"
         ],
         "street": [
-          "Nullnummerweg 55"
+          "Schwarzenburgstrasse 165"
         ],
         "locality": [
-          "Schaffhausen"
+          "Bern"
         ],
         "postal_code": [
-          "8200"
+          "3003"
         ],
         "country": [
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ],
         "uid": [
           "CHE113614519"
@@ -3036,10 +3079,10 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "nina.provider@blw.admin.ch",
+      "email": "lena.provider@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
-      "firstName": "Nina",
+      "firstName": "Lena",
       "groups": [
       ],
       "lastName": "Provider",
@@ -3059,13 +3102,13 @@
           "consumer-provider"
         ],
         "locale": [
-          "it"
+          "IT"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ],
         "uid": "CHE113614519"
       },
@@ -3080,7 +3123,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "multi.role@blw.admin.ch",
+      "email": "multi.role@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Test",
@@ -3104,8 +3147,27 @@
           "3477554"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
+        "street": [
+          "Schwarzenburgstrasse 165"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3003"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ],
+        "mobileNumber": [
+          "+41 12 345 67 89"
+        ],
+        "uid": "CHE146680598",
         "adminGlobalID": [
           "p-1234567"
         ]
@@ -3121,10 +3183,10 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "tom.admin@blw.admin.ch",
+      "email": "beat.admin@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
-      "firstName": "Tom",
+      "firstName": "Beat",
       "groups": [
       ],
       "lastName": "Admin",
@@ -3144,8 +3206,27 @@
           "3477555"
         ],
         "locale": [
-          "de"
-        ]
+          "DE"
+        ],
+        "street": [
+          "Schwarzenburgstrasse 165"
+        ],
+        "locality": [
+          "Bern"
+        ],
+        "postal_code": [
+          "3003"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+41 12 345 67 89"
+        ],
+        "mobileNumber": [
+          "+41 12 345 67 89"
+        ],
+        "uid": "CHE146680598"
       },
       "createdTimestamp": 1704813979950,
       "credentials": [
@@ -3158,10 +3239,10 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "sep.support@blw.admin.ch",
+      "email": "chris.support@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
-      "firstName": "Sep",
+      "firstName": "Chris",
       "groups": [
       ],
       "lastName": "Support",
@@ -3181,7 +3262,7 @@
           "000000"
         ],
         "locale": [
-          "de"
+          "DE"
         ]
       },
       "createdTimestamp": 1704813979950,
@@ -3195,7 +3276,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "leo.guest@blw.admin.ch",
+      "email": "leo.guest@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Leo",
@@ -3220,7 +3301,7 @@
           "3477580"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Beispielgasse 42"
@@ -3235,10 +3316,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3252,7 +3333,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-a@blw.admin.ch",
+      "email": "producer-a@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Erika",
@@ -3278,7 +3359,7 @@
           "3477581"
         ],
         "locale": [
-          "fr"
+          "FR"
         ],
         "street": [
           "Hauptstrasse 2"
@@ -3293,10 +3374,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3310,7 +3391,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-b@blw.admin.ch",
+      "email": "producer-b@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Jonas",
@@ -3336,7 +3417,7 @@
           "3477582"
         ],
         "locale": [
-          "it"
+          "IT"
         ],
         "street": [
           "Hauptstrasse 138"
@@ -3351,10 +3432,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3368,7 +3449,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-b-3@blw.admin.ch",
+      "email": "producer-b-3@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Sofia",
@@ -3394,7 +3475,7 @@
           "3477583"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Musterweg 1"
@@ -3409,10 +3490,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3426,7 +3507,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-c@blw.admin.ch",
+      "email": "producer-c@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Max",
@@ -3452,7 +3533,7 @@
           "3477584"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Beispielallee 9"
@@ -3467,10 +3548,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3484,7 +3565,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-d@blw.admin.ch",
+      "email": "producer-d@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Lara",
@@ -3507,7 +3588,7 @@
           "3477585"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Kirchgasse 5"
@@ -3522,10 +3603,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3539,7 +3620,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-e@blw.admin.ch",
+      "email": "producer-e@local.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "firstName": "Nico",
@@ -3548,7 +3629,8 @@
       "lastName": "Demomann",
       "notBefore": 0,
       "realmRoles": [
-        "default-roles-agate"
+        "default-roles-agate",
+        "agridata.ch.Agridata_Einwilliger"
       ],
       "requiredActions": [
       ],
@@ -3564,7 +3646,7 @@
           "producer-agis-tvd-unavailable"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Producergasse 1"
@@ -3579,10 +3661,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3596,7 +3678,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-agis-tvd-unavailable@blw.admin.ch",
+      "email": "producer-agis-tvd-unavailable@local.only.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "groups": [
@@ -3622,7 +3704,7 @@
           "producer-agis-no-uid-tvd-unavailable"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Producergasse 3"
@@ -3637,10 +3719,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3654,7 +3736,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-agis-no-uid-tvd-unavailable@blw.admin.ch",
+      "email": "producer-agis-no-uid-tvd-unavailable@local.only.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "groups": [
@@ -3680,7 +3762,7 @@
           "producer-agis-unavailable-tvd-no-uid"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Procergasse 4"
@@ -3695,10 +3777,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3712,7 +3794,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-agis-unavailable-tvd-no-uid@blw.admin.ch",
+      "email": "producer-agis-unavailable-tvd-no-uid@local.only.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "groups": [
@@ -3738,7 +3820,7 @@
           "producer-both-no-uid"
         ],
         "locale": [
-          "de"
+          "DE"
         ],
         "street": [
           "Producergasse 2"
@@ -3753,10 +3835,10 @@
           "CH"
         ],
         "phoneNumber": [
-          "+41 33 123 45 67"
+          "+41 12 345 67 89"
         ],
         "mobileNumber": [
-          "+41 79 123 45 67"
+          "+41 12 345 67 89"
         ]
       },
       "createdTimestamp": 1753048800000,
@@ -3770,7 +3852,7 @@
       ],
       "disableableCredentialTypes": [
       ],
-      "email": "producer-both-no-uid@blw.admin.ch",
+      "email": "producer-both-no-uid@local.only.agridata.ch",
       "emailVerified": true,
       "enabled": true,
       "groups": [
@@ -3781,6 +3863,95 @@
       "realmRoles": [
         "default-roles-agate",
         "agridata.ch.Agridata_Einwilliger"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "admin-incomplete-attributes",
+      "attributes": {
+        "loginid": [
+          "3477591"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "tom.admin@local.only.agridata.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Tom",
+      "groups": [
+      ],
+      "lastName": "Admin",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Admin"
+      ],
+      "requiredActions": [
+      ],
+      "totp": false
+    },
+    {
+      "username": "consumer-incomplete-attributes",
+      "attributes": {
+        "loginid": [
+          "20154601"
+        ],
+        "street": [
+          "Testfallgasse 9"
+        ],
+        "locality": [
+          "Thun"
+        ],
+        "postal_code": [
+          "3600"
+        ],
+        "country": [
+          "CH"
+        ],
+        "phoneNumber": [
+          "+4133123456789"
+        ],
+        "mobileNumber": [
+          "+4179123456789"
+        ],
+        "uid": [
+          "CHE101708094"
+        ]
+      },
+      "createdTimestamp": 1753048800000,
+      "credentials": [
+        {
+          "createdDate": 1753048800000,
+          "type": "password",
+          "userLabel": "My password",
+          "value": "secret"
+        }
+      ],
+      "disableableCredentialTypes": [
+      ],
+      "email": "lea.consumer@local.only.agridata.ch",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Lea",
+      "groups": [
+      ],
+      "lastName": "Consumer",
+      "notBefore": 0,
+      "realmRoles": [
+        "default-roles-agate",
+        "agridata.ch.Agridata_Datenbezueger"
       ],
       "requiredActions": [
       ],

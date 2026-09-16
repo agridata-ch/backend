@@ -16,133 +16,190 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TestUserEnum {
-  PRODUCER_A("producer-a",
+  PRODUCER_A(
+      "producer-a",
       "Erika",
       "Musterfrau",
       List.of(CHE101000001),
       "3477580",
-      "FLXXA0001"),
-  PRODUCER_B("producer-b",
+      "FLXXA0001"
+  ),
+  PRODUCER_B(
+      "producer-b",
       "Jonas",
       "Testmann",
       List.of(CHE102000001, CHE102000002),
       "3477581",
-      "FLXXB0001"),
-  PRODUCER_B_3("producer-b-3",
+      "FLXXB0001"
+  ),
+  PRODUCER_B_3(
+      "producer-b-3",
       "Sofia",
       "Mustermann",
       List.of(CHE102000002),
       "3477582",
-      "FLXXB0003"),
-  PRODUCER_C("producer-c",
+      "FLXXB0003"
+  ),
+  PRODUCER_C(
+      "producer-c",
       "Max",
       "Mustermann",
       List.of(CHE103000001, CHE103000002),
       "3477583",
-      "FLXXC0001"),
-  PRODUCER_D("producer-d",
+      "FLXXC0001"
+  ),
+  PRODUCER_D(
+      "producer-d",
       "Lara",
       "Beispiel",
       List.of(CHE104000002, ZZZ199984051),
       "3477584",
-      "FLXXD0001"),
-  PRODUCER_E("producer-e",
+      "FLXXD0001"
+  ),
+  PRODUCER_E(
+      "producer-e",
       "Nico",
       "Demomann",
       List.of(ZZZ199984068),
       "3477585",
-      null),
-  PRODUCER_AGIS_TVD_UNAVAILABLE("producer-agis-tvd-unavailable",
+      null
+  ),
+  PRODUCER_AGIS_TVD_UNAVAILABLE(
+      "producer-agis-tvd-unavailable",
       "Test",
       "AgisTvdUnavailable",
       List.of(),
       "producer-agis-tvd-unavailable",
-      "producer-agis-tvd-unavailable"),
-  PRODUCER_AGIS_NO_UID_TVD_UNAVAILABLE("producer-agis-no-uid-tvd-unavailable",
+      "producer-agis-tvd-unavailable"
+  ),
+  PRODUCER_AGIS_NO_UID_TVD_UNAVAILABLE(
+      "producer-agis-no-uid-tvd-unavailable",
       "Test",
       "AgisNoUidTvdUnavailable",
       List.of(),
       "producer-agis-no-uid-tvd-unavailable",
-      "producer-agis-no-uid-tvd-unavailable"),
-  PRODUCER_AGIS_UNAVAILABLE_TVD_NO_UID("producer-agis-unavailable-tvd-no-uid",
+      "producer-agis-no-uid-tvd-unavailable"
+  ),
+  PRODUCER_AGIS_UNAVAILABLE_TVD_NO_UID(
+      "producer-agis-unavailable-tvd-no-uid",
       "Test",
       "AgisUnavailableTvdNoUid",
       List.of(),
       "producer-agis-unavailable-tvd-no-uid",
-      "producer-agis-unavailable-tvd-no-uid"),
-  PRODUCER_BOTH_NO_UID("producer-both-no-uid",
+      "producer-agis-unavailable-tvd-no-uid"
+  ),
+  PRODUCER_BOTH_NO_UID(
+      "producer-both-no-uid",
       "Test",
       "ProducerBothNoUid",
       List.of(),
       "producer-both-no-uid",
-      "producer-both-no-uid"),
-  CONSUMER_BIO_SUISSE("consumer",
-      "Lea",
-      "Consumer",
+      "producer-both-no-uid"
+  ),
+  CONSUMER_BIO_SUISSE(
+      "consumer",
+      "Emilia",
+      "Bio Suisse",
       List.of(),
       "20154600",
-      null),
-  CONSUMER_IP_SUISSE("consumer-ip-suisse",
+      null
+  ),
+  CONSUMER_IP_SUISSE(
+      "consumer-ip-suisse",
       "Tim",
       "Consumer",
       List.of(),
       "900000",
-      null),
-  CONSUMER_BLV_1("consumer-blv-1",
+      null
+  ),
+  CONSUMER_BLV_1(
+      "consumer-blv-1",
       "Maria",
       "BLV",
       List.of(),
       "3477588",
-      null),
-  CONSUMER_BLV_2("consumer-blv-2",
+      null
+  ),
+  CONSUMER_BLV_2(
+      "consumer-blv-2",
       "Thomas",
       "BLV",
       List.of(),
       "3477589",
-      null),
-  CONSUMER_BLV_WITHOUT_UID("consumer-blv-without-uid",
+      null
+  ),
+  CONSUMER_BLV_WITHOUT_UID(
+      "consumer-blv-without-uid",
       "Sandra",
       "BLV",
       List.of(),
       "3477590",
-      null),
-  PROVIDER_1("provider-1",
-      "Teo",
+      null
+  ),
+  PROVIDER_1(
+      "provider-1",
+      "Anna",
       "Provider",
       List.of(),
       "3477553",
-      null),
+      null
+  ),
   PROVIDER_2(
       "provider-2",
-      "Nina",
+      "Lena",
       "Provider",
       List.of(),
       "3477586",
-      null),
-  CONSUMER_PROVIDER("consumer-provider",
+      null
+  ),
+  CONSUMER_PROVIDER(
+      "consumer-provider",
       "Test",
       "MultiRoleConsumerProvider",
       List.of(),
       "consumer-provider",
-      null),
-  SUPPORT("support",
+      null
+  ),
+  SUPPORT(
+      "support",
       "Sep",
       "Support",
       List.of(),
       "3477555",
-      null),
-  GUEST("guest",
+      null
+  ),
+  GUEST(
+      "guest",
       "Leo",
       "Guest",
       List.of(),
       null,
-      null),
-  ADMIN("admin",
-      "Tom",
+      null
+  ),
+  ADMIN(
+      "admin",
+      "Beat",
       "Admin",
       List.of(),
       "3477554",
-      null);
+      null
+  ),
+  ADMIN_INCOMPLETE_ATTRIBUTES(
+      "admin-incomplete-attributes",
+      "Tom",
+      "Admin",
+      List.of(),
+      "3477591",
+      null
+  ),
+  CONSUMER_INCOMPLETE_ATTRIBUTES(
+      "consumer-incomplete-attributes",
+      "Lea",
+      "Consumer",
+      List.of(),
+      "20154601",
+      null
+  );
 
   private final String username;
   private final String givenName;
