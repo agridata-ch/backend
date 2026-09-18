@@ -1,3 +1,9 @@
+## [1.18.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.4...v1.18.0-rc.5) (2026-09-18)
+
+### Features
+
+* **agreement:** make dataRequest consumerDisplayText multilangual ([0177fc2](https://github.com/agridata-ch/backend/commit/0177fc27d4987c074674788f12576d4214cb7705)), closes [DIGIB2-1698](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1698)
+
 ## [1.18.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.3...v1.18.0-rc.4) (2026-09-16)
 
 ### Features
