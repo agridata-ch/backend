@@ -11,15 +11,19 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Represents the complete definition of a data request. It includes identifiers, metadata, consumer details, requested products, and
- * contact information.
+ * Legacy (v1) view of a data request that exposes the data consumer display name as a single string rather than a multilingual object. It
+ * exists to keep the deprecated consent request producer endpoints backward compatible for partners that have not yet adopted the
+ * multilingual display name.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-09-18
+ * @deprecated Superseded by {@link DataRequestDto} with its multilingual display name; kept only for the deprecated consent request
+ *     producer endpoints until partners adopt the multilingual field.
  */
 
 @Schema(description = "Data transfer object representing a data request")
 @Builder
-public record DataRequestDto(
+@Deprecated(since = "1.18")
+public record DataRequestV1Dto(
 
     @Schema(
         description = "Unique identifier of the data request",
@@ -88,9 +92,11 @@ public record DataRequestDto(
     String dataConsumerLegalName,
 
     @Schema(
-        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer"
+        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer",
+        examples = {"Bio Suisse"}
     )
-    DataRequestConsumerDisplayNameDto dataConsumerDisplayName,
+    @Size(max = 255)
+    String dataConsumerDisplayName,
 
     @Schema(
         description = "Uid of the data consumer",

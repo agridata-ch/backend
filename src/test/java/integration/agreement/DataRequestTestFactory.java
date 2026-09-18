@@ -9,6 +9,7 @@ import ch.agridata.agreement.controller.ContractRevisionController;
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.DataRequestAdvantageDto;
+import ch.agridata.agreement.dto.DataRequestConsumerDisplayNameDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
@@ -60,7 +61,7 @@ public class DataRequestTestFactory {
         .description(
             new DataRequestDescriptionDto("Beschreibung lang genug", "Description assez longue",
                 "Descrizione abbastanza lunga"))
-        .dataConsumerDisplayName("Test Consumer");
+        .dataConsumerDisplayName(new DataRequestConsumerDisplayNameDto("Test Consumer", "Consommateur test", "Consumatore test"));
   }
 
   @SneakyThrows

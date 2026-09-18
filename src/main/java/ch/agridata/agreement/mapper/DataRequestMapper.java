@@ -1,6 +1,7 @@
 package ch.agridata.agreement.mapper;
 
 import ch.agridata.agreement.dto.DataProviderReferenceDto;
+import ch.agridata.agreement.dto.DataRequestConsumerDisplayNameDto;
 import ch.agridata.agreement.dto.DataRequestDescriptionDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestPurposeDto;
@@ -104,6 +105,8 @@ public interface DataRequestMapper {
   TranslationPersistenceDto toTranslationPersistenceDto(DataRequestTitleDto translationDto);
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataRequestPurposeDto translationDto);
+
+  TranslationPersistenceDto toTranslationPersistenceDto(DataRequestConsumerDisplayNameDto translationDto);
 
   DataRequestTitleDto toDataRequestTitleDto(TranslationPersistenceDto translationDto);
 

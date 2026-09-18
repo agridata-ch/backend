@@ -45,13 +45,11 @@ public record DataRequestUpdateDto(
     DataRequestPurposeDto purpose,
 
     @Schema(
-        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer",
-        examples = {"Bio Suisse"}
+        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer"
     )
-    @Size(max = 255)
-    @Size(min = 3, max = 255, groups = ValidationSchemaGenerator.Submit.class)
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
-    String dataConsumerDisplayName,
+    @Valid
+    DataRequestConsumerDisplayNameDto dataConsumerDisplayName,
 
     @Schema(
         description = "City of the data consumer",
