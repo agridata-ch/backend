@@ -79,8 +79,10 @@ public class DataRequestEntity extends AuditableEntity {
   @Enumerated(EnumType.STRING)
   private DataRequestStateEnum stateCode;
 
-  @Column(name = "data_consumer_display_name", length = 255)
-  private String dataConsumerDisplayName;
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "data_consumer_display_name")
+  @Valid
+  private TranslationPersistenceDto dataConsumerDisplayName;
 
   @Column(name = "data_consumer_legal_name", length = 255)
   private String dataConsumerLegalName;

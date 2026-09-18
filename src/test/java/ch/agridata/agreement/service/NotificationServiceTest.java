@@ -62,7 +62,7 @@ class NotificationServiceTest {
     return DataRequestEntity.builder()
         .id(id)
         .title(new TranslationPersistenceDto("Titel DE", "Titre FR", "Titolo IT"))
-        .dataConsumerDisplayName("Bio Suisse")
+        .dataConsumerDisplayName(new TranslationPersistenceDto("Bio Suisse", "Bio Suisse", "Bio Suisse"))
         .dataConsumerUid("CHE123456789")
         .build();
   }
@@ -100,7 +100,9 @@ class NotificationServiceTest {
         .containsEntry("dataRequestTitleDe", "Titel DE")
         .containsEntry("dataRequestTitleFr", "Titre FR")
         .containsEntry("dataRequestTitleIt", "Titolo IT")
-        .containsEntry("dataConsumer", "Bio Suisse")
+        .containsEntry("dataConsumerDe", "Bio Suisse")
+        .containsEntry("dataConsumerFr", "Bio Suisse")
+        .containsEntry("dataConsumerIt", "Bio Suisse")
         .containsEntry("dataRequestUrl", "https://agridata.ch/admin/" + id);
   }
 
@@ -124,7 +126,9 @@ class NotificationServiceTest {
         .containsEntry("dataRequestTitleDe", "Titel DE")
         .containsEntry("dataRequestTitleFr", "Titre FR")
         .containsEntry("dataRequestTitleIt", "Titolo IT")
-        .containsEntry("dataConsumer", "Bio Suisse");
+        .containsEntry("dataConsumerDe", "Bio Suisse")
+        .containsEntry("dataConsumerFr", "Bio Suisse")
+        .containsEntry("dataConsumerIt", "Bio Suisse");
   }
 
   // ── queueDataRequestToBeSignedByProvider ──────────────────────────────────
@@ -163,7 +167,9 @@ class NotificationServiceTest {
         .containsEntry("dataRequestTitleDe", "Titel DE")
         .containsEntry("dataRequestTitleFr", "Titre FR")
         .containsEntry("dataRequestTitleIt", "Titolo IT")
-        .containsEntry("dataConsumer", "Bio Suisse")
+        .containsEntry("dataConsumerDe", "Bio Suisse")
+        .containsEntry("dataConsumerFr", "Bio Suisse")
+        .containsEntry("dataConsumerIt", "Bio Suisse")
         .containsEntry("dataRequestUrl", "https://agridata.ch/provider/" + id);
   }
 
@@ -279,7 +285,9 @@ class NotificationServiceTest {
         .containsEntry("dataRequestTitleDe", "Titel DE")
         .containsEntry("dataRequestTitleFr", "Titre FR")
         .containsEntry("dataRequestTitleIt", "Titolo IT")
-        .containsEntry("dataConsumer", "Bio Suisse")
+        .containsEntry("dataConsumerDe", "Bio Suisse")
+        .containsEntry("dataConsumerFr", "Bio Suisse")
+        .containsEntry("dataConsumerIt", "Bio Suisse")
         .containsEntry("dataRequestUrl", "https://agridata.ch/consumer/" + id);
   }
 

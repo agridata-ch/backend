@@ -153,7 +153,9 @@ public class NotificationService {
     placeholders.put("dataRequestTitleDe", request.getTitle().de());
     placeholders.put("dataRequestTitleFr", request.getTitle().fr());
     placeholders.put("dataRequestTitleIt", request.getTitle().it());
-    placeholders.put("dataConsumer", request.getDataConsumerDisplayName());
+    placeholders.put("dataConsumerDe", request.getDataConsumerDisplayName().de());
+    placeholders.put("dataConsumerFr", request.getDataConsumerDisplayName().fr());
+    placeholders.put("dataConsumerIt", request.getDataConsumerDisplayName().it());
     placeholders.put("dataRequestHumanFriendlyId", request.getHumanFriendlyId());
     placeholders.put("dataRequestUrl", roleSpecificDataRequestUrl);
     return placeholders;

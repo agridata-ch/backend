@@ -70,9 +70,9 @@ public record ConsentRequestProducerViewDto(
 
     @Schema(
         description = "Details of the underlying data request",
-        implementation = DataRequestDto.class
+        implementation = DataRequestV1Dto.class
     )
-    DataRequestDto dataRequest
+    DataRequestV1Dto dataRequest
 
 ) {
 }

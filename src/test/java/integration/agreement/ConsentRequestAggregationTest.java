@@ -184,7 +184,8 @@ class ConsentRequestAggregationTest {
                                     'fr', 'Surveillance légalement prescrite de la santé animale et prévention des épizooties.',
                                     'it', 'Sorveglianza legalmente prescritta della salute degli animali e prevenzione delle epizoozie.'),
                  'ACTIVE', '2025-03-11 09:27:55'::timestamp, 'Bern', 'CH',
-                 'Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV', 'BLV', 'Schwarzenburgstrasse 155', '3003',
+                 'Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV',
+                 jsonb_build_object('de', 'BLV', 'fr', 'OSAV', 'it', 'USAV'), 'Schwarzenburgstrasse 155', '3003',
                  '+41 58 463 30 33', 'info@blv.admin.ch', 'Alle Tierhalter',
                  'COLLECTIVE_SIGNATURE', 'COLLECTIVE_SIGNATURE', '[]'::jsonb)
               """)

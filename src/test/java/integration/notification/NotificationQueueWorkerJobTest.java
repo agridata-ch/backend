@@ -81,7 +81,9 @@ class NotificationQueueWorkerJobTest {
             "dataRequestTitleDe", "Testantrag DE",
             "dataRequestTitleFr", "Demande de test FR",
             "dataRequestTitleIt", "Richiesta di test IT",
-            "dataConsumer", "Test AG",
+            "dataConsumerDe", "Test AG",
+            "dataConsumerFr", "Test AG",
+            "dataConsumerIt", "Test AG",
             "dataRequestHumanFriendlyId", "A1B2"
         ),
         TargetTypeCodeEnum.DATA_REQUEST,

@@ -22,10 +22,9 @@ public record DataRequestSummaryDto(
     UUID id,
 
     @Schema(
-        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer",
-        examples = {"Bio Suisse"}
+        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer"
     )
-    String dataConsumerDisplayName,
+    DataRequestConsumerDisplayNameDto dataConsumerDisplayName,
 
     @Schema(
         description = "Base64-encoded logo of the data consumer",
