@@ -4,8 +4,8 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.DEFAULT_AGATE_ROLES;
 import static ch.agridata.user.service.ImpersonationHeaderFilter.IMPERSONATION_HEADER;
-import static integration.testutils.TestUserEnum.ADMIN;
-import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.ADMIN_INCOMPLETE_ATTRIBUTES;
+import static integration.testutils.TestUserEnum.CONSUMER_INCOMPLETE_ATTRIBUTES;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static integration.testutils.TestUserEnum.SUPPORT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +36,7 @@ class UserUpdateTest {
 
   @Test
   void givenAdminWithoutSomeAttributesSet_testUpdateUserData_isSuccessful() {
-    var actualResult = AuthTestUtils.requestAs(ADMIN).when()
+    var actualResult = AuthTestUtils.requestAs(ADMIN_INCOMPLETE_ATTRIBUTES).when()
         .get(UserController.PATH + "/user-info").then().statusCode(200)
         .extract()
         .as(new TypeRef<UserInfoDto>() {
@@ -47,12 +47,12 @@ class UserUpdateTest {
         .ignoringCollectionOrder()
         .ignoringFields("userId", "lastLoginDate", "enforceAgbAcceptanceFrom")
         .isEqualTo(UserInfoDto.builder()
-            .agateLoginId(ADMIN.getAgateLoginId())
+            .agateLoginId(ADMIN_INCOMPLETE_ATTRIBUTES.getAgateLoginId())
             .ktIdP(null)
             .uid(null)
             .givenName("Tom")
             .familyName("Admin")
-            .email("tom.admin@blw.admin.ch")
+            .email("tom.admin@local.only.agridata.ch")
             .phoneNumber(null)
             .mobileNumber(null)
             .addressStreet(null)
@@ -75,7 +75,7 @@ class UserUpdateTest {
 
   @Test
   void givenConsumerWithoutSomeAttributesSet_testUpdateUserData_isSuccessful() {
-    var actualResult = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+    var actualResult = AuthTestUtils.requestAs(CONSUMER_INCOMPLETE_ATTRIBUTES).when()
         .get(UserController.PATH + "/user-info").then().statusCode(200)
         .extract()
         .as(new TypeRef<UserInfoDto>() {
@@ -86,12 +86,12 @@ class UserUpdateTest {
         .ignoringCollectionOrder()
         .ignoringFields("userId", "lastLoginDate", "enforceAgbAcceptanceFrom")
         .isEqualTo(UserInfoDto.builder()
-            .agateLoginId(CONSUMER_BIO_SUISSE.getAgateLoginId())
+            .agateLoginId(CONSUMER_INCOMPLETE_ATTRIBUTES.getAgateLoginId())
             .ktIdP(null)
             .uid("CHE101708094")
             .givenName("Lea")
             .familyName("Consumer")
-            .email("lea.consumer@blw.admin.ch")
+            .email("lea.consumer@local.only.agridata.ch")
             .phoneNumber("+4133123456789")
             .mobileNumber("+4179123456789")
             .addressStreet("Testfallgasse 9")

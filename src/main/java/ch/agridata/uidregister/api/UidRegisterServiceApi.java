@@ -15,7 +15,7 @@ public interface UidRegisterServiceApi {
    * Retrieves the organisation details for the current user based on their UID.
    *
    * @return UidRegisterOrganisationDto containing the organisation details.
-   * @throws UidMissingException         if the current user does not have a valid UID.
+   * @throws UidClaimMissingException    if the current user does not have a valid UID.
    * @throws NotFoundException           if no organisation is found for the current user's UID.
    * @throws ExternalWebServiceException if there is an error communicating with the UID web service.
    */

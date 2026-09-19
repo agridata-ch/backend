@@ -3,7 +3,7 @@ package ch.agridata.common.security;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
-import ch.agridata.common.exceptions.UidMissingException;
+import ch.agridata.common.exceptions.UidClaimMissingException;
 import com.fasterxml.uuid.Generators;
 import io.quarkus.oidc.UserInfo;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -20,7 +20,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 /**
  * Provides access to user-related security claims. It extracts identifiers, email, and UID from security tokens and ensures validity.
  *
- * @CommentLastReviewed 2026-06-25
+ * @CommentLastReviewed 2026-09-16
  */
 
 @RequestScoped
@@ -118,7 +118,7 @@ public class AgridataSecurityIdentity {
   }
 
   public String getUidOrElseThrow() {
-    return getUid().orElseThrow(() -> new UidMissingException("User with agateLoginId " + getAgateLoginId() + " has no UID assigned"));
+    return getUid().orElseThrow(() -> new UidClaimMissingException("User with agateLoginId " + getAgateLoginId() + " has no UID assigned"));
   }
 
   public Optional<String> getUid() {
