@@ -31,7 +31,7 @@ public interface AgisRegisterApiRestClient {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @Path("register-data/1/register")
+  @Path("register-data/2/register")
   @CacheResult(cacheName = "agis-api-register")
   AgisPersonFarmResponseType register(AgisRegisterDataRequest request);
 
