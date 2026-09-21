@@ -1,3 +1,18 @@
+## [1.18.0](https://github.com/agridata-ch/backend/compare/v1.17.0...v1.18.0) (2026-09-21)
+
+### Features
+
+* **agreement:** make dataRequest consumerDisplayText multilangual ([0177fc2](https://github.com/agridata-ch/backend/commit/0177fc27d4987c074674788f12576d4214cb7705)), closes [DIGIB2-1698](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1698)
+* **data-request:** Add data requests kpi summary ([5883012](https://github.com/agridata-ch/backend/commit/588301236198495b89ea9633c99f53fbb4fb6eb3)), closes [DIGIB2-1683](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1683)
+* **data-request:** Increase size limits for DataRequestPurposeDto and TranslationDto fields ([f716d08](https://github.com/agridata-ch/backend/commit/f716d089ea29384f5c4d3d5f8f591d02cb414513)), closes [DIGIB2-1706](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1706)
+* **data-request:** Validate country codes in the backend ([1bc8c1c](https://github.com/agridata-ch/backend/commit/1bc8c1ce75af348e424d256e19ed0e679d376ff7)), closes [DIGIB2-1707](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1707)
+* **product:** Add column based filtering ([07040e0](https://github.com/agridata-ch/backend/commit/07040e0f0b72caa7ccda05cc9ffc173c09fb1398)), closes [DIGIB2-1673](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1673)
+
+### Bug Fixes
+
+* **product:** Tighten data product validation ([21fefd1](https://github.com/agridata-ch/backend/commit/21fefd1dea62ed62356bc38347e5cedfbcbe02de)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+* **test-data:** prefix test burs with 'A' ([5883523](https://github.com/agridata-ch/backend/commit/5883523e0574794e19afed8c9ef2d6a22a3d50e6))
+
 ## [1.18.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.18.0-rc.4...v1.18.0-rc.5) (2026-09-18)
 
 ### Features
