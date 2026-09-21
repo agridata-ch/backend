@@ -138,7 +138,8 @@ public class ConsentRequestQueryService {
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom
+        lastModifiedFrom,
+        false
     );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
@@ -156,7 +157,8 @@ public class ConsentRequestQueryService {
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom
+        lastModifiedFrom,
+        true
     );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);

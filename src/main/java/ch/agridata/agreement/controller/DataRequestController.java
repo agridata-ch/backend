@@ -150,13 +150,13 @@ public class DataRequestController {
       @Parameter(
           name = "sortBy",
           description = "Field names to sort by. Ascending by default; prefix with - for descending. "
-              + "Defaults to -modifiedAt."
+              + "Defaults to -lastModifiedDateTime."
       )
       @QueryParam("sortBy") List<String> sortBy,
       @QueryParam("searchTerm") String searchTerm
   ) {
 
-    var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-modifiedAt") : sortBy;
+    var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-lastModifiedDateTime") : sortBy;
     var resourceQueryDto = ResourceQueryDto.builder()
         .page(page)
         .size(size)

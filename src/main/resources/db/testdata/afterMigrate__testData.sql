@@ -115,6 +115,8 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     -- Data Request: 3da3a459-d3c2-48af-b8d0-02bc95146468
     ('07813a3a-7b8d-4b68-847b-f34ce7037397'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, NULL::timestamp, NULL::timestamp),
     ('1d2025b5-424b-489d-a3c1-30464661f723'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910003', 'DECLINED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, '2004-05-08 14:25:00'::timestamp, NULL::timestamp),
+    -- Terminated UID/BUR relation (uid_bur_relation_until set): must be hidden from the consumer but visible to the provider.
+    ('fe8254e1-57d5-4781-8508-748fbbb4ad08'::uuid, false, NOW(), NOW(), 'CHE101000001', 'A99910006', 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-03-14 10:12:33'::timestamp, '2025-03-20 14:25:00'::timestamp, '2004-05-08 14:25:00'::timestamp, '2020-01-01 00:00:00'::timestamp),
     ('94e4f8e3-70b1-43ae-bdfa-78b27f86958e'::uuid, false, NOW(), NOW(), 'CHE102000001', null, 'OPENED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-02-11 16:48:20'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
     ('f789e5ca-3b26-4ced-bcce-77df72ac06ac'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '3da3a459-d3c2-48af-b8d0-02bc95146468'::uuid, '2025-07-02 08:00:00'::timestamp, '2025-07-03 08:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
 
@@ -125,10 +127,11 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
     ('584c3587-517b-49ef-aaec-cb6e0179f78c'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'OPENED', '81ae8571-9497-413a-99c5-237e72621ca7'::uuid, '2025-06-20 09:15:00'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
 
     -- Data Request: 98a35e61-0162-4986-9e9e-ee5c65f86316
-    ('ef35df35-2051-416a-98ad-47ab35c8a77c'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
-    ('2f8ec662-9fce-417e-9b82-3ed042adb482'::uuid, false, NOW(), NOW(), 'CHE102000002', null, 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('5e439777-8564-4954-9d01-7ebeabf4fc39'::uuid, false, NOW(), NOW(), 'CHE103000001', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp, NULL::timestamp, NULL::timestamp),
-    ('adbc6d5a-331d-4dd9-b80c-ee1945716293'::uuid, false, NOW(), NOW(), 'CHE103000002', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
+    -- Distinct modified_at values (deliberately not in insertion / data_producer_uid order) to test sorting by lastModifiedDateTime.
+    ('ef35df35-2051-416a-98ad-47ab35c8a77c'::uuid, false, NOW(), '2025-08-01 10:00:00'::timestamp, 'CHE101000001', null, 'OPENED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-06-25 11:20:00'::timestamp, NULL::timestamp, NULL::timestamp, NULL::timestamp),
+    ('2f8ec662-9fce-417e-9b82-3ed042adb482'::uuid, false, NOW(), '2025-05-01 10:00:00'::timestamp, 'CHE102000002', null, 'GRANTED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-10 09:00:00'::timestamp, '2025-04-13 11:30:00'::timestamp, NULL::timestamp, NULL::timestamp),
+    ('5e439777-8564-4954-9d01-7ebeabf4fc39'::uuid, false, NOW(), '2025-07-01 10:00:00'::timestamp, 'CHE103000001', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-01-30 10:10:10'::timestamp, '2025-02-02 11:11:11'::timestamp, NULL::timestamp, NULL::timestamp),
+    ('adbc6d5a-331d-4dd9-b80c-ee1945716293'::uuid, false, NOW(), '2025-06-01 10:00:00'::timestamp, 'CHE103000002', null, 'DECLINED', '98a35e61-0162-4986-9e9e-ee5c65f86316'::uuid, '2025-04-25 12:12:12'::timestamp, '2025-04-30 17:00:00'::timestamp, NULL::timestamp, NULL::timestamp),
 
     -- Data Request: 341f558a-781c-4eb5-bab7-c2f39216b9f2
     ('5542ff84-ab93-417a-925a-9c7711a20fff'::uuid, false, NOW(), NOW(), 'CHE101000001', null, 'GRANTED', '341f558a-781c-4eb5-bab7-c2f39216b9f2'::uuid, '2025-04-18 14:30:00'::timestamp, '2025-04-21 10:00:00'::timestamp, NULL::timestamp, NULL::timestamp),

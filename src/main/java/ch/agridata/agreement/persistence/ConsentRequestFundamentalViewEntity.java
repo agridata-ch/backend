@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import org.hibernate.annotations.Formula;
@@ -15,9 +16,10 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SQLRestriction;
 
 /**
- * Read-only projection over {@code consent_request} used to load consents cheaply during data transfers.
+ * Read-only, immutable projection over {@code consent_request} exposing only the columns needed to evaluate consents
+ * cheaply, without the associations of {@link ConsentRequestEntity}.
  *
- * @CommentLastReviewed 2026-08-14
+ * @CommentLastReviewed 2026-09-21
  */
 @Entity
 @Immutable
@@ -42,6 +44,9 @@ public class ConsentRequestFundamentalViewEntity extends AuditableEntity {
   @Column(name = "state_code", nullable = false, length = 50)
   @Enumerated(EnumType.STRING)
   private ConsentRequestEntity.StateEnum stateCode;
+
+  @Column(name = "uid_bur_relation_until")
+  private LocalDateTime uidBurRelationUntil;
 
   @Formula("""
       CASE
