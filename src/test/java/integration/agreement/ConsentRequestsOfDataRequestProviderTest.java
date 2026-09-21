@@ -13,6 +13,7 @@ import integration.testutils.TestDataIdentifiers;
 import integration.testutils.TestDataIdentifiers.ConsentRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -77,6 +78,62 @@ class ConsentRequestsOfDataRequestProviderTest {
 
     assertThat(response.items()).isEmpty();
     assertThat(response.totalItems()).isZero();
+  }
+
+  @Test
+  void givenProvider_whenRequestingWithoutSortBy_thenSortedByLastModifiedDateTimeDescending() {
+    // No sortBy means the controller falls back to "-lastModifiedDateTime" (DataRequestController line 159):
+    // newest lastModifiedDateTime first. IP_SUISSE_01's consent requests carry distinct modified_at values.
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
+        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(response.items())
+        .extracting(ConsentRequestFundamentalViewDto::lastModifiedDateTime)
+        .isSortedAccordingTo(Comparator.reverseOrder());
+    assertThat(response.items())
+        .extracting(ConsentRequestFundamentalViewDto::id)
+        .containsExactly(
+            ConsentRequest.IP_SUISSE_01_CHE101000001.uuid(), // 2025-08-01
+            ConsentRequest.IP_SUISSE_01_CHE103000001.uuid(), // 2025-07-01
+            ConsentRequest.IP_SUISSE_01_CHE103000002.uuid(), // 2025-06-01
+            ConsentRequest.IP_SUISSE_01_CHE102000002.uuid()  // 2025-05-01
+        );
+  }
+
+  @Test
+  void givenProvider_whenSortingByLastModifiedDateTimeAscending_thenOrderedOldestFirst() {
+    // The DTO exposes "lastModifiedDateTime"; sorting by that name must be honoured (DIGIB2-617),
+    // producing the reverse of the default descending order.
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(PROVIDER_1)
+        .queryParam("sortBy", "lastModifiedDateTime")
+        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(response.items())
+        .extracting(ConsentRequestFundamentalViewDto::lastModifiedDateTime)
+        .isSorted();
+    assertThat(response.items())
+        .extracting(ConsentRequestFundamentalViewDto::id)
+        .containsExactly(
+            ConsentRequest.IP_SUISSE_01_CHE102000002.uuid(), // 2025-05-01
+            ConsentRequest.IP_SUISSE_01_CHE103000002.uuid(), // 2025-06-01
+            ConsentRequest.IP_SUISSE_01_CHE103000001.uuid(), // 2025-07-01
+            ConsentRequest.IP_SUISSE_01_CHE101000001.uuid()  // 2025-08-01
+        );
+  }
+
+  @Test
+  void givenProvider_whenSortingByInternalModifiedAtFieldName_thenBadRequest() {
+    // The internal entity field "modifiedAt" is no longer a valid sort key after aligning with the DTO name (DIGIB2-617).
+    AuthTestUtils.requestAs(PROVIDER_1)
+        .queryParam("sortBy", "modifiedAt")
+        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.IP_SUISSE_01 + "/consent-requests")
+        .then().statusCode(400);
   }
 
   @Test

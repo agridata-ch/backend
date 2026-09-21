@@ -47,6 +47,22 @@ class ConsentRequestsOfDataRequestConsumerFundamentalViewTest {
   }
 
   @Test
+  void givenConsumer_whenRequestingConsentRequestsOfOwnDataRequest_thenTerminatedUidBurRelationExcluded() {
+    // BIO_SUISSE_01 also has a consent request with a terminated UID/BUR relation (uid_bur_relation_until set).
+    // The consumer must not see it, so only the 4 current consent requests are returned.
+    PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
+        .when().get(DataRequestController.PATH_V1 + "/" + TestDataIdentifiers.DataRequest.BIO_SUISSE_01 + "/consent-requests")
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(response.items())
+        .extracting(ConsentRequestFundamentalViewDto::id)
+        .doesNotContain(ConsentRequest.BIO_SUISSE_01_CHE101000001_99910006_TERMINATED.uuid());
+    assertThat(response.totalItems()).isEqualTo(4);
+  }
+
+  @Test
   void givenConsumer_whenFilteringByLastModifiedFromFarInFuture_thenEmptyResultReturned() {
     // All test data has modifiedAt = NOW(), so a far-future filter must yield an empty result.
     PageResponseDto<ConsentRequestFundamentalViewDto> response = AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
