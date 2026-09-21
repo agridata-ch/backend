@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -68,12 +69,36 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
                 "modifiedAt", SearchField.simple("modifiedAt"),
                 STATE_CODE, SearchField.simple(STATE_CODE),
                 DATA_PRODUCER_UID, SearchField.simple(DATA_PRODUCER_UID),
-                DATA_PRODUCER_BUR, SearchField.simple(DATA_PRODUCER_BUR)))
+                DATA_PRODUCER_BUR, SearchField.simple(DATA_PRODUCER_BUR)
+            ))
             .searchableFields(List.of(
                 SearchField.simple(DATA_PRODUCER_UID),
-                SearchField.simple(DATA_PRODUCER_BUR)))
+                SearchField.simple(DATA_PRODUCER_BUR)
+            ))
             .build()
     );
   }
 
+  public Map<ConsentRequestEntity.StateEnum, Long> countUidBasedByDataRequestIdGroupedByState(UUID dataRequestId) {
+    return countByDataRequestIdGroupedByState(dataRequestId, false);
+  }
+
+  public Map<ConsentRequestEntity.StateEnum, Long> countBurBasedByDataRequestIdGroupedByState(UUID dataRequestId) {
+    return countByDataRequestIdGroupedByState(dataRequestId, true);
+  }
+
+  private Map<ConsentRequestEntity.StateEnum, Long> countByDataRequestIdGroupedByState(UUID dataRequestId, boolean burBased) {
+    List<Object[]> rows = getEntityManager().createQuery(
+            "SELECT c.stateCode, COUNT(c) FROM ConsentRequestFundamentalViewEntity c "
+                + "WHERE c.dataRequestId = :dataRequestId "
+                + "AND (CASE WHEN c.dataProducerBur IS NULL THEN false ELSE true END) = :burBased "
+                + "GROUP BY c.stateCode",
+            Object[].class
+        )
+        .setParameter("dataRequestId", dataRequestId)
+        .setParameter("burBased", burBased)
+        .getResultList();
+
+    return rows.stream().collect(Collectors.toMap(row -> (ConsentRequestEntity.StateEnum) row[0], row -> (Long) row[1]));
+  }
 }

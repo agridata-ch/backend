@@ -364,6 +364,35 @@ class DataRequestTest {
   }
 
   @Test
+  void givenInvalidCountryCode_whenUpdateDraft_thenReturnBadRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
+        .dataConsumerCountry("XX")
+        .build();
+
+    updateDataRequest(id, invalidDto)
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
+  void givenValidCountryCode_whenUpdateDraft_thenReturnUpdatedRequest() {
+    String id = createDataRequest().then()
+        .statusCode(201).extract().path("id");
+
+    DataRequestUpdateDto update = getPartialDataRequestUpdateDtoBuilder()
+        .dataConsumerCountry("DE")
+        .build();
+
+    updateDataRequest(id, update)
+        .then()
+        .statusCode(200)
+        .body("dataConsumerCountry", equalTo("DE"));
+  }
+
+  @Test
   void givenTooLongFields_whenCreateDraft_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
         .title(new DataRequestTitleDto(

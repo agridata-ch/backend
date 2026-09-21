@@ -88,11 +88,9 @@ public record DataRequestDto(
     String dataConsumerLegalName,
 
     @Schema(
-        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer",
-        examples = {"Bio Suisse"}
+        description = "Shorter name of the data consumer defined by the data consumer used when displaying the request to the producer"
     )
-    @Size(max = 255)
-    String dataConsumerDisplayName,
+    DataRequestConsumerDisplayNameDto dataConsumerDisplayName,
 
     @Schema(
         description = "Uid of the data consumer",

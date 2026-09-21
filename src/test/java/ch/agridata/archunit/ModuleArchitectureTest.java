@@ -69,7 +69,8 @@ class ModuleArchitectureTest {
       "ch.agridata.common.security",
       "ch.agridata.common.exceptions",
       "ch.agridata.common.filters",
-      "ch.agridata.common.openapi"
+      "ch.agridata.common.openapi",
+      "ch.agridata.common.validation"
   );
 
   static final JavaClasses CLASSES = new ClassFileImporter()

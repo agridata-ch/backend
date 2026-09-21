@@ -6,6 +6,7 @@ import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
+import ch.agridata.agreement.dto.DataRequestConsumerDisplayNameDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewEntity;
@@ -36,6 +37,13 @@ public interface ConsentRequestMapper {
   @Mapping(target = "showStateAsMigrated", source = "entity.showStateAsMigrated")
   @Mapping(target = "dataProducerBur", source = "entity.dataProducerBur")
   ConsentRequestProducerViewDto toConsentRequestProducerViewDto(ConsentRequestEntity entity, DataRequestDto dataRequest);
+
+  /**
+   * Reduces the multilingual data consumer display name to its German string for the legacy (v1) producer view.
+   */
+  default String toV1DisplayName(DataRequestConsumerDisplayNameDto displayName) {
+    return displayName == null ? null : displayName.de();
+  }
 
   ConsentRequestProducerViewV2Dto toConsentRequestProducerViewV2Dto(ConsentRequestEntity entity);
 

@@ -36,7 +36,7 @@ public record ConsentRequestProducerViewDto(
 
     @Schema(
         description = "BUR of the data producer; null for UID-based consent requests",
-        examples = {"99910003"}
+        examples = {"A99910003"}
     )
     String dataProducerBur,
 
@@ -70,9 +70,9 @@ public record ConsentRequestProducerViewDto(
 
     @Schema(
         description = "Details of the underlying data request",
-        implementation = DataRequestDto.class
+        implementation = DataRequestV1Dto.class
     )
-    DataRequestDto dataRequest
+    DataRequestV1Dto dataRequest
 
 ) {
 }

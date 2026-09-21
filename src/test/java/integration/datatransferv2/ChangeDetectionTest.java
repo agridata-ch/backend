@@ -2,9 +2,11 @@ package integration.datatransferv2;
 
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000001;
+import static integration.testutils.TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000002;
 import static integration.testutils.TestDataIdentifiers.DataProduct.UUID_C661EA48;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE101000001;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE102000001;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE102000002;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE103000001;
 import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_A;
@@ -69,6 +71,8 @@ class ChangeDetectionTest {
   void givenNoGrantedConsents_whenGetModifiedProducers_thenReturnsEmpty() {
     // Initial state: CHE102000001 is OPENED (lastStateChangeDate=null → excluded from "all granted")
     mockProviderReturning(List.of(CHE102000001.name()));
+    // Initial state: CHE102000002 is GRANTED
+    updateConsentStatus(BIO_SUISSE_01_CHE102000002, PRODUCER_B, ConsentRequestStateEnum.DECLINED);
 
     var result = getModifiedProducers("1970-01-01");
 
@@ -82,7 +86,9 @@ class ChangeDetectionTest {
 
     var result = getModifiedProducers("1970-01-01");
 
-    assertThat(result).containsExactly(new ProducerIdentifier(CHE102000001.name(), null));
+    assertThat(result).containsExactlyInAnyOrder(
+        new ProducerIdentifier(CHE102000001.name(), null),
+        new ProducerIdentifier(CHE102000002.name(), null));
   }
 
   @Test
@@ -113,6 +119,7 @@ class ChangeDetectionTest {
   void givenDeclinedConsent_andProviderReportsChange_thenUidIsNotReturned() {
     grantConsent(BIO_SUISSE_01_CHE102000001, PRODUCER_B);
     updateConsentStatus(BIO_SUISSE_01_CHE102000001, PRODUCER_B, ConsentRequestStateEnum.DECLINED);
+    updateConsentStatus(BIO_SUISSE_01_CHE102000002, PRODUCER_B, ConsentRequestStateEnum.DECLINED);
     mockProviderReturning(List.of(CHE102000001.name()));
 
     var result = getModifiedProducers("1970-01-01");
@@ -121,9 +128,10 @@ class ChangeDetectionTest {
   }
 
   @Test
-  void givenTwoGrantedConsents_andProviderReportsOnlyOne_thenBothChannelsMergedCorrectly() {
+  void givenThreeGrantedConsents_andProviderReportsOnlyOne_thenBothChannelsMergedCorrectly() {
     // CHE101000001: currently DECLINED → GRANTED (via its BUR consent request, which cascades the UID one to GRANTED)
     // CHE102000001: currently OPENED → GRANTED
+    // CHE102000002: currently GRANTED
     // Provider reports only CHE101000001 as changed data
     // → CHE101000001 comes from provider channel, CHE102000001 comes from new-consent channel
     grantConsent(BIO_SUISSE_01_CHE101000001_99910003, PRODUCER_A);
@@ -133,7 +141,7 @@ class ChangeDetectionTest {
     var result = getModifiedProducers("1970-01-01");
 
     assertThat(result).extracting(ProducerIdentifier::uid)
-        .containsExactlyInAnyOrder(CHE101000001.name(), CHE102000001.name());
+        .containsExactlyInAnyOrder(CHE101000001.name(), CHE102000001.name(), CHE102000002.name());
   }
 
   @Test
@@ -145,8 +153,10 @@ class ChangeDetectionTest {
     var result = getModifiedProducers("1970-01-01");
 
     assertThat(result)
-            .hasSize(1)
-            .containsExactly(new ProducerIdentifier(CHE102000001.name(), null));
+        .hasSize(2)
+        .containsExactlyInAnyOrder(
+            new ProducerIdentifier(CHE102000001.name(), null),
+            new ProducerIdentifier(CHE102000002.name(), null));
   }
 
   private List<ProducerIdentifier> getModifiedProducers(String since) {

@@ -6,7 +6,7 @@ import lombok.Builder;
 
 /**
  * Immutable specification of the static (non-request) parts of a generic paged search: the base
- * query/where, its parameters, the searchable and sortable fields. Combined with a
+ * query/where, its parameters, the searchable, filterable and sortable fields. Combined with a
  * {@link ch.agridata.common.dto.ResourceQueryDto} (which carries the request-specific page, sort,
  * search term and language) by {@link BaseSearchRepository#findPage}.
  *
@@ -26,12 +26,15 @@ import lombok.Builder;
  * @param combinedFields   Groups of fields searched together by the search term.
  *                         E.g. for search term "john doe" and a group {@code [firstName, lastName]}
  *                         any permutation of "john" and "doe" across firstName and lastName will match.
+ * @param filterableFields Whitelist mapping API filter keys to filterable columns; an unknown key throws.
+ *                         E.g. {@code Map.of("dataProviderId", FilterField.uuid("p.id"))}:
+ *                         {@code ?filter=dataProviderId:<uuid>,<uuid>} keeps products of either provider.
  * @param sortableFields   Whitelist mapping API sort keys to sortable fields; an unknown key throws.
  *                         E.g. {@code Map.of("productName", SearchField.translated("dp.name"))}:
  *                         {@code ?sortBy=-productName} sorts by the translated name, descending.
  * @param sortTieBreaker   Field appended to every ORDER BY for stable pagination.
  *                         E.g. {@code "dp.id"}; defaults to {@code "id"}.
- * @CommentLastReviewed 2026-07-28
+ * @CommentLastReviewed 2026-09-14
  */
 @Builder
 public record SearchSpec(
@@ -40,6 +43,7 @@ public record SearchSpec(
     Map<String, Object> baseParams,
     List<SearchField> searchableFields,
     List<List<SearchField>> combinedFields,
+    Map<String, FilterField> filterableFields,
     Map<String, SearchField> sortableFields,
     String sortTieBreaker
 ) {
@@ -48,6 +52,7 @@ public record SearchSpec(
     baseParams = baseParams != null ? baseParams : Map.of();
     searchableFields = searchableFields != null ? searchableFields : List.of();
     combinedFields = combinedFields != null ? combinedFields : List.of();
+    filterableFields = filterableFields != null ? filterableFields : Map.of();
     sortableFields = sortableFields != null ? sortableFields : Map.of();
     sortTieBreaker = sortTieBreaker != null ? sortTieBreaker : "id";
   }
