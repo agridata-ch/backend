@@ -58,6 +58,16 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
     ).list();
   }
 
+  public List<ConsentRequestFundamentalViewEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+    return find(
+        "dataRequestId = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            DATA_PRODUCER_UID, dataProducerUid
+        )
+    ).list();
+  }
+
   public PageResponseDto<ConsentRequestFundamentalViewEntity> findByDataRequestIdAndLastModifiedFrom(
       ResourceQueryDto resourceQueryDto,
       UUID dataRequestId,

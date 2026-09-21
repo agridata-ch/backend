@@ -23,7 +23,7 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET,
         UserController.PATH + "/authorized-uids", PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/uid/1/authorized-burs", ADMIN_ROLE);
+        UserController.PATH + "/uids/1/authorized-burs", CONSUMER_ROLE, ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET,
         UserController.PATH + "/producers", SUPPORT_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST,

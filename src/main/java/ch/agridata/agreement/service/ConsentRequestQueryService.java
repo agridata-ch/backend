@@ -164,6 +164,19 @@ public class ConsentRequestQueryService {
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
   }
 
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerAndProducerUid(
+      UUID dataRequestId,
+      String dataProducerUid
+  ) {
+    if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    return consentRequestFundamentalViewRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, dataProducerUid).stream()
+        .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
+        .toList();
+  }
+
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(
       List<UUID> dataRequestIds,
       List<String> producerUids
