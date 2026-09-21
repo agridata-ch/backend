@@ -85,7 +85,7 @@ class BurAuthorizationTest {
   @MethodSource("authorizedBurDataProvider")
   void testGetAuthorizedBursByUid(String uid, List<BurDto> expectedResult) {
     var actualResult = AuthTestUtils.requestAs(ADMIN).accept(ContentType.JSON).when()
-        .get(UserController.PATH + "/uid/" + uid + "/authorized-burs").then().statusCode(200)
+        .get(UserController.PATH + "/uids/" + uid + "/authorized-burs").then().statusCode(200)
         .extract()
         .as(new TypeRef<List<BurDto>>() {
         });

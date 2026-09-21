@@ -1,5 +1,6 @@
 package ch.agridata.user.controller;
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
@@ -103,14 +104,14 @@ public class UserController {
   }
 
   @GET
-  @ApiSubset({WEB_APP})
-  @Path("/uid/{uid}/authorized-burs")
+  @ApiSubset({WEB_APP, DATA_CONSUMER})
+  @Path("/uids/{uid}/authorized-burs")
   @Operation(
       operationId = "getAuthorizedBursByUid",
-      description = "Retrieves all BURs authorized for the given UID. Only accessible to admin users.")
+      description = "Retrieves all BURs authorized for the given UID. Accessible to consumers and admin users.")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed(ADMIN_ROLE)
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   public List<BurDto> getAuthorizedBursByUid(@PathParam("uid") String uid) {
     return burAuthorizationService.getAuthorizedBurs(uid);
   }
