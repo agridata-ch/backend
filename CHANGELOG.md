@@ -1,3 +1,9 @@
+## [1.19.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.18.0...v1.19.0-rc.1) (2026-09-22)
+
+### Features
+
+* **test-data:** Synchronize the test data documentation, local and dev ([cfbc3a6](https://github.com/agridata-ch/backend/commit/cfbc3a6823ffcecb3b95dd48d9a16a01b0744219)), closes [DIGIB2-1318](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1318)
+
 ## [1.18.0](https://github.com/agridata-ch/backend/compare/v1.17.0...v1.18.0) (2026-09-21)
 
 ### Features
