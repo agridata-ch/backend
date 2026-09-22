@@ -1,3 +1,9 @@
+## [1.19.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.1...v1.19.0-rc.2) (2026-09-22)
+
+### Features
+
+* **agis:** update register data API path to version 2 ([a27abe9](https://github.com/agridata-ch/backend/commit/a27abe92210aae7cb3731184330c58a6334fef6c)), closes [DIGIB2-1316](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1316)
+
 ## [1.19.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.18.0...v1.19.0-rc.1) (2026-09-22)
 
 ### Features
