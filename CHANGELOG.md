@@ -1,3 +1,9 @@
+## [1.19.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.3...v1.19.0-rc.4) (2026-09-23)
+
+### Features
+
+* **agreement:** allow consumer to identify relevant burs related to a data request and producer ([dda5171](https://github.com/agridata-ch/backend/commit/dda5171f9de9b13f66fc05897815661d726f65e7)), closes [DIGIB2-1223](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1223)
+
 ## [1.19.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.2...v1.19.0-rc.3) (2026-09-23)
 
 ### Bug Fixes
