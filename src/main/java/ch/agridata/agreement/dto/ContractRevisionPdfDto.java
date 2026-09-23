@@ -23,7 +23,7 @@ public record ContractRevisionPdfDto(
     String requestHumanFriendlyId,
     ContractRevisionPdfTranslationDto requestTitle,
     ContractRevisionPdfTranslationDto requestDescription,
-    ContractRevisionPdfTranslationDto requestPurpose,
+    ContractRevisionPdfPurposeDto requestPurpose,
 
     String targetGroup,
 

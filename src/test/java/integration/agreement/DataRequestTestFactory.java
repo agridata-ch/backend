@@ -42,8 +42,14 @@ public class DataRequestTestFactory {
             "Comodo rinnovo dell'iscrizione")});
     return DataRequestUpdateDto.builder()
         .description(DataRequestDescriptionDto.builder().de("Beschreibung lang genug").build())
-        .purpose(new DataRequestPurposeDto("Zweck lang genug", "But assez long",
-            "Scopo abbastanza lungo"))
+        .purpose(new DataRequestPurposeDto(
+            "<p>Zweck mit <strong>fett</strong>, <em>kursiv</em> und <u>unterstrichen</u>.</p>"
+                + "<ul><li><p>Punkt eins</p></li><li><p>Punkt zwei</p></li></ul>"
+                + "<ol><li><p>Schritt eins</p></li><li><p>Schritt zwei</p></li></ol>",
+            "<p>But avec <strong>gras</strong>, <em>italique</em> et <u>souligné</u>.</p>"
+                + "<ul><li><p>Point un</p></li></ul><ol><li><p>Etape un</p></li></ol>",
+            "<p>Scopo con <strong>grassetto</strong>, <em>corsivo</em> e <u>sottolineato</u>.</p>"
+                + "<ul><li><p>Punto uno</p></li></ul><ol><li><p>Passo uno</p></li></ol>"))
         .products(List.of(TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid()))
         .dataConsumerCity("Bern")
         .dataConsumerCountry("CH")
