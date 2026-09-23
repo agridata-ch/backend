@@ -1,9 +1,11 @@
 package ch.agridata.agreement.mapper;
 
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
+import ch.agridata.agreement.dto.ContractRevisionPdfPurposeDto;
 import ch.agridata.agreement.dto.ContractRevisionPdfTranslationDto;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
+import ch.agridata.common.utils.RichTextHtmlParser;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,7 +27,7 @@ public interface ContractRevisionPdfMapper {
   @Mapping(target = "requestHumanFriendlyId", source = "dataRequestHumanFriendlyId")
   @Mapping(target = "requestTitle", source = "title", qualifiedByName = "toContractRevisionPdfTranslationDto")
   @Mapping(target = "requestDescription", source = "description", qualifiedByName = "toContractRevisionPdfTranslationDto")
-  @Mapping(target = "requestPurpose", source = "purpose", qualifiedByName = "toContractRevisionPdfTranslationDto")
+  @Mapping(target = "requestPurpose", source = "purpose", qualifiedByName = "toContractRevisionPdfPurposeDto")
   @Mapping(target = "products", source = "dataProducts", qualifiedByName = "toContractRevisionPdfTranslationDtoList")
   @Mapping(target = "consumerName", source = "dataConsumerName")
   @Mapping(target = "consumerStreet", source = "dataConsumerStreet")
@@ -90,6 +92,17 @@ public interface ContractRevisionPdfMapper {
     return dto == null ? null : ContractRevisionPdfTranslationDto.builder().de(dto.de()).fr(dto.fr()).it(dto.it()).build();
   }
 
+
+  @Named("toContractRevisionPdfPurposeDto")
+  default ContractRevisionPdfPurposeDto toContractRevisionPdfPurposeDto(TranslationPersistenceDto dto) {
+    if (dto == null) {
+      return null;
+    }
+    return new ContractRevisionPdfPurposeDto(List.of(
+        RichTextHtmlParser.toElement("de", dto.de()),
+        RichTextHtmlParser.toElement("fr", dto.fr()),
+        RichTextHtmlParser.toElement("it", dto.it())));
+  }
 
   @Named("toContractRevisionPdfTranslationDtoList")
   default List<ContractRevisionPdfTranslationDto> toContractRevisionPdfTranslationDtoList(

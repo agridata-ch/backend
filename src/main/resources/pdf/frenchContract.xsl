@@ -311,22 +311,21 @@
                 Usage prévu des données par le destinataire des données :
             </fo:block>
 
-            <fo:block xsl:use-attribute-sets="body-text">
-                Allemand :
-                <fo:inline xml:lang="de">
-                    <xsl:value-of select="requestPurpose/de"/>
-                </fo:inline>
-            </fo:block>
-            <fo:block xsl:use-attribute-sets="body-text">
-                Français :
-                <xsl:value-of select="requestPurpose/fr"/>
-            </fo:block>
-            <fo:block xsl:use-attribute-sets="body-text">
-                Italien :
-                <fo:inline xml:lang="it">
-                    <xsl:value-of select="requestPurpose/it"/>
-                </fo:inline>
-            </fo:block>
+            <xsl:call-template name="render-purpose-language">
+                <xsl:with-param name="label">Allemand :</xsl:with-param>
+                <xsl:with-param name="lang">de</xsl:with-param>
+                <xsl:with-param name="content" select="requestPurpose/de/node()"/>
+            </xsl:call-template>
+            <xsl:call-template name="render-purpose-language">
+                <xsl:with-param name="label">Français :</xsl:with-param>
+                <xsl:with-param name="lang">fr</xsl:with-param>
+                <xsl:with-param name="content" select="requestPurpose/fr/node()"/>
+            </xsl:call-template>
+            <xsl:call-template name="render-purpose-language">
+                <xsl:with-param name="label">Italien :</xsl:with-param>
+                <xsl:with-param name="lang">it</xsl:with-param>
+                <xsl:with-param name="content" select="requestPurpose/it/node()"/>
+            </xsl:call-template>
 
             <fo:block xsl:use-attribute-sets="section-heading">
                 Système du fournisseur de données :
