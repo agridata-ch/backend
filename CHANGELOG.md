@@ -1,3 +1,9 @@
+## [1.19.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.2...v1.19.0-rc.3) (2026-09-23)
+
+### Bug Fixes
+
+* **agreement:** Align consent-request sort field with DTO name and hide consent requests with expired bur relation. ([f5b7f02](https://github.com/agridata-ch/backend/commit/f5b7f02a31bd532fa76a934f5859acf46c16f070)), closes [DIGIB2-617](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-617)
+
 ## [1.19.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.1...v1.19.0-rc.2) (2026-09-22)
 
 ### Features
