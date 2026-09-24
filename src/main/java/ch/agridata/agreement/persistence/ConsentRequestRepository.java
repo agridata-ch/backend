@@ -111,12 +111,15 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   //region "Only BUR" based queries
 
-  public List<ConsentRequestEntity> findActiveBurBasedByDataRequestIdAndDataProducerBurs(UUID dataRequestId,
-                                                                                         List<String> dataProducerBurs) {
+  public List<ConsentRequestEntity> findActiveBurBasedByDataRequestIdAndDataProducerUidAndBurs(UUID dataRequestId,
+                                                                                               String dataProducerUid,
+                                                                                               List<String> dataProducerBurs) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerBur IN :dataProducerBurs and uidBurRelationUntil is null",
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and dataProducerBur IN :dataProducerBurs "
+            + "and uidBurRelationUntil is null",
         Map.of(
             "dataRequestId", dataRequestId,
+            "dataProducerUid", dataProducerUid,
             "dataProducerBurs", dataProducerBurs
         )
     ).list();
