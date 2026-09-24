@@ -2,10 +2,12 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
+import ch.agridata.agreement.dto.CreateConsentRequestsForUidDto;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -17,6 +19,7 @@ import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.user.api.UserApi;
+import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,8 +28,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
 
@@ -61,6 +66,47 @@ public class ConsentRequestCreationService {
             .toList());
   }
 
+  /**
+   * Creates the consent requests of a single data producer UID for a data request owned by the current consumer.
+   *
+   * <p>The UID-based consent request ({@code dataProducerBur} is {@code null}) is created only if it does not exist yet. When BURs are
+   * provided, they are validated against the UID's BURs in AGIS and against existing consent requests: an active (non-expired) consent
+   * request for the UID and one of the BURs makes the whole request invalid. A new BUR-based consent request is then created for every
+   * provided BUR, even if an expired consent request for that UID/BUR combination already exists.
+   */
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ConsentRequestCreatedDto> createConsentRequestsForDataRequestAsCurrentConsumer(
+      UUID dataRequestId,
+      CreateConsentRequestsForUidDto createConsentRequestsForUidDto
+  ) {
+    var uid = createConsentRequestsForUidDto.uid();
+    var burs = createConsentRequestsForUidDto.burs() == null ? List.<String>of() : createConsentRequestsForUidDto.burs();
+    var consumerUid = identity.getUidOrElseThrow();
+
+    var relationSinceByBur = burs.isEmpty() ? Map.<String, LocalDateTime>of() : resolveAndValidateBurs(uid, burs);
+
+    return sessionFactory.fromTransaction(state -> {
+      var dataRequest = dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, consumerUid)
+          .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
+      if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
+        throw new IllegalStateException(
+            "Data request " + dataRequestId + " must be in ACTIVE state to create a consent request.");
+      }
+      assertNoActiveBurConsentRequestExists(dataRequestId, uid, burs);
+
+      var consentRequestState = resolveConsentRequestState(dataRequest);
+      var createdConsentRequests = new ArrayList<ConsentRequestCreatedDto>();
+      createdConsentRequests.add(createConsentRequestIfMissing(dataRequest, consentRequestState, uid, null, null));
+      burs.forEach(bur ->
+          createdConsentRequests.add(createConsentRequest(dataRequest, consentRequestState, uid, bur, relationSinceByBur.get(bur))));
+
+      if (!burs.isEmpty()) {
+        consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), uid);
+      }
+      return createdConsentRequests;
+    });
+  }
+
   public void createLegallyPermittedConsentRequestIfMissing(UUID dataRequestId,
                                                             String uid,
                                                             String bur,
@@ -90,8 +136,7 @@ public class ConsentRequestCreationService {
     var dataRequest = loadActiveDataRequest(dataRequestId);
     var products = loadProducts(dataRequest);
     var hasBurProducts = products.stream().map(DataProductDto::flowCode).anyMatch(FlowCodeEnum::isBurBased);
-    var isConsentRequired = products.stream().anyMatch(DataProductDto::consentRequired);
-    var consentRequestState = isConsentRequired ? OPENED : LEGALLY_PERMITTED;
+    var consentRequestState = resolveConsentRequestState(products);
 
     List<ConsentRequestCreatedDto> createdConsentRequests = new ArrayList<>();
     createdConsentRequests.add(createConsentRequestIfMissing(dataRequest, consentRequestState, uid, null, null));
@@ -104,6 +149,47 @@ public class ConsentRequestCreationService {
     }
 
     return createdConsentRequests;
+  }
+
+  /**
+   * Fetches the UID's BURs from AGIS, ensures every provided BUR belongs to the UID, and returns the UID-to-BUR relation start date per
+   * provided BUR.
+   */
+  private Map<String, LocalDateTime> resolveAndValidateBurs(String uid, List<String> burs) {
+    var relationSinceByBur = userApi.getAuthorizedBurs(uid).stream()
+        .collect(Collectors.toMap(BurDto::bur, BurDto::relationSince, (first, second) -> first));
+
+    var unknownBurs = burs.stream()
+        .filter(bur -> !relationSinceByBur.containsKey(bur))
+        .toList();
+    if (!unknownBurs.isEmpty()) {
+      throw new IllegalArgumentException("The following burs do not belong to uid " + uid + " according to AGIS: " + unknownBurs);
+    }
+
+    return relationSinceByBur;
+  }
+
+  private void assertNoActiveBurConsentRequestExists(UUID dataRequestId, String uid, List<String> burs) {
+    if (burs.isEmpty()) {
+      return;
+    }
+    var activeBurs = consentRequestRepository.findActiveBurBasedByDataRequestIdAndDataProducerBurs(dataRequestId, burs).stream()
+        .filter(consentRequest -> uid.equals(consentRequest.getDataProducerUid()))
+        .map(ConsentRequestEntity::getDataProducerBur)
+        .distinct()
+        .toList();
+    if (!activeBurs.isEmpty()) {
+      throw new IllegalStateException(
+          "An active consent request already exists for uid " + uid + " and burs: " + activeBurs);
+    }
+  }
+
+  private ConsentRequestEntity.StateEnum resolveConsentRequestState(DataRequestEntity dataRequest) {
+    return resolveConsentRequestState(loadProducts(dataRequest));
+  }
+
+  private ConsentRequestEntity.StateEnum resolveConsentRequestState(List<DataProductDto> products) {
+    return products.stream().anyMatch(DataProductDto::consentRequired) ? OPENED : LEGALLY_PERMITTED;
   }
 
   private DataRequestEntity loadActiveDataRequest(UUID dataRequestId) {
@@ -144,6 +230,16 @@ public class ConsentRequestCreationService {
       return consentRequestMapper.toConsentRequestCreatedDto(existingConsentRequest.get(), false);
     }
 
+    return createConsentRequest(dataRequest, consentRequestState, uid, bur, uidBurRelationSince);
+  }
+
+  private ConsentRequestCreatedDto createConsentRequest(
+      DataRequestEntity dataRequest,
+      ConsentRequestEntity.StateEnum consentRequestState,
+      String uid,
+      String bur,
+      LocalDateTime uidBurRelationSince
+  ) {
     var consentRequestEntity = ConsentRequestEntity.builder()
         .requestDate(LocalDateTime.now())
         .dataRequest(dataRequest)
