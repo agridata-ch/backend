@@ -1,3 +1,9 @@
+## [1.19.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.4...v1.19.0-rc.5) (2026-09-24)
+
+### Features
+
+* **agreement:** support formatting for the purpose field in the contract pdf ([a4f1bcf](https://github.com/agridata-ch/backend/commit/a4f1bcf0c98f1048b02e504fb5b71f5afa557fdb)), closes [DIGIB2-1731](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1731)
+
 ## [1.19.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.3...v1.19.0-rc.4) (2026-09-23)
 
 ### Features
