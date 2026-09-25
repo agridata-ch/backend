@@ -30,4 +30,26 @@ class RichTextHtmlParserTest {
     assertThat(element.getTagName()).isEqualTo("it");
     assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(1);
   }
+
+  @Test
+  void givenNbspEntity_toElement_parsesAsNonBreakingSpace() {
+    var element = RichTextHtmlParser.toElement("de", "<p>a&nbsp;b</p>");
+
+    assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(1);
+    assertThat(element.getTextContent()).isEqualTo("a b");
+  }
+
+  @Test
+  void givenEditorContentWithNbspSpacers_toElement_doesNotThrow() {
+    var html =
+        "<p>First paragraph of text.</p><p>&nbsp;</p>"
+            + "<ul><li><p><em>a list item in italics</em></p></li></ul>"
+            + "<p><strong>&nbsp;</strong></p><p><strong>A bold heading</strong></p>";
+
+    var element = RichTextHtmlParser.toElement("de", html);
+
+    assertThat(element.getTagName()).isEqualTo("de");
+    assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(5);
+    assertThat(element.getElementsByTagName("li").getLength()).isEqualTo(1);
+  }
 }
