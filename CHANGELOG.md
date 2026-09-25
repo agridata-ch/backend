@@ -1,3 +1,9 @@
+## [1.19.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.5...v1.19.0-rc.6) (2026-09-25)
+
+### Bug Fixes
+
+* **agreement:** allow consumer to paste word documents into purpose field ([16b2163](https://github.com/agridata-ch/backend/commit/16b2163dfcfb5def2131a87c6fa5cafab24fda32)), closes [DIGIB2-1708](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1708)
+
 ## [1.19.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.4...v1.19.0-rc.5) (2026-09-24)
 
 ### Features
