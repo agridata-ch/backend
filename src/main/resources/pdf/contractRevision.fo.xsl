@@ -5,6 +5,7 @@
                 xmlns:fox="http://xmlgraphics.apache.org/fop/extensions">
 
     <xsl:include href="styles.xsl"/>
+    <xsl:include href="richText.xsl"/>
     <xsl:include href="frenchContract.xsl"/>
     <xsl:include href="germanContract.xsl"/>
 

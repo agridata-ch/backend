@@ -138,7 +138,8 @@ public class ConsentRequestQueryService {
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom
+        lastModifiedFrom,
+        false
     );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
@@ -156,10 +157,24 @@ public class ConsentRequestQueryService {
     var pagedEntities = consentRequestFundamentalViewRepository.findByDataRequestIdAndLastModifiedFrom(
         resourceQueryDto,
         dataRequestId,
-        lastModifiedFrom
+        lastModifiedFrom,
+        true
     );
 
     return consentRequestMapper.toPagedConsentRequestFundamentalViewDto(pagedEntities);
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestOfCurrentConsumerAndProducerUid(
+      UUID dataRequestId,
+      String dataProducerUid
+  ) {
+    if (dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow()).isEmpty()) {
+      throw new NotFoundException(dataRequestId.toString());
+    }
+    return consentRequestFundamentalViewRepository.findByDataRequestIdAndDataProducerUid(dataRequestId, dataProducerUid).stream()
+        .map(consentRequestMapper::toConsentRequestFundamentalViewDto)
+        .toList();
   }
 
   public List<ConsentRequestFundamentalViewDto> getGrantedConsentRequestsOfDataRequestsAndProducersUids(

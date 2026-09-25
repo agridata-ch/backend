@@ -126,7 +126,7 @@ class LegallyPermittedConsentTest {
 
   @Test
   void givenAgisFailureDuringBurResolution_whenConsentFreeProductFetched_thenOkAndNoConsentRequestCreated() {
-    wireMock.register(WireMock.post(WireMock.urlEqualTo("/agis/register-data/1/register"))
+    wireMock.register(WireMock.post(WireMock.urlEqualTo("/agis/register-data/2/register"))
         .withRequestBody(WireMock.matchingJsonPath("$.farmSearchParameters.ber"))
         .atPriority(1)
         .willReturn(WireMock.aResponse().withStatus(500)));
@@ -139,7 +139,7 @@ class LegallyPermittedConsentTest {
   }
 
   private void stubAgisFarmForBur() {
-    wireMock.register(WireMock.post(WireMock.urlEqualTo("/agis/register-data/1/register"))
+    wireMock.register(WireMock.post(WireMock.urlEqualTo("/agis/register-data/2/register"))
         .withRequestBody(WireMock.matchingJsonPath("$.farmSearchParameters.ber", WireMock.equalTo(PRODUCER_BUR)))
         .atPriority(1)
         .willReturn(WireMock.okJson("""

@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Read-only queries over {@link ConsentRequestFundamentalViewEntity} — the performant path for loading consents in the
- * data-transfer flow, avoiding the eager data request fetch of {@link ConsentRequestEntity}.
+ * Read-only queries over {@link ConsentRequestFundamentalViewEntity}, a lightweight projection that avoids the eager
+ * data-request fetch of {@link ConsentRequestEntity}. Covers the performant consent lookups used by the data-transfer
+ * flow ({@code findGranted…}), the paged/sortable/searchable consent listing exposed to clients
+ * ({@link #findByDataRequestIdAndLastModifiedFrom}), and the per-state consent counts grouped by UID- vs. BUR-based
+ * relations ({@code count…GroupedByState}).
  *
- * @CommentLastReviewed 2026-09-02
+ * @CommentLastReviewed 2026-09-21
  */
 
 @ApplicationScoped
@@ -55,18 +58,33 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
     ).list();
   }
 
+  public List<ConsentRequestFundamentalViewEntity> findByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+    return find(
+        "dataRequestId = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            DATA_PRODUCER_UID, dataProducerUid
+        )
+    ).list();
+  }
+
   public PageResponseDto<ConsentRequestFundamentalViewEntity> findByDataRequestIdAndLastModifiedFrom(
       ResourceQueryDto resourceQueryDto,
       UUID dataRequestId,
-      LocalDateTime lastModifiedFrom
+      LocalDateTime lastModifiedFrom,
+      boolean onlyCurrentUidBurRelations
   ) {
+    var baseWhere = "dataRequestId = :dataRequestId AND modifiedAt >= :lastModifiedFrom";
+    if (onlyCurrentUidBurRelations) {
+      baseWhere += " AND uidBurRelationUntil IS NULL";
+    }
     return findPage(
         resourceQueryDto,
         SearchSpec.builder()
-            .baseWhere("dataRequestId = :dataRequestId AND modifiedAt >= :lastModifiedFrom")
+            .baseWhere(baseWhere)
             .baseParams(Map.of("dataRequestId", dataRequestId, "lastModifiedFrom", lastModifiedFrom))
             .sortableFields(Map.of(
-                "modifiedAt", SearchField.simple("modifiedAt"),
+                "lastModifiedDateTime", SearchField.simple("modifiedAt"),
                 STATE_CODE, SearchField.simple(STATE_CODE),
                 DATA_PRODUCER_UID, SearchField.simple(DATA_PRODUCER_UID),
                 DATA_PRODUCER_BUR, SearchField.simple(DATA_PRODUCER_BUR)
@@ -91,6 +109,7 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
     List<Object[]> rows = getEntityManager().createQuery(
             "SELECT c.stateCode, COUNT(c) FROM ConsentRequestFundamentalViewEntity c "
                 + "WHERE c.dataRequestId = :dataRequestId "
+                + "AND c.uidBurRelationUntil IS NULL "
                 + "AND (CASE WHEN c.dataProducerBur IS NULL THEN false ELSE true END) = :burBased "
                 + "GROUP BY c.stateCode",
             Object[].class

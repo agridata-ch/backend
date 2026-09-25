@@ -31,6 +31,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -150,13 +151,13 @@ public class DataRequestController {
       @Parameter(
           name = "sortBy",
           description = "Field names to sort by. Ascending by default; prefix with - for descending. "
-              + "Defaults to -modifiedAt."
+              + "Defaults to -lastModifiedDateTime."
       )
       @QueryParam("sortBy") List<String> sortBy,
       @QueryParam("searchTerm") String searchTerm
   ) {
 
-    var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-modifiedAt") : sortBy;
+    var sortParams = (sortBy == null || sortBy.isEmpty()) ? List.of("-lastModifiedDateTime") : sortBy;
     var resourceQueryDto = ResourceQueryDto.builder()
         .page(page)
         .size(size)
@@ -177,6 +178,35 @@ public class DataRequestController {
       );
       default -> throw new ForbiddenException();
     };
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/uids/{uid}/consent-requests")
+  @Operation(
+      operationId = "getConsentRequestsOfDataRequestAndUid",
+      description = "Retrieves the UID- and BUR-based consent requests of a specific data request for a single producer UID. "
+          + "Accessible to the consumer who owns the data request."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  public List<ConsentRequestFundamentalViewDto> getConsentRequestsOfDataRequestAndUid(
+      @Parameter(
+          description = "The UUID of the data request",
+          example = "3da3a459-d3c2-48af-b8d0-02bc95146468"
+      )
+      @PathParam("id") UUID dataRequestId,
+      @Parameter(
+          description = "The UID of the data producer",
+          example = "CHE123456789"
+      )
+      @Pattern(
+          regexp = "^(?:CHE|ZZZ)\\d{9}$",
+          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
+      )
+      @PathParam("uid") String uid
+  ) {
+    return consentRequestQueryService.getConsentRequestsOfDataRequestOfCurrentConsumerAndProducerUid(dataRequestId, uid);
   }
 
   @GET
