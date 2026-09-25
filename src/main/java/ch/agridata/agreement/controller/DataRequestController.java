@@ -8,13 +8,16 @@ import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.ConsentRequestConsumerViewV2Dto;
+import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStatusSummaryDto;
+import ch.agridata.agreement.dto.CreateConsentRequestsForUidDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.agreement.service.ConsentRequestCreationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
@@ -31,6 +34,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -84,6 +88,7 @@ public class DataRequestController {
   private final DataRequestMutationService dataRequestMutationService;
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
+  private final ConsentRequestCreationService consentRequestCreationService;
   private final ActingRoleHolder actingRoleHolder;
   private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
 
@@ -178,6 +183,29 @@ public class DataRequestController {
       );
       default -> throw new ForbiddenException();
     };
+  }
+
+  @POST
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/consent-requests")
+  @Operation(
+      operationId = "createConsentRequestsForDataRequest",
+      description = "Creates the consent requests of a single data producer UID for a data request. "
+          + "A UID-based consent request is created if it does not exist yet. When BURs are provided, they are validated against the "
+          + "UID's BURs in AGIS and a BUR-based consent request is created for each of them. "
+          + "Accessible to the consumer who owns the data request."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  @ResponseStatus(RestResponse.StatusCode.CREATED)
+  public List<ConsentRequestCreatedDto> createConsentRequestsForDataRequest(
+      @Parameter(description = "The UUID of the data request", example = "3da3a459-d3c2-48af-b8d0-02bc95146468")
+      @PathParam("id") UUID dataRequestId,
+      @Valid @NotNull CreateConsentRequestsForUidDto createConsentRequestsForUidDto
+  ) {
+    return consentRequestCreationService.createConsentRequestsForDataRequestAsCurrentConsumer(
+        dataRequestId, createConsentRequestsForUidDto);
   }
 
   @GET
