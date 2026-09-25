@@ -1,3 +1,17 @@
+## [1.19.0](https://github.com/agridata-ch/backend/compare/v1.18.0...v1.19.0) (2026-09-25)
+
+### Features
+
+* **agis:** update register data API path to version 2 ([a27abe9](https://github.com/agridata-ch/backend/commit/a27abe92210aae7cb3731184330c58a6334fef6c)), closes [DIGIB2-1316](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1316)
+* **agreement:** allow consumer to identify relevant burs related to a data request and producer ([dda5171](https://github.com/agridata-ch/backend/commit/dda5171f9de9b13f66fc05897815661d726f65e7)), closes [DIGIB2-1223](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1223)
+* **agreement:** support formatting for the purpose field in the contract pdf ([a4f1bcf](https://github.com/agridata-ch/backend/commit/a4f1bcf0c98f1048b02e504fb5b71f5afa557fdb)), closes [DIGIB2-1731](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1731)
+* **test-data:** Synchronize the test data documentation, local and dev ([cfbc3a6](https://github.com/agridata-ch/backend/commit/cfbc3a6823ffcecb3b95dd48d9a16a01b0744219)), closes [DIGIB2-1318](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1318)
+
+### Bug Fixes
+
+* **agreement:** Align consent-request sort field with DTO name and hide consent requests with expired bur relation. ([f5b7f02](https://github.com/agridata-ch/backend/commit/f5b7f02a31bd532fa76a934f5859acf46c16f070)), closes [DIGIB2-617](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-617)
+* **agreement:** allow consumer to paste word documents into purpose field ([16b2163](https://github.com/agridata-ch/backend/commit/16b2163dfcfb5def2131a87c6fa5cafab24fda32)), closes [DIGIB2-1708](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1708)
+
 ## [1.19.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.19.0-rc.5...v1.19.0-rc.6) (2026-09-25)
 
 ### Bug Fixes
