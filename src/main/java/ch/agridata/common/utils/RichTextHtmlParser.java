@@ -20,7 +20,11 @@ import org.xml.sax.InputSource;
  * {@link RichTextParseException} rather than silently rendered as-is, so non-HTML data fails fast
  * instead of leaking raw text into the PDF.
  *
- * @CommentLastReviewed 2026-09-23
+ * <p>The named HTML entity {@code &nbsp;} (the only one the front-end editor emits, produced when a
+ * {@code U+00A0} non-breaking space is serialized) is not defined in XML, so it is rewritten to its
+ * numeric character reference {@code &#160;} before parsing.
+ *
+ * @CommentLastReviewed 2026-09-25
  */
 @UtilityClass
 public class RichTextHtmlParser {
@@ -36,7 +40,7 @@ public class RichTextHtmlParser {
    * @throws RichTextParseException if the fragment is not well-formed XHTML or is bare (non-markup) text
    */
   public static Element toElement(String tagName, String html) {
-    String content = html == null ? "" : html;
+    String content = html == null ? "" : html.replace("&nbsp;", "&#160;");
     DocumentBuilder builder = newSecureBuilder();
 
     Element element;
