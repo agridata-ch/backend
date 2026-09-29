@@ -11,7 +11,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Provides a producer-facing view of a consent request. It includes identifiers, state information, request dates
  *
- * @CommentLastReviewed 2026-08-13
+ * @CommentLastReviewed 2026-09-28
  */
 
 @Schema(description = "Data transfer object representing a consent request")
@@ -44,10 +44,25 @@ public record ConsentRequestProducerViewV2Dto(
     ConsentRequestStateEnum stateCode,
 
     @Schema(
-        description = "If the state should be shown as migrated",
+        description = "If the state should be shown as migrated. Only considers MAF migrations. "
+            + "Deprecated: use showStateAsMigratedFromMaf instead.",
+        examples = {"true"},
+        deprecated = true
+    )
+    @Deprecated(since = "1.19.0", forRemoval = true)
+    boolean showStateAsMigrated,
+
+    @Schema(
+        description = "If the state should be shown as migrated from MAF",
         examples = {"true"}
     )
-    boolean showStateAsMigrated,
+    boolean showStateAsMigratedFromMaf,
+
+    @Schema(
+        description = "If the state should be shown as migrated from Identitas (TVD)",
+        examples = {"true"}
+    )
+    boolean showStateAsMigratedFromTvd,
 
     @Schema(
         description = "Date and time when the state was changed last",

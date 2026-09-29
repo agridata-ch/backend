@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.D
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import ch.agridata.agreement.dto.ConsentRequestAggregationStateEnum;
 import ch.agridata.agreement.dto.ConsentRequestAggregationSummaryDto;
@@ -24,9 +25,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Unit tests for {@link ConsentRequestAggregationMapper}, covering the aggregated state derivation, the request and last-state-change
- * dates, the migration flag, and the shape of the mapped consent request lists.
+ * dates, the migration flags, and the shape of the mapped consent request lists.
  *
- * @CommentLastReviewed 2026-08-13
+ * @CommentLastReviewed 2026-09-28
  */
 class ConsentRequestAggregationMapperTest {
   private final ConsentRequestAggregationMapper mapper = new ConsentRequestAggregationMapperImpl(new ConsentRequestMapperImpl());
@@ -86,20 +87,48 @@ class ConsentRequestAggregationMapperTest {
   }
 
   @Test
-  void showStateAsMigrated_isTrue_whenAnyConsentRequestIsMigrated() {
+  void showStateAsMigratedFromMaf_isTrue_whenAnyConsentRequestIsMigratedFromMaf() {
     var group = List.of(
         consentRequest(CR1, GRANTED, dateTime(2), dateTime(3), "BUR1", null),
         consentRequest(CR2, GRANTED, dateTime(4), dateTime(5), "BUR2", dateTime(6))
     );
 
-    assertThat(mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST).showStateAsMigrated()).isTrue();
+    var result = mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST);
+
+    assertThat(result.showStateAsMigratedFromMaf()).isTrue();
+    assertThat(result.showStateAsMigrated()).isTrue();
+    assertThat(result.showStateAsMigratedFromTvd()).isFalse();
+  }
+
+  @Test
+  void showStateAsMigratedFromTvd_isTrue_whenAnyConsentRequestIsMigratedFromTvd() {
+    var migratedFromTvd = consentRequest(CR2, GRANTED, dateTime(4), dateTime(5), "BUR2", null);
+    migratedFromTvd.setMigratedFromTvdDate(dateTime(6));
+    var group = List.of(consentRequest(CR1, GRANTED, dateTime(2), dateTime(3), "BUR1", null), migratedFromTvd);
+
+    var summary = mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST);
+    var detail = mapper.toConsentRequestAggregationDto(group, DETAIL_DATA_REQUEST);
+
+    assertThat(summary.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(summary.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(summary.showStateAsMigrated()).isFalse();
+    assertThat(detail.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(detail.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(detail.showStateAsMigrated()).isFalse();
+    assertThat(detail.consentRequests())
+        .extracting(ConsentRequestProducerViewV2Dto::id, ConsentRequestProducerViewV2Dto::showStateAsMigratedFromTvd)
+        .containsExactlyInAnyOrder(tuple(CR1, false), tuple(CR2, true));
   }
 
   @Test
   void showStateAsMigrated_isFalse_whenNoConsentRequestIsMigrated() {
     var group = List.of(consentRequest(CR1, GRANTED, dateTime(2), dateTime(3), "BUR1", null));
 
-    assertThat(mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST).showStateAsMigrated()).isFalse();
+    var result = mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST);
+
+    assertThat(result.showStateAsMigrated()).isFalse();
+    assertThat(result.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(result.showStateAsMigratedFromTvd()).isFalse();
   }
 
   @Test

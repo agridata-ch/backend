@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,16 +29,43 @@ class ConsentRequestEntityTest {
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideShowStateAsMigratedCases")
-  @DisplayName("isShowStateAsMigrated should behave correctly")
-  void testShowStateAsMigrated(String title,
-                               LocalDateTime migratedFromMafDate,
-                               LocalDateTime lastStateChangeDate,
-                               boolean expected) {
+  @DisplayName("isShowStateAsMigratedFromMaf should behave correctly")
+  void testShowStateAsMigratedFromMaf(String title,
+                                      LocalDateTime migratedFromMafDate,
+                                      LocalDateTime lastStateChangeDate,
+                                      boolean expected) {
 
     ConsentRequestEntity entity = new ConsentRequestEntity();
     entity.setMigratedFromMafDate(migratedFromMafDate);
     entity.setLastStateChangeDate(lastStateChangeDate);
 
+    assertThat(entity.isShowStateAsMigratedFromMaf()).isEqualTo(expected);
     assertThat(entity.isShowStateAsMigrated()).isEqualTo(expected);
+    assertThat(entity.isShowStateAsMigratedFromTvd()).isFalse();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("provideShowStateAsMigratedCases")
+  @DisplayName("isShowStateAsMigratedFromTvd should behave correctly")
+  void testShowStateAsMigratedFromTvd(String title,
+                                      LocalDateTime migratedFromTvdDate,
+                                      LocalDateTime lastStateChangeDate,
+                                      boolean expected) {
+
+    ConsentRequestEntity entity = new ConsentRequestEntity();
+    entity.setMigratedFromTvdDate(migratedFromTvdDate);
+    entity.setLastStateChangeDate(lastStateChangeDate);
+
+    assertThat(entity.isShowStateAsMigratedFromTvd()).isEqualTo(expected);
+    assertThat(entity.isShowStateAsMigratedFromMaf()).isFalse();
+  }
+
+  @Test
+  @DisplayName("isShowStateAsMigrated should ignore TVD migrations")
+  void testShowStateAsMigratedIgnoresTvd() {
+    ConsentRequestEntity entity = new ConsentRequestEntity();
+    entity.setMigratedFromTvdDate(LocalDateTime.now());
+
+    assertThat(entity.isShowStateAsMigrated()).isFalse();
   }
 }

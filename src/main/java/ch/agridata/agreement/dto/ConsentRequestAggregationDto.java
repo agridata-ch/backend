@@ -13,7 +13,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * Provides a producer-facing aggregated view of consent requests. It groups consent requests by their underlying data request and
  * includes aggregated state information, timestamps, and detailed consent request entries.
  *
- * @CommentLastReviewed 2026-02-04
+ * @CommentLastReviewed 2026-09-28
  */
 
 @Schema(description = "Data transfer object representing an aggregation of consent requests")
@@ -40,10 +40,25 @@ public record ConsentRequestAggregationDto(
     LocalDate requestDate,
 
     @Schema(
-        description = "Indicates whether the aggregated state originates from migrated consent requests",
+        description = "Indicates whether the aggregated state originates from migrated consent requests. Only considers MAF migrations. "
+            + "Deprecated: use showStateAsMigratedFromMaf instead.",
+        examples = {"true"},
+        deprecated = true
+    )
+    @Deprecated(since = "1.19.0", forRemoval = true)
+    boolean showStateAsMigrated,
+
+    @Schema(
+        description = "Indicates whether the aggregated state originates from consent requests migrated from MAF",
         examples = {"true"}
     )
-    boolean showStateAsMigrated,
+    boolean showStateAsMigratedFromMaf,
+
+    @Schema(
+        description = "Indicates whether the aggregated state originates from consent requests migrated from Identitas (TVD)",
+        examples = {"true"}
+    )
+    boolean showStateAsMigratedFromTvd,
 
     @Schema(
         description = "Date and time when the state was changed last",
