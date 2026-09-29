@@ -81,6 +81,8 @@ class ConsentRequestAggregationTest {
     assertThat(bioSuisse01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.DECLINED);
     assertThat(bioSuisse01.requestDate()).isEqualTo(LocalDate.of(2025, 3, 14));
     assertThat(bioSuisse01.showStateAsMigrated()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromMaf()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromTvd()).isFalse();
 
     assertThat(bioSuisse01.consentRequests())
         .extracting(ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::id)
@@ -135,7 +137,49 @@ class ConsentRequestAggregationTest {
     assertThat(bioSuisse01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.DECLINED);
     assertThat(bioSuisse01.requestDate()).isEqualTo(LocalDate.of(2025, 3, 14));
     assertThat(bioSuisse01.showStateAsMigrated()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromMaf()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromTvd()).isFalse();
+    assertThat(bioSuisse01.consentRequests())
+        .extracting(ConsentRequestProducerViewV2Dto::showStateAsMigratedFromMaf)
+        .containsOnly(true);
     assertThat(bioSuisse01.lastStateChangeDate()).isEqualTo(LocalDateTime.of(2025, 3, 20, 14, 25));
+  }
+
+  @Test
+  void givenProducer_whenGetConsentRequestAggregationsWithTvdMigration_thenOnlyTvdMigrationFlagIsSet() {
+    List<ConsentRequestAggregationSummaryDto> aggregations = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    var blv01 = aggregations.stream()
+        .filter(aggregation -> aggregation.id().equals(TestDataIdentifiers.DataRequest.BLV_1.uuid()))
+        .findFirst()
+        .orElseThrow();
+
+    assertThat(blv01.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(blv01.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(blv01.showStateAsMigrated()).isFalse();
+  }
+
+  @Test
+  void givenProducer_whenGetConsentRequestAggregationWithTvdMigration_thenOnlyTvdMigrationFlagIsSet() {
+    ConsentRequestAggregationDto blv01 = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(
+            ConsentRequestAggregationController.PATH + "/" + TestDataIdentifiers.DataRequest.BLV_1.uuid()
+                + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001
+        )
+        .then().statusCode(200)
+        .extract().as(ConsentRequestAggregationDto.class);
+
+    assertThat(blv01.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(blv01.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(blv01.showStateAsMigrated()).isFalse();
+    assertThat(blv01.consentRequests())
+        .isNotEmpty()
+        .extracting(ConsentRequestProducerViewV2Dto::showStateAsMigratedFromTvd)
+        .containsOnly(true);
   }
 
   @Test

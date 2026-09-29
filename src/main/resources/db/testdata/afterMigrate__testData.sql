@@ -215,6 +215,16 @@ DELETE FROM users WHERE given_name NOT LIKE 'SYSTEM:%';
       AND dr.id IN ('3da3a459-d3c2-48af-b8d0-02bc95146468','81ae8571-9497-413a-99c5-237e72621ca7');
 
     -- ===============================================
+    -- set migrated_from_tvd for BLV (Identitas) consent-requests
+    -- ===============================================
+
+    UPDATE consent_request cr
+    SET migrated_from_tvd_date = '2026-03-01 00:00:00'::timestamp
+    FROM data_request dr
+    WHERE cr.data_request_id = dr.id
+      AND dr.id IN ('218bca06-e792-4855-bcd9-e3559cea3d18','dc7dbc72-084c-451f-aaf9-7db7561d157d');
+
+    -- ===============================================
     -- data_request_data_product
     -- ===============================================
     INSERT INTO data_request_data_product (id, archived, created_at, modified_at, data_request_id, data_product_id) VALUES
