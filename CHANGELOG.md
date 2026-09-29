@@ -1,3 +1,9 @@
+## [1.20.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.19.0...v1.20.0-rc.1) (2026-09-29)
+
+### Features
+
+* **migration:** add migratedFromMaf and Tvd to consentRequest ([75fcd11](https://github.com/agridata-ch/backend/commit/75fcd11d9a70c32c6c8b7f77b82c82d3b00bdcdf)), closes [DIGIB2-1444](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1444)
+
 ## [1.19.0](https://github.com/agridata-ch/backend/compare/v1.18.0...v1.19.0) (2026-09-25)
 
 ### Features
