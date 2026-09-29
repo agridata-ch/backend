@@ -96,7 +96,8 @@ public class ConsentRequestCreationService {
       var createdConsentRequests = new ArrayList<ConsentRequestCreatedDto>();
       createdConsentRequests.add(createConsentRequestIfMissing(dataRequest, consentRequestState, uid, null, null));
       burs.forEach(bur ->
-          createdConsentRequests.add(createConsentRequest(dataRequest, consentRequestState, uid, bur, relationSinceByBur.get(bur))));
+          createdConsentRequests.add(createConsentRequest(dataRequest, consentRequestState, uid, bur, relationSinceByBur.get(bur)))
+      );
 
       if (!burs.isEmpty()) {
         consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), uid);
@@ -105,10 +106,12 @@ public class ConsentRequestCreationService {
     });
   }
 
-  public void createLegallyPermittedConsentRequestIfMissing(UUID dataRequestId,
-                                                            String uid,
-                                                            String bur,
-                                                            LocalDateTime uidBurRelationSince) {
+  public void createLegallyPermittedConsentRequestIfMissing(
+      UUID dataRequestId,
+      String uid,
+      String bur,
+      LocalDateTime uidBurRelationSince
+  ) {
     sessionFactory.inTransaction(session -> {
       var dataRequest = loadActiveDataRequest(dataRequestId);
       createConsentRequestIfMissing(dataRequest, LEGALLY_PERMITTED, uid, null, null);
@@ -126,7 +129,8 @@ public class ConsentRequestCreationService {
 
     if (!unauthorizedUids.isEmpty()) {
       throw new IllegalArgumentException(
-          "Current user is not authorized to create consent request for data producer uids: " + unauthorizedUids);
+          "Current user is not authorized to create consent request for data producer uids: " + unauthorizedUids
+      );
     }
   }
 
@@ -167,7 +171,7 @@ public class ConsentRequestCreationService {
   private DataRequestEntity loadActiveDataRequestOfConsumer(UUID dataRequestId, String consumerUid) {
     var dataRequest = dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, consumerUid)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
-    assertActive(dataRequest);
+    assertActiveOrPaused(dataRequest);
     return dataRequest;
   }
 
@@ -177,10 +181,10 @@ public class ConsentRequestCreationService {
         .anyMatch(FlowCodeEnum::isBurBased);
   }
 
-  private void assertActive(DataRequestEntity dataRequest) {
-    if (!DataRequestEntity.DataRequestStateEnum.ACTIVE.equals(dataRequest.getStateCode())) {
-      throw new IllegalStateException(
-          "Data request " + dataRequest.getId() + " must be in ACTIVE state to create a consent request.");
+  private void assertActiveOrPaused(DataRequestEntity dataRequest) {
+    var stateCode = dataRequest.getStateCode();
+    if (stateCode != DataRequestEntity.DataRequestStateEnum.ACTIVE && stateCode != DataRequestEntity.DataRequestStateEnum.PAUSED) {
+      throw new IllegalStateException("Data request " + dataRequest.getId() + " must be in ACTIVE state to create a consent request.");
     }
   }
 
@@ -225,7 +229,7 @@ public class ConsentRequestCreationService {
   private DataRequestEntity loadActiveDataRequest(UUID dataRequestId) {
     var dataRequest = dataRequestRepository.findByIdOptional(dataRequestId)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
-    assertActive(dataRequest);
+    assertActiveOrPaused(dataRequest);
     return dataRequest;
   }
 

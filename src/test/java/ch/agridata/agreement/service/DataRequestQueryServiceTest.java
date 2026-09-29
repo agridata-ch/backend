@@ -47,6 +47,7 @@ class DataRequestQueryServiceTest {
   private static final Set<DataRequestEntity.DataRequestStateEnum> PROVIDER_ACCESSIBLE_STATES = Set.of(
       DataRequestEntity.DataRequestStateEnum.ACTIVE,
       DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
+      DataRequestEntity.DataRequestStateEnum.PAUSED,
       DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
       DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER
   );

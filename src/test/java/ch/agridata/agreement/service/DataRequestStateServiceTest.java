@@ -258,6 +258,55 @@ class DataRequestStateServiceTest {
   }
 
   @Test
+  void givenActiveRequest_whenSetStateAsAdminToPaused_thenReturnDtoAndDispatch() {
+    var id = UUID.randomUUID();
+
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+    var expectedDto = DataRequestDto.builder().build();
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(expectedDto);
+
+    var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.PAUSED);
+
+    assertThat(result).isSameAs(expectedDto);
+    assertThat(entity.getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.PAUSED);
+    verify(dataRequestStateEventDispatcher).dispatchAdminStatusTransition(
+        entity,
+        DataRequestEntity.DataRequestStateEnum.ACTIVE,
+        DataRequestEntity.DataRequestStateEnum.PAUSED
+    );
+  }
+
+  @Test
+  void givenToBeActivatedRequest_whenSetStateAsAdminToPaused_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.PAUSED))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
+  void givenActiveRequest_whenSetStateAsConsumerToPaused_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.PAUSED))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
   void givenInDraftRequest_whenSetStateAsAdminToBeSigned_thenThrowError() {
     var id = UUID.randomUUID();
 
