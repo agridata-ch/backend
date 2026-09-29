@@ -3,6 +3,7 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
@@ -59,7 +60,8 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, DRAFT, Set.of(Actor.CONSUMER, Actor.ADMIN)),
       new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED, Set.of(Actor.PROVIDER)),
       new AllowedTransition(TO_BE_ACTIVATED, DRAFT, Set.of(Actor.CONSUMER)),
-      new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN))
+      new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN)),
+      new AllowedTransition(ACTIVE, PAUSED, Set.of(Actor.ADMIN))
   );
 
   private enum Actor {

@@ -15,4 +15,5 @@ public enum DataRequestStateEnum {
   TO_BE_RELEASED_BY_PROVIDER,
   TO_BE_ACTIVATED,
   ACTIVE,
+  PAUSED,
 }
