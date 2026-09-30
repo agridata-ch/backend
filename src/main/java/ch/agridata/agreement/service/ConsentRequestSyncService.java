@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.D
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.ConsentRequestRepository;
@@ -31,7 +32,7 @@ public class ConsentRequestSyncService {
         .orElseThrow(
             () -> new IllegalStateException("no uid consent request found for dataRequestId=" + dataRequestId + " and uid=" + uid));
 
-    var burConsentRequests = consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, uid)
+    var burConsentRequests = consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequestId, uid)
         .stream()
         .filter(ConsentRequestEntity::isBurConsentRequest)
         .toList();
@@ -52,6 +53,9 @@ public class ConsentRequestSyncService {
         .map(ConsentRequestEntity::getStateCode)
         .collect(Collectors.toSet());
 
+    if (burStates.equals(Set.of(WITHDRAWN))) {
+      return WITHDRAWN;
+    }
     if (burStates.contains(LEGALLY_PERMITTED)) {
       return LEGALLY_PERMITTED;
     }

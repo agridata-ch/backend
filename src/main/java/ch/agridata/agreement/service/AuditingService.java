@@ -5,6 +5,7 @@ import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_CLEANUP_TRIGGE
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
+import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_CONSUMER_CHOSEN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_PROVIDER_CHOSEN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED;
@@ -59,6 +60,7 @@ public class AuditingService {
       case GRANTED -> api.logUserAction(CONSENT_REQUEST_GRANTED, CONSENT_REQUEST, id);
       case DECLINED -> api.logUserAction(CONSENT_REQUEST_DECLINED, CONSENT_REQUEST, id);
       case OPENED -> api.logUserAction(CONSENT_REQUEST_REOPENED, CONSENT_REQUEST, id);
+      case WITHDRAWN -> api.logUserAction(CONSENT_REQUEST_WITHDRAWN, CONSENT_REQUEST, id);
     }
   }
 

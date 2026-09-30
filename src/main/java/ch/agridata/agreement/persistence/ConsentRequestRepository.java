@@ -30,7 +30,7 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   //region "UID and BUR" based queries
 
-  public List<ConsentRequestEntity> findActiveUidAndBurBasedByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
+  public List<ConsentRequestEntity> findActiveByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
@@ -42,7 +42,7 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
         .getResultList();
   }
 
-  public Optional<ConsentRequestEntity> findActiveUidAndBurBasedByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
+  public Optional<ConsentRequestEntity> findActiveByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
     return find(
         "id = :id and dataProducerUid IN :dataProducerUids and uidBurRelationUntil is null",
         Map.of(
@@ -52,7 +52,17 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
-  public List<ConsentRequestEntity> findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+  public Optional<ConsentRequestEntity> findActiveByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
+    return find(
+        "id = :id and dataRequest.dataConsumerUid = :dataConsumerUid and uidBurRelationUntil is null",
+        Map.of(
+            "id", id,
+            "dataConsumerUid", dataConsumerUid
+        )
+    ).firstResultOptional();
+  }
+
+  public List<ConsentRequestEntity> findActiveByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",
         Map.of(

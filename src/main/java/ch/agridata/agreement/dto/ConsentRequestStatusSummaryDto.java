@@ -24,6 +24,6 @@ public record ConsentRequestStatusSummaryDto(
    */
   @Schema(description = "Counts of consent requests by status, for a single mode (UID or BUR)")
   @Builder
-  public record StateCountsDto(long total, long open, long granted, long declined) {
+  public record StateCountsDto(long total, long open, long granted, long declined, long withdrawn) {
   }
 }

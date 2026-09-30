@@ -121,6 +121,7 @@ public class ConsentRequestEntity extends AuditableEntity {
     GRANTED,
     OPENED,
     DECLINED,
-    LEGALLY_PERMITTED
+    LEGALLY_PERMITTED,
+    WITHDRAWN
   }
 }
