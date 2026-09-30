@@ -214,7 +214,8 @@ public class ConsentRequestQueryService {
         sumStates(counts, ConsentRequestEntity.StateEnum.values()),
         sumStates(counts, ConsentRequestEntity.StateEnum.OPENED),
         sumStates(counts, ConsentRequestEntity.StateEnum.GRANTED, ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED),
-        sumStates(counts, ConsentRequestEntity.StateEnum.DECLINED)
+        sumStates(counts, ConsentRequestEntity.StateEnum.DECLINED),
+        sumStates(counts, ConsentRequestEntity.StateEnum.WITHDRAWN)
     );
   }
 

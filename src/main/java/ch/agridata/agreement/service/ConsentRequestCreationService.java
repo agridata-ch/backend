@@ -253,7 +253,7 @@ public class ConsentRequestCreationService {
       LocalDateTime uidBurRelationSince
   ) {
     var existingConsentRequest =
-        consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid).stream()
+        consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid).stream()
             .filter(cr -> (cr.getDataProducerUid().equals(uid) && Objects.equals(cr.getDataProducerBur(), bur)))
             .findAny();
 

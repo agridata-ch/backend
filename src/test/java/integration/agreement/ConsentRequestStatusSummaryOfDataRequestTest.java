@@ -28,8 +28,8 @@ class ConsentRequestStatusSummaryOfDataRequestTest {
         .then().statusCode(200)
         .extract().as(ConsentRequestStatusSummaryDto.class);
 
-    assertThat(summary.uid()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(3, 1, 1, 1));
-    assertThat(summary.bur()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(1, 0, 0, 1));
+    assertThat(summary.uid()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(3, 1, 1, 1, 0));
+    assertThat(summary.bur()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(1, 0, 0, 1, 0));
   }
 
   @Test
@@ -40,7 +40,7 @@ class ConsentRequestStatusSummaryOfDataRequestTest {
         .then().statusCode(200)
         .extract().as(ConsentRequestStatusSummaryDto.class);
 
-    assertThat(summary.uid()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(4, 2, 1, 1));
+    assertThat(summary.uid()).isEqualTo(new ConsentRequestStatusSummaryDto.StateCountsDto(4, 2, 1, 1, 0));
     assertThat(summary.bur()).isNull();
   }
 

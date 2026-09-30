@@ -142,11 +142,11 @@ class ConsentRequestCreationServiceTest {
     when(agridataSecurityIdentity.getKtIdP()).thenReturn(ktIdP);
     when(agridataSecurityIdentity.getAgateLoginId()).thenReturn(agateLoginId);
     when(userApi.getAuthorizedUids(ktIdP, agateLoginId)).thenReturn(uidDtos);
-    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequestId, UID1))
         .thenReturn(List.of());
-    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequestId, UID2))
         .thenReturn(List.of(existingConsentRequest));
-    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequestId, UID3))
         .thenReturn(List.of());
     doAnswer(invocation -> {
       ConsentRequestEntity e = invocation.getArgument(0);
@@ -284,7 +284,7 @@ class ConsentRequestCreationServiceTest {
         BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
         BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
     ));
-    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
         .thenReturn(List.of(
             ConsentRequestEntity.builder().dataProducerUid(UID1).build(),
             ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).build()
