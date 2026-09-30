@@ -3,7 +3,10 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.DECLINED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
+import static java.util.Map.entry;
 
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.mapper.ConsentRequestMapper;
@@ -44,16 +47,19 @@ public class ConsentRequestStateService {
   private final UserApi userApi;
   private final Clock clock;
 
-  private static final Map<Transition, Rule> ALLOWED_TRANSITIONS = Map.of(
-      new Transition(null, OPENED), Rule.allow(),
-      new Transition(null, GRANTED), Rule.allow(),
-      new Transition(null, DECLINED), Rule.allow(),
-      new Transition(OPENED, GRANTED), Rule.allow(),
-      new Transition(OPENED, DECLINED), Rule.allow(),
-      new Transition(GRANTED, DECLINED), Rule.allow(),
-      new Transition(GRANTED, OPENED), Rule.allowWithinSeconds(30),
-      new Transition(DECLINED, GRANTED), Rule.allow(),
-      new Transition(DECLINED, OPENED), Rule.allowWithinSeconds(30)
+  private static final Map<Transition, Rule> ALLOWED_TRANSITIONS = Map.ofEntries(
+      entry(new Transition(null, OPENED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(null, GRANTED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(null, DECLINED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(OPENED, GRANTED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(OPENED, DECLINED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(GRANTED, DECLINED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(GRANTED, OPENED), Rule.allowWithinSeconds(Actor.PRODUCER, 30)),
+      entry(new Transition(DECLINED, GRANTED), Rule.allow(Actor.PRODUCER)),
+      entry(new Transition(DECLINED, OPENED), Rule.allowWithinSeconds(Actor.PRODUCER, 30)),
+      entry(new Transition(OPENED, WITHDRAWN), Rule.allow(Actor.CONSUMER)),
+      entry(new Transition(GRANTED, WITHDRAWN), Rule.allow(Actor.CONSUMER)),
+      entry(new Transition(DECLINED, WITHDRAWN), Rule.allow(Actor.CONSUMER))
   );
 
   @RolesAllowed(PRODUCER_ROLE)
@@ -64,31 +70,43 @@ public class ConsentRequestStateService {
         .orElseThrow(() -> new NotFoundException(consentRequestId.toString()));
     var targetState = consentRequestMapper.toEntityStateEnum(state);
 
+    updateConsentRequestState(consentRequest, targetState, Actor.PRODUCER);
+  }
+
+  @RolesAllowed(CONSUMER_ROLE)
+  @Transactional
+  public void updateConsentRequestStateAsCurrentDataConsumer(UUID consentRequestId, ConsentRequestStateEnum state) {
+    var consentRequest = consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(consentRequestId,
+            identity.getUidOrElseThrow())
+        .orElseThrow(() -> new NotFoundException(consentRequestId.toString()));
+    var targetState = consentRequestMapper.toEntityStateEnum(state);
+
+    updateConsentRequestState(consentRequest, targetState, Actor.CONSUMER);
+  }
+
+  private void updateConsentRequestState(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum targetState, Actor actor) {
     if (consentRequest.isBurConsentRequest()) {
-      updateBurConsentRequestStateAsCurrentDataProducer(consentRequest, targetState);
+      updateBurConsentRequestState(consentRequest, targetState, actor);
     } else {
-      updateUidConsentRequestStateAsCurrentDataProducer(consentRequest, targetState);
+      updateUidConsentRequestState(consentRequest, targetState, actor);
     }
   }
 
-  private void updateUidConsentRequestStateAsCurrentDataProducer(ConsentRequestEntity consentRequest,
-                                                                 ConsentRequestEntity.StateEnum targetState) {
+  private void updateUidConsentRequestState(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum targetState, Actor actor) {
     verifyNoBurConsentRequests(consentRequest);
-    verifyStatusTransition(consentRequest, targetState);
+    verifyStatusTransition(consentRequest, targetState, actor);
     consentRequest.setStateCode(targetState);
     auditingService.logConsentRequestStateChange(consentRequest);
   }
 
-  private void updateBurConsentRequestStateAsCurrentDataProducer(ConsentRequestEntity consentRequest,
-                                                                 ConsentRequestEntity.StateEnum targetState) {
-    verifyStatusTransition(consentRequest, targetState);
+  private void updateBurConsentRequestState(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum targetState, Actor actor) {
+    verifyStatusTransition(consentRequest, targetState, actor);
     consentRequest.setStateCode(targetState);
     auditingService.logConsentRequestStateChange(consentRequest);
 
     consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(consentRequest.getDataRequest().getId(),
         consentRequest.getDataProducerUid());
   }
-
 
   private void verifyNoBurConsentRequests(ConsentRequestEntity consentRequest) {
     var dataRequestId = consentRequest.getDataRequest().getId();
@@ -105,12 +123,13 @@ public class ConsentRequestStateService {
     }
   }
 
-  private void verifyStatusTransition(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum targetState) {
+  private void verifyStatusTransition(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum targetState, Actor actor) {
     var currentState = consentRequest.getStateCode();
     var lastStateChangeDate = consentRequest.getLastStateChangeDate();
 
     Rule rule = Optional.ofNullable(ALLOWED_TRANSITIONS.get(new Transition(currentState, targetState)))
-        .orElseThrow(() -> new ValidationException("invalid transition from " + currentState + " to " + targetState));
+        .filter(allowedRule -> allowedRule.actor == actor)
+        .orElseThrow(() -> new ValidationException("invalid transition from " + currentState + " to " + targetState + " for " + actor));
 
     if (rule.maxAgeSeconds == null || lastStateChangeDate == null) {
       return;
@@ -130,14 +149,19 @@ public class ConsentRequestStateService {
   private record Transition(ConsentRequestEntity.StateEnum from, ConsentRequestEntity.StateEnum to) {
   }
 
-  private record Rule(Integer maxAgeSeconds) {
-    static Rule allow() {
-      return new Rule(null);
+  private enum Actor {
+    PRODUCER,
+    CONSUMER
+  }
+
+  private record Rule(Actor actor, Integer maxAgeSeconds) {
+    static Rule allow(Actor actor) {
+      return new Rule(actor, null);
     }
 
     // enables revert functionality
-    static Rule allowWithinSeconds(int seconds) {
-      return new Rule(seconds);
+    static Rule allowWithinSeconds(Actor actor, int seconds) {
+      return new Rule(actor, seconds);
     }
   }
 

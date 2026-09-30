@@ -3,18 +3,27 @@ package integration.agreement;
 import static ch.agridata.agreement.dto.ConsentRequestStateEnum.DECLINED;
 import static ch.agridata.agreement.dto.ConsentRequestStateEnum.GRANTED;
 import static ch.agridata.agreement.dto.ConsentRequestStateEnum.OPENED;
+import static ch.agridata.agreement.dto.ConsentRequestStateEnum.WITHDRAWN;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
+import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
+import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
+import ch.agridata.agreement.persistence.ConsentRequestEntity;
+import ch.agridata.agreement.persistence.ConsentRequestRepository;
 import integration.auditing.utils.AuditLogTestUtils;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers.ConsentRequest;
+import integration.testutils.TestDataLoader;
+import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -23,6 +32,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -30,6 +41,13 @@ import org.junit.jupiter.api.Test;
 class ConsentRequestStatusChangeTest {
 
   private final AuditLogTestUtils auditLogTestUtils;
+  private final ConsentRequestRepository consentRequestRepository;
+  private final Flyway flyway;
+
+  @BeforeEach
+  void setUp() {
+    flyway.migrate();
+  }
 
   @Test
   void givenApplicationRunning_whenApiCalled_thenStatusOk() {
@@ -91,6 +109,45 @@ class ConsentRequestStatusChangeTest {
     });
   }
 
+  @Test
+  void givenOwningConsumer_whenConsentRequestWithdrawn_thenStatusOk() {
+    var requestId = ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+
+    updateConsentRequestStatusAs(CONSUMER_BIO_SUISSE, requestId, WITHDRAWN, 204);
+
+    var updatedRequest = TestDataLoader.of(consentRequestRepository).load(requestId);
+    assertThat(updatedRequest.getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.WITHDRAWN);
+    assertThat(updatedRequest.getLastStateChangeDate().toLocalDate()).isToday();
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).satisfies(log -> {
+      assertThat(log.getEntityTypeCode()).isEqualTo(CONSENT_REQUEST.name());
+      assertThat(log.getEntityId()).isEqualTo(requestId);
+      assertThat(log.getActionCode()).isEqualTo(CONSENT_REQUEST_WITHDRAWN.name());
+    });
+  }
+
+  @Test
+  void givenOwningConsumer_whenLastActiveBurConsentRequestWithdrawn_thenUidConsentRequestWithdrawn() {
+    var burRequestId = ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003.uuid();
+    var uidRequestId = ConsentRequest.BIO_SUISSE_01_CHE101000001.uuid();
+
+    updateConsentRequestStatusAs(CONSUMER_BIO_SUISSE, burRequestId, WITHDRAWN, 204);
+
+    var loader = TestDataLoader.of(consentRequestRepository);
+    assertThat(loader.load(burRequestId).getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.WITHDRAWN);
+    assertThat(loader.load(uidRequestId).getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.WITHDRAWN);
+  }
+
+  @Test
+  void givenOtherConsumer_whenConsentRequestWithdrawn_thenNotFound() {
+    var requestId = ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+
+    updateConsentRequestStatusAs(CONSUMER_IP_SUISSE, requestId, WITHDRAWN, 404);
+
+    var unchangedRequest = TestDataLoader.of(consentRequestRepository).load(requestId);
+    assertThat(unchangedRequest.getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.OPENED);
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).isNull();
+  }
+
   private ConsentRequestProducerViewDto findConsentRequest(Predicate<ConsentRequestProducerViewDto> filter) {
     return AuthTestUtils.requestAs(PRODUCER_B).accept(ContentType.JSON).when()
         .get(ConsentRequestController.PATH).then().statusCode(200)
@@ -101,7 +158,12 @@ class ConsentRequestStatusChangeTest {
 
   private void updateConsentRequestStatus(UUID id, ConsentRequestStateEnum newStatus,
                                           int expectedStatusCode) {
-    AuthTestUtils.requestAs(PRODUCER_B).contentType(ContentType.JSON)
+    updateConsentRequestStatusAs(PRODUCER_B, id, newStatus, expectedStatusCode);
+  }
+
+  private void updateConsentRequestStatusAs(TestUserEnum user, UUID id, ConsentRequestStateEnum newStatus,
+                                            int expectedStatusCode) {
+    AuthTestUtils.requestAs(user).contentType(ContentType.JSON)
         .body(String.format("\"%s\"", newStatus)).when()
         .put(ConsentRequestController.PATH + "/" + id + "/status")
         .then().statusCode(expectedStatusCode);

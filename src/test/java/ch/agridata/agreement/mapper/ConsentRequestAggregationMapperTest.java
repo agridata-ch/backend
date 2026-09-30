@@ -2,7 +2,9 @@ package ch.agridata.agreement.mapper;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.DECLINED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
@@ -47,7 +49,12 @@ class ConsentRequestAggregationMapperTest {
         Arguments.of(List.of(OPENED, OPENED), ConsentRequestAggregationStateEnum.OPENED),
         Arguments.of(List.of(OPENED, GRANTED), ConsentRequestAggregationStateEnum.PARTIALLY_OPENED),
         Arguments.of(List.of(OPENED, DECLINED), ConsentRequestAggregationStateEnum.PARTIALLY_OPENED),
-        Arguments.of(List.of(GRANTED, DECLINED), ConsentRequestAggregationStateEnum.PARTIALLY_GRANTED)
+        Arguments.of(List.of(GRANTED, DECLINED), ConsentRequestAggregationStateEnum.PARTIALLY_GRANTED),
+        Arguments.of(List.of(WITHDRAWN, WITHDRAWN), ConsentRequestAggregationStateEnum.WITHDRAWN),
+        Arguments.of(List.of(GRANTED, WITHDRAWN), ConsentRequestAggregationStateEnum.GRANTED),
+        Arguments.of(List.of(OPENED, WITHDRAWN), ConsentRequestAggregationStateEnum.OPENED),
+        Arguments.of(List.of(DECLINED, WITHDRAWN), ConsentRequestAggregationStateEnum.DECLINED),
+        Arguments.of(List.of(LEGALLY_PERMITTED, WITHDRAWN), ConsentRequestAggregationStateEnum.LEGALLY_PERMITTED)
     );
   }
 

@@ -84,15 +84,23 @@ public interface ConsentRequestAggregationMapper {
 
   @Named("aggregateState")
   static ConsentRequestAggregationStateEnum aggregateState(List<ConsentRequestEntity> group) {
+    // withdrawn consent requests only determine the state if no other consent requests remain
+    var relevantGroup = group.stream()
+        .filter(consentRequest -> consentRequest.getStateCode() != ConsentRequestEntity.StateEnum.WITHDRAWN)
+        .toList();
+    if (relevantGroup.isEmpty()) {
+      return ConsentRequestAggregationStateEnum.WITHDRAWN;
+    }
+
     Map<ConsentRequestEntity.StateEnum, Long> counts =
-        group.stream()
+        relevantGroup.stream()
             .collect(Collectors.groupingBy(
                 ConsentRequestEntity::getStateCode,
                 () -> new EnumMap<>(ConsentRequestEntity.StateEnum.class),
                 Collectors.counting()
             ));
 
-    final long total = group.size();
+    final long total = relevantGroup.size();
     final long granted = counts.getOrDefault(ConsentRequestEntity.StateEnum.GRANTED, 0L);
     final long opened = counts.getOrDefault(ConsentRequestEntity.StateEnum.OPENED, 0L);
     final long declined = counts.getOrDefault(ConsentRequestEntity.StateEnum.DECLINED, 0L);

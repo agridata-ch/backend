@@ -23,5 +23,6 @@ public enum ConsentRequestStateEnum {
   OPENED,
   DECLINED,
   LEGALLY_PERMITTED,
-  NOT_CREATED
+  NOT_CREATED,
+  WITHDRAWN
 }
