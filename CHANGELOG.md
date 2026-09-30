@@ -1,3 +1,9 @@
+## [1.20.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.1...v1.20.0-rc.2) (2026-09-30)
+
+### Features
+
+* **agreement:** allow consumer to add specific consent-requests ([119a7fe](https://github.com/agridata-ch/backend/commit/119a7feec8cf59bf48e57b594151a2a919e897b4)), closes [DIGIB2-1708](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1708)
+
 ## [1.20.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.19.0...v1.20.0-rc.1) (2026-09-29)
 
 ### Features
