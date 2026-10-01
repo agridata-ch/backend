@@ -141,8 +141,8 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_2F28D2EC.uuid().toString(),
-            Map.of("dateFrom", LocalDate.now().toString(),
-                "dateTo", LocalDate.now().toString(),
+            Map.of("dateTimeFrom", LocalDateTime.now().toString(),
+                "dateTimeTo", LocalDateTime.now().toString(),
                 "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
@@ -159,8 +159,8 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_88DCF0F9.uuid().toString(),
-            Map.of("dateFrom", LocalDate.now().toString(),
-                "dateTo", LocalDate.now().toString(),
+            Map.of("dateTimeFrom", LocalDateTime.now().toString(),
+                "dateTimeTo", LocalDateTime.now().toString(),
                 "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
@@ -173,8 +173,8 @@ class ProductFetchingTest {
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,
             DataProduct.UUID_720AA209.uuid().toString(),
-            Map.of("dateFrom", LocalDate.now().toString(),
-                "dateTo", LocalDate.now().toString(),
+            Map.of("dateTimeFrom", LocalDateTime.now().toString(),
+                "dateTimeTo", LocalDateTime.now().toString(),
                 "recipientUid", "CHE123456789")),
         Arguments.of(
             TestUserEnum.CONSUMER_BLV_1,

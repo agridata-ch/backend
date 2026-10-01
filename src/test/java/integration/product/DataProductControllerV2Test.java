@@ -174,7 +174,7 @@ class DataProductControllerV2Test {
         .then()
         .statusCode(200)
         .body("items.size()", greaterThan(0))
-        .body("items[0].name.de", equalTo("01 Lebensmittelsicherheit (Pflanzliche Primärproduktion)"));
+        .body("items[0].name.de", equalTo("01 Lebensmittelsicherheit (pflanzliche Primärproduktion)"));
   }
 
   @Test
