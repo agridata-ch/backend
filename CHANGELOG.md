@@ -1,3 +1,9 @@
+## [1.20.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.4...v1.20.0-rc.5) (2026-10-01)
+
+### Features
+
+* **test-data:** get data products from production ([6e71761](https://github.com/agridata-ch/backend/commit/6e717613af78223250dd2136b3891f72206e0633)), closes [DIGIB2-1733](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1733)
+
 ## [1.20.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.3...v1.20.0-rc.4) (2026-10-01)
 
 ### Bug Fixes
