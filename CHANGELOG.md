@@ -1,3 +1,9 @@
+## [1.20.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.3...v1.20.0-rc.4) (2026-10-01)
+
+### Bug Fixes
+
+* **deps:** update dependencies ([20b8567](https://github.com/agridata-ch/backend/commit/20b8567791e6f3ad5130af4f9b730e4f8c9a0609)), closes [DIGIB2-1714](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1714)
+
 ## [1.20.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.2...v1.20.0-rc.3) (2026-10-01)
 
 ### Features
