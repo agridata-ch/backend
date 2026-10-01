@@ -43,6 +43,8 @@ public class DataRequestStateEventDispatcher {
       notificationService.queueDataRequestActivated(entity);
     } else if (oldStateCode == ACTIVE && newStateCode == PAUSED) {
       auditingService.logDataRequestPaused(entity.getId());
+    } else if (oldStateCode == PAUSED && newStateCode == ACTIVE) {
+      auditingService.logDataRequestReactivated(entity.getId());
     }
   }
 
