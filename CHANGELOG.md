@@ -1,3 +1,9 @@
+## [1.20.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.5...v1.20.0-rc.6) (2026-10-01)
+
+### Features
+
+* **docu:** update publiccode.yml for open source catalog ([84913f4](https://github.com/agridata-ch/backend/commit/84913f43a375b475ffda560ac835e4e34cf02c0e))
+
 ## [1.20.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.4...v1.20.0-rc.5) (2026-10-01)
 
 ### Features
