@@ -58,6 +58,39 @@ class DataRequestPauseTest {
   }
 
   @Test
+  void givenPausedDataRequest_whenAdminReactivates_thenStateIsActiveAndAuditLogged() {
+    setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.PAUSED, ADMIN).then().statusCode(200);
+
+    setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.ACTIVE, ADMIN)
+        .then().statusCode(200)
+        .body("stateCode", equalTo(DataRequestStateEnum.ACTIVE.name()));
+
+    assertThat(auditLogTestUtils.getLatestAuditLogEntry()).satisfies(log -> {
+      assertThat(log.getEntityTypeCode()).isEqualTo(EntityTypeEnum.DATA_REQUEST.name());
+      assertThat(log.getEntityId()).isEqualTo(DataRequest.BIO_SUISSE_01.uuid());
+      assertThat(log.getActionCode()).isEqualTo(ActionEnum.DATA_REQUEST_REACTIVATED.name());
+    });
+  }
+
+  @Test
+  void givenPausedDataRequest_whenConsumerReactivates_thenRejected() {
+    setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.PAUSED, ADMIN).then().statusCode(200);
+
+    var statusCode = setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.ACTIVE, CONSUMER_BIO_SUISSE)
+        .then().extract().statusCode();
+
+    assertThat(statusCode).isBetween(400, 499);
+  }
+
+  @Test
+  void givenActiveDataRequest_whenAdminReactivates_thenRejected() {
+    var statusCode = setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.ACTIVE, ADMIN)
+        .then().extract().statusCode();
+
+    assertThat(statusCode).isBetween(400, 499);
+  }
+
+  @Test
   void givenActiveDataRequest_whenConsumerPauses_thenRejected() {
     var statusCode = setStatusAs(DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.PAUSED, CONSUMER_BIO_SUISSE)
         .then().extract().statusCode();

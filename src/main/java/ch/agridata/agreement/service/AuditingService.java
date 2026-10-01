@@ -19,6 +19,7 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_APPROVED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_PAUSED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REACTIVATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
@@ -80,6 +81,10 @@ public class AuditingService {
 
   public void logDataRequestPaused(UUID entityId) {
     api.logUserAction(DATA_REQUEST_PAUSED, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestReactivated(UUID entityId) {
+    api.logUserAction(DATA_REQUEST_REACTIVATED, DATA_REQUEST, entityId);
   }
 
   public void logDataRequestWithdrawn(UUID entityId) {

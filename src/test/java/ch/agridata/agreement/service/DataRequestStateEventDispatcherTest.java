@@ -1,8 +1,8 @@
 package ch.agridata.agreement.service;
 
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
-import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
@@ -100,6 +100,16 @@ class DataRequestStateEventDispatcherTest {
     service.dispatchAdminStatusTransition(entity, ACTIVE, PAUSED);
 
     verify(auditingService).logDataRequestPaused(entity.getId());
+    verifyNoInteractions(notificationService);
+  }
+
+  @Test
+  void givenPausedToActive_whenDispatchAdmin_thenLogReactivatedAndNoNotification() {
+    var entity = entity();
+
+    service.dispatchAdminStatusTransition(entity, PAUSED, ACTIVE);
+
+    verify(auditingService).logDataRequestReactivated(entity.getId());
     verifyNoInteractions(notificationService);
   }
 
