@@ -1,3 +1,9 @@
+## [1.20.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.2...v1.20.0-rc.3) (2026-10-01)
+
+### Features
+
+* **data-request:** Add pausing data requests as admin ([db65c4d](https://github.com/agridata-ch/backend/commit/db65c4dacbd3a9ce1385ff8c9b76a9710091c08f)), closes [DIGIB2-1689](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1689)
+
 ## [1.20.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.1...v1.20.0-rc.2) (2026-09-30)
 
 ### Features
