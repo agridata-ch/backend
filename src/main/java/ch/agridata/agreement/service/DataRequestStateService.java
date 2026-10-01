@@ -61,7 +61,8 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_RELEASED_BY_PROVIDER, TO_BE_ACTIVATED, Set.of(Actor.PROVIDER)),
       new AllowedTransition(TO_BE_ACTIVATED, DRAFT, Set.of(Actor.CONSUMER)),
       new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN)),
-      new AllowedTransition(ACTIVE, PAUSED, Set.of(Actor.ADMIN))
+      new AllowedTransition(ACTIVE, PAUSED, Set.of(Actor.ADMIN)),
+      new AllowedTransition(PAUSED, ACTIVE, Set.of(Actor.ADMIN))
   );
 
   private enum Actor {
