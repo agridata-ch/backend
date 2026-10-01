@@ -307,6 +307,42 @@ class DataRequestStateServiceTest {
   }
 
   @Test
+  void givenPausedRequest_whenSetStateAsAdminToActive_thenReturnDtoAndDispatch() {
+    var id = UUID.randomUUID();
+
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.PAUSED);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+    var expectedDto = DataRequestDto.builder().build();
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(expectedDto);
+
+    var result = dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.ACTIVE);
+
+    assertThat(result).isSameAs(expectedDto);
+    assertThat(entity.getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    verify(dataRequestStateEventDispatcher).dispatchAdminStatusTransition(
+        entity,
+        DataRequestEntity.DataRequestStateEnum.PAUSED,
+        DataRequestEntity.DataRequestStateEnum.ACTIVE
+    );
+  }
+
+  @Test
+  void givenPausedRequest_whenSetStateAsConsumerToActive_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.PAUSED);
+
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.ACTIVE))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
   void givenInDraftRequest_whenSetStateAsAdminToBeSigned_thenThrowError() {
     var id = UUID.randomUUID();
 
