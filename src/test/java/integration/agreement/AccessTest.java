@@ -30,7 +30,7 @@ class AccessTest {
         PRODUCER_ROLE, SUPPORT_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, ConsentRequestController.PATH + "/1/status",
-        PRODUCER_ROLE);
+        PRODUCER_ROLE, CONSUMER_ROLE);
 
     AccessTestUtils.assertForbiddenForAllExcept(POST, ConsentRequestController.PATH + "/cleanup",
         ADMIN_ROLE);

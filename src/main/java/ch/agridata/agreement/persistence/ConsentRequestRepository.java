@@ -52,6 +52,16 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
+  public Optional<ConsentRequestEntity> findActiveUidAndBurBasedByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
+    return find(
+        "id = :id and dataRequest.dataConsumerUid = :dataConsumerUid and uidBurRelationUntil is null",
+        Map.of(
+            "id", id,
+            "dataConsumerUid", dataConsumerUid
+        )
+    ).firstResultOptional();
+  }
+
   public List<ConsentRequestEntity> findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",

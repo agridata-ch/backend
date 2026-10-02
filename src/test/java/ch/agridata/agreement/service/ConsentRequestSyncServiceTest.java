@@ -3,6 +3,7 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.DECLINED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -118,6 +119,28 @@ class ConsentRequestSyncServiceTest {
     sync();
 
     assertThat(uidRow.getStateCode()).isEqualTo(OPENED);
+    verify(auditingService).logConsentRequestStateChange(uidRow);
+  }
+
+  @Test
+  void allBursWithdrawn_rollsUpToWithdrawn() {
+    var uidRow = row(null, GRANTED);
+    givenUidRowAndBurRows(uidRow, row(BUR1, WITHDRAWN), row(BUR2, WITHDRAWN));
+
+    sync();
+
+    assertThat(uidRow.getStateCode()).isEqualTo(WITHDRAWN);
+    verify(auditingService).logConsentRequestStateChange(uidRow);
+  }
+
+  @Test
+  void someBursWithdrawn_rollsUpByRemainingBurs() {
+    var uidRow = row(null, GRANTED);
+    givenUidRowAndBurRows(uidRow, row(BUR1, WITHDRAWN), row(BUR2, DECLINED));
+
+    sync();
+
+    assertThat(uidRow.getStateCode()).isEqualTo(DECLINED);
     verify(auditingService).logConsentRequestStateChange(uidRow);
   }
 

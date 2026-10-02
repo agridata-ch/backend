@@ -2,7 +2,9 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.DECLINED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -115,7 +117,15 @@ class ConsentRequestStateServiceTest {
 
         // Reverting to OPENED is not allowed if time has passed
         new TransitionTestCase(GRANTED, OPENED, FIXED_LOCAL_NOW.minusSeconds(31), false),
-        new TransitionTestCase(DECLINED, OPENED, FIXED_LOCAL_NOW.minusDays(5), false)
+        new TransitionTestCase(DECLINED, OPENED, FIXED_LOCAL_NOW.minusDays(5), false),
+
+        // Withdrawing is reserved for the consumer
+        new TransitionTestCase(OPENED, WITHDRAWN, null, false),
+        new TransitionTestCase(GRANTED, WITHDRAWN, FIXED_LOCAL_NOW.minusSeconds(10), false),
+        new TransitionTestCase(DECLINED, WITHDRAWN, FIXED_LOCAL_NOW.minusSeconds(10), false),
+
+        // Leaving LEGALLY_PERMITTED is never allowed
+        new TransitionTestCase(LEGALLY_PERMITTED, WITHDRAWN, FIXED_LOCAL_NOW.minusSeconds(10), false)
     );
   }
 
@@ -147,6 +157,106 @@ class ConsentRequestStateServiceTest {
       LocalDateTime lastStateChangeDate,
       boolean expectedAllowed
   ) {
+  }
+
+  // ---- Withdrawal by the consumer ----
+
+  private static final String CONSUMER_UID = "CHE987654321";
+
+  private void updateAsConsumer(UUID id, ConsentRequestEntity.StateEnum target) {
+    consentRequestStateService.updateConsentRequestStateAsCurrentDataConsumer(id, ConsentRequestStateEnum.valueOf(target.name()));
+  }
+
+  @ParameterizedTest
+  @MethodSource("withdrawableStates")
+  void consumerCanWithdrawConsentRequest(ConsentRequestEntity.StateEnum from) {
+    var id = UUID.randomUUID();
+    var consentRequest = consentRequest(id, null, from, FIXED_LOCAL_NOW.minusDays(5));
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(Optional.of(consentRequest));
+
+    updateAsConsumer(id, WITHDRAWN);
+
+    assertEquals(WITHDRAWN, consentRequest.getStateCode());
+    verify(auditingService).logConsentRequestStateChange(consentRequest);
+  }
+
+  static Stream<ConsentRequestEntity.StateEnum> withdrawableStates() {
+    return Stream.of(OPENED, GRANTED, DECLINED);
+  }
+
+  @Test
+  void consumerCannotWithdrawLegallyPermittedConsentRequest() {
+    var id = UUID.randomUUID();
+    var consentRequest = consentRequest(id, null, LEGALLY_PERMITTED, null);
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(Optional.of(consentRequest));
+
+    assertThrows(ValidationException.class, () -> updateAsConsumer(id, WITHDRAWN));
+    assertEquals(LEGALLY_PERMITTED, consentRequest.getStateCode());
+    verify(auditingService, never()).logConsentRequestStateChange(any());
+  }
+
+  @Test
+  void consumerWithdrawingBurConsentRequestDelegatesToSync() {
+    var burId = UUID.randomUUID();
+    var burConsentRequest = consentRequest(burId, BUR1, GRANTED, null);
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(burId, CONSUMER_UID))
+        .thenReturn(Optional.of(burConsentRequest));
+
+    updateAsConsumer(burId, WITHDRAWN);
+
+    assertEquals(WITHDRAWN, burConsentRequest.getStateCode());
+    verify(auditingService).logConsentRequestStateChange(burConsentRequest);
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(DATA_REQUEST_ID, UID);
+  }
+
+  @Test
+  void consumerCannotWithdrawUidConsentRequestDirectlyWhenActiveBurExists() {
+    var id = UUID.randomUUID();
+    var uidConsentRequest = consentRequest(id, null, GRANTED, null);
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(
+        Optional.of(uidConsentRequest));
+    when(consentRequestRepository.findActiveUidAndBurBasedByDataRequestIdAndDataProducerUid(DATA_REQUEST_ID, UID))
+        .thenReturn(List.of(uidConsentRequest, consentRequest(UUID.randomUUID(), BUR1, GRANTED, null)));
+
+    assertThrows(ValidationException.class, () -> updateAsConsumer(id, WITHDRAWN));
+    assertEquals(GRANTED, uidConsentRequest.getStateCode());
+    verify(auditingService, never()).logConsentRequestStateChange(any());
+  }
+
+  @Test
+  void consumerCannotWithdrawAlreadyWithdrawnConsentRequest() {
+    var id = UUID.randomUUID();
+    var consentRequest = consentRequest(id, null, WITHDRAWN, null);
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(Optional.of(consentRequest));
+
+    assertThrows(ValidationException.class, () -> updateAsConsumer(id, WITHDRAWN));
+    verify(auditingService, never()).logConsentRequestStateChange(any());
+  }
+
+  @Test
+  void consumerCannotPerformProducerTransition() {
+    var id = UUID.randomUUID();
+    var consentRequest = consentRequest(id, null, OPENED, null);
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(Optional.of(consentRequest));
+
+    assertThrows(ValidationException.class, () -> updateAsConsumer(id, GRANTED));
+    assertEquals(OPENED, consentRequest.getStateCode());
+    verify(auditingService, never()).logConsentRequestStateChange(any());
+  }
+
+  @Test
+  void consumerUpdatingUnknownConsentRequestThrowsNotFound() {
+    var id = UUID.randomUUID();
+    when(identity.getUidOrElseThrow()).thenReturn(CONSUMER_UID);
+    when(consentRequestRepository.findActiveUidAndBurBasedByIdAndDataConsumerUid(id, CONSUMER_UID)).thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, () -> updateAsConsumer(id, WITHDRAWN));
   }
 
   // ---- Not found ----
