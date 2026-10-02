@@ -1,3 +1,9 @@
+## [1.20.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.6...v1.20.0-rc.7) (2026-10-02)
+
+### Features
+
+* **cicd:** add cloudfront cache invalidation ([da30b12](https://github.com/agridata-ch/backend/commit/da30b125608cddad530f5147cdf59b69cba86a34)), closes [DIGIB2-1682](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1682)
+
 ## [1.20.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.5...v1.20.0-rc.6) (2026-10-01)
 
 ### Features
