@@ -14,18 +14,21 @@ import org.jboss.logging.MDC;
 
 /**
  * Adds request identifiers and API paths to the logging context before security checks. It improves traceability for early request stages.
+ * Also records the request arrival time on the routing context so later stages can measure wall-clock time per request.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-10-04
  */
 public class PreSecurityMdcFilter {
 
   public static final String REQUEST_ID_MDC_FIELD = "requestId";
   public static final String API_MDC_FIELD = "api";
+  public static final String REQUEST_START_NANOS_KEY = "request.startNanos";
   private static final String USER_ID_MDC_FIELD = "agridataUserId";
 
   // Higher numbers = higher priority (runs earlier)
   @RouteFilter(1501)
   void beforeSecurity(RoutingContext ctx) {
+    ctx.put(REQUEST_START_NANOS_KEY, System.nanoTime());
     MDC.put(REQUEST_ID_MDC_FIELD, UUID.randomUUID().toString());
     MDC.put(USER_ID_MDC_FIELD, getUserId(ctx));
     String path = ctx.request().path();

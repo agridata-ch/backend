@@ -14,13 +14,17 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Orchestrates the execution of data transfer workflows by running task pipelines
- * and proxying responses from upstream data providers.
+ * and proxying responses from upstream data providers. The timing log is emitted once per request: after the
+ * response body has been streamed to the consumer, or immediately if the flow fails before that.
  *
- * @CommentLastReviewed 2026-08-03
+ * @CommentLastReviewed 2026-10-04
  */
 @ApplicationScoped
 @Slf4j
 public class AgridataFlow {
+
+  static final String PROVIDER_REQUEST_TASK = "Provider Request";
+  static final String RESPONSE_STREAMING_TASK = "Response Streaming";
 
   public Response run(AgridataContext context,
                       List<UnaryOperator<AgridataContext>> tasksBefore,
@@ -31,8 +35,9 @@ public class AgridataFlow {
     try {
       runTasks(context, tasksBefore);
       return proxy(context, tasksAfter);
-    } finally {
+    } catch (RuntimeException ex) {
       context.emitTimingLog();
+      throw ex;
     }
   }
 
@@ -60,16 +65,15 @@ public class AgridataFlow {
 
     log.debug("Calling upstream provider");
     long providerStart = System.nanoTime();
-    String taskName = "Provider Request";
     Response upstream;
     try {
       upstream = context.getProviderRequest().get();
     } catch (RuntimeException ex) {
-      context.getFlowTiming().addTask(taskName, FlowTiming.Responsibility.PROVIDER, providerStart);
-      context.getFlowTiming().setFailedTask(taskName);
+      context.getFlowTiming().addTask(PROVIDER_REQUEST_TASK, FlowTiming.Responsibility.PROVIDER, providerStart);
+      context.getFlowTiming().setFailedTask(PROVIDER_REQUEST_TASK);
       throw ex;
     }
-    context.getFlowTiming().addTask(taskName, FlowTiming.Responsibility.PROVIDER, providerStart);
+    context.getFlowTiming().addTask(PROVIDER_REQUEST_TASK, FlowTiming.Responsibility.PROVIDER, providerStart);
     log.debug("Upstream provider responded with status={}", upstream.getStatus());
 
     Map<String, String> headers = upstream.getStringHeaders().entrySet().stream()
@@ -88,7 +92,7 @@ public class AgridataFlow {
   }
 
   private Response forwardResponse(Response upstream, AgridataContext context) {
-    StreamingOutput out = os -> streamAndClose(upstream, os);
+    StreamingOutput out = os -> streamAndClose(upstream, os, context);
     return Response.status(upstream.getStatus())
         .header("AGRIDATA-REQUEST-ID", context.getDataTransferRequestId())
         .type(upstream.getMediaType())
@@ -96,10 +100,17 @@ public class AgridataFlow {
         .build();
   }
 
-  private void streamAndClose(Response upstream, OutputStream os) throws IOException {
+  private void streamAndClose(Response upstream, OutputStream os, AgridataContext context) throws IOException {
+    long streamingStart = System.nanoTime();
     try (Response r = upstream; InputStream is = r.readEntity(InputStream.class)) {
       is.transferTo(os);
       os.flush();
+    } catch (IOException | RuntimeException ex) {
+      context.getFlowTiming().setFailedTask(RESPONSE_STREAMING_TASK);
+      throw ex;
+    } finally {
+      context.getFlowTiming().addTask(RESPONSE_STREAMING_TASK, FlowTiming.Responsibility.AGRIDATA, streamingStart);
+      context.emitTimingLog();
     }
   }
 
