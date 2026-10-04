@@ -2,6 +2,7 @@ package ch.agridata.datatransferv2.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.within;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,28 +24,29 @@ class FlowTimingTest {
   }
 
   @Test
-  void givenTasksOfBothResponsibilities_whenAggregating_thenTimeIsSplitAndTotalIsTheirSum() {
-    var timing = new FlowTiming();
-    long fiftyMsAgo = System.nanoTime() - 50_000_000L;
-    timing.addTask("agridata", FlowTiming.Responsibility.AGRIDATA, fiftyMsAgo);
-    timing.addTask("provider", FlowTiming.Responsibility.PROVIDER, System.nanoTime());
+  void givenRequestArrivedBeforeFlow_whenSummarize_thenTimeOutsideProviderCallCountsAsAgridata() {
+    long now = System.nanoTime();
+    var timing = new FlowTiming(now - 80_000_000L);
+    timing.addTask("Provider Request", FlowTiming.Responsibility.PROVIDER, now - 20_000_000L);
 
-    long agridata = timing.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.AGRIDATA);
-    long provider = timing.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.PROVIDER);
+    var summary = timing.summarize();
 
-    assertThat(agridata).isGreaterThanOrEqualTo(40L);
-    assertThat(provider).isGreaterThanOrEqualTo(0L);
-    assertThat(timing.getTotalTimeInMsSinceInitialization()).isEqualTo(agridata + provider);
+    assertThat(summary.totalTimeInMs()).isGreaterThanOrEqualTo(80L);
+    assertThat(summary.usedTimeInMsByProvider()).isBetween(20L, summary.totalTimeInMs());
+    assertThat(summary.usedTimeInMsByAgridata()).isGreaterThanOrEqualTo(55L);
+    assertThat(summary.usedTimeInMsByAgridata() + summary.usedTimeInMsByProvider())
+        .isCloseTo(summary.totalTimeInMs(), within(1L));
   }
 
   @Test
-  void givenNoTasks_whenAggregating_thenAllTimesAreZero() {
+  void givenSubMillisecondTasks_whenSummarize_thenTheyAddUpInsteadOfRoundingToZero() {
     var timing = new FlowTiming();
+    for (int i = 0; i < 5; i++) {
+      timing.addTask("Provider Request", FlowTiming.Responsibility.PROVIDER, System.nanoTime() - 900_000L);
+    }
 
-    assertThat(timing.getTasks()).isEmpty();
-    assertThat(timing.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.AGRIDATA)).isZero();
-    assertThat(timing.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.PROVIDER)).isZero();
-    assertThat(timing.getTotalTimeInMsSinceInitialization()).isZero();
+    assertThat(timing.getTasks()).allSatisfy(task -> assertThat(task.durationMs()).isGreaterThanOrEqualTo(0.9));
+    assertThat(timing.summarize().usedTimeInMsByProvider()).isGreaterThanOrEqualTo(4L);
   }
 
   @Test
