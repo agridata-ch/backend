@@ -138,6 +138,17 @@ class ConsentRequestStatusChangeTest {
   }
 
   @Test
+  void givenWithdrawnConsentRequest_whenProducerUpdatesStatus_thenNotFound() {
+    var requestId = ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+    updateConsentRequestStatusAs(CONSUMER_BIO_SUISSE, requestId, WITHDRAWN, 204);
+
+    updateConsentRequestStatus(requestId, GRANTED, 404);
+
+    var unchangedRequest = TestDataLoader.of(consentRequestRepository).load(requestId);
+    assertThat(unchangedRequest.getStateCode()).isEqualTo(ConsentRequestEntity.StateEnum.WITHDRAWN);
+  }
+
+  @Test
   void givenOtherConsumer_whenConsentRequestWithdrawn_thenNotFound() {
     var requestId = ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
 

@@ -3,6 +3,7 @@ package integration.agreement;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE101000001;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE102000002;
 import static integration.testutils.TestDataIdentifiers.DataRequest.ACONTROL_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,6 +12,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,6 +103,19 @@ class ConsentRequestTest {
         .body("size()", equalTo(0))
         .extract().as(new TypeRef<>() {
         });
+  }
+
+  @Test
+  void givenWithdrawnConsentRequest_whenProducerGetsConsentRequests_thenWithdrawnConsentRequestHidden() {
+    var requestId = TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+    assertThat(getConsentRequestsAsProducerB()).extracting(ConsentRequestProducerViewDto::id).contains(requestId);
+
+    withdrawAsConsumerBioSuisse(requestId);
+
+    assertThat(getConsentRequestsAsProducerB()).extracting(ConsentRequestProducerViewDto::id).doesNotContain(requestId);
+    AuthTestUtils.requestAs(PRODUCER_B)
+        .when().get(ConsentRequestController.PATH + "/" + requestId)
+        .then().statusCode(404);
   }
 
   @Test
@@ -209,6 +225,22 @@ class ConsentRequestTest {
         .uid(Uid.CHE102000001.name())
         .build()))
         .then().statusCode(404);
+  }
+
+  private List<ConsentRequestProducerViewDto> getConsentRequestsAsProducerB() {
+    return AuthTestUtils.requestAs(PRODUCER_B)
+        .when().get(ConsentRequestController.PATH)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+  }
+
+  private void withdrawAsConsumerBioSuisse(UUID consentRequestId) {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
+        .contentType(JSON)
+        .body(String.format("\"%s\"", ConsentRequestStateEnum.WITHDRAWN))
+        .when().put(ConsentRequestController.PATH + "/" + consentRequestId + "/status")
+        .then().statusCode(204);
   }
 
   private List<ConsentRequestCreatedDto> createConsentRequestsForAcontrolDataRequest() throws JsonProcessingException {

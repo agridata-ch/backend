@@ -1,6 +1,7 @@
 package ch.agridata.agreement.persistence;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 
 import ch.agridata.common.persistence.BaseSearchRepository;
 import io.quarkus.panache.common.Sort;
@@ -20,7 +21,11 @@ import lombok.RequiredArgsConstructor;
 /**
  * Manages persistence of consent requests. It supports querying and updating consent-related records.
  *
- * @CommentLastReviewed 2026-02-26
+ * <p>Naming of query methods: "Active" means the consent request's UID-BUR relation still exists ({@code uidBurRelationUntil} is null).
+ * "NotWithdrawn" additionally excludes consent requests withdrawn by the consumer; use these variants for producer-facing queries, since
+ * withdrawn consent requests are hidden from producers.
+ *
+ * @CommentLastReviewed 2026-10-05
  */
 
 @ApplicationScoped
@@ -30,24 +35,27 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
 
   //region "UID and BUR" based queries
 
-  public List<ConsentRequestEntity> findActiveByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
+  public List<ConsentRequestEntity> findActiveNotWithdrawnByDataProducerUidsWithDataRequest(List<String> dataProducerUids) {
     return entityManager.createQuery(
             "SELECT cr FROM ConsentRequestEntity cr "
                 + "JOIN FETCH cr.dataRequest dr "
                 + "WHERE cr.dataProducerUid IN :uids "
                 + "AND cr.uidBurRelationUntil IS NULL "
+                + "AND cr.stateCode <> :withdrawn "
                 + "ORDER BY cr.id", ConsentRequestEntity.class
         )
         .setParameter("uids", dataProducerUids)
+        .setParameter("withdrawn", WITHDRAWN)
         .getResultList();
   }
 
-  public Optional<ConsentRequestEntity> findActiveByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
+  public Optional<ConsentRequestEntity> findActiveNotWithdrawnByIdAndDataProducerUids(UUID id, List<String> dataProducerUids) {
     return find(
-        "id = :id and dataProducerUid IN :dataProducerUids and uidBurRelationUntil is null",
+        "id = :id and dataProducerUid IN :dataProducerUids and uidBurRelationUntil is null and stateCode <> :withdrawn",
         Map.of(
             "id", id,
-            "dataProducerUids", dataProducerUids
+            "dataProducerUids", dataProducerUids,
+            "withdrawn", WITHDRAWN
         )
     ).firstResultOptional();
   }
@@ -72,12 +80,24 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).list();
   }
 
+  public List<ConsentRequestEntity> findActiveNotWithdrawnByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+    return find(
+        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null "
+            + "and stateCode <> :withdrawn",
+        Map.of(
+            "dataRequestId", dataRequestId,
+            "dataProducerUid", dataProducerUid,
+            "withdrawn", WITHDRAWN
+        )
+    ).list();
+  }
+
   //endregion
 
   //region "Only UID" based queries
 
-  public List<ConsentRequestEntity> findUidBasedByDataProducerUids(List<String> dataProducerUids) {
-    return find("dataProducerUid IN ?1 and dataProducerBur is null", dataProducerUids).list();
+  public List<ConsentRequestEntity> findUidBasedNotWithdrawnByDataProducerUids(List<String> dataProducerUids) {
+    return find("dataProducerUid IN ?1 and dataProducerBur is null and stateCode <> ?2", dataProducerUids, WITHDRAWN).list();
   }
 
   public Optional<ConsentRequestEntity> findUidBasedByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
