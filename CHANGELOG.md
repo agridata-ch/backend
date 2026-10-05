@@ -1,3 +1,9 @@
+## [1.20.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.11...v1.20.0-rc.12) (2026-10-05)
+
+### Features
+
+* **agreement:** hide withdrawn consent requests from producers ([fab1cd8](https://github.com/agridata-ch/backend/commit/fab1cd8f4bd04b96bbe6dff29f7a257526918535)), closes [DIGIB2-1563](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1563)
+
 ## [1.20.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.10...v1.20.0-rc.11) (2026-10-05)
 
 ### Features
