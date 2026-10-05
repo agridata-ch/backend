@@ -18,9 +18,6 @@ agridata:
   product:
     scan-recovery:
       pending-timeout: PT15M
-  user:
-    uid-authorization:
-      min-relation-age: P14D
 bit:
   signature:
     key-bearer: "BLW-Agridata"
@@ -74,19 +71,7 @@ quarkus:
           policy: permit
           auth-mechanism: none
     cors:
-      access-control-allow-credentials: true
       enabled: true
-      headers:
-        - Authorization
-        - Content-Type
-        - X-Impersonated-AgateLoginId
-      methods:
-        - GET
-        - PUT
-        - POST
-        - DELETE
-        - OPTIONS
-        - PATCH
     port: 8060
   micrometer:
     enabled: true
