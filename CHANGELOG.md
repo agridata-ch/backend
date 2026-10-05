@@ -1,3 +1,9 @@
+## [1.20.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.8...v1.20.0-rc.9) (2026-10-05)
+
+### Features
+
+* **agreement:** allow consumer to withdraw consent requests ([79fa9ae](https://github.com/agridata-ch/backend/commit/79fa9ae7582fa3bcf4fcee904e8519fcde005aaf)), closes [DIGIB2-618](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-618)
+
 ## [1.20.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.7...v1.20.0-rc.8) (2026-10-05)
 
 ### Bug Fixes
