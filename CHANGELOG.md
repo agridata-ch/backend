@@ -1,3 +1,9 @@
+## [1.20.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.9...v1.20.0-rc.10) (2026-10-05)
+
+### Bug Fixes
+
+* **envs:** remove envs that are overridden by external config ([5071bdd](https://github.com/agridata-ch/backend/commit/5071bdd53dfd76b3f2168006c410455c2cb88d70))
+
 ## [1.20.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.8...v1.20.0-rc.9) (2026-10-05)
 
 ### Features
