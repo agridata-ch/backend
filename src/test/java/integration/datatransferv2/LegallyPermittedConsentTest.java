@@ -5,6 +5,8 @@ import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+import ch.agridata.agreement.api.ConsentRequestApi;
+import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewEntity;
 import ch.agridata.agreement.service.ConsentRequestLegallyPermittedService;
 import ch.agridata.datatransferv2.controller.DataTransferController;
@@ -44,6 +46,7 @@ class LegallyPermittedConsentTest {
 
   private final EntityManager entityManager;
   private final ConsentRequestLegallyPermittedService legallyPermittedService;
+  private final ConsentRequestApi consentRequestApi;
 
   WireMock wireMock;
 
@@ -105,6 +108,31 @@ class LegallyPermittedConsentTest {
             LocalDate.of(1970, 1, 1),
             LEGALLY_PERMITTED,
             ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT));
+  }
+
+  @Test
+  void givenLegallyPermittedBurConsentRequest_whenGrantedConsentRequestsQueriedByBur_thenItCountsAsConsent() {
+    stubAgisFarmForBur();
+    fetchProduct(DataRequest.BLV_ZO_CONSENT_FREE.uuid()).then().statusCode(200);
+    legallyPermittedService.awaitAllProcessed();
+
+    // Otherwise EnsureValidConsentForProducerBursTask re-enqueues the consent request on every fetch
+    assertThat(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersBurs(
+        List.of(DataRequest.BLV_ZO_CONSENT_FREE.uuid()), List.of(PRODUCER_BUR)))
+        .extracting(ConsentRequestFundamentalViewDto::dataProducerBur, ConsentRequestFundamentalViewDto::grantedDataPeriodFrom)
+        .containsExactly(tuple(PRODUCER_BUR, RELATION_SINCE.toLocalDate()));
+  }
+
+  @Test
+  void givenLegallyPermittedUidConsentRequest_whenGrantedConsentRequestsQueriedByUid_thenItCountsAsConsent() {
+    fetchUidBasedProduct(DataRequest.BLV_ZO_CONSENT_FREE.uuid()).then().statusCode(200);
+    legallyPermittedService.awaitAllProcessed();
+
+    // Otherwise EnsureValidConsentForProducerUidsTask re-enqueues the consent request on every fetch
+    assertThat(consentRequestApi.getGrantedConsentRequestsOfDataRequestsAndProducersUids(
+        List.of(DataRequest.BLV_ZO_CONSENT_FREE.uuid()), List.of(UID_BASED_PRODUCER_UID.name())))
+        .extracting(ConsentRequestFundamentalViewDto::dataProducerUid)
+        .containsExactly(UID_BASED_PRODUCER_UID.name());
   }
 
   @Test
