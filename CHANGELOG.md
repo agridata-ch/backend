@@ -1,3 +1,9 @@
+## [1.20.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.10...v1.20.0-rc.11) (2026-10-05)
+
+### Features
+
+* **data-request:** Add reactivating paused data requests as admin ([fa64870](https://github.com/agridata-ch/backend/commit/fa64870523bf44997180ed4501dd0d627159a41e)), closes [DIGIB2-1691](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1691)
+
 ## [1.20.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.9...v1.20.0-rc.10) (2026-10-05)
 
 ### Bug Fixes
