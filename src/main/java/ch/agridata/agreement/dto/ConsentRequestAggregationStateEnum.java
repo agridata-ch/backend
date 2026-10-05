@@ -13,6 +13,5 @@ public enum ConsentRequestAggregationStateEnum {
   DECLINED,
   LEGALLY_PERMITTED,
   PARTIALLY_GRANTED,
-  PARTIALLY_OPENED,
-  WITHDRAWN
+  PARTIALLY_OPENED
 }

@@ -61,7 +61,7 @@ public class ConsentRequestQueryService {
             .map(UidDto::uid)
             .filter(uid -> dataProducerUid == null || uid.equals(dataProducerUid))
             .toList();
-    var consentRequestEntities = consentRequestRepository.findUidBasedByDataProducerUids(uids);
+    var consentRequestEntities = consentRequestRepository.findUidBasedNotWithdrawnByDataProducerUids(uids);
     return consentRequestEntities.stream()
         .map(this::toConsentRequestProducerViewDto)
         .toList();
@@ -73,7 +73,7 @@ public class ConsentRequestQueryService {
         userApi.getAuthorizedUids(identity.getKtIdpOrImpersonatedKtIdP(), identity.getAgateLoginIdOrImpersonatedAgateLoginId()).stream()
             .map(UidDto::uid)
             .toList();
-    return consentRequestRepository.findUidBasedByDataProducerUids(uids).stream()
+    return consentRequestRepository.findUidBasedNotWithdrawnByDataProducerUids(uids).stream()
         .filter(consentRequests -> consentRequests.getId().equals(id))
         .map(this::toConsentRequestProducerViewDto)
         .findFirst()

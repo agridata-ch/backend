@@ -66,7 +66,7 @@ public class ConsentRequestStateService {
   @Transactional
   public void updateConsentRequestStateAsCurrentDataProducer(UUID consentRequestId, ConsentRequestStateEnum state) {
     var uids = getAuthorizedUidsAsCurrentProducer();
-    var consentRequest = consentRequestRepository.findActiveByIdAndDataProducerUids(consentRequestId, uids)
+    var consentRequest = consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(consentRequestId, uids)
         .orElseThrow(() -> new NotFoundException(consentRequestId.toString()));
     var targetState = consentRequestMapper.toEntityStateEnum(state);
 

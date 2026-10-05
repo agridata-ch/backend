@@ -139,7 +139,7 @@ class ConsentRequestStateServiceTest {
   void testValidateProducerTransition(TransitionTestCase testCase) {
     var id = UUID.randomUUID();
     var uidConsentRequest = consentRequest(id, null, testCase.from, testCase.lastStateChangeDate);
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
         Optional.of(uidConsentRequest));
     when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(DATA_REQUEST_ID, UID)).thenReturn(List.of());
 
@@ -320,7 +320,7 @@ class ConsentRequestStateServiceTest {
   @Test
   void updatingUnknownConsentRequestThrowsNotFound() {
     var id = UUID.randomUUID();
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(id, List.of(UID))).thenReturn(Optional.empty());
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(id, List.of(UID))).thenReturn(Optional.empty());
 
     assertThrows(NotFoundException.class, () -> update(id, GRANTED));
   }
@@ -331,7 +331,7 @@ class ConsentRequestStateServiceTest {
   void directUidEditIsRejectedWhenActiveBurExists() {
     var id = UUID.randomUUID();
     var uidConsentRequest = consentRequest(id, null, OPENED, null);
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
         Optional.of(uidConsentRequest));
     when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(DATA_REQUEST_ID, UID))
         .thenReturn(List.of(uidConsentRequest, consentRequest(UUID.randomUUID(), BUR1, GRANTED, null)));
@@ -345,7 +345,7 @@ class ConsentRequestStateServiceTest {
   void directUidEditIsAppliedWhenNoActiveBurExists() {
     var id = UUID.randomUUID();
     var uidConsentRequest = consentRequest(id, null, OPENED, null);
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(id, List.of(UID))).thenReturn(
         Optional.of(uidConsentRequest));
     when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(DATA_REQUEST_ID, UID))
         .thenReturn(List.of(uidConsentRequest));
@@ -363,7 +363,7 @@ class ConsentRequestStateServiceTest {
   void burEditAppliesTargetStateAuditsBurAndDelegatesToSync() {
     var burId = UUID.randomUUID();
     var burConsentRequest = consentRequest(burId, BUR1, OPENED, null);
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(burId, List.of(UID)))
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(burId, List.of(UID)))
         .thenReturn(Optional.of(burConsentRequest));
 
     update(burId, GRANTED);
@@ -377,7 +377,7 @@ class ConsentRequestStateServiceTest {
   void burEditWithInvalidTransitionIsRejectedAndDoesNotDelegateToSync() {
     var burId = UUID.randomUUID();
     var burConsentRequest = consentRequest(burId, BUR1, OPENED, null);
-    when(consentRequestRepository.findActiveByIdAndDataProducerUids(burId, List.of(UID)))
+    when(consentRequestRepository.findActiveNotWithdrawnByIdAndDataProducerUids(burId, List.of(UID)))
         .thenReturn(Optional.of(burConsentRequest));
 
     assertThrows(ValidationException.class, () -> update(burId, OPENED));

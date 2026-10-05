@@ -63,6 +63,10 @@ public class TestDataIdentifiers {
     public static final Identifier<ConsentRequestEntity> BIO_SUISSE_02_CHE103000001 = id("235aed61-7da2-41ac-94c4-bcca91328ad6");
     public static final Identifier<ConsentRequestEntity> BIO_SUISSE_02_CHE103000002 = id("584c3587-517b-49ef-aaec-cb6e0179f78c");
 
+    public static final Identifier<ConsentRequestEntity> BLV_1_CHE101000001 = id("1f954fad-f355-46b6-973a-e98813206e7c");
+    public static final Identifier<ConsentRequestEntity> BLV_1_CHE101000001_99910002 = id("cf212412-b1e5-4e9c-a963-b50e26b00632");
+    public static final Identifier<ConsentRequestEntity> BLV_1_CHE101000001_99910003 = id("3d30f8b7-6be3-487f-ba13-4ad52ca1ef05");
+
     public static final Identifier<ConsentRequestEntity> IP_SUISSE_01_CHE101000001 = id("ef35df35-2051-416a-98ad-47ab35c8a77c");
     public static final Identifier<ConsentRequestEntity> IP_SUISSE_01_CHE102000002 = id("2f8ec662-9fce-417e-9b82-3ed042adb482");
     public static final Identifier<ConsentRequestEntity> IP_SUISSE_01_CHE103000001 = id("5e439777-8564-4954-9d01-7ebeabf4fc39");

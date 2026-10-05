@@ -1,6 +1,5 @@
 package ch.agridata.user.controller;
 
-import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
@@ -104,7 +103,7 @@ public class UserController {
   }
 
   @GET
-  @ApiSubset({WEB_APP, DATA_CONSUMER})
+  @ApiSubset({WEB_APP})
   @Path("/uids/{uid}/authorized-burs")
   @Operation(
       operationId = "getAuthorizedBursByUid",
