@@ -13,6 +13,8 @@ import ch.agridata.common.exceptions.ExternalWebServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -58,26 +60,22 @@ class SmsSnsServiceTest {
     assertThat(capturedRequest.message()).isEqualTo(MESSAGE);
   }
 
-  @Test
-  void givenPhoneWithWhitespace_whenSendSms_thenWhitespaceRemoved() {
+  @ParameterizedTest(name = "[{index}] \"{0}\" -> {1}")
+  @CsvSource({
+      "'+41 79 123 45 67', +41791234567",
+      "0791234567,         +41791234567",
+      "0041791234567,      +41791234567",
+      "'+49 79 123 45 67', +49791234567",
+      "0049791234567,      +49791234567",
+  })
+  void givenPhoneInVariousFormats_whenSendSms_thenNumberNormalizedToE164(String input, String expected) {
     when(snsClient.publish(any(PublishRequest.class)))
         .thenReturn(PublishResponse.builder().messageId("mock-msg-id").build());
 
-    smsSnsService.sendSms("+41 79 123 45 67", MESSAGE);
+    smsSnsService.sendSms(input, MESSAGE);
 
     verify(snsClient).publish(publishRequestCaptor.capture());
-    assertThat(publishRequestCaptor.getValue().phoneNumber()).isEqualTo("+41791234567");
-  }
-
-  @Test
-  void givenPhoneWithLeadingZero_whenSendSms_thenNumberNormalizedToE164() {
-    when(snsClient.publish(any(PublishRequest.class)))
-        .thenReturn(PublishResponse.builder().messageId("mock-msg-id").build());
-
-    smsSnsService.sendSms("0791234567", MESSAGE);
-
-    verify(snsClient).publish(publishRequestCaptor.capture());
-    assertThat(publishRequestCaptor.getValue().phoneNumber()).isEqualTo("+41791234567");
+    assertThat(publishRequestCaptor.getValue().phoneNumber()).isEqualTo(expected);
   }
 
   @Test

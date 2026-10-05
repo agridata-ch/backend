@@ -31,7 +31,11 @@ public class SmsSnsService implements SmsApi {
   @Override
   public void sendSms(String phoneNumber, String message) {
     phoneNumber = phoneNumber.replaceAll("\\s", "");
-    // Normalize to E.164 by replacing a leading 0 with the Swiss country code (+41).
+    // Normalize to E.164 by replacing two leading 0 with the + sign.
+    if (phoneNumber.startsWith("00")) {
+      phoneNumber = "+" + phoneNumber.substring(2);
+    }
+    // Normalize to E.164 by replacing a single leading 0 with the Swiss country code (+41).
     // The application is primarily used in Switzerland and participant phone numbers are
     // sometimes stored without a country prefix, which would cause SNS to reject the request.
     if (phoneNumber.startsWith("0")) {
