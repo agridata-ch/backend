@@ -1,3 +1,9 @@
+## [1.20.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.7...v1.20.0-rc.8) (2026-10-05)
+
+### Bug Fixes
+
+* **sms:** support two leading zeros as mobile number ([729ebf6](https://github.com/agridata-ch/backend/commit/729ebf6478cb807494a97e5598a1f5fed88d1262)), closes [DIGIB2-1747](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1747)
+
 ## [1.20.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.6...v1.20.0-rc.7) (2026-10-02)
 
 ### Features
