@@ -50,7 +50,7 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
         findBursWithMissingConsent(producerBurs, validDataRequestIds, requestedDateRange);
 
     if (!bursWithMissingConsent.isEmpty()) {
-      return handleMissingConsent(context, producerBurs, bursWithMissingConsent);
+      return handleMissingConsent(context, bursWithMissingConsent);
     }
 
     log.debug("Consent verified for all {} producer BUR(s)", producerBurs.size());
@@ -73,12 +73,11 @@ public class EnsureValidConsentForProducerBursTask implements UnaryOperator<Agri
     return bursWithMissingConsent;
   }
 
-  private AgridataContext handleMissingConsent(AgridataContext context, Set<String> producerBurs,
-                                               Set<String> bursWithMissingConsent) {
+  private AgridataContext handleMissingConsent(AgridataContext context, Set<String> bursWithMissingConsent) {
     if (!context.getProductProviderConfiguration().consentRequired()) {
       var dataRequestId = context.getValidDataRequestIds().getFirst();
       log.debug("Product is consent-free, enqueueing legally permitted consent requests for dataRequestId={}, producerBurs={}",
-          dataRequestId, producerBurs);
+          dataRequestId, bursWithMissingConsent);
       bursWithMissingConsent.forEach(bur -> consentRequestApi.enqueueLegallyPermittedBurBasedConsentRequest(dataRequestId, bur));
       return context;
     }

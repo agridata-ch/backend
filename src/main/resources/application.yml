@@ -6,6 +6,7 @@ agridata:
       validation:
         enabled: true
     legally-permitted-consent:
+      enabled: true
       queue-capacity: 10000
   aws:
     send-sms:
