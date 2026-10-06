@@ -18,6 +18,8 @@ agridata:
   product:
     scan-recovery:
       pending-timeout: PT15M
+    data-provider:
+      max-concurrent-requests: 50 # per data provider
 bit:
   signature:
     key-bearer: "BLW-Agridata"
@@ -112,6 +114,7 @@ quarkus:
         type: CLIENT
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
+    read-timeout: 25000 # The API gateway times out after max. 30s, so timeouts to external systems must be lower
     uid-register:
       url: https://www.uid-wse.admin.ch/V5.0/PublicServices.svc
     agis-api:

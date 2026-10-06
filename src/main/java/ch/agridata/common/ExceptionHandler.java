@@ -8,6 +8,7 @@ import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
+import ch.agridata.common.exceptions.DataProviderUnavailableException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -35,7 +36,7 @@ import org.slf4j.MDC;
 /**
  * Handles exceptions throughout the application and returns appropriate HTTP responses with detailed messages.
  *
- * @CommentLastReviewed 2026-09-16
+ * @CommentLastReviewed 2026-10-02
  */
 
 @ApplicationScoped
@@ -238,6 +239,15 @@ public class ExceptionHandler {
             ex.getDataProviderHttpStatus(),
             ex.getDataProviderMessage()
         )).build();
+  }
+
+  @ServerExceptionMapper(DataProviderUnavailableException.class)
+  public Response handleDataProviderUnavailableException(DataProviderUnavailableException ex) {
+    log.warn("DataProviderUnavailableException: {}", ex.getMessage());
+    return Response.status(Status.BAD_GATEWAY)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse(ex.getMessage(), ex.getMessage(), ExceptionEnum.DATA_PROVIDER_ERROR))
+        .build();
   }
 
   private ExceptionDto createResponse(String message, String debugMessage) {
