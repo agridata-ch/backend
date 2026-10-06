@@ -11,6 +11,7 @@ import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
+import ch.agridata.common.exceptions.DataProviderUnavailableException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -369,6 +370,23 @@ class ExceptionHandlerTest {
     assertThat(dto.exceptionType()).isEqualTo(ExceptionEnum.DATA_PROVIDER_ERROR);
     assertThat(dto.dataProviderHttpStatus()).isEqualTo(418);
     assertThat(dto.dataProviderMessage()).isEqualTo("I'm a teapot");
+  }
+
+  @ParameterizedTest(name = "handleDataProviderUnavailableException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleDataProviderUnavailableException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+    DataProviderUnavailableException ex = new DataProviderUnavailableException("data provider unavailable");
+
+    Response response = exceptionHandler.handleDataProviderUnavailableException(ex);
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_GATEWAY.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo("data provider unavailable");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.DATA_PROVIDER_ERROR);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "data provider unavailable" : null);
   }
 
   private ConstraintViolation<?> mockConstraintViolation(String path, String message) {
