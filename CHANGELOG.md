@@ -1,3 +1,9 @@
+## [1.20.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.12...v1.20.0-rc.13) (2026-10-06)
+
+### Bug Fixes
+
+* **datatransfer:** treat legally permitted consent requests as granted ([fecc205](https://github.com/agridata-ch/backend/commit/fecc205ac2acb6d1ca681e9cf1b929870d2eda4f))
+
 ## [1.20.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.11...v1.20.0-rc.12) (2026-10-05)
 
 ### Features
