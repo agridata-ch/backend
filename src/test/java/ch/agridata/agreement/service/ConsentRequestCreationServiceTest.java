@@ -1,7 +1,9 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -80,6 +82,8 @@ class ConsentRequestCreationServiceTest {
   private SessionFactory sessionFactory;
   @Mock
   private ConsentRequestSyncService consentRequestSyncService;
+  @Mock
+  private AuditingService auditingService;
   @InjectMocks
   private ConsentRequestCreationService service;
 
@@ -301,6 +305,93 @@ class ConsentRequestCreationServiceTest {
       assertThat(consentRequest.getDataProducerBur()).isEqualTo(BUR2);
       assertThat(consentRequest.getUidBurRelationSince()).isEqualTo(RELATION_SINCE_2);
     });
+  }
+
+  @Test
+  void givenWithdrawnUidConsentRequest_whenCreateConsentRequests_thenConsentRequestIsReopened() {
+    // Given
+    var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.UID_BASED_PRE_VALIDATION);
+    givenAuthorizedProducer(dataRequest);
+    var withdrawnConsentRequest = ConsentRequestEntity.builder()
+        .id(UUID.randomUUID())
+        .dataProducerUid(UID1)
+        .stateCode(WITHDRAWN)
+        .requestDate(LocalDateTime.of(2025, 1, 1, 0, 0))
+        .build();
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
+        .thenReturn(List.of(withdrawnConsentRequest));
+
+    // When
+    var result = service.createConsentRequests(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
+
+    // Then
+    assertThat(result).singleElement().satisfies(created -> {
+      assertThat(created.id()).isEqualTo(withdrawnConsentRequest.getId());
+      assertThat(created.isCreated()).isFalse();
+    });
+    assertThat(withdrawnConsentRequest.getStateCode()).isEqualTo(OPENED);
+    assertThat(withdrawnConsentRequest.getRequestDate()).isEqualTo(LocalDateTime.of(2025, 1, 1, 0, 0));
+    assertThat(persistedConsentRequests()).isEmpty();
+    verify(auditingService).logConsentRequestStateChange(withdrawnConsentRequest);
+  }
+
+  @Test
+  void givenWithdrawnBurConsentRequest_whenCreateConsentRequests_thenOnlyWithdrawnConsentRequestIsReopened() {
+    // Given
+    var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_PRE_VALIDATION);
+    givenAuthorizedProducer(dataRequest);
+    when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
+        BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build(),
+        BurDto.builder().uid(UID1).bur(BUR2).relationSince(RELATION_SINCE_2).build()
+    ));
+    var uidConsentRequest = ConsentRequestEntity.builder().dataProducerUid(UID1).stateCode(GRANTED).build();
+    var grantedBurConsentRequest = ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).stateCode(GRANTED).build();
+    var withdrawnBurConsentRequest =
+        ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR2).stateCode(WITHDRAWN).build();
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
+        .thenReturn(List.of(uidConsentRequest, grantedBurConsentRequest, withdrawnBurConsentRequest));
+
+    // When
+    var result = service.createConsentRequests(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
+
+    // Then
+    assertThat(result)
+        .extracting(ConsentRequestCreatedDto::dataProducerBur, ConsentRequestCreatedDto::isCreated)
+        .containsExactly(tuple(null, false), tuple(BUR1, false), tuple(BUR2, false));
+    assertThat(uidConsentRequest.getStateCode()).isEqualTo(GRANTED);
+    assertThat(grantedBurConsentRequest.getStateCode()).isEqualTo(GRANTED);
+    assertThat(withdrawnBurConsentRequest.getStateCode()).isEqualTo(OPENED);
+    assertThat(persistedConsentRequests()).isEmpty();
+    verify(auditingService).logConsentRequestStateChange(withdrawnBurConsentRequest);
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), UID1);
+  }
+
+  @Test
+  void givenWithdrawnUidAndBurConsentRequests_whenCreateConsentRequests_thenOnlyBurConsentRequestsAreReopenedDirectly() {
+    // Given
+    var dataRequest = activeDataRequestWithProduct(FlowCodeEnum.BUR_BASED_PRE_VALIDATION);
+    givenAuthorizedProducer(dataRequest);
+    when(userApi.getAuthorizedBurs(UID1)).thenReturn(List.of(
+        BurDto.builder().uid(UID1).bur(BUR1).relationSince(RELATION_SINCE_1).build()
+    ));
+    var uidConsentRequest = ConsentRequestEntity.builder().dataProducerUid(UID1).stateCode(WITHDRAWN).build();
+    var burConsentRequest = ConsentRequestEntity.builder().dataProducerUid(UID1).dataProducerBur(BUR1).stateCode(WITHDRAWN).build();
+    when(consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), UID1))
+        .thenReturn(List.of(uidConsentRequest, burConsentRequest));
+
+    // When
+    service.createConsentRequests(
+        List.of(CreateConsentRequestDto.builder().dataRequestId(dataRequest.getId()).uid(UID1).build()));
+
+    // Then
+    // The UID consent request is left to the (mocked) sync, which derives its state from the BUR consent requests
+    assertThat(uidConsentRequest.getStateCode()).isEqualTo(WITHDRAWN);
+    assertThat(burConsentRequest.getStateCode()).isEqualTo(OPENED);
+    verify(auditingService).logConsentRequestStateChange(burConsentRequest);
+    verify(auditingService, never()).logConsentRequestStateChange(uidConsentRequest);
+    verify(consentRequestSyncService).syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), UID1);
   }
 
   @Test

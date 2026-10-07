@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.OPENED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.WITHDRAWN;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,7 @@ import org.hibernate.SessionFactory;
 /**
  * Provides business logic for consent requests. It coordinates creation, validation, and updates across related entities.
  *
- * @CommentLastReviewed 2026-09-29
+ * @CommentLastReviewed 2026-10-07
  */
 
 @ApplicationScoped
@@ -53,6 +55,7 @@ public class ConsentRequestCreationService {
   private final DataRequestRepository dataRequestRepository;
   private final DataProductApi dataProductApi;
   private final SessionFactory sessionFactory;
+  private final AuditingService auditingService;
 
   @RolesAllowed(PRODUCER_ROLE)
   public List<ConsentRequestCreatedDto> createConsentRequests(List<CreateConsentRequestDto> createConsentRequestDtos) {
@@ -145,12 +148,31 @@ public class ConsentRequestCreationService {
 
     if (hasBurProducts) {
       userApi.getAuthorizedBurs(uid).stream()
-          .map(bur -> createConsentRequestIfMissing(dataRequest, consentRequestState, bur.uid(), bur.bur(), bur.relationSince()))
+          .map(bur -> createOrReopenConsentRequest(dataRequest, consentRequestState, bur.uid(), bur.bur(), bur.relationSince()))
           .forEach(createdConsentRequests::add);
       consentRequestSyncService.syncUidConsentRequestStateWithBurConsentRequests(dataRequest.getId(), uid);
     }
+    reopenWithdrawnUidConsentRequestWithoutBurConsentRequests(dataRequest, consentRequestState, uid);
 
     return createdConsentRequests;
+  }
+
+  /**
+   * Reopens the withdrawn UID consent request of a UID without active BUR consent requests. With active BUR consent requests, the state of
+   * the UID consent request is derived from them by {@link ConsentRequestSyncService} instead.
+   */
+  private void reopenWithdrawnUidConsentRequestWithoutBurConsentRequests(
+      DataRequestEntity dataRequest,
+      ConsentRequestEntity.StateEnum consentRequestState,
+      String uid
+  ) {
+    var consentRequests = consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid);
+    if (consentRequests.stream().anyMatch(ConsentRequestEntity::isBurConsentRequest)) {
+      return;
+    }
+    consentRequests.stream()
+        .filter(consentRequest -> consentRequest.getStateCode() == WITHDRAWN)
+        .forEach(consentRequest -> reopenConsentRequest(consentRequest, consentRequestState));
   }
 
   /**
@@ -252,16 +274,48 @@ public class ConsentRequestCreationService {
       String bur,
       LocalDateTime uidBurRelationSince
   ) {
-    var existingConsentRequest =
-        consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid).stream()
-            .filter(cr -> (cr.getDataProducerUid().equals(uid) && Objects.equals(cr.getDataProducerBur(), bur)))
-            .findAny();
+    var existingConsentRequest = findExistingConsentRequest(dataRequest, uid, bur);
 
     if (existingConsentRequest.isPresent()) {
       return consentRequestMapper.toConsentRequestCreatedDto(existingConsentRequest.get(), false);
     }
 
     return createConsentRequest(dataRequest, consentRequestState, uid, bur, uidBurRelationSince);
+  }
+
+  /**
+   * Like {@link #createConsentRequestIfMissing}, but an existing consent request withdrawn by the consumer is reopened instead of being
+   * returned unchanged. Only used for BUR consent requests, see {@link #reopenWithdrawnUidConsentRequestWithoutBurConsentRequests}.
+   */
+  private ConsentRequestCreatedDto createOrReopenConsentRequest(
+      DataRequestEntity dataRequest,
+      ConsentRequestEntity.StateEnum consentRequestState,
+      String uid,
+      String bur,
+      LocalDateTime uidBurRelationSince
+  ) {
+    var existingConsentRequest = findExistingConsentRequest(dataRequest, uid, bur);
+
+    if (existingConsentRequest.isEmpty()) {
+      return createConsentRequest(dataRequest, consentRequestState, uid, bur, uidBurRelationSince);
+    }
+
+    var consentRequest = existingConsentRequest.get();
+    if (consentRequest.getStateCode() == WITHDRAWN) {
+      reopenConsentRequest(consentRequest, consentRequestState);
+    }
+    return consentRequestMapper.toConsentRequestCreatedDto(consentRequest, false);
+  }
+
+  private void reopenConsentRequest(ConsentRequestEntity consentRequest, ConsentRequestEntity.StateEnum consentRequestState) {
+    consentRequest.setStateCode(consentRequestState);
+    auditingService.logConsentRequestStateChange(consentRequest);
+  }
+
+  private Optional<ConsentRequestEntity> findExistingConsentRequest(DataRequestEntity dataRequest, String uid, String bur) {
+    return consentRequestRepository.findActiveByDataRequestIdAndDataProducerUid(dataRequest.getId(), uid).stream()
+        .filter(cr -> (cr.getDataProducerUid().equals(uid) && Objects.equals(cr.getDataProducerBur(), bur)))
+        .findAny();
   }
 
   private ConsentRequestCreatedDto createConsentRequest(
