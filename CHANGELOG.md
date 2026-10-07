@@ -1,3 +1,9 @@
+## [1.20.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.14...v1.20.0-rc.15) (2026-10-07)
+
+### Bug Fixes
+
+* **datatransferv2:** measure data transfer timing from request arrival to end of response streaming ([d3f1ada](https://github.com/agridata-ch/backend/commit/d3f1ada6b02ce6f10f0f493b3df98ff0e9a4f0f4))
+
 ## [1.20.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.13...v1.20.0-rc.14) (2026-10-07)
 
 ### Features
