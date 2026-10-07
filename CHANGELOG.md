@@ -1,3 +1,9 @@
+## [1.20.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.13...v1.20.0-rc.14) (2026-10-07)
+
+### Features
+
+* **product:** limit concurrent requests and read timeout for data providers ([af22a8e](https://github.com/agridata-ch/backend/commit/af22a8eabc41076e5d4134cf4086ef326178dd32)), closes [DIGIB2-1740](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1740)
+
 ## [1.20.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.12...v1.20.0-rc.13) (2026-10-06)
 
 ### Bug Fixes
