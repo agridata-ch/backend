@@ -17,7 +17,9 @@ import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserNotificationInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.mapper.UserMapper;
+import ch.agridata.user.persistence.UserEntity;
 import ch.agridata.user.persistence.UserRepository;
+import io.quarkus.oidc.UserInfo;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -58,8 +60,16 @@ public class UserService {
   public UserInfoDto updateUserData() {
     var user = userRepository.findById(identity.getUserId());
 
-    var userInfo = identity.getUserInfoOrElseThrow();
+    user.setRolesAtLastLogin(identity.getRoles());
+    user.setLastLoginDate(LocalDateTime.now());
 
+    // Service accounts have no UserInfo and therefore no personal data
+    identity.getUserInfo().ifPresent(userInfo -> applyUserInfo(user, userInfo));
+
+    return userMapper.toUserInfoDto(user);
+  }
+
+  private void applyUserInfo(UserEntity user, UserInfo userInfo) {
     user.setKtIdP(userInfo.getString("KT_ID_P"));
     user.setUid(userInfo.getString("uid"));
     user.setEmail(userInfo.getString("email"));
@@ -67,9 +77,6 @@ public class UserService {
     user.setFamilyName(userInfo.getString("family_name"));
     user.setPhoneNumber(userInfo.getString("phone_number"));
     user.setMobileNumber(userInfo.getString("mobile_number"));
-
-    user.setRolesAtLastLogin(identity.getRoles());
-    user.setLastLoginDate(LocalDateTime.now());
     user.setLanguage(SupportedLanguage.from(userInfo.getString("locale")));
 
     var address = userInfo.getObject("address");
@@ -79,8 +86,6 @@ public class UserService {
       user.setAddressPostalCode(address.getString("postal_code", null));
       user.setAddressCountry(address.getString("country", null));
     }
-
-    return userMapper.toUserInfoDto(user);
   }
 
   public UserInfoDto getUserInfo(@NonNull String agateLoginId) {
