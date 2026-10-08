@@ -135,11 +135,15 @@ public class AgridataSecurityIdentity {
   }
 
   public UserInfo getUserInfoOrElseThrow() {
-    UserInfo userInfo = securityIdentity.getAttribute("userinfo");
-    if (userInfo == null) {
-      throw new IllegalStateException("UserInfo of user with agateLoginId " + getAgateLoginId() + " not found");
-    }
-    return userInfo;
+    return getUserInfo().orElseThrow(
+        () -> new IllegalStateException("UserInfo of user with agateLoginId " + getAgateLoginId() + " not found"));
+  }
+
+  /**
+   * Returns the UserInfo of the authenticated user. Empty for service accounts, see {@link ServiceAccountTenantConfigResolver}.
+   */
+  public Optional<UserInfo> getUserInfo() {
+    return Optional.ofNullable(securityIdentity.getAttribute("userinfo"));
   }
 
   public boolean isAnonymous() {
