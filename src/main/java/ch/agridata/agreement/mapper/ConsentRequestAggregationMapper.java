@@ -23,7 +23,7 @@ import org.mapstruct.Named;
  * Assembles producer-facing consent request aggregations from a group of consent requests that share a data request. It derives the
  * aggregated state and metadata; the underlying data request DTO is supplied by the caller, since its enrichment is a service concern.
  *
- * @CommentLastReviewed 2026-08-13
+ * @CommentLastReviewed 2026-09-28
  */
 
 @Mapper(componentModel = "jakarta", uses = ConsentRequestMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
@@ -32,7 +32,9 @@ public interface ConsentRequestAggregationMapper {
   @Mapping(target = "id", source = "dataRequest.id")
   @Mapping(target = "stateCode", source = "consentRequests", qualifiedByName = "aggregateState")
   @Mapping(target = "requestDate", source = "consentRequests", qualifiedByName = "latestRequestDate")
-  @Mapping(target = "showStateAsMigrated", source = "consentRequests", qualifiedByName = "anyShownAsMigrated")
+  @Mapping(target = "showStateAsMigrated", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromMaf")
+  @Mapping(target = "showStateAsMigratedFromMaf", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromMaf")
+  @Mapping(target = "showStateAsMigratedFromTvd", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromTvd")
   @Mapping(target = "lastStateChangeDate", source = "consentRequests", qualifiedByName = "latestStateChangeDate")
   @Mapping(target = "dataRequest", source = "dataRequest")
   @Mapping(target = "consentRequests", source = "consentRequests")
@@ -42,16 +44,23 @@ public interface ConsentRequestAggregationMapper {
   @Mapping(target = "id", source = "dataRequest.id")
   @Mapping(target = "stateCode", source = "consentRequests", qualifiedByName = "aggregateState")
   @Mapping(target = "requestDate", source = "consentRequests", qualifiedByName = "latestRequestDate")
-  @Mapping(target = "showStateAsMigrated", source = "consentRequests", qualifiedByName = "anyShownAsMigrated")
+  @Mapping(target = "showStateAsMigrated", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromMaf")
+  @Mapping(target = "showStateAsMigratedFromMaf", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromMaf")
+  @Mapping(target = "showStateAsMigratedFromTvd", source = "consentRequests", qualifiedByName = "anyShownAsMigratedFromTvd")
   @Mapping(target = "lastStateChangeDate", source = "consentRequests", qualifiedByName = "latestStateChangeDate")
   @Mapping(target = "dataRequest", source = "dataRequest")
   @Mapping(target = "consentRequests", source = "consentRequests")
   ConsentRequestAggregationDto toConsentRequestAggregationDto(List<ConsentRequestEntity> consentRequests,
                                                               DataRequestDto dataRequest);
 
-  @Named("anyShownAsMigrated")
-  static boolean anyShownAsMigrated(List<ConsentRequestEntity> group) {
-    return group.stream().anyMatch(ConsentRequestEntity::isShowStateAsMigrated);
+  @Named("anyShownAsMigratedFromMaf")
+  static boolean anyShownAsMigratedFromMaf(List<ConsentRequestEntity> group) {
+    return group.stream().anyMatch(ConsentRequestEntity::isShowStateAsMigratedFromMaf);
+  }
+
+  @Named("anyShownAsMigratedFromTvd")
+  static boolean anyShownAsMigratedFromTvd(List<ConsentRequestEntity> group) {
+    return group.stream().anyMatch(ConsentRequestEntity::isShowStateAsMigratedFromTvd);
   }
 
   @Named("latestRequestDate")

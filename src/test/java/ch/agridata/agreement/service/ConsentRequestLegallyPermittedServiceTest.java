@@ -1,6 +1,8 @@
 package ch.agridata.agreement.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,8 +56,8 @@ class ConsentRequestLegallyPermittedServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, identity, 10);
-    when(container.requestContext()).thenReturn(context);
+    service = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, identity, true, 10);
+    lenient().when(container.requestContext()).thenReturn(context);
     arc = mockStatic(Arc.class);
     arc.when(Arc::container).thenReturn(container);
   }
@@ -91,6 +95,42 @@ class ConsentRequestLegallyPermittedServiceTest {
     invoke("createForBur", DATA_REQUEST_ID, BUR);
 
     verify(consentRequestCreationService, never()).createLegallyPermittedConsentRequestIfMissing(any(), any(), any(), any());
+  }
+
+  @Test
+  void givenSameKeyAlreadyQueued_whenEnqueue_thenSubmittedOnlyOnce() throws Exception {
+    var field = ConsentRequestLegallyPermittedService.class.getDeclaredField("executor");
+    field.setAccessible(true);
+    var executor = (ThreadPoolExecutor) field.get(service);
+    var release = new CountDownLatch(1);
+    executor.execute(() -> {
+      try {
+        release.await();
+      } catch (InterruptedException _) {
+        Thread.currentThread().interrupt();
+      }
+    });
+
+    service.enqueueUidBased(DATA_REQUEST_ID, UID);
+    service.enqueueUidBased(DATA_REQUEST_ID, UID);
+    service.enqueueBurBased(DATA_REQUEST_ID, BUR);
+    service.enqueueBurBased(DATA_REQUEST_ID, BUR);
+
+    assertThat(executor.getQueue()).hasSize(2);
+    release.countDown();
+  }
+
+  @Test
+  void givenDisabled_whenEnqueue_thenNothingIsSubmitted() throws Exception {
+    var disabledService = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, identity, false, 10);
+    var field = ConsentRequestLegallyPermittedService.class.getDeclaredField("executor");
+    field.setAccessible(true);
+    var executor = (ThreadPoolExecutor) field.get(disabledService);
+
+    disabledService.enqueueUidBased(DATA_REQUEST_ID, UID);
+    disabledService.enqueueBurBased(DATA_REQUEST_ID, BUR);
+
+    assertThat(executor.getTaskCount()).isZero();
   }
 
   private void invoke(String method, UUID dataRequestId, String producer) throws Exception {

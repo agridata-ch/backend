@@ -67,9 +67,10 @@ public final class AgridataContext {
   }
 
   public void emitTimingLog() {
-    var totalTimeInMs = flowTiming.getTotalTimeInMsSinceInitialization();
-    var usedTimeInMsByAgridata = flowTiming.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.AGRIDATA);
-    var usedTimeInMsByProvider = flowTiming.getUsedTimeInMsByResponsibility(FlowTiming.Responsibility.PROVIDER);
+    var summary = flowTiming.summarize();
+    var totalTimeInMs = summary.totalTimeInMs();
+    var usedTimeInMsByAgridata = summary.usedTimeInMsByAgridata();
+    var usedTimeInMsByProvider = summary.usedTimeInMsByProvider();
 
     var failed = flowTiming.getFailedTask() != null;
     var status = failed ? "failed" : "ok";

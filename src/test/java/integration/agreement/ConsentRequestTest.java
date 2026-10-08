@@ -3,6 +3,7 @@ package integration.agreement;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE101000001;
 import static integration.testutils.TestDataIdentifiers.ConsentRequest.IP_SUISSE_01_CHE102000002;
 import static integration.testutils.TestDataIdentifiers.DataRequest.ACONTROL_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_B;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,6 +12,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
+import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
+import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +26,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -100,6 +104,19 @@ class ConsentRequestTest {
         .body("size()", equalTo(0))
         .extract().as(new TypeRef<>() {
         });
+  }
+
+  @Test
+  void givenWithdrawnConsentRequest_whenProducerGetsConsentRequests_thenWithdrawnConsentRequestHidden() {
+    var requestId = TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+    assertThat(getConsentRequestsAsProducerB()).extracting(ConsentRequestProducerViewDto::id).contains(requestId);
+
+    withdrawAsConsumerBioSuisse(requestId);
+
+    assertThat(getConsentRequestsAsProducerB()).extracting(ConsentRequestProducerViewDto::id).doesNotContain(requestId);
+    AuthTestUtils.requestAs(PRODUCER_B)
+        .when().get(ConsentRequestController.PATH + "/" + requestId)
+        .then().statusCode(404);
   }
 
   @Test
@@ -192,6 +209,61 @@ class ConsentRequestTest {
   }
 
   @Test
+  void givenWithdrawnUidConsentRequest_whenCreateConsentRequests_thenExistingConsentRequestIsReopened() throws JsonProcessingException {
+    var requestId = TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE102000001.uuid();
+    withdrawAsConsumerBioSuisse(requestId);
+
+    List<ConsentRequestCreatedDto> createdConsentRequests = postConsentRequests(List.of(CreateConsentRequestDto.builder()
+        .dataRequestId(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid())
+        .uid(Uid.CHE102000001.name())
+        .build()))
+        .then().statusCode(201)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(createdConsentRequests).singleElement().satisfies(created -> {
+      assertThat(created.id()).isEqualTo(requestId);
+      assertThat(created.isCreated()).isFalse();
+    });
+    assertThat(getConsentRequestsAsProducerB())
+        .filteredOn(consentRequest -> consentRequest.id().equals(requestId))
+        .singleElement()
+        .satisfies(consentRequest -> {
+          assertThat(consentRequest.stateCode()).isEqualTo(ConsentRequestStateEnum.OPENED);
+          assertThat(consentRequest.requestDate()).isEqualTo(LocalDate.of(2025, 2, 11));
+        });
+  }
+
+  @Test
+  void givenWithdrawnBurConsentRequest_whenCreateConsentRequestsAgain_thenExistingConsentRequestIsReopened()
+      throws JsonProcessingException {
+    var consentRequestsOfUid = createConsentRequestsForAcontrolDataRequest().stream()
+        .filter(created -> Uid.CHE102000002.name().equals(created.dataProducerUid()))
+        .toList();
+    var uidConsentRequestId = consentRequestsOfUid.stream()
+        .filter(created -> created.dataProducerBur() == null)
+        .findFirst().orElseThrow()
+        .id();
+    var burConsentRequestId = consentRequestsOfUid.stream()
+        .filter(created -> Bur.CODE_99920005.getCode().equals(created.dataProducerBur()))
+        .findFirst().orElseThrow()
+        .id();
+
+    // 99920005 is the only BUR of CHE102000002, so withdrawing it rolls the UID consent request up to WITHDRAWN as well
+    withdrawAsConsumerBioSuisse(burConsentRequestId);
+    assertThat(stateCodeOf(uidConsentRequestId)).isEqualTo(ConsentRequestStateEnum.WITHDRAWN.name());
+
+    var createdConsentRequests = createConsentRequestsForAcontrolDataRequest();
+
+    assertThat(createdConsentRequests).hasSize(5)
+        .extracting(ConsentRequestCreatedDto::isCreated)
+        .containsOnly(false);
+    assertThat(consentRequestRowsOfProducerB(ACONTROL_BIO_SUISSE.uuid())).hasSize(5);
+    assertThat(stateCodeOf(burConsentRequestId)).isEqualTo(ConsentRequestStateEnum.OPENED.name());
+    assertThat(stateCodeOf(uidConsentRequestId)).isEqualTo(ConsentRequestStateEnum.OPENED.name());
+  }
+
+  @Test
   void givenUnauthorizedUid_whenCreateConsentRequests_thenNoConsentRequestIsCreated() throws JsonProcessingException {
     postConsentRequests(List.of(
         CreateConsentRequestDto.builder().dataRequestId(ACONTROL_BIO_SUISSE.uuid()).uid(Uid.CHE102000001.name()).build(),
@@ -211,6 +283,22 @@ class ConsentRequestTest {
         .then().statusCode(404);
   }
 
+  private List<ConsentRequestProducerViewDto> getConsentRequestsAsProducerB() {
+    return AuthTestUtils.requestAs(PRODUCER_B)
+        .when().get(ConsentRequestController.PATH)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+  }
+
+  private void withdrawAsConsumerBioSuisse(UUID consentRequestId) {
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
+        .contentType(JSON)
+        .body(String.format("\"%s\"", ConsentRequestStateEnum.WITHDRAWN))
+        .when().put(ConsentRequestController.PATH + "/" + consentRequestId + "/status")
+        .then().statusCode(204);
+  }
+
   private List<ConsentRequestCreatedDto> createConsentRequestsForAcontrolDataRequest() throws JsonProcessingException {
     var createDtos = PRODUCER_B.getCompanyUids().stream()
         .map(uid -> CreateConsentRequestDto.builder().dataRequestId(ACONTROL_BIO_SUISSE.uuid()).uid(uid.name()).build())
@@ -227,6 +315,12 @@ class ConsentRequestTest {
         .contentType(JSON)
         .body(MAPPER.writeValueAsString(createDtos))
         .when().post(ConsentRequestController.PATH);
+  }
+
+  private Object stateCodeOf(UUID consentRequestId) {
+    return entityManager.createNativeQuery("SELECT state_code FROM consent_request WHERE id = :id")
+        .setParameter("id", consentRequestId)
+        .getSingleResult();
   }
 
   @SuppressWarnings("unchecked")

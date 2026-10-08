@@ -1,6 +1,7 @@
 package ch.agridata.agreement.persistence;
 
 import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.GRANTED;
+import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.LEGALLY_PERMITTED;
 
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
@@ -37,11 +38,11 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
   public List<ConsentRequestFundamentalViewEntity> findGrantedByDataRequestIdsAndDataProducerBurs(
       List<UUID> dataRequestIds, List<String> dataProducerBurs) {
     return find(
-        "dataRequestId IN :dataRequestIds and dataProducerBur IN :dataProducerBurs and stateCode = :stateCode",
+        "dataRequestId IN :dataRequestIds and dataProducerBur IN :dataProducerBurs and stateCode IN :stateCodes",
         Map.of(
             "dataRequestIds", dataRequestIds,
             "dataProducerBurs", dataProducerBurs,
-            "stateCode", GRANTED
+            "stateCodes", List.of(GRANTED, LEGALLY_PERMITTED)
         )
     ).list();
   }
@@ -49,11 +50,11 @@ public class ConsentRequestFundamentalViewRepository extends BaseSearchRepositor
   public List<ConsentRequestFundamentalViewEntity> findGrantedByDataRequestIdsAndDataProducerUids(
       List<UUID> dataRequestIds, List<String> dataProducerUids) {
     return find(
-        "dataRequestId IN :dataRequestIds and dataProducerUid IN :dataProducerUids and stateCode = :stateCode",
+        "dataRequestId IN :dataRequestIds and dataProducerUid IN :dataProducerUids and stateCode IN :stateCodes",
         Map.of(
             "dataRequestIds", dataRequestIds,
             "dataProducerUids", dataProducerUids,
-            "stateCode", GRANTED
+            "stateCodes", List.of(GRANTED, LEGALLY_PERMITTED)
         )
     ).list();
   }

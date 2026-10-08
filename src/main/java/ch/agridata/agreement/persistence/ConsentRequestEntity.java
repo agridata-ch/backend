@@ -24,13 +24,15 @@ import org.hibernate.annotations.SQLRestriction;
 /**
  * Defines the persistence representation of a consent request. It captures identifiers, states, and related attributes.
  *
- * @CommentLastReviewed 2026-02-26
+ * @CommentLastReviewed 2026-09-28
  */
 @Entity
-@Table(name = "consent_request",
+@Table(
+    name = "consent_request",
     indexes = {
         @Index(name = "idx_consent_request_data_producer_uid", columnList = "data_producer_uid")
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE consent_request SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
@@ -63,6 +65,9 @@ public class ConsentRequestEntity extends AuditableEntity {
   @Column(name = "migrated_from_maf_date")
   private LocalDateTime migratedFromMafDate;
 
+  @Column(name = "migrated_from_tvd_date")
+  private LocalDateTime migratedFromTvdDate;
+
   @Column(name = "uid_bur_relation_since")
   private LocalDateTime uidBurRelationSince;
 
@@ -78,11 +83,29 @@ public class ConsentRequestEntity extends AuditableEntity {
     this.stateCode = stateCode;
   }
 
+  /**
+   * Only considers MAF migrations.
+   *
+   * @deprecated Use {@link #isShowStateAsMigratedFromMaf()} instead. Kept until the mobile app has switched to the source specific fields.
+   */
+  @Deprecated(since = "1.19.0", forRemoval = true)
   public boolean isShowStateAsMigrated() {
-    if (migratedFromMafDate == null) {
+    return isShowStateAsMigratedFromMaf();
+  }
+
+  public boolean isShowStateAsMigratedFromMaf() {
+    return isShownAsMigratedSince(migratedFromMafDate);
+  }
+
+  public boolean isShowStateAsMigratedFromTvd() {
+    return isShownAsMigratedSince(migratedFromTvdDate);
+  }
+
+  private boolean isShownAsMigratedSince(LocalDateTime migrationDate) {
+    if (migrationDate == null) {
       return false;
     }
-    return lastStateChangeDate == null || lastStateChangeDate.isBefore(migratedFromMafDate);
+    return lastStateChangeDate == null || lastStateChangeDate.isBefore(migrationDate);
   }
 
   public boolean isBurConsentRequest() {
@@ -98,6 +121,7 @@ public class ConsentRequestEntity extends AuditableEntity {
     GRANTED,
     OPENED,
     DECLINED,
-    LEGALLY_PERMITTED
+    LEGALLY_PERMITTED,
+    WITHDRAWN
   }
 }

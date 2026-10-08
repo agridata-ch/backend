@@ -4,6 +4,7 @@ import static ch.agridata.agreement.controller.ConsentRequestController.PATH;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
@@ -19,12 +20,15 @@ import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.ConsentRequestStateService;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.actingrole.ActingRoleHolder;
+import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -73,6 +77,7 @@ public class ConsentRequestController {
   private final ConsentRequestCleanupRunner consentRequestCleanupRunner;
   private final AuditingService auditingService;
   private final AgridataSecurityIdentity identity;
+  private final ActingRoleHolder actingRoleHolder;
 
   /**
    * This method is deprecated.
@@ -134,19 +139,25 @@ public class ConsentRequestController {
   @ApiSubset({MOBILE_APP, WEB_APP})
   @Operation(
       operationId = "updateConsentRequestStatus",
-      description = "Updates the status of a specific consent request. Only accessible to the "
-          + "data producer assigned to the consent request."
+      description = "Updates the status of a specific consent request. Withdrawing is only accessible to the "
+          + "data consumer owning the related data request, all other status changes only to the data producer "
+          + "assigned to the consent request."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed(PRODUCER_ROLE)
-  public void updateConsentRequestStateForCurrentDataProducer(
+  @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE})
+  @EnableActingRoleHolder
+  public void updateConsentRequestState(
       @Parameter(description = "ID of the consent request", required = true)
       @PathParam("id") UUID id,
       @RequestBody(description = "New status of the consent request")
       ConsentRequestStateEnum newStatus
   ) {
-    consentRequestStateService.updateConsentRequestStateAsCurrentDataProducer(id, newStatus);
+    switch (actingRoleHolder.getRole()) {
+      case PRODUCER -> consentRequestStateService.updateConsentRequestStateAsCurrentDataProducer(id, newStatus);
+      case CONSUMER -> consentRequestStateService.updateConsentRequestStateAsCurrentDataConsumer(id, newStatus);
+      default -> throw new ForbiddenException();
+    }
   }
 
   @POST

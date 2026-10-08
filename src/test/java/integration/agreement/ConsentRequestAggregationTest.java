@@ -1,10 +1,13 @@
 package integration.agreement;
 
+import static integration.testutils.TestUserEnum.CONSUMER_BIO_SUISSE;
+import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.PRODUCER_A;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.agreement.controller.ConsentRequestAggregationController;
+import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.dto.ConsentRequestAggregationDto;
 import ch.agridata.agreement.dto.ConsentRequestAggregationStateEnum;
 import ch.agridata.agreement.dto.ConsentRequestAggregationSummaryDto;
@@ -12,9 +15,11 @@ import ch.agridata.agreement.dto.ConsentRequestProducerViewV2Dto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
+import integration.testutils.TestUserEnum;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,6 +86,8 @@ class ConsentRequestAggregationTest {
     assertThat(bioSuisse01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.DECLINED);
     assertThat(bioSuisse01.requestDate()).isEqualTo(LocalDate.of(2025, 3, 14));
     assertThat(bioSuisse01.showStateAsMigrated()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromMaf()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromTvd()).isFalse();
 
     assertThat(bioSuisse01.consentRequests())
         .extracting(ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::id)
@@ -135,7 +142,49 @@ class ConsentRequestAggregationTest {
     assertThat(bioSuisse01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.DECLINED);
     assertThat(bioSuisse01.requestDate()).isEqualTo(LocalDate.of(2025, 3, 14));
     assertThat(bioSuisse01.showStateAsMigrated()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromMaf()).isTrue();
+    assertThat(bioSuisse01.showStateAsMigratedFromTvd()).isFalse();
+    assertThat(bioSuisse01.consentRequests())
+        .extracting(ConsentRequestProducerViewV2Dto::showStateAsMigratedFromMaf)
+        .containsOnly(true);
     assertThat(bioSuisse01.lastStateChangeDate()).isEqualTo(LocalDateTime.of(2025, 3, 20, 14, 25));
+  }
+
+  @Test
+  void givenProducer_whenGetConsentRequestAggregationsWithTvdMigration_thenOnlyTvdMigrationFlagIsSet() {
+    List<ConsentRequestAggregationSummaryDto> aggregations = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    var blv01 = aggregations.stream()
+        .filter(aggregation -> aggregation.id().equals(TestDataIdentifiers.DataRequest.BLV_1.uuid()))
+        .findFirst()
+        .orElseThrow();
+
+    assertThat(blv01.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(blv01.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(blv01.showStateAsMigrated()).isFalse();
+  }
+
+  @Test
+  void givenProducer_whenGetConsentRequestAggregationWithTvdMigration_thenOnlyTvdMigrationFlagIsSet() {
+    ConsentRequestAggregationDto blv01 = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(
+            ConsentRequestAggregationController.PATH + "/" + TestDataIdentifiers.DataRequest.BLV_1.uuid()
+                + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001
+        )
+        .then().statusCode(200)
+        .extract().as(ConsentRequestAggregationDto.class);
+
+    assertThat(blv01.showStateAsMigratedFromTvd()).isTrue();
+    assertThat(blv01.showStateAsMigratedFromMaf()).isFalse();
+    assertThat(blv01.showStateAsMigrated()).isFalse();
+    assertThat(blv01.consentRequests())
+        .isNotEmpty()
+        .extracting(ConsentRequestProducerViewV2Dto::showStateAsMigratedFromTvd)
+        .containsOnly(true);
   }
 
   @Test
@@ -155,6 +204,86 @@ class ConsentRequestAggregationTest {
 
     assertThat(aggregation.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.LEGALLY_PERMITTED);
     assertThat(aggregation.consentRequests()).hasSize(2);
+  }
+
+  @Test
+  void givenWithdrawnConsentRequests_whenGetConsentRequestAggregations_thenAggregationHidden() {
+    withdrawAs(CONSUMER_BIO_SUISSE, TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003.uuid());
+
+    List<ConsentRequestAggregationSummaryDto> aggregations = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(aggregations)
+        .hasSize(7)
+        .extracting(ConsentRequestAggregationSummaryDto::id)
+        .doesNotContain(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid());
+  }
+
+  @Test
+  void givenWithdrawnConsentRequests_whenGetConsentRequestAggregation_thenReturn404() {
+    withdrawAs(CONSUMER_BIO_SUISSE, TestDataIdentifiers.ConsentRequest.BIO_SUISSE_01_CHE101000001_99910003.uuid());
+
+    AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(
+            ConsentRequestAggregationController.PATH + "/" + TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid()
+                + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001
+        )
+        .then().statusCode(404);
+  }
+
+  @Test
+  void givenPartiallyWithdrawnConsentRequests_whenGetConsentRequestAggregations_thenOnlyRemainingConsentRequestsShown() {
+    withdrawAs(CONSUMER_BLV_1, TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001_99910002.uuid());
+
+    List<ConsentRequestAggregationSummaryDto> aggregations = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
+        .then().statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    var blv01 = aggregations.stream()
+        .filter(aggregation -> aggregation.id().equals(TestDataIdentifiers.DataRequest.BLV_1.uuid()))
+        .findFirst()
+        .orElseThrow();
+
+    assertThat(blv01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.GRANTED);
+    assertThat(blv01.consentRequests())
+        .extracting(ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::id)
+        .containsExactlyInAnyOrder(
+            TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001.uuid(),
+            TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001_99910003.uuid()
+        );
+  }
+
+  @Test
+  void givenPartiallyWithdrawnConsentRequests_whenGetConsentRequestAggregation_thenOnlyRemainingConsentRequestsShown() {
+    withdrawAs(CONSUMER_BLV_1, TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001_99910002.uuid());
+
+    ConsentRequestAggregationDto blv01 = AuthTestUtils.requestAs(PRODUCER_A)
+        .when().get(
+            ConsentRequestAggregationController.PATH + "/" + TestDataIdentifiers.DataRequest.BLV_1.uuid()
+                + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001
+        )
+        .then().statusCode(200)
+        .extract().as(ConsentRequestAggregationDto.class);
+
+    assertThat(blv01.stateCode()).isEqualTo(ConsentRequestAggregationStateEnum.GRANTED);
+    assertThat(blv01.consentRequests())
+        .extracting(ConsentRequestProducerViewV2Dto::id)
+        .containsExactlyInAnyOrder(
+            TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001.uuid(),
+            TestDataIdentifiers.ConsentRequest.BLV_1_CHE101000001_99910003.uuid()
+        );
+  }
+
+  private static void withdrawAs(TestUserEnum consumer, UUID consentRequestId) {
+    AuthTestUtils.requestAs(consumer).contentType(ContentType.JSON)
+        .body(String.format("\"%s\"", ConsentRequestStateEnum.WITHDRAWN)).when()
+        .put(ConsentRequestController.PATH + "/" + consentRequestId + "/status")
+        .then().statusCode(204);
   }
 
   /**

@@ -3,6 +3,7 @@ package ch.agridata.agreement.service;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.ACTIVE;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
@@ -40,6 +41,10 @@ public class DataRequestStateEventDispatcher {
     } else if (oldStateCode == TO_BE_ACTIVATED && newStateCode == ACTIVE) {
       auditingService.logDataRequestActivated(entity.getId());
       notificationService.queueDataRequestActivated(entity);
+    } else if (oldStateCode == ACTIVE && newStateCode == PAUSED) {
+      auditingService.logDataRequestPaused(entity.getId());
+    } else if (oldStateCode == PAUSED && newStateCode == ACTIVE) {
+      auditingService.logDataRequestReactivated(entity.getId());
     }
   }
 

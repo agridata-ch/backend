@@ -7,8 +7,10 @@ import ch.agridata.user.dto.BurDto;
 import io.quarkus.arc.Arc;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -40,18 +42,23 @@ public class ConsentRequestLegallyPermittedService {
   private final AgisApi agisApi;
   private final UserApi userApi;
   private final AgridataSecurityIdentity identity;
+  private final boolean enabled;
   private final ExecutorService executor;
+  // Keys (dataRequestId + producer) of tasks currently queued or in progress, to skip duplicate submissions.
+  private final Set<String> pending = ConcurrentHashMap.newKeySet();
 
   public ConsentRequestLegallyPermittedService(
       ConsentRequestCreationService consentRequestCreationService,
       AgisApi agisApi,
       UserApi userApi,
       AgridataSecurityIdentity identity,
+      @ConfigProperty(name = "agridata.agreement.legally-permitted-consent.enabled", defaultValue = "true") boolean enabled,
       @ConfigProperty(name = "agridata.agreement.legally-permitted-consent.queue-capacity") int queueCapacity) {
     this.consentRequestCreationService = consentRequestCreationService;
     this.agisApi = agisApi;
     this.userApi = userApi;
     this.identity = identity;
+    this.enabled = enabled;
     // Single worker on purpose: keeps the AGIS BUR->UID lookups sequential so the external API is not hit in too many parallel bursts.
     this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(queueCapacity));
   }
@@ -65,9 +72,26 @@ public class ConsentRequestLegallyPermittedService {
   }
 
   private void submit(UUID dataRequestId, String producer, Runnable work) {
+    if (!enabled) {
+      log.debug("Legally permitted consent request creation disabled: dataRequestId={}, {}", dataRequestId, producer);
+      return;
+    }
+    var key = dataRequestId + "|" + producer;
+    if (!pending.add(key)) {
+      log.debug("Legally permitted consent request already queued: dataRequestId={}, {}", dataRequestId, producer);
+      return;
+    }
     try {
-      executor.execute(work);
+      executor.execute(() -> {
+        try {
+          work.run();
+        } finally {
+          pending.remove(key);
+        }
+      });
+      log.debug("Legally permitted consent request queued: dataRequestId={}, {}", dataRequestId, producer);
     } catch (RejectedExecutionException _) {
+      pending.remove(key);
       log.error("Legally permitted consent request dropped, queue saturated: dataRequestId={}, {}", dataRequestId, producer);
     }
   }

@@ -5,6 +5,7 @@ import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_CLEANUP_TRIGGE
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
+import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_CONSUMER_CHOSEN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_COLLECTIVE_SIGNATURE_FOR_PROVIDER_CHOSEN;
 import static ch.agridata.auditing.api.ActionEnum.CONTRACT_FIRST_CONSUMER_SLOT_SIGNED;
@@ -18,6 +19,8 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_ACTIVATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_APPROVED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_COLLECTIVE_SIGNATURE_SET_FOR_PROVIDER;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_PAUSED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REACTIVATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
@@ -58,6 +61,7 @@ public class AuditingService {
       case GRANTED -> api.logUserAction(CONSENT_REQUEST_GRANTED, CONSENT_REQUEST, id);
       case DECLINED -> api.logUserAction(CONSENT_REQUEST_DECLINED, CONSENT_REQUEST, id);
       case OPENED -> api.logUserAction(CONSENT_REQUEST_REOPENED, CONSENT_REQUEST, id);
+      case WITHDRAWN -> api.logUserAction(CONSENT_REQUEST_WITHDRAWN, CONSENT_REQUEST, id);
     }
   }
 
@@ -75,6 +79,14 @@ public class AuditingService {
 
   public void logDataRequestActivated(UUID entityId) {
     api.logUserAction(DATA_REQUEST_ACTIVATED, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestPaused(UUID entityId) {
+    api.logUserAction(DATA_REQUEST_PAUSED, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestReactivated(UUID entityId) {
+    api.logUserAction(DATA_REQUEST_REACTIVATED, DATA_REQUEST, entityId);
   }
 
   public void logDataRequestWithdrawn(UUID entityId) {

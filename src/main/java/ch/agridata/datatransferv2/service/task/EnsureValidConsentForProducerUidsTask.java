@@ -41,7 +41,7 @@ public class EnsureValidConsentForProducerUidsTask implements UnaryOperator<Agri
     Set<String> missingConsentUids = findUidsWithMissingConsent(producerUids, validDataRequestIds);
 
     if (!missingConsentUids.isEmpty()) {
-      return handleMissingConsent(context, producerUids, missingConsentUids);
+      return handleMissingConsent(context, missingConsentUids);
     }
 
     log.debug("Consent verified for all {} producer UID(s)", producerUids.size());
@@ -60,12 +60,11 @@ public class EnsureValidConsentForProducerUidsTask implements UnaryOperator<Agri
     return missingConsentUids;
   }
 
-  private AgridataContext handleMissingConsent(AgridataContext context, Set<String> producerUids,
-                                               Set<String> missingConsentUids) {
+  private AgridataContext handleMissingConsent(AgridataContext context, Set<String> missingConsentUids) {
     if (!context.getProductProviderConfiguration().consentRequired()) {
       var dataRequestId = context.getValidDataRequestIds().getFirst();
       log.debug("Product is consent-free, enqueueing legally permitted consent requests for dataRequestId={}, producerUids={}",
-          dataRequestId, producerUids);
+          dataRequestId, missingConsentUids);
       missingConsentUids.forEach(uid -> consentRequestApi.enqueueLegallyPermittedUidBasedConsentRequest(dataRequestId, uid));
       return context;
     }
