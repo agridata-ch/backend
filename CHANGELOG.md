@@ -1,3 +1,27 @@
+## [1.20.0](https://github.com/agridata-ch/backend/compare/v1.19.0...v1.20.0) (2026-10-08)
+
+### Features
+
+* **agreement:** allow consumer to add specific consent-requests ([119a7fe](https://github.com/agridata-ch/backend/commit/119a7feec8cf59bf48e57b594151a2a919e897b4)), closes [DIGIB2-1708](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1708)
+* **agreement:** allow consumer to withdraw consent requests ([79fa9ae](https://github.com/agridata-ch/backend/commit/79fa9ae7582fa3bcf4fcee904e8519fcde005aaf)), closes [DIGIB2-618](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-618)
+* **agreement:** allow producer to reopen withdrawn consent requests ([763b3c1](https://github.com/agridata-ch/backend/commit/763b3c162c405ab7e7f269270f40e639e30da3ad)), closes [DIGIB2-1562](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1562)
+* **agreement:** hide withdrawn consent requests from producers ([fab1cd8](https://github.com/agridata-ch/backend/commit/fab1cd8f4bd04b96bbe6dff29f7a257526918535)), closes [DIGIB2-1563](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1563)
+* **cicd:** add cloudfront cache invalidation ([da30b12](https://github.com/agridata-ch/backend/commit/da30b125608cddad530f5147cdf59b69cba86a34)), closes [DIGIB2-1682](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1682)
+* **data-request:** Add pausing data requests as admin ([db65c4d](https://github.com/agridata-ch/backend/commit/db65c4dacbd3a9ce1385ff8c9b76a9710091c08f)), closes [DIGIB2-1689](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1689)
+* **data-request:** Add reactivating paused data requests as admin ([fa64870](https://github.com/agridata-ch/backend/commit/fa64870523bf44997180ed4501dd0d627159a41e)), closes [DIGIB2-1691](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1691)
+* **docu:** update publiccode.yml for open source catalog ([84913f4](https://github.com/agridata-ch/backend/commit/84913f43a375b475ffda560ac835e4e34cf02c0e))
+* **migration:** add migratedFromMaf and Tvd to consentRequest ([75fcd11](https://github.com/agridata-ch/backend/commit/75fcd11d9a70c32c6c8b7f77b82c82d3b00bdcdf)), closes [DIGIB2-1444](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1444)
+* **product:** limit concurrent requests and read timeout for data providers ([af22a8e](https://github.com/agridata-ch/backend/commit/af22a8eabc41076e5d4134cf4086ef326178dd32)), closes [DIGIB2-1740](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1740)
+* **test-data:** get data products from production ([6e71761](https://github.com/agridata-ch/backend/commit/6e717613af78223250dd2136b3891f72206e0633)), closes [DIGIB2-1733](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1733)
+
+### Bug Fixes
+
+* **datatransfer:** treat legally permitted consent requests as granted ([fecc205](https://github.com/agridata-ch/backend/commit/fecc205ac2acb6d1ca681e9cf1b929870d2eda4f))
+* **datatransferv2:** measure data transfer timing from request arrival to end of response streaming ([d3f1ada](https://github.com/agridata-ch/backend/commit/d3f1ada6b02ce6f10f0f493b3df98ff0e9a4f0f4))
+* **deps:** update dependencies ([20b8567](https://github.com/agridata-ch/backend/commit/20b8567791e6f3ad5130af4f9b730e4f8c9a0609)), closes [DIGIB2-1714](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1714)
+* **envs:** remove envs that are overridden by external config ([5071bdd](https://github.com/agridata-ch/backend/commit/5071bdd53dfd76b3f2168006c410455c2cb88d70))
+* **sms:** support two leading zeros as mobile number ([729ebf6](https://github.com/agridata-ch/backend/commit/729ebf6478cb807494a97e5598a1f5fed88d1262)), closes [DIGIB2-1747](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1747)
+
 ## [1.20.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.15...v1.20.0-rc.16) (2026-10-08)
 
 ### Features
