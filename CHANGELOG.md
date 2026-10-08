@@ -1,3 +1,9 @@
+## [1.20.0-rc.16](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.15...v1.20.0-rc.16) (2026-10-08)
+
+### Features
+
+* **agreement:** allow producer to reopen withdrawn consent requests ([763b3c1](https://github.com/agridata-ch/backend/commit/763b3c162c405ab7e7f269270f40e639e30da3ad)), closes [DIGIB2-1562](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1562)
+
 ## [1.20.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.20.0-rc.14...v1.20.0-rc.15) (2026-10-07)
 
 ### Bug Fixes
