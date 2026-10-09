@@ -18,6 +18,7 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.service.ConsentRequestCreationService;
+import ch.agridata.agreement.service.ConsentRequestExportService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
@@ -47,8 +48,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -89,6 +92,7 @@ public class DataRequestController {
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
   private final ConsentRequestCreationService consentRequestCreationService;
+  private final ConsentRequestExportService consentRequestExportService;
   private final ActingRoleHolder actingRoleHolder;
   private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
 
@@ -407,5 +411,23 @@ public class DataRequestController {
   @RolesAllowed(CONSUMER_ROLE)
   public ConsentRequestStatusSummaryDto getConsentRequestStatusSummaryOfDataRequest(@PathParam("id") UUID dataRequestId) {
     return consentRequestQueryService.getConsentRequestStatusSummaryOfDataRequestOfCurrentConsumer(dataRequestId);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/consent-requests/export")
+  @Operation(
+      operationId = "exportConsentRequestsOfDataRequest",
+      description = "Exports the consent requests of a data request as CSV (semicolon-separated, UTF-8 with BOM) with the columns "
+          + "uid, bur, requestDate, lastChangeDate and stateCode. Consent requests of terminated UID/BUR relations are excluded. "
+          + "Accessible to the consumer who owns the data request."
+  )
+  @Produces("text/csv")
+  @RolesAllowed(CONSUMER_ROLE)
+  public Response exportConsentRequestsOfDataRequest(@PathParam("id") UUID dataRequestId) {
+    var csv = consentRequestExportService.exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(dataRequestId);
+    return Response.ok(csv.getBytes(StandardCharsets.UTF_8), "text/csv; charset=UTF-8")
+        .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"consent-requests-%s.csv\"", dataRequestId))
+        .build();
   }
 }

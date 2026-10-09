@@ -70,6 +70,13 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).firstResultOptional();
   }
 
+  public List<ConsentRequestExportProjection> findActiveExportProjectionsByDataRequestId(UUID dataRequestId) {
+    return find(
+        "dataRequest.id = :dataRequestId and uidBurRelationUntil is null order by dataProducerUid, dataProducerBur nulls first",
+        Map.of("dataRequestId", dataRequestId)
+    ).project(ConsentRequestExportProjection.class).list();
+  }
+
   public List<ConsentRequestEntity> findActiveByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
     return find(
         "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null",
