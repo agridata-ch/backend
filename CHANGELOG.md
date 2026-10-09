@@ -1,3 +1,9 @@
+## [1.20.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.0...v1.20.1-rc.1) (2026-10-09)
+
+### Bug Fixes
+
+* **security:** allow service accounts without openid scope ([aa40a8c](https://github.com/agridata-ch/backend/commit/aa40a8cde8090a29a954f3477c8e0a1b612d33b3)), closes [DIGIB2-1758](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1758)
+
 ## [1.20.0](https://github.com/agridata-ch/backend/compare/v1.19.0...v1.20.0) (2026-10-08)
 
 ### Features
