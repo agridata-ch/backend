@@ -12,6 +12,8 @@ import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataProviderUnavailableException;
+import ch.agridata.common.exceptions.ExportCapacityExhaustedException;
+import ch.agridata.common.exceptions.ExportLimitExceededException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -29,6 +31,7 @@ import jakarta.validation.Path;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Set;
@@ -227,6 +230,29 @@ class ExceptionHandlerTest {
     assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
     assertThat(dto.message()).isEqualTo("OTP resend cooldown active");
     assertThat(dto.type()).isEqualTo(ExceptionEnum.OTP_RESEND_COOLDOWN);
+  }
+
+  @Test
+  void handleExportLimitExceededException() {
+    Response response = exceptionHandler.handleExportLimitExceededException(new ExportLimitExceededException(100_001L, 100_000));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo("Export limit exceeded");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXPORT_LIMIT_EXCEEDED);
+  }
+
+  @Test
+  void handleExportCapacityExhaustedException() {
+    Response response = exceptionHandler.handleExportCapacityExhaustedException(new ExportCapacityExhaustedException(10));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getHeaderString(HttpHeaders.RETRY_AFTER)).isEqualTo("10");
+    assertThat(dto.message()).isEqualTo("Export capacity exhausted");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.EXPORT_CAPACITY_EXHAUSTED);
   }
 
   @ParameterizedTest(name = "handleValidationException, debug={0}")
