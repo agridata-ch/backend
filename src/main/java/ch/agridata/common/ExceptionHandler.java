@@ -9,6 +9,8 @@ import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataProviderUnavailableException;
+import ch.agridata.common.exceptions.ExportCapacityExhaustedException;
+import ch.agridata.common.exceptions.ExportLimitExceededException;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.common.exceptions.OtpExpiredException;
 import ch.agridata.common.exceptions.OtpInvalidException;
@@ -24,6 +26,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -153,6 +156,25 @@ public class ExceptionHandler {
     return Response.status(Status.BAD_REQUEST)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("OTP resend cooldown active", ex.getMessage(), ExceptionEnum.OTP_RESEND_COOLDOWN))
+        .build();
+  }
+
+  @ServerExceptionMapper(ExportLimitExceededException.class)
+  public Response handleExportLimitExceededException(ExportLimitExceededException ex) {
+    log.warn("ExportLimitExceededException: {}", ex.getMessage());
+    return Response.status(Status.BAD_REQUEST)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("Export limit exceeded", ex.getMessage(), ExceptionEnum.EXPORT_LIMIT_EXCEEDED))
+        .build();
+  }
+
+  @ServerExceptionMapper(ExportCapacityExhaustedException.class)
+  public Response handleExportCapacityExhaustedException(ExportCapacityExhaustedException ex) {
+    log.warn("ExportCapacityExhaustedException: {}", ex.getMessage());
+    return Response.status(Status.SERVICE_UNAVAILABLE)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .header(HttpHeaders.RETRY_AFTER, ex.getRetryAfterSeconds())
+        .entity(createResponse("Export capacity exhausted", ex.getMessage(), ExceptionEnum.EXPORT_CAPACITY_EXHAUSTED))
         .build();
   }
 
