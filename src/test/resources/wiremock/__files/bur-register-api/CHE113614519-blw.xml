@@ -1,0 +1,23 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+    <s:Header>
+        <a:Action s:mustUnderstand="1">http://burweb2.admin.ch/IQueryServiceV1X8/GetLocalUnitByUidResponse</a:Action>
+    </s:Header>
+    <s:Body>
+        <GetLocalUnitByUidResponse xmlns="http://burweb2.admin.ch/">
+            <GetLocalUnitByUidResult xmlns:b="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.BurWeb.Services.External.V1_8" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+                <b:countryIdISO2>CH</b:countryIdISO2>
+                <b:foreignZipCode i:nil="true"/>
+                <b:houseNumber>165</b:houseNumber>
+                <b:legalName>Bundesamt für Landwirtschaft BLW</b:legalName>
+                <b:name>Bundesamt für Landwirtschaft BLW</b:name>
+                <b:street>Schwarzenburgstrasse</b:street>
+                <b:swissZipCode>3008</b:swissZipCode>
+                <b:town>Bern</b:town>
+                <b:uid>
+                    <b:uidOrganisationId>113614519</b:uidOrganisationId>
+                    <b:uidOrganisationIdCategorie>CHE</b:uidOrganisationIdCategorie>
+                </b:uid>
+            </GetLocalUnitByUidResult>
+        </GetLocalUnitByUidResponse>
+    </s:Body>
+</s:Envelope>

@@ -1,0 +1,14 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "url": "/agis/register-data/2/register"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "agis-register-api/fallback.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

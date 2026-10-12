@@ -1,0 +1,23 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "url": "/bur-register/QueryServiceV1X8.svc",
+    "basicAuthCredentials": {
+      "username": "agridata",
+      "password": "secret"
+    },
+    "bodyPatterns": [
+      {
+        "matchesXPath": "//*[local-name()='uid']"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "bur-register-api/fallback.xml",
+    "headers": {
+      "Content-Type": "application/soap+xml; charset=utf-8"
+    }
+  }
+}
