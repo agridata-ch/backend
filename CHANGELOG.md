@@ -1,3 +1,9 @@
+## [1.21.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.1-rc.1...v1.21.0-rc.1) (2026-10-12)
+
+### Features
+
+* **burregister:** add connection to bur register api ([596d5cd](https://github.com/agridata-ch/backend/commit/596d5cddb90560a96ecf23890312c15a8c89367d)), closes [DIGIB2-1258](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1258)
+
 ## [1.20.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.0...v1.20.1-rc.1) (2026-10-09)
 
 ### Bug Fixes
