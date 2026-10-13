@@ -1,6 +1,7 @@
 package ch.agridata.user.mapper;
 
 import ch.agridata.user.dto.AgbRevisionDto;
+import ch.agridata.user.dto.AgbRevisionOverviewDto;
 import ch.agridata.user.persistence.AgbRevisionEntity;
 import org.mapstruct.Mapper;
 
@@ -13,4 +14,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jakarta")
 public interface AgbRevisionMapper {
   AgbRevisionDto toDto(AgbRevisionEntity agbRevisionEntity);
+
+  AgbRevisionOverviewDto toOverviewDto(AgbRevisionEntity agbRevisionEntity);
 }
