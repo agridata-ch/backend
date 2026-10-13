@@ -1,3 +1,9 @@
+## [1.21.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.1...v1.21.0-rc.2) (2026-10-13)
+
+### Features
+
+* **agbs:** implement admin controller and service for paginated agb revisions ([aa70dab](https://github.com/agridata-ch/backend/commit/aa70dab23d5a392c298b3e25650ed9194159e138)), closes [DIGIB2-1520](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1520)
+
 ## [1.21.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.1-rc.1...v1.21.0-rc.1) (2026-10-12)
 
 ### Features
