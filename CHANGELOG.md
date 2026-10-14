@@ -1,3 +1,9 @@
+## [1.21.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.4...v1.21.0-rc.5) (2026-10-14)
+
+### Features
+
+* **api:** updated ApiSubset annotation ([8f55c01](https://github.com/agridata-ch/backend/commit/8f55c01b2babadeba3106ff06c31464ffa3db0d6))
+
 ## [1.21.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.3...v1.21.0-rc.4) (2026-10-14)
 
 ### Features
