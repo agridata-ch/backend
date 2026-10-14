@@ -1,6 +1,5 @@
 package ch.agridata.product.controller;
 
-import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
@@ -42,7 +41,7 @@ public class DataProductController {
   private final DataProductQueryService dataProductQueryService;
 
   @GET
-  @ApiSubset({WEB_APP, MOBILE_APP})
+  @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getDataProducts",
       description = "Retrieves the list of all available data products. Accessible to users with the "

@@ -136,7 +136,7 @@ public class DataRequestController {
   }
 
   @GET
-  @ApiSubset({WEB_APP, DATA_PROVIDER})
+  @ApiSubset({WEB_APP, DATA_PROVIDER, DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequest",
