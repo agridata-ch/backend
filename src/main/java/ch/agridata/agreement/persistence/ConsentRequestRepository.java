@@ -91,13 +91,14 @@ public class ConsentRequestRepository extends BaseSearchRepository<ConsentReques
     ).list();
   }
 
-  public List<ConsentRequestEntity> findActiveNotWithdrawnByDataRequestIdAndDataProducerUid(UUID dataRequestId, String dataProducerUid) {
+  public List<ConsentRequestEntity> findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(UUID dataRequestId,
+                                                                                         List<String> dataProducerUids) {
     return find(
-        "dataRequest.id = :dataRequestId and dataProducerUid = :dataProducerUid and uidBurRelationUntil is null "
+        "dataRequest.id = :dataRequestId and dataProducerUid IN :dataProducerUids and uidBurRelationUntil is null "
             + "and stateCode <> :withdrawn",
         Map.of(
             "dataRequestId", dataRequestId,
-            "dataProducerUid", dataProducerUid,
+            "dataProducerUids", dataProducerUids,
             "withdrawn", WITHDRAWN
         )
     ).list();

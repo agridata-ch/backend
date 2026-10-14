@@ -138,7 +138,7 @@ class ConsentRequestAggregationServiceTest {
 
   @Test
   void givenNoConsentRequestsForDataRequest_whenGetAggregation_thenThrowNotFound() {
-    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUid(DR1, AUTH_UID)).thenReturn(List.of());
+    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID))).thenReturn(List.of());
 
     assertThatThrownBy(() -> service.getConsentRequestAggregationAsCurrentDataProducer(AUTH_UID, DR1))
         .isInstanceOf(NotFoundException.class);
@@ -148,7 +148,7 @@ class ConsentRequestAggregationServiceTest {
   void givenAuthorizedUidAndConsentRequests_whenGetAggregation_thenReturnAggregationWithEnrichedDataRequest() {
     var dataRequest = dataRequest(DR1);
     var enrichedDataRequest = DataRequestDto.builder().id(DR1).build();
-    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUid(DR1, AUTH_UID))
+    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID)))
         .thenReturn(List.of(consentRequest(CR1, dataRequest, dateTime(2))));
     when(dataRequestEnrichmentService.toEnrichedDto(dataRequest)).thenReturn(enrichedDataRequest);
 
@@ -160,6 +160,30 @@ class ConsentRequestAggregationServiceTest {
         .extracting(ConsentRequestProducerViewV2Dto::id)
         .containsExactly(CR1);
     verify(dataRequestEnrichmentService).toEnrichedDto(dataRequest);
+  }
+
+  @Test
+  void givenConsentRequestForAuthorizedUid_whenIsVisibleToCurrentDataProducer_thenReturnTrue() {
+    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID)))
+        .thenReturn(List.of(consentRequest(CR1, dataRequest(DR1), dateTime(2))));
+
+    assertThat(service.isVisibleToCurrentDataProducer(DR1)).isTrue();
+  }
+
+  @Test
+  void givenNoConsentRequestForAuthorizedUid_whenIsVisibleToCurrentDataProducer_thenReturnFalse() {
+    when(consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(DR1, List.of(AUTH_UID)))
+        .thenReturn(List.of());
+
+    assertThat(service.isVisibleToCurrentDataProducer(DR1)).isFalse();
+  }
+
+  @Test
+  void givenNoAuthorizedUids_whenIsVisibleToCurrentDataProducer_thenReturnFalseWithoutRepositoryAccess() {
+    when(userApi.getAuthorizedUids("dummyp-kt-id-p-1", "agate_user_1")).thenReturn(List.of());
+
+    assertThat(service.isVisibleToCurrentDataProducer(DR1)).isFalse();
+    verifyNoInteractions(consentRequestRepository);
   }
 
   private static DataRequestEntity dataRequest(UUID id) {

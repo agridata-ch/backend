@@ -2,7 +2,9 @@ package ch.agridata.agreement.service;
 
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
 import ch.agridata.agreement.mapper.ContractRevisionPdfMapper;
@@ -65,6 +67,13 @@ public class ContractRevisionPdfService {
   @RolesAllowed(CONSUMER_ROLE)
   public byte[] getPdfAsConsumer(UUID contractRevisionId) {
     ContractRevisionEntity contractRevision = contractRevisionQueryService.getAsConsumer(contractRevisionId);
+
+    return contractRevisionStorageService.download(contractRevision.getId());
+  }
+
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
+  public byte[] getPdfAsProducer(UUID contractRevisionId) {
+    ContractRevisionEntity contractRevision = contractRevisionQueryService.getAsProducer(contractRevisionId);
 
     return contractRevisionStorageService.download(contractRevision.getId());
   }

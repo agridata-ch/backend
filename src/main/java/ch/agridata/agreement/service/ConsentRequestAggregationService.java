@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class ConsentRequestAggregationService {
   public List<ConsentRequestAggregationSummaryDto> getConsentRequestAggregationsAsCurrentDataProducer(
       @NotNull String dataProducerUid
   ) {
-    if (isNotAuthorized(dataProducerUid)) {
+    if (!isAuthorized(dataProducerUid)) {
       return List.of();
     }
 
@@ -69,11 +70,11 @@ public class ConsentRequestAggregationService {
       @NotNull String dataProducerUid,
       @NotNull UUID dataRequestId
   ) {
-    if (isNotAuthorized(dataProducerUid)) {
+    if (!isAuthorized(dataProducerUid)) {
       throw new NotFoundException(dataRequestId.toString());
     }
 
-    var group = consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUid(dataRequestId, dataProducerUid);
+    var group = consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(dataRequestId, List.of(dataProducerUid));
     if (group.isEmpty()) {
       throw new NotFoundException(dataRequestId.toString());
     }
@@ -83,15 +84,32 @@ public class ConsentRequestAggregationService {
     return aggregationMapper.toConsentRequestAggregationDto(group, dataRequest);
   }
 
-  private boolean isNotAuthorized(String dataProducerUid) {
+  /**
+   * Returns whether the data request is visible as a consent request aggregation for any of the UIDs the current data producer is
+   * authorized for.
+   */
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE})
+  public boolean isVisibleToCurrentDataProducer(@NotNull UUID dataRequestId) {
+    var authorizedUids = getAuthorizedUids();
+    if (authorizedUids.isEmpty()) {
+      return false;
+    }
+
+    return !consentRequestRepository.findActiveNotWithdrawnByDataRequestIdAndDataProducerUids(dataRequestId, List.copyOf(authorizedUids))
+        .isEmpty();
+  }
+
+  private boolean isAuthorized(String dataProducerUid) {
+    return getAuthorizedUids().contains(dataProducerUid);
+  }
+
+  private Set<String> getAuthorizedUids() {
     var ktIdP = identity.getKtIdpOrImpersonatedKtIdP();
     var agateLoginId = identity.getAgateLoginIdOrImpersonatedAgateLoginId();
 
-    var authorizedUids = userApi.getAuthorizedUids(ktIdP, agateLoginId)
+    return userApi.getAuthorizedUids(ktIdP, agateLoginId)
         .stream()
         .map(UidDto::uid)
         .collect(Collectors.toSet());
-
-    return !authorizedUids.contains(dataProducerUid);
   }
 }
