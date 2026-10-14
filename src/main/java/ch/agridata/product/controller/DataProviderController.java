@@ -1,6 +1,7 @@
 package ch.agridata.product.controller;
 
 
+import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
@@ -75,7 +76,7 @@ public class DataProviderController {
   }
 
   @GET
-  @ApiSubset({WEB_APP})
+  @ApiSubset({WEB_APP, MOBILE_APP})
   @Path("/{providerId}/products")
   @Operation(
       operationId = "getDataProductsByProviderId",
