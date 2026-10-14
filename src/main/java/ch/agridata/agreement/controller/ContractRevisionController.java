@@ -4,7 +4,9 @@ import static ch.agridata.agreement.controller.ContractRevisionController.PATH;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.CONSUMER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 
 import ch.agridata.agreement.dto.ContractRevisionDto;
 import ch.agridata.agreement.dto.OtpChallengeDto;
@@ -197,9 +199,10 @@ public class ContractRevisionController {
   @Produces("application/pdf")
   @Operation(
       operationId = "getContractRevisionPdf",
-      description = "Returns the pdf of the contract revision"
+      description = "Returns the pdf of the contract revision. Data producers can only access the current contract revision "
+          + "of a data request for which they have a consent request aggregation."
   )
-  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE})
   @EnableActingRoleHolder
   public Response getContractRevisionPdf(
       @PathParam("id") UUID id
@@ -208,7 +211,7 @@ public class ContractRevisionController {
       case ADMIN -> contractRevisionPdfService.getPdfAsAdmin(id);
       case PROVIDER -> contractRevisionPdfService.getPdfAsProvider(id);
       case CONSUMER -> contractRevisionPdfService.getPdfAsConsumer(id);
-      default -> throw new ForbiddenException();
+      case PRODUCER, SUPPORT -> contractRevisionPdfService.getPdfAsProducer(id);
     };
     return Response.ok(pdf)
         .header("Content-Disposition", String.format("attachment; filename=\"contract-revision-%s.pdf\"", id))

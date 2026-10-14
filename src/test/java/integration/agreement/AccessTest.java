@@ -49,7 +49,7 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/seals/status",
         ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/pdf",
-        ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE);
+        ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE);
   }
 
   @Test
