@@ -1,3 +1,9 @@
+## [1.21.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.5...v1.21.0-rc.6) (2026-10-15)
+
+### Features
+
+* **agreement:** allow producers to download relevant contracts ([a44e7fc](https://github.com/agridata-ch/backend/commit/a44e7fc40491916a49d028aa21ee38ca7bfe8361)), closes [DIGIB2-1749](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1749)
+
 ## [1.21.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.4...v1.21.0-rc.5) (2026-10-14)
 
 ### Features
