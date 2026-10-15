@@ -1,6 +1,7 @@
 package ch.agridata.agreement.controller;
 
 import static ch.agridata.agreement.controller.ConsentRequestController.PATH;
+import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
@@ -136,7 +137,7 @@ public class ConsentRequestController {
 
   @PUT
   @Path("/{id}/status")
-  @ApiSubset({MOBILE_APP, WEB_APP})
+  @ApiSubset({MOBILE_APP, WEB_APP, DATA_CONSUMER})
   @Operation(
       operationId = "updateConsentRequestStatus",
       description = "Updates the status of a specific consent request. Withdrawing is only accessible to the "
