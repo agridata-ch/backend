@@ -189,7 +189,7 @@ public class DataRequestController {
   }
 
   @POST
-  @ApiSubset({WEB_APP})
+  @ApiSubset({WEB_APP, DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/consent-requests")
   @Operation(
       operationId = "createConsentRequestsForDataRequest",
