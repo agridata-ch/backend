@@ -1,3 +1,9 @@
+## [1.21.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.6...v1.21.0-rc.7) (2026-10-15)
+
+### Features
+
+* **agreement:** updated ApiSubset annotation ([1aeabce](https://github.com/agridata-ch/backend/commit/1aeabce8d2580aa61a3936a901fedf80e08979de)), closes [DIGIB2-1310](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1310)
+
 ## [1.21.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.5...v1.21.0-rc.6) (2026-10-15)
 
 ### Features
