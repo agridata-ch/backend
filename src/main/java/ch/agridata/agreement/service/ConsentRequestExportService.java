@@ -36,14 +36,14 @@ import org.jspecify.annotations.NonNull;
 /**
  * Exports the active consent requests of a data request as CSV. The format targets Excel in Swiss, German, French and Italian
  * locales: semicolon-separated, UTF-8 with BOM and locale-neutral {@code yyyy-MM-dd HH:mm:ss} timestamps in local Swiss time. UID
- * and BUR are written unescaped, as their fixed formats consist of letters and digits only; any free-text column added later
+ * and BUR are written unescaped, as their formats consist of letters and digits only; any free-text column added later
  * needs quoting and protection against formula injection. The query result and the CSV are fully loaded into memory, so exports
  * above {@value #MAX_ROWS} rows are rejected and at most {@value #MAX_CONCURRENT_EXPORTS} exports run concurrently per instance;
  * further exports are rejected immediately to protect the heap. The permit is held until the CSV is rendered, after which only the
  * much smaller CSV bytes remain in memory. The row limit also keeps the CSV below the 10 MB response limit of the API gateway.
  * Only active data requests can be exported. Drafts are not visible to admins and are therefore reported as not found to them.
  *
- * @CommentLastReviewed 2026-10-13
+ * @CommentLastReviewed 2026-10-16
  */
 @ApplicationScoped
 @RequiredArgsConstructor
