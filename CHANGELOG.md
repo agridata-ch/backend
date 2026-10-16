@@ -1,3 +1,9 @@
+## [1.21.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.7...v1.21.0-rc.8) (2026-10-16)
+
+### Features
+
+* **agreement:** loosen format expectations for bur ([4fa6984](https://github.com/agridata-ch/backend/commit/4fa69849aa7ac051713c5153754e89ef9590e8f5)), closes [DIGIB2-1310](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1310)
+
 ## [1.21.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.6...v1.21.0-rc.7) (2026-10-15)
 
 ### Features
