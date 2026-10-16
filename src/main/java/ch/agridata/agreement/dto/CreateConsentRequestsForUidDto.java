@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Used to create the consent requests of a single data producer UID (and optionally its BURs) for a data request.
  *
- * @CommentLastReviewed 2026-09-24
+ * @CommentLastReviewed 2026-10-16
  */
 
 @Schema(description = "Data transfer object used to create consent requests for a data producer UID and optionally its BURs")
@@ -35,8 +35,8 @@ public record CreateConsentRequestsForUidDto(
     List<
         @NotNull
         @Pattern(
-            regexp = "^A\\d{8}$",
-            message = "Invalid BUR format. Expected format is 'A' followed by 8 digits."
+            regexp = "^[A-Za-z0-9]{8,9}$",
+            message = "Invalid BUR format. Expected 8 to 9 alphanumeric characters."
         )
         String> burs
 ) {
