@@ -422,16 +422,16 @@ public class DataRequestController {
           + "Exports of more than 100000 consent requests are rejected with status 400 and type EXPORT_LIMIT_EXCEEDED. "
           + "If too many exports run concurrently, the export is rejected with status 503, type EXPORT_CAPACITY_EXHAUSTED and a "
           + "Retry-After header. "
-          + "Accessible to the consumer who owns the data request and to admin users. Only active data requests can be "
-          + "exported, otherwise the export is rejected with status 400. Draft data requests are not found for admin users."
+          + "Accessible to the consumer who owns the data request and to admin users. Only active and paused data requests "
+          + "can be exported, otherwise the export is rejected with status 400. Draft data requests are not found for admin users."
   )
   @Produces("text/csv")
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
   @EnableActingRoleHolder
   public Response exportConsentRequestsOfDataRequest(@PathParam("id") UUID dataRequestId) {
     var export = switch (actingRoleHolder.getRole()) {
-      case CONSUMER -> consentRequestExportService.exportConsentRequestsOfActiveDataRequestOfCurrentConsumerAsCsv(dataRequestId);
-      case ADMIN -> consentRequestExportService.exportConsentRequestsOfActiveDataRequestAsCsv(dataRequestId);
+      case CONSUMER -> consentRequestExportService.exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(dataRequestId);
+      case ADMIN -> consentRequestExportService.exportConsentRequestsOfDataRequestAsCsv(dataRequestId);
       default -> throw new ForbiddenException();
     };
     return Response.ok(export.content(), "text/csv; charset=UTF-8")
