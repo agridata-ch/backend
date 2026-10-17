@@ -77,7 +77,7 @@ class ConsentRequestExportServiceTest {
   @Test
   void givenDataRequest_whenExporting_thenFileNameContainsHumanFriendlyIdAndLocalDate() {
     givenDataRequestVisibleToAdmin(DataRequestStateEnum.ACTIVE);
-    var export = service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID);
+    var export = service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID);
 
     assertThat(export.fileName()).isEqualTo("consent-requests-SV29-2026-10-13.csv");
   }
@@ -95,12 +95,12 @@ class ConsentRequestExportServiceTest {
 
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
       List<Future<?>> runningExports = List.of(
-          executor.submit(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID)),
-          executor.submit(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID))
+          executor.submit(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID)),
+          executor.submit(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID))
       );
       assertThat(queriesStarted.await(5, TimeUnit.SECONDS)).isTrue();
 
-      assertThatThrownBy(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID))
+      assertThatThrownBy(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID))
           .isInstanceOf(ExportCapacityExhaustedException.class);
 
       queriesMayFinish.countDown();
@@ -109,7 +109,7 @@ class ConsentRequestExportServiceTest {
       }
     }
 
-    assertThat(service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
+    assertThat(service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
   }
 
   @Test
@@ -122,47 +122,48 @@ class ConsentRequestExportServiceTest {
 
     // As many failures as there are permits: a single leaked permit would make the subsequent export fail.
     for (var i = 0; i < 2; i++) {
-      assertThatThrownBy(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID))
+      assertThatThrownBy(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID))
           .isInstanceOf(IllegalStateException.class);
     }
 
-    assertThat(service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
+    assertThat(service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
   }
 
   @Test
   void givenNoConsentRequests_whenExporting_thenCsvContainsHeaderOnly() {
     givenDataRequestVisibleToAdmin(DataRequestStateEnum.ACTIVE);
 
-    var export = service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID);
+    var export = service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID);
 
     assertThat(new String(export.content(), StandardCharsets.UTF_8))
         .isEqualTo("\uFEFFuid;bur;requestDate;lastChangeDate;stateCode\r\n");
   }
 
-  @Test
-  void givenActiveDataRequestOfCurrentConsumer_whenExporting_thenExported() {
-    givenDataRequestOfCurrentConsumer(DataRequestStateEnum.ACTIVE);
+  @ParameterizedTest
+  @EnumSource(value = DataRequestStateEnum.class, names = {"ACTIVE", "PAUSED"})
+  void givenExportableDataRequestOfCurrentConsumer_whenExporting_thenExported(DataRequestStateEnum stateCode) {
+    givenDataRequestOfCurrentConsumer(stateCode);
 
-    assertThat(service.exportConsentRequestsOfActiveDataRequestOfCurrentConsumerAsCsv(DATA_REQUEST_ID)).isNotNull();
+    assertThat(service.exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(DATA_REQUEST_ID)).isNotNull();
   }
 
   @ParameterizedTest
-  @EnumSource(value = DataRequestStateEnum.class, names = "ACTIVE", mode = EnumSource.Mode.EXCLUDE)
-  void givenNonActiveDataRequestOfCurrentConsumer_whenExporting_thenRejected(DataRequestStateEnum stateCode) {
+  @EnumSource(value = DataRequestStateEnum.class, names = {"ACTIVE", "PAUSED"}, mode = EnumSource.Mode.EXCLUDE)
+  void givenNonExportableDataRequestOfCurrentConsumer_whenExporting_thenRejected(DataRequestStateEnum stateCode) {
     givenDataRequestOfCurrentConsumer(stateCode);
 
-    assertThatThrownBy(() -> service.exportConsentRequestsOfActiveDataRequestOfCurrentConsumerAsCsv(DATA_REQUEST_ID))
+    assertThatThrownBy(() -> service.exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(DATA_REQUEST_ID))
         .isInstanceOf(IllegalStateException.class);
     verify(consentRequestRepository, never()).findActiveExportProjectionsByDataRequestId(any());
   }
 
   // Drafts are excluded, because the repository does not return them to admins.
   @ParameterizedTest
-  @EnumSource(value = DataRequestStateEnum.class, names = {"ACTIVE", "DRAFT"}, mode = EnumSource.Mode.EXCLUDE)
-  void givenNonActiveDataRequest_whenAdminExports_thenRejected(DataRequestStateEnum stateCode) {
+  @EnumSource(value = DataRequestStateEnum.class, names = {"ACTIVE", "PAUSED", "DRAFT"}, mode = EnumSource.Mode.EXCLUDE)
+  void givenNonExportableDataRequest_whenAdminExports_thenRejected(DataRequestStateEnum stateCode) {
     givenDataRequestVisibleToAdmin(stateCode);
 
-    assertThatThrownBy(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID))
+    assertThatThrownBy(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID))
         .isInstanceOf(IllegalStateException.class);
     verify(consentRequestRepository, never()).findActiveExportProjectionsByDataRequestId(any());
   }
@@ -172,7 +173,7 @@ class ConsentRequestExportServiceTest {
     givenDataRequestVisibleToAdmin(DataRequestStateEnum.ACTIVE);
     when(consentRequestRepository.countActiveByDataRequestId(DATA_REQUEST_ID)).thenReturn(100_001L);
 
-    assertThatThrownBy(() -> service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID))
+    assertThatThrownBy(() -> service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID))
         .isInstanceOf(ExportLimitExceededException.class);
     verify(consentRequestRepository, never()).findActiveExportProjectionsByDataRequestId(any());
   }
@@ -182,7 +183,7 @@ class ConsentRequestExportServiceTest {
     givenDataRequestVisibleToAdmin(DataRequestStateEnum.ACTIVE);
     when(consentRequestRepository.countActiveByDataRequestId(DATA_REQUEST_ID)).thenReturn(100_000L);
 
-    assertThat(service.exportConsentRequestsOfActiveDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
+    assertThat(service.exportConsentRequestsOfDataRequestAsCsv(DATA_REQUEST_ID)).isNotNull();
     verify(consentRequestRepository).findActiveExportProjectionsByDataRequestId(DATA_REQUEST_ID);
   }
 }

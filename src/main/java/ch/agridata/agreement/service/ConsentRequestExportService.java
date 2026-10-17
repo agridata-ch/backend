@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,8 @@ import org.jspecify.annotations.NonNull;
  * above {@value #MAX_ROWS} rows are rejected and at most {@value #MAX_CONCURRENT_EXPORTS} exports run concurrently per instance;
  * further exports are rejected immediately to protect the heap. The permit is held until the CSV is rendered, after which only the
  * much smaller CSV bytes remain in memory. The row limit also keeps the CSV below the 10 MB response limit of the API gateway.
- * Only active data requests can be exported. Drafts are not visible to admins and are therefore reported as not found to them.
+ * Only active and paused data requests can be exported. Drafts are not visible to admins and are therefore reported as not found
+ * to them.
  *
  * @CommentLastReviewed 2026-10-16
  */
@@ -58,6 +60,7 @@ public class ConsentRequestExportService {
   private static final int MAX_CONCURRENT_EXPORTS = 2;
   private static final int RETRY_AFTER_SECONDS = 10;
   private static final int MAX_ROWS = 100_000;
+  private static final Set<DataRequestStateEnum> EXPORTABLE_STATES = Set.of(DataRequestStateEnum.ACTIVE, DataRequestStateEnum.PAUSED);
 
   private final ConsentRequestRepository consentRequestRepository;
   private final DataRequestRepository dataRequestRepository;
@@ -91,22 +94,22 @@ public class ConsentRequestExportService {
   }
 
   @RolesAllowed(CONSUMER_ROLE)
-  public CsvExport exportConsentRequestsOfActiveDataRequestOfCurrentConsumerAsCsv(UUID dataRequestId) {
+  public CsvExport exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(UUID dataRequestId) {
     var dataRequest = dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, identity.getUidOrElseThrow())
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
     return exportAsCsv(dataRequest);
   }
 
   @RolesAllowed(ADMIN_ROLE)
-  public CsvExport exportConsentRequestsOfActiveDataRequestAsCsv(UUID dataRequestId) {
+  public CsvExport exportConsentRequestsOfDataRequestAsCsv(UUID dataRequestId) {
     var dataRequest = dataRequestRepository.findByIdAndStateCodeNotDraft(dataRequestId)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
     return exportAsCsv(dataRequest);
   }
 
   private CsvExport exportAsCsv(DataRequestEntity dataRequest) {
-    if (dataRequest.getStateCode() != DataRequestStateEnum.ACTIVE) {
-      throw new IllegalStateException("Data request with id " + dataRequest.getId() + " is not in status active");
+    if (!EXPORTABLE_STATES.contains(dataRequest.getStateCode())) {
+      throw new IllegalStateException("Data request with id " + dataRequest.getId() + " is not in status active or paused");
     }
     var startedAt = System.nanoTime();
     var rowCount = consentRequestRepository.countActiveByDataRequestId(dataRequest.getId());

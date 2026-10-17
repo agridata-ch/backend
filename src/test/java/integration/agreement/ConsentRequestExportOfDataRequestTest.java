@@ -85,13 +85,14 @@ class ConsentRequestExportOfDataRequestTest {
   }
 
   @Test
-  void givenAdmin_whenExportingPausedDataRequest_thenBadRequest() {
+  void givenAdmin_whenExportingPausedDataRequest_thenCsvIsReturned() {
     DataRequestTestFactory.setStatusAs(TestDataIdentifiers.DataRequest.IP_SUISSE_01.toString(), DataRequestStateEnum.PAUSED, ADMIN)
         .then().statusCode(200);
 
     AuthTestUtils.requestAs(ADMIN)
         .when().get(exportPath(TestDataIdentifiers.DataRequest.IP_SUISSE_01))
-        .then().statusCode(400);
+        .then().statusCode(200)
+        .contentType("text/csv");
   }
 
   @Test
@@ -104,13 +105,14 @@ class ConsentRequestExportOfDataRequestTest {
   }
 
   @Test
-  void givenPausedDataRequestOfCurrentConsumer_whenExporting_thenBadRequest() {
+  void givenPausedDataRequestOfCurrentConsumer_whenExporting_thenCsvIsReturned() {
     DataRequestTestFactory.setStatusAs(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.toString(), DataRequestStateEnum.PAUSED, ADMIN)
         .then().statusCode(200);
 
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE)
         .when().get(exportPath(TestDataIdentifiers.DataRequest.BIO_SUISSE_01))
-        .then().statusCode(400);
+        .then().statusCode(200)
+        .contentType("text/csv");
   }
 
   private static String exportPath(TestDataIdentifiers.Identifier<?> dataRequestId) {
