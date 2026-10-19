@@ -1,3 +1,9 @@
+## [1.21.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.8...v1.21.0-rc.9) (2026-10-19)
+
+### Features
+
+* **agreement:** allow consent-request-export for paused data requests ([ff4f871](https://github.com/agridata-ch/backend/commit/ff4f871b88c73f5450772d4513e2451d5511a23c)), closes [DIGIB2-546](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-546)
+
 ## [1.21.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.7...v1.21.0-rc.8) (2026-10-16)
 
 ### Features
