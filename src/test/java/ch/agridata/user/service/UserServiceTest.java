@@ -24,6 +24,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class UserServiceTest {
 
     when(identity.getUserId()).thenReturn(userId);
     when(userRepository.findById(userId)).thenReturn(user);
-    when(identity.getUserInfoOrElseThrow()).thenReturn(userInfo);
+    when(identity.getUserInfo()).thenReturn(Optional.of(userInfo));
     when(userInfo.getString("KT_ID_P")).thenReturn("KT-123");
     when(userInfo.getString("uid")).thenReturn("CHE123456789");
     when(userInfo.getString("email")).thenReturn("user@example.com");

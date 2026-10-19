@@ -197,7 +197,7 @@ class ConsentRequestCreationForDataRequestConsumerTest {
   @Test
   void givenMalformedBur_whenCreateConsentRequests_thenBadRequestAndNothingCreated() throws JsonProcessingException {
     postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("99920004")).build())
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("A-0000000")).build())
         .then().statusCode(400);
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name())).isEmpty();

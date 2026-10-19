@@ -18,6 +18,7 @@ import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.service.ConsentRequestCreationService;
+import ch.agridata.agreement.service.ConsentRequestExportService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.DataRequestLogoService;
 import ch.agridata.agreement.service.DataRequestMutationService;
@@ -47,6 +48,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
@@ -89,6 +91,7 @@ public class DataRequestController {
   private final DataRequestStateService dataRequestStateService;
   private final ConsentRequestQueryService consentRequestQueryService;
   private final ConsentRequestCreationService consentRequestCreationService;
+  private final ConsentRequestExportService consentRequestExportService;
   private final ActingRoleHolder actingRoleHolder;
   private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
 
@@ -133,7 +136,7 @@ public class DataRequestController {
   }
 
   @GET
-  @ApiSubset({WEB_APP, DATA_PROVIDER})
+  @ApiSubset({WEB_APP, DATA_PROVIDER, DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/consent-requests")
   @Operation(
       operationId = "getConsentRequestsOfDataRequest",
@@ -186,7 +189,7 @@ public class DataRequestController {
   }
 
   @POST
-  @ApiSubset({WEB_APP})
+  @ApiSubset({WEB_APP, DATA_CONSUMER})
   @Path(PATH_V1 + "/{id}/consent-requests")
   @Operation(
       operationId = "createConsentRequestsForDataRequest",
@@ -407,5 +410,32 @@ public class DataRequestController {
   @RolesAllowed(CONSUMER_ROLE)
   public ConsentRequestStatusSummaryDto getConsentRequestStatusSummaryOfDataRequest(@PathParam("id") UUID dataRequestId) {
     return consentRequestQueryService.getConsentRequestStatusSummaryOfDataRequestOfCurrentConsumer(dataRequestId);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/{id}/consent-requests/export")
+  @Operation(
+      operationId = "exportConsentRequestsOfDataRequest",
+      description = "Exports the consent requests of a data request as CSV (semicolon-separated, UTF-8 with BOM) with the columns "
+          + "uid, bur, requestDate, lastChangeDate and stateCode. Consent requests of terminated UID/BUR relations are excluded. "
+          + "Exports of more than 100000 consent requests are rejected with status 400 and type EXPORT_LIMIT_EXCEEDED. "
+          + "If too many exports run concurrently, the export is rejected with status 503, type EXPORT_CAPACITY_EXHAUSTED and a "
+          + "Retry-After header. "
+          + "Accessible to the consumer who owns the data request and to admin users. Only active and paused data requests "
+          + "can be exported, otherwise the export is rejected with status 400. Draft data requests are not found for admin users."
+  )
+  @Produces("text/csv")
+  @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public Response exportConsentRequestsOfDataRequest(@PathParam("id") UUID dataRequestId) {
+    var export = switch (actingRoleHolder.getRole()) {
+      case CONSUMER -> consentRequestExportService.exportConsentRequestsOfDataRequestOfCurrentConsumerAsCsv(dataRequestId);
+      case ADMIN -> consentRequestExportService.exportConsentRequestsOfDataRequestAsCsv(dataRequestId);
+      default -> throw new ForbiddenException();
+    };
+    return Response.ok(export.content(), "text/csv; charset=UTF-8")
+        .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", export.fileName()))
+        .build();
   }
 }

@@ -1,0 +1,22 @@
+{
+  "personFarmTree": {
+    "relevantPersons": {
+      "person": []
+    },
+    "personRelations": {
+      "person": []
+    },
+    "relevantFarms": {
+      "farm": []
+    },
+    "farmRelations": {
+      "farm": []
+    }
+  },
+  "dataAmount": [],
+  "resultOffset": {
+    "from": 0,
+    "to": 0,
+    "totalHits": 0
+  }
+}

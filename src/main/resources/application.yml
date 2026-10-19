@@ -40,6 +40,9 @@ quarkus:
       uid-register:
         expire-after-write: 5M
         maximum-size: 100
+      bur-register:
+        expire-after-write: 5M
+        maximum-size: 100
   application:
     name: agridata.ch
   banner:
@@ -118,6 +121,8 @@ quarkus:
     read-timeout: 25000 # The API gateway times out after max. 30s, so timeouts to external systems must be lower
     uid-register:
       url: https://www.uid-wse.admin.ch/V5.0/PublicServices.svc
+    bur-register:
+      url: https://www.burweb2.admin.ch/BurWeb.Services.External/V1_8/QueryServiceV1X8.svc
     agis-api:
       key-store-type: PKCS12
     bit-signature-api:

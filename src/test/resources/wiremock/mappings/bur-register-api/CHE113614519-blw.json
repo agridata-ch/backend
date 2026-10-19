@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bur-register/QueryServiceV1X8.svc",
+    "basicAuthCredentials": {
+      "username": "agridata",
+      "password": "secret"
+    },
+    "bodyPatterns": [
+      {
+        "matchesXPath": "//*[local-name()='uid' and text()='CHE113614519']"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "bur-register-api/CHE113614519-blw.xml",
+    "headers": {
+      "Content-Type": "application/soap+xml; charset=utf-8"
+    }
+  }
+}

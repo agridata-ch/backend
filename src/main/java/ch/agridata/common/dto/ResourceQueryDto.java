@@ -14,7 +14,7 @@ import org.jboss.resteasy.reactive.Separator;
  *
  * @CommentLastReviewed 2026-09-14
  */
-@Builder
+@Builder(toBuilder = true)
 
 public record ResourceQueryDto(
     @Schema(description = "page number")

@@ -35,6 +35,9 @@ class ContractRevisionQueryServiceTest {
   @Mock
   private DataRequestQueryService dataRequestQueryService;
 
+  @Mock
+  private ConsentRequestAggregationService consentRequestAggregationService;
+
   @InjectMocks
   ContractRevisionQueryService service;
 
@@ -160,5 +163,63 @@ class ContractRevisionQueryServiceTest {
         .hasMessageContaining(REVISION_ID.toString());
 
     verifyNoInteractions(dataRequestQueryService);
+  }
+
+  @Test
+  void givenCurrentRevisionVisibleToProducer_whenGetContractRevisionAsProducer_thenReturnEntity() {
+    ContractRevisionEntity contractRevisionEntity = contractRevisionOfDataRequestWithCurrentRevision(REVISION_ID);
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(contractRevisionEntity));
+    when(consentRequestAggregationService.isVisibleToCurrentDataProducer(DATA_REQUEST_ID)).thenReturn(true);
+
+    var result = service.getAsProducer(REVISION_ID);
+
+    assertThat(result.getId()).isEqualTo(REVISION_ID);
+    verify(consentRequestAggregationService).isVisibleToCurrentDataProducer(DATA_REQUEST_ID);
+  }
+
+  @Test
+  void givenCurrentRevisionNotVisibleToProducer_whenGetContractRevisionAsProducer_thenThrowNotFoundException() {
+    ContractRevisionEntity contractRevisionEntity = contractRevisionOfDataRequestWithCurrentRevision(REVISION_ID);
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(contractRevisionEntity));
+    when(consentRequestAggregationService.isVisibleToCurrentDataProducer(DATA_REQUEST_ID)).thenReturn(false);
+
+    assertThatThrownBy(() -> service.getAsProducer(REVISION_ID))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessageContaining(REVISION_ID.toString());
+  }
+
+  @Test
+  void givenOutdatedRevision_whenGetContractRevisionAsProducer_thenThrowNotFoundWithoutVisibilityCheck() {
+    var currentRevisionId = UUID.fromString("00000000-0000-0000-0000-000000000003");
+    ContractRevisionEntity contractRevisionEntity = contractRevisionOfDataRequestWithCurrentRevision(currentRevisionId);
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.of(contractRevisionEntity));
+
+    assertThatThrownBy(() -> service.getAsProducer(REVISION_ID))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessageContaining(REVISION_ID.toString());
+
+    verifyNoInteractions(consentRequestAggregationService);
+  }
+
+  @Test
+  void givenMissingContractRevision_whenGetContractRevisionAsProducer_thenThrowNotFoundException() {
+    when(contractRevisionRepository.findByIdOptional(REVISION_ID)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> service.getAsProducer(REVISION_ID))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessageContaining(REVISION_ID.toString());
+
+    verifyNoInteractions(consentRequestAggregationService);
+  }
+
+  private static ContractRevisionEntity contractRevisionOfDataRequestWithCurrentRevision(UUID currentContractRevisionId) {
+    DataRequestEntity dataRequestEntity = DataRequestEntity.builder()
+        .id(DATA_REQUEST_ID)
+        .currentContractRevisionId(currentContractRevisionId)
+        .build();
+    return ContractRevisionEntity.builder()
+        .id(REVISION_ID)
+        .dataRequest(dataRequestEntity)
+        .build();
   }
 }

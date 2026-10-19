@@ -3,7 +3,9 @@ package ch.agridata.product.controller;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
 import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.PRODUCER_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
+import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static ch.agridata.product.controller.DataProductControllerV2.PATH;
 
 import ch.agridata.common.dto.PageResponseDto;
@@ -84,15 +86,17 @@ public class DataProductControllerV2 {
   @ApiSubset({WEB_APP})
   @Operation(
       operationId = "getDataProduct",
-      description = "Retrieves a single data product. Acessible to users with the provider and admin role"
+      description = "Retrieves a single data product. Accessible to users with the provider and admin role. "
+          + "Producers and support users can only retrieve active data products."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE})
+  @RolesAllowed({ADMIN_ROLE, PROVIDER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE})
   @EnableActingRoleHolder
   public DataProductDto getDataProduct(@PathParam("id") UUID dataProductId) {
     return switch (actingRoleHolder.getRole()) {
       case ADMIN -> dataProductQueryService.getDataProductAsAdmin(dataProductId);
       case PROVIDER -> dataProductQueryService.getDataProductAsProvider(dataProductId);
+      case PRODUCER, SUPPORT -> dataProductQueryService.getActiveProductById(dataProductId);
       default -> throw new ForbiddenException();
     };
   }
@@ -261,10 +265,11 @@ public class DataProductControllerV2 {
   @Path("/{id}/documents")
   @Operation(
       operationId = "getDataProductDocumentsMetadata",
-      description = "Retrieves metadata for all documents of a data product. Accessible to the owning provider and admins."
+      description = "Retrieves metadata for all documents of a data product. Accessible to the owning provider and admins. "
+          + "Producers and support users only see available documents of active data products."
   )
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE, PRODUCER_ROLE, SUPPORT_ROLE})
   @EnableActingRoleHolder
   public List<DataProductDocumentMetadataDto> getDataProductDocumentsMetadata(
       @PathParam("id") UUID dataProductId
@@ -272,6 +277,7 @@ public class DataProductControllerV2 {
     return switch (actingRoleHolder.getRole()) {
       case PROVIDER -> dataProductDocumentService.getDataProductDocumentsMetadataAsProvider(dataProductId);
       case ADMIN -> dataProductDocumentService.getDataProductDocumentsMetadataAsAdmin(dataProductId);
+      case PRODUCER, SUPPORT -> dataProductDocumentService.getPublicDataProductDocumentsMetadata(dataProductId);
       default -> throw new ForbiddenException();
     };
   }
@@ -304,10 +310,11 @@ public class DataProductControllerV2 {
   @Path("/{id}/documents/{documentId}/download")
   @Operation(
       operationId = "getDataProductDocument",
-      description = "Downloads the content of a data product document. Accessible to the owning provider and admins."
+      description = "Downloads the content of a data product document. Accessible to the owning provider and admins. "
+          + "Producers and support users can only download available documents of active data products."
   )
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE})
+  @RolesAllowed({PROVIDER_ROLE, ADMIN_ROLE, PRODUCER_ROLE, SUPPORT_ROLE})
   @EnableActingRoleHolder
   public RestResponse<byte[]> getDataProductDocument(
       @PathParam("id") UUID dataProductId,
@@ -316,6 +323,7 @@ public class DataProductControllerV2 {
     DocumentDownloadDto document = switch (actingRoleHolder.getRole()) {
       case PROVIDER -> dataProductDocumentService.getDataProductDocumentAsProvider(dataProductId, documentId);
       case ADMIN -> dataProductDocumentService.getDataProductDocumentAsAdmin(dataProductId, documentId);
+      case PRODUCER, SUPPORT -> dataProductDocumentService.getPublicDataProductDocument(dataProductId, documentId);
       default -> throw new ForbiddenException();
     };
     return RestResponse.ResponseBuilder

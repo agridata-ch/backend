@@ -17,6 +17,11 @@ public class AuthTestUtils {
         .auth().oauth2(getAccessToken(user));
   }
 
+  public static RequestSpecification requestAsServiceAccount(String clientId) {
+    return RestAssured.given()
+        .auth().oauth2(keycloakClient.getClientAccessToken(clientId, CLIENT_SECRET, List.of()));
+  }
+
   private static String getAccessToken(TestUserEnum user) {
     return keycloakClient.getAccessToken(user.getUsername(), TEST_USER_PASSWORD, CLIENT_ID, CLIENT_SECRET, List.of("openid"));
   }

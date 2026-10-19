@@ -526,6 +526,20 @@
   },
   "clients": [
     {
+      "clientId": "provider-service-account",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": ["acr", "agridata", "roles", "basic", "service_account"],
+      "optionalClientScopes": []
+    },
+    {
       "id": "05d2d06a-744f-4c79-9800-6bc59db54665",
       "clientId": "account",
       "name": "${client_account}",
@@ -2718,6 +2732,16 @@
     "policies": []
   },
   "users": [
+    {
+      "username": "service-account-provider-service-account",
+      "enabled": true,
+      "serviceAccountClientId": "provider-service-account",
+      "attributes": {
+        "loginid": ["provider-service-account"],
+        "uid": ["CHE113614519"]
+      },
+      "realmRoles": ["default-roles-agate", "agridata.ch.Agridata_Datenanbieter"]
+    },
     {
       "username": "consumer",
       "attributes": {

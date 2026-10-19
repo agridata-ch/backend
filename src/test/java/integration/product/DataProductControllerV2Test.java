@@ -677,6 +677,40 @@ class DataProductControllerV2Test {
 
   @SneakyThrows
   @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PRODUCER_A", "SUPPORT"})
+  void givenActiveProductWithAvailableDocument_whenProducerOrSupportGetsDocuments_thenReturnMetadataAndContent(TestUserEnum user) {
+    var dataProductRequest = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_5D3A4A87.uuid());
+    DataProductDto product = AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
+        .then().statusCode(201).extract().as(DataProductDto.class);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, product.id(), "report.pdf", SAMPLE_PDF);
+    forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.AVAILABLE);
+    activateDataProduct(PROVIDER_1, product.id()).then().statusCode(200);
+
+    AuthTestUtils.requestAs(user).when().get(DataProductControllerV2.PATH + "/" + product.id() + "/documents")
+        .then().statusCode(200)
+        .body("size()", equalTo(1))
+        .body("[0].id", equalTo(document.id().toString()));
+    AuthTestUtils.requestAs(user)
+        .when().get(DataProductControllerV2.PATH + "/" + product.id() + "/documents/" + document.id() + "/download")
+        .then().statusCode(200);
+  }
+
+  @Test
+  void givenDraftProductWithDocument_whenProducerGetsDocuments_thenNotFound() {
+    UUID productId = createEmptyDraft(PROVIDER_1);
+    DataProductDocumentMetadataDto document = uploadDocument(PROVIDER_1, productId, "report.pdf", SAMPLE_PDF);
+    forceScanStatus(document.id(), ch.agridata.product.persistence.DocumentScanStatusEnum.AVAILABLE);
+
+    AuthTestUtils.requestAs(TestUserEnum.PRODUCER_A).when().get(DataProductControllerV2.PATH + "/" + productId + "/documents")
+        .then().statusCode(404);
+    AuthTestUtils.requestAs(TestUserEnum.PRODUCER_A)
+        .when().get(DataProductControllerV2.PATH + "/" + productId + "/documents/" + document.id() + "/download")
+        .then().statusCode(404);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
   @EnumSource(value = TestUserEnum.class, names = {"PROVIDER_1", "ADMIN"})
   void givenAccessibleDraftDataProduct_whenGetDataProduct_thenReturnDataProduct(TestUserEnum user) {
     DataProductUpdateDto dataProductRequest =
@@ -700,6 +734,28 @@ class DataProductControllerV2Test {
         .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
         .then().statusCode(201).extract().as(DataProductDto.class);
     AuthTestUtils.requestAs(PROVIDER_1).when().get(DataProductControllerV2.PATH + "/" + existingDataProduct.id()).then().statusCode(404);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = TestUserEnum.class, names = {"PRODUCER_A", "SUPPORT"})
+  void givenActiveDataProduct_whenGetDataProductAsProducerOrSupport_thenReturnDataProduct(TestUserEnum user) {
+    UUID activeProductId = TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid();
+    DataProductDto fetchedDataProduct =
+        AuthTestUtils.requestAs(user).when().get(DataProductControllerV2.PATH + "/" + activeProductId).then().statusCode(200)
+            .extract().as(DataProductDto.class);
+    assertThat(fetchedDataProduct.id()).isEqualTo(activeProductId);
+    assertThat(fetchedDataProduct.stateCode()).isEqualTo(DataProductStateEnum.ACTIVE);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenDraftDataProduct_whenGetDataProductAsProducer_thenReturnNotFound() {
+    DataProductUpdateDto dataProductRequest = DataProductUpdateDto.builder().restClientPathTemplate(JsonNullable.of("/test")).build();
+    DataProductDto draftDataProduct = AuthTestUtils.requestAs(ADMIN).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(dataProductRequest)).when().post(DataProductControllerV2.PATH)
+        .then().statusCode(201).extract().as(DataProductDto.class);
+    AuthTestUtils.requestAs(TestUserEnum.PRODUCER_A).when().get(DataProductControllerV2.PATH + "/" + draftDataProduct.id())
+        .then().statusCode(404);
   }
 
   @Test

@@ -33,7 +33,7 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProductControllerV2.PATH,
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProductControllerV2.PATH + "/1",
-        ADMIN_ROLE, PROVIDER_ROLE);
+        ADMIN_ROLE, PROVIDER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(POST, DataProductControllerV2.PATH,
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataProductControllerV2.PATH + "/1",
@@ -47,11 +47,11 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(POST, DataProductControllerV2.PATH + "/1/documents", ContentType.MULTIPART,
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProductControllerV2.PATH + "/1/documents",
-        ADMIN_ROLE, PROVIDER_ROLE);
+        ADMIN_ROLE, PROVIDER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProductControllerV2.PATH + "/1/documents/2",
         ADMIN_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, DataProductControllerV2.PATH + "/1/documents/2/download",
-        ADMIN_ROLE, PROVIDER_ROLE);
+        ADMIN_ROLE, PROVIDER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(DELETE, DataProductControllerV2.PATH + "/1/documents/2",
         ADMIN_ROLE, PROVIDER_ROLE);
   }

@@ -1,3 +1,63 @@
+## [1.21.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.8...v1.21.0-rc.9) (2026-10-19)
+
+### Features
+
+* **agreement:** allow consent-request-export for paused data requests ([ff4f871](https://github.com/agridata-ch/backend/commit/ff4f871b88c73f5450772d4513e2451d5511a23c)), closes [DIGIB2-546](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-546)
+
+## [1.21.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.7...v1.21.0-rc.8) (2026-10-16)
+
+### Features
+
+* **agreement:** loosen format expectations for bur ([4fa6984](https://github.com/agridata-ch/backend/commit/4fa69849aa7ac051713c5153754e89ef9590e8f5)), closes [DIGIB2-1310](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1310)
+
+## [1.21.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.6...v1.21.0-rc.7) (2026-10-15)
+
+### Features
+
+* **agreement:** updated ApiSubset annotation ([1aeabce](https://github.com/agridata-ch/backend/commit/1aeabce8d2580aa61a3936a901fedf80e08979de)), closes [DIGIB2-1310](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1310)
+
+## [1.21.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.5...v1.21.0-rc.6) (2026-10-15)
+
+### Features
+
+* **agreement:** allow producers to download relevant contracts ([a44e7fc](https://github.com/agridata-ch/backend/commit/a44e7fc40491916a49d028aa21ee38ca7bfe8361)), closes [DIGIB2-1749](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1749)
+
+## [1.21.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.4...v1.21.0-rc.5) (2026-10-14)
+
+### Features
+
+* **api:** updated ApiSubset annotation ([8f55c01](https://github.com/agridata-ch/backend/commit/8f55c01b2babadeba3106ff06c31464ffa3db0d6))
+
+## [1.21.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.3...v1.21.0-rc.4) (2026-10-14)
+
+### Features
+
+* **agreement:** allow consumer to export consent requests of a data request as csv ([9dbf10f](https://github.com/agridata-ch/backend/commit/9dbf10f6d35bb07792003c478172a1611ef7137d)), closes [DIGIB2-546](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-546)
+
+## [1.21.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.2...v1.21.0-rc.3) (2026-10-13)
+
+### Features
+
+* **consent-request:** Show product details as modal ([16641b3](https://github.com/agridata-ch/backend/commit/16641b30e500cf782aabae9dfefe9c05f6ea18ec)), closes [DIGIB2-1751](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1751)
+
+## [1.21.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.21.0-rc.1...v1.21.0-rc.2) (2026-10-13)
+
+### Features
+
+* **agbs:** implement admin controller and service for paginated agb revisions ([aa70dab](https://github.com/agridata-ch/backend/commit/aa70dab23d5a392c298b3e25650ed9194159e138)), closes [DIGIB2-1520](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1520)
+
+## [1.21.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.1-rc.1...v1.21.0-rc.1) (2026-10-12)
+
+### Features
+
+* **burregister:** add connection to bur register api ([596d5cd](https://github.com/agridata-ch/backend/commit/596d5cddb90560a96ecf23890312c15a8c89367d)), closes [DIGIB2-1258](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1258)
+
+## [1.20.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.20.0...v1.20.1-rc.1) (2026-10-09)
+
+### Bug Fixes
+
+* **security:** allow service accounts without openid scope ([aa40a8c](https://github.com/agridata-ch/backend/commit/aa40a8cde8090a29a954f3477c8e0a1b612d33b3)), closes [DIGIB2-1758](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1758)
+
 ## [1.20.0](https://github.com/agridata-ch/backend/compare/v1.19.0...v1.20.0) (2026-10-08)
 
 ### Features

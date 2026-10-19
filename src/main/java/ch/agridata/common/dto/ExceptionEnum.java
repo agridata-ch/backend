@@ -16,5 +16,7 @@ public enum ExceptionEnum {
   OTP_EXPIRED,
   OTP_RESEND_COOLDOWN,
   DATA_PROVIDER_ERROR,
+  EXPORT_LIMIT_EXCEEDED,
+  EXPORT_CAPACITY_EXHAUSTED,
   MAINTENANCE // Used by the AWS load balancer to indicate that the service is temporarily unavailable due to maintenance
 }

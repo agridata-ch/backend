@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.dto.ContractRevisionPdfDto;
@@ -79,6 +80,31 @@ class ContractRevisionPdfServiceTest {
 
     assertThatThrownBy(() -> contractRevisionPdfService.getPdfAsConsumer(REVISION_ID))
         .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
+  void getPdfAsProducer_Success() {
+    ContractRevisionEntity entity = ContractRevisionEntity.builder().id(REVISION_ID).build();
+    byte[] expectedPdf = new byte[] {37, 80, 68, 70}; // %PDF
+
+    when(contractRevisionQueryService.getAsProducer(REVISION_ID)).thenReturn(entity);
+    when(contractRevisionStorageService.download(REVISION_ID)).thenReturn(expectedPdf);
+
+    byte[] result = contractRevisionPdfService.getPdfAsProducer(REVISION_ID);
+
+    assertThat(result).isEqualTo(expectedPdf);
+    verify(contractRevisionQueryService).getAsProducer(REVISION_ID);
+    verify(contractRevisionStorageService).download(REVISION_ID);
+  }
+
+  @Test
+  void getPdfAsProducer_NotFound_ThrowsException() {
+    when(contractRevisionQueryService.getAsProducer(REVISION_ID))
+        .thenThrow(new NotFoundException(REVISION_ID.toString()));
+
+    assertThatThrownBy(() -> contractRevisionPdfService.getPdfAsProducer(REVISION_ID))
+        .isInstanceOf(NotFoundException.class);
+    verifyNoInteractions(contractRevisionStorageService);
   }
 
   @Test
