@@ -1,3 +1,9 @@
+## [1.21.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.0...v1.21.1-rc.1) (2026-10-20)
+
+### Bug Fixes
+
+* **deps:** fix trivy findings ([228d1ed](https://github.com/agridata-ch/backend/commit/228d1ed1adfc67107a78ffad634b669e5cc03c80))
+
 ## [1.21.0](https://github.com/agridata-ch/backend/compare/v1.20.0...v1.21.0) (2026-10-19)
 
 ### Features
