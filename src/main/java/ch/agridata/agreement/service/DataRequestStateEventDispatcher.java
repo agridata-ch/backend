@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestSta
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
@@ -61,6 +62,8 @@ public class DataRequestStateEventDispatcher {
     } else if (oldStateCode == TO_BE_RELEASED_BY_CONSUMER && newStateCode == TO_BE_SIGNED_BY_PROVIDER) {
       auditingService.logDataRequestReleasedByConsumer(entity.getId());
       notificationService.queueDataRequestReadyForProviderSigning(entity);
+    } else if (oldStateCode == ACTIVE && newStateCode == TERMINATION_PENDING) {
+      auditingService.logDataRequestTerminationRequested(entity);
     }
   }
 
@@ -72,6 +75,8 @@ public class DataRequestStateEventDispatcher {
     if (oldStateCode == TO_BE_RELEASED_BY_PROVIDER && newStateCode == TO_BE_ACTIVATED) {
       auditingService.logDataRequestReleasedByProvider(entity.getId());
       notificationService.queueDataRequestReadyForActivation(entity);
+    } else if (oldStateCode == ACTIVE && newStateCode == TERMINATION_PENDING) {
+      auditingService.logDataRequestTerminationRequested(entity);
     }
   }
 

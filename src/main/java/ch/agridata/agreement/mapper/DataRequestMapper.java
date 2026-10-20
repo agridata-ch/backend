@@ -76,6 +76,7 @@ public interface DataRequestMapper {
 
   @Mapping(target = "humanFriendlyId", ignore = true)
   @Mapping(target = "submissionDate", ignore = true)
+  @Mapping(target = "terminationPeriodUntil", ignore = true)
   @Mapping(target = "dataConsumerUid", ignore = true)
   @Mapping(target = "dataConsumerLegalName", ignore = true)
   @Mapping(target = "validRedirectUriRegex", ignore = true)
