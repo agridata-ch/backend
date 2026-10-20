@@ -322,8 +322,8 @@ public class DataRequestController {
   @Path(PATH_V1 + "/{id}/status")
   @Operation(
       operationId = "setDataRequestStatus",
-      description = "sets status of data request. Only accessible to the consumer who owns the data request and to admins. "
-          + "Only specific transitions are allowed."
+      description = "sets status of data request. Only accessible to the consumer who owns the data request, "
+          + "to the provider it is assigned to and to admins. Only specific transitions are allowed."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

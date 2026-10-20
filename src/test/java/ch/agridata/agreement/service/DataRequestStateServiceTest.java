@@ -20,10 +20,16 @@ import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.validation.Validator;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -53,6 +59,10 @@ class DataRequestStateServiceTest {
   private ContractRevisionInitializationService contractRevisionInitializationService;
   @Mock
   private ContractRevisionMutationService contractRevisionMutationService;
+  @Mock
+  private DataRequestQueryService dataRequestQueryService;
+  @Mock
+  private Clock clock;
 
   @Test
   void givenSubmittedRequest_whenSetStateToInReview_thenThrowIllegalStateAsAdminException() {
@@ -340,6 +350,120 @@ class DataRequestStateServiceTest {
         .isInstanceOf(IllegalStateException.class);
 
     verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
+  void givenActiveRequest_whenSetStateAsConsumerToTerminationPending_thenSetLastDayOfNoticePeriodAndDispatch() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+    var expectedDto = DataRequestDto.builder().build();
+    when(dataRequestEnrichmentService.toEnrichedDto(entity)).thenReturn(expectedDto);
+    fixClockAt(LocalDate.of(2026, 10, 13));
+
+    var result = dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.TERMINATION_PENDING);
+
+    assertThat(result).isSameAs(expectedDto);
+    assertThat(entity.getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING);
+    assertThat(entity.getTerminationPeriodUntil()).isEqualTo(LocalDate.of(2027, 1, 13));
+    verify(dataRequestStateEventDispatcher).dispatchConsumerStatusTransition(
+        entity,
+        DataRequestEntity.DataRequestStateEnum.ACTIVE,
+        DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING
+    );
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      {
+          "2026-01-01, 2026-04-01",
+          "2026-10-31, 2027-01-31",
+          "2026-11-30, 2027-02-28",
+          "2027-11-30, 2028-02-29",
+          "2026-12-31, 2027-03-31",
+          "2026-05-31, 2026-08-31"
+      }
+  )
+  void givenActiveRequest_whenSetStateAsProviderToTerminationPending_thenClampLastValidDayToMonthEnd(
+      LocalDate today, LocalDate expectedTerminationPeriodUntil
+  ) {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+    when(dataRequestQueryService.isAssignedToCurrentProvider(entity)).thenReturn(true);
+    fixClockAt(today);
+
+    dataRequestStateService.setStateAsProvider(id, DataRequestStateEnum.TERMINATION_PENDING);
+
+    assertThat(entity.getTerminationPeriodUntil()).isEqualTo(expectedTerminationPeriodUntil);
+    verify(dataRequestStateEventDispatcher).dispatchProviderStatusTransition(
+        entity,
+        DataRequestEntity.DataRequestStateEnum.ACTIVE,
+        DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING
+    );
+  }
+
+  @Test
+  void givenActiveRequest_whenSetStateAsAdminToTerminationPending_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.TERMINATION_PENDING))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
+  void givenPausedRequest_whenSetStateAsConsumerToTerminationPending_thenThrowError() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.PAUSED);
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, DataRequestStateEnum.TERMINATION_PENDING))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = DataRequestStateEnum.class, names = {"ACTIVE", "PAUSED", "TERMINATED"})
+  void givenTerminationPendingRequest_whenSetStateAsConsumer_thenThrowErrorBecauseTerminationIsFinal(DataRequestStateEnum newState) {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING);
+    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
+    when(repository.findByIdAndDataConsumerUid(id, USER_UID)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsConsumer(id, newState))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  @Test
+  void givenTerminationPendingRequest_whenSetStateAsAdminToActive_thenThrowErrorBecauseTerminationIsFinal() {
+    var id = UUID.randomUUID();
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING);
+    when(repository.findByIdOptional(id)).thenReturn(Optional.of(entity));
+
+    assertThatThrownBy(() -> dataRequestStateService.setStateAsAdmin(id, DataRequestStateEnum.ACTIVE))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(dataRequestStateEventDispatcher);
+  }
+
+  private void fixClockAt(LocalDate date) {
+    when(clock.instant()).thenReturn(date.atStartOfDay(ZoneOffset.UTC).toInstant());
+    when(clock.getZone()).thenReturn(ZoneOffset.UTC);
   }
 
   @Test

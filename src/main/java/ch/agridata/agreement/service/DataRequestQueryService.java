@@ -37,6 +37,8 @@ public class DataRequestQueryService implements DataRequestApi {
   private static final Set<DataRequestEntity.DataRequestStateEnum> PROVIDER_ACCESSIBLE_STATES = Set.of(
       DataRequestEntity.DataRequestStateEnum.ACTIVE,
       DataRequestEntity.DataRequestStateEnum.PAUSED,
+      DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING,
+      DataRequestEntity.DataRequestStateEnum.TERMINATED,
       DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED,
       DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_PROVIDER,
       DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER

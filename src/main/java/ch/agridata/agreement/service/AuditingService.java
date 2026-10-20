@@ -25,6 +25,7 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_TERMINATION_PERIOD_STARTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONTRACT_REVISION;
@@ -87,6 +88,10 @@ public class AuditingService {
 
   public void logDataRequestReactivated(UUID entityId) {
     api.logUserAction(DATA_REQUEST_REACTIVATED, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestTerminationRequested(DataRequestEntity dataRequest) {
+    api.logUserAction(DATA_REQUEST_TERMINATION_PERIOD_STARTED, DATA_REQUEST, dataRequest.getId());
   }
 
   public void logDataRequestWithdrawn(UUID entityId) {
