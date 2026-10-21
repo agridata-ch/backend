@@ -5,11 +5,15 @@ import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.user.dto.AgbRevisionDto;
 import ch.agridata.user.dto.AgbRevisionOverviewDto;
 import ch.agridata.user.mapper.AgbRevisionMapper;
+import ch.agridata.user.persistence.AgbRevisionEntity;
 import ch.agridata.user.persistence.AgbRevisionRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -30,6 +34,11 @@ public class AgbRevisionService {
     return agbRevisionMapper.toDto(agbRevisionRepository.findValidRevisionAt(LocalDateTime.now(clock))
         .orElseThrow(() -> new IllegalStateException("No AGB revision is currently valid"))
     );
+  }
+
+  public Map<UUID, String> getVersionsById() {
+    return agbRevisionRepository.listAll().stream()
+        .collect(Collectors.toMap(AgbRevisionEntity::getId, AgbRevisionEntity::getVersion));
   }
 
   public PageResponseDto<AgbRevisionOverviewDto> getAllRevisions(ResourceQueryDto query) {

@@ -29,6 +29,8 @@ class AccessTest {
     AccessTestUtils.assertForbiddenForAllExcept(POST,
         UserController.PATH + "/agb-revisions/73b2f303-2e87-4970-b82d-c5a6e296f1ec/accept",
         CONSUMER_ROLE, PROVIDER_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET,
+        UserController.PATH + "/agb-acceptances", ADMIN_ROLE, SUPPORT_ROLE);
   }
 
 }
