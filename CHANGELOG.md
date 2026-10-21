@@ -1,3 +1,9 @@
+## [1.22.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.1-rc.1...v1.22.0-rc.1) (2026-10-21)
+
+### Features
+
+* **data-request:** add terminating data-requests ([56854bb](https://github.com/agridata-ch/backend/commit/56854bb120c38e36ccbe8e193eb82a9c4ab4e038)), closes [DIGIB2-329](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-329)
+
 ## [1.21.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.0...v1.21.1-rc.1) (2026-10-20)
 
 ### Bug Fixes
