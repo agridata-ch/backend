@@ -1,6 +1,8 @@
 package ch.agridata.user.mapper;
 
 import ch.agridata.common.dto.PageResponseDto;
+import ch.agridata.user.dto.AgbAcceptanceOverviewDto;
+import ch.agridata.user.dto.AgbAcceptanceStatusEnum;
 import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.persistence.UserEntity;
@@ -20,6 +22,10 @@ public interface UserMapper {
 
   @Mapping(target = "userId", source = "id")
   UserInfoDto toUserInfoDto(UserEntity userEntity);
+
+  @Mapping(target = "userId", source = "userEntity.id")
+  AgbAcceptanceOverviewDto toAgbAcceptanceOverviewDto(
+      UserEntity userEntity, String lastAcceptedAgbVersion, AgbAcceptanceStatusEnum status);
 
   PageResponseDto<UserInfoDto> toPagedUserInfoDto(PageResponseDto<UserEntity> pagedProducerEntities);
 
