@@ -43,7 +43,7 @@ public class DataProviderHealthService {
                 .supplyAsync(() -> statusFor(probe), executor)
                 .completeOnTimeout(timeoutStatusFor(probe), PROBE_TIMEOUT.toSeconds(), TimeUnit.SECONDS)
                 .thenApply(status ->
-                    new DataProviderStatus(system.dataProvider().name(), system.name(), status));
+                    new DataProviderStatus(system.code(), system.dataProvider().name(), system.name(), status));
           })
           .toList();
 
