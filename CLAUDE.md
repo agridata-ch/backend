@@ -1,6 +1,7 @@
 # CLAUDE.md – agridata.ch Backend
 
-Quarkus + Java 25 backend for the agridata.ch agricultural data-exchange platform. Uses PostgreSQL (Flyway + Hibernate ORM Panache),
+Quarkus + Java 25 backend for the agridata.ch agricultural data-exchange platform. Uses PostgreSQL (Flyway + Hibernate
+ORM Panache),
 Keycloak OIDC, MapStruct, Lombok, WireMock, and ArchUnit.
 
 ---
@@ -73,7 +74,8 @@ controller  →  service  →  persistence
 
 - Role constants (`PRODUCER_ROLE`, `CONSUMER_ROLE`, `PROVIDER_ROLE`, `ADMIN_ROLE`, `SUPPORT_ROLE`) map to Keycloak
   `agridata.ch.Agridata_*` roles in `AuthenticationUtil`.
-- User identity comes from the Agate `loginid` JWT claim, converted to a UUID v3 via `AgridataSecurityIdentity.getUserId()`.
+- User identity comes from the Agate `loginid` JWT claim, converted to a UUID v3 via
+  `AgridataSecurityIdentity.getUserId()`.
   Support users impersonate via the `X-Impersonated-AgateLoginId` request header.
 
 ### Flyway Migrations
@@ -97,7 +99,8 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 ### Integration Test Patterns
 
 - Call `flyway.migrate()` in `@BeforeEach` to reset the DB to the known test-data state.
-- External services (AGIS, TVD, UID Register) are stubbed with WireMock; inject `WireMock wireMock` and annotate the class with
+- External services (AGIS, TVD, BurWeb) are stubbed with WireMock; inject `WireMock wireMock` and annotate the class
+  with
   `@ConnectWireMock`. Call `wireMock.resetToDefaultMappings()` in `@BeforeEach`.
 - Authenticated HTTP: `AuthTestUtils.requestAs(TestUserEnum.CONSUMER_BIO_SUISSE).when().get(…)`.
 - Access-control tests: `AccessTestUtils.assertForbiddenForAllExcept(GET, path, PRODUCER_ROLE, ADMIN_ROLE)`.
@@ -107,17 +110,21 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 
 ## Data Transfer Flow (v2)
 
-- `datatransferv2` uses a pipeline pattern. Each flow implements `Flowable` and calls `AgridataFlow.run(context, tasksBefore, tasksAfter)`.
+- `datatransferv2` uses a pipeline pattern. Each flow implements `Flowable` and calls
+  `AgridataFlow.run(context, tasksBefore, tasksAfter)`.
 - Tasks are `UnaryOperator<AgridataContext>` beans composed into lists.
-- The five flows: `UidBasedPreValidationFlow`, `BurBasedPreValidationFlow`, `BurBasedPostValidationFlow`, `UidBasedPostValidationFlow`,
-  `UnboundPostValidationFlow`(pre/post = consent checked before/after the upstream call; UID/BUR = how producer identity is resolved).
+- The five flows: `UidBasedPreValidationFlow`, `BurBasedPreValidationFlow`, `BurBasedPostValidationFlow`,
+  `UidBasedPostValidationFlow`,
+  `UnboundPostValidationFlow`(pre/post = consent checked before/after the upstream call; UID/BUR = how producer identity
+  is resolved).
 
 ---
 
 ## External Integrations
 
-- Most external systems (AGIS, UID Register, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST clients
-  configured under `quarkus.rest-client.*` in `application.yml`. Only UID Register uses REST client to access a SOAP-API.
+- Most external systems (AGIS, BurWeb, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST
+  clients
+  configured under `quarkus.rest-client.*` in `application.yml`. Only BurWeb uses REST client to access a SOAP-API.
     - BIT and AControl use mTLS (PKCS12).
     - AGIS DTOs are OpenAPI-generated in `ch.agridata.agis.dto`.
     - WireMock stubs for all external calls live in `src/test/resources/wiremock/`.

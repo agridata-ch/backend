@@ -28,7 +28,7 @@ public record ContractRevisionDto(
     UUID dataRequestId,
 
     @Schema(
-        description = "LegalName of the data consumer taken from the uid register",
+        description = "LegalName of the data consumer taken from the BurWeb",
         examples = {"Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen"}
     )
     @NotNull

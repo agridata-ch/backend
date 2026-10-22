@@ -17,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-09-18
  * @deprecated Superseded by {@link DataRequestDto} with its multilingual display name; kept only for the deprecated consent request
- *     producer endpoints until partners adopt the multilingual field.
+ * producer endpoints until partners adopt the multilingual field.
  */
 
 @Schema(description = "Data transfer object representing a data request")
@@ -85,7 +85,7 @@ public record DataRequestV1Dto(
     DataRequestStateEnum stateCode,
 
     @Schema(
-        description = "LegalName of the data consumer taken from the uid register",
+        description = "LegalName of the data consumer taken from the BurWeb",
         examples = {"Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen"}
     )
     @Size(max = 255)

@@ -154,7 +154,7 @@ class DataRequestProcessTest {
         .statusCode(200)
         .body("dataConsumerName", equalTo("Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV"))
         .body("dataConsumerCity", equalTo("Bern"))
-        .body("dataProviderName", equalTo("Bundesamt für Landwirtschaft (BLW)"))
+        .body("dataProviderName", equalTo("Bundesamt für Landwirtschaft BLW"))
         .body("dataProviderCity", equalTo("Liebefeld"))
         .body("consumerSignatures", empty());
 

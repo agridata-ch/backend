@@ -92,7 +92,7 @@ public record DataRequestDto(
     LocalDate terminationPeriodUntil,
 
     @Schema(
-        description = "LegalName of the data consumer taken from the uid register",
+        description = "LegalName of the data consumer taken from the BurWeb",
         examples = {"Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen"}
     )
     @Size(max = 255)

@@ -79,8 +79,6 @@ quarkus:
     token:
       audience: agridata-backend
   rest-client:
-    uid-register:
-      url: http://localhost:8050/uid-register/findByUid
     bur-register:
       url: http://localhost:8050/bur-register/QueryServiceV1X8.svc
     agis-api:
