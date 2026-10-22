@@ -97,7 +97,7 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 ### Integration Test Patterns
 
 - Call `flyway.migrate()` in `@BeforeEach` to reset the DB to the known test-data state.
-- External services (AGIS, TVD, UID Register) are stubbed with WireMock; inject `WireMock wireMock` and annotate the class with
+- External services (AGIS, TVD, Burweb) are stubbed with WireMock; inject `WireMock wireMock` and annotate the class with
   `@ConnectWireMock`. Call `wireMock.resetToDefaultMappings()` in `@BeforeEach`.
 - Authenticated HTTP: `AuthTestUtils.requestAs(TestUserEnum.CONSUMER_BIO_SUISSE).when().get(…)`.
 - Access-control tests: `AccessTestUtils.assertForbiddenForAllExcept(GET, path, PRODUCER_ROLE, ADMIN_ROLE)`.
@@ -116,8 +116,8 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 
 ## External Integrations
 
-- Most external systems (AGIS, UID Register, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST clients
-  configured under `quarkus.rest-client.*` in `application.yml`. Only UID Register uses REST client to access a SOAP-API.
+- Most external systems (AGIS, Burweb, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST clients
+  configured under `quarkus.rest-client.*` in `application.yml`. Only Burweb uses REST client to access a SOAP-API.
     - BIT and AControl use mTLS (PKCS12).
     - AGIS DTOs are OpenAPI-generated in `ch.agridata.agis.dto`.
     - WireMock stubs for all external calls live in `src/test/resources/wiremock/`.

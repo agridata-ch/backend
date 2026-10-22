@@ -5,13 +5,12 @@ import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
+import ch.agridata.burregister.api.BurRegisterServiceApi;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
-import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class ContractRevisionInitializationService {
   private final ContractRevisionRepository contractRevisionRepository;
   private final ContractRevisionMapper contractRevisionMapper;
   private final DataProductApi dataproductApi;
-  private final UidRegisterServiceApi uidRegisterServiceApi;
+  private final BurRegisterServiceApi burRegisterServiceApi;
   private final ContractRevisionPdfService contractRevisionPdfService;
 
   @Transactional
@@ -45,9 +44,8 @@ public class ContractRevisionInitializationService {
 
     DataSourceSystemDto dataSourceSystem = dataproductApi.getDataSourceSystem(dataRequest.getDataSourceSystemId());
     List<DataProductDto> dataProductDtos = dataproductApi.getActiveProductsByIds(productIds);
-    var uid = dataSourceSystem.dataProvider().uid();
-    var uidWithoutPrefix = new BigInteger(uid.replace("CHE", ""));
-    var dataProvider = uidRegisterServiceApi.getByUid(uidWithoutPrefix);
+
+    var dataProvider = burRegisterServiceApi.getByUid(dataSourceSystem.dataProvider().uid());
 
     ContractRevisionEntity revision =
         contractRevisionMapper.toInitialEntity(

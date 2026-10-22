@@ -85,7 +85,7 @@ public record DataRequestV1Dto(
     DataRequestStateEnum stateCode,
 
     @Schema(
-        description = "LegalName of the data consumer taken from the uid register",
+        description = "LegalName of the data consumer taken from BurWeb",
         examples = {"Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen"}
     )
     @Size(max = 255)
