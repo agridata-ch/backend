@@ -10,10 +10,10 @@ import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.burregister.api.BurRegisterServiceApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
-import ch.agridata.uidregister.api.UidRegisterServiceApi;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -40,7 +40,7 @@ public class DataRequestMutationService {
   private final DataRequestRepository dataRequestRepository;
   private final DataRequestMapper dataRequestMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
-  private final UidRegisterServiceApi uidRegisterServiceApi;
+  private final BurRegisterServiceApi burRegisterServiceApi;
   private final HumanFriendlyIdService humanFriendlyIdService;
   private final DataProductApi dataProductApi;
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
@@ -56,11 +56,11 @@ public class DataRequestMutationService {
       throw new ValidationException("Cannot create new data request: maximum number of 10 draft requests reached");
     }
 
-    var uidRegisterCompany = uidRegisterServiceApi.getByUidOfCurrentUser();
+    var burCompany = burRegisterServiceApi.getByUidOfCurrentUser();
     var dataRequestEntity = DataRequestEntity.builder()
         .humanFriendlyId(humanFriendlyIdService.getHumanFriendlyIdForDataRequest())
         .dataConsumerUid(agridataSecurityIdentity.getUidOrElseThrow())
-        .dataConsumerLegalName(uidRegisterCompany.legalName())
+        .dataConsumerLegalName(burCompany.legalName())
         .stateCode(DataRequestEntity.DataRequestStateEnum.DRAFT)
         .consumerSignatureType(ch.agridata.agreement.persistence.SignatureTypeEnum.COLLECTIVE_SIGNATURE)
         .providerSignatureType(ch.agridata.agreement.persistence.SignatureTypeEnum.COLLECTIVE_SIGNATURE)

@@ -9,9 +9,9 @@ import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.SignatureTypeEnum;
+import ch.agridata.burregister.dto.BurRegisterOrganisationDto;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.product.dto.DataProductDto;
-import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -66,8 +66,8 @@ public class DataRequestTestUtils {
         .build();
   }
 
-  public static UidRegisterOrganisationDto buildUidSearchResult() {
-    return UidRegisterOrganisationDto.builder()
+  public static BurRegisterOrganisationDto buildUidSearchResult() {
+    return BurRegisterOrganisationDto.builder()
         .uid(USER_UID)
         .legalName("Test Organisation")
         .build();

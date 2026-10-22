@@ -18,14 +18,13 @@ import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
+import ch.agridata.burregister.api.BurRegisterServiceApi;
+import ch.agridata.burregister.dto.BurRegisterOrganisationDto;
 import ch.agridata.product.api.DataProductApi;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProviderDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
-import ch.agridata.uidregister.api.UidRegisterServiceApi;
-import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import jakarta.ws.rs.NotFoundException;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ class ContractRevisionInitializationServiceTest {
   private DataProductApi dataProductApi;
 
   @Mock
-  private UidRegisterServiceApi uidRegisterServiceApi;
+  private BurRegisterServiceApi burRegisterServiceApi;
 
   @Mock
   private ContractRevisionPdfService contractRevisionPdfService;
@@ -66,7 +65,7 @@ class ContractRevisionInitializationServiceTest {
     DataProviderDto dataProvider = DataProviderDto.builder().uid("CHE123456789").build();
     DataSourceSystemDto dataSourceSystem = DataSourceSystemDto.builder().dataProvider(dataProvider).build();
     List<DataProductDto> dataProductDtos = List.of(DataProductDto.builder().build());
-    UidRegisterOrganisationDto dataProviderUidResult = UidRegisterOrganisationDto.builder().legalName("Provider Name").build();
+    BurRegisterOrganisationDto dataProviderUidResult = BurRegisterOrganisationDto.builder().legalName("Provider Name").build();
 
     when(contractRevisionMapper.toInitialEntity(
         same(dataRequest),
@@ -75,7 +74,7 @@ class ContractRevisionInitializationServiceTest {
         eq(dataProductDtos)
     )).thenReturn(revision);
     when(dataProductApi.getDataSourceSystem(DATA_SOURCE_SYSTEM_ID)).thenReturn(dataSourceSystem);
-    when(uidRegisterServiceApi.getByUid(BigInteger.valueOf(123456789))).thenReturn(dataProviderUidResult);
+    when(burRegisterServiceApi.getByUid("CHE123456789")).thenReturn(dataProviderUidResult);
     when(dataProductApi.getActiveProductsByIds(anyList())).thenReturn(dataProductDtos);
 
 
