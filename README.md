@@ -2,7 +2,7 @@
 
 This repository contains the backend services for the agridata.ch platform, built with Quarkus. It handles agricultural
 data exchange between producers, consumers, and data providers — including consent flows, data transfer pipelines, and
-integrations with external registries (AGIS, TVD, UID Register, BIT).
+integrations with external registries (AGIS, TVD, BurWeb, BIT).
 
 ---
 

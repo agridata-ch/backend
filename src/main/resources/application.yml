@@ -37,9 +37,6 @@ quarkus:
       tvd-api-fetch-equid-owner-legal-units:
         expire-after-write: 5M
         maximum-size: 100
-      uid-register:
-        expire-after-write: 5M
-        maximum-size: 100
       bur-register:
         expire-after-write: 5M
         maximum-size: 100
@@ -119,8 +116,6 @@ quarkus:
       refresh-token-time-skew: 1M # Refreshs the token one minute before it expires to avoid timing issues
   rest-client:
     read-timeout: 25000 # The API gateway times out after max. 30s, so timeouts to external systems must be lower
-    uid-register:
-      url: https://www.uid-wse.admin.ch/V5.0/PublicServices.svc
     bur-register:
       url: https://www.burweb2.admin.ch/BurWeb.Services.External/V1_8/QueryServiceV1X8.svc
     agis-api:
