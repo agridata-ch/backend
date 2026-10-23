@@ -2,6 +2,7 @@ package ch.agridata.common.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 import java.util.List;
@@ -32,8 +33,10 @@ public record ResourceQueryDto(
     @Schema(description = "List of field names to sort by. Default is ascending prefix with - for descending")
     @QueryParam("sortBy") List<String> sortParams,
 
-    @Schema(description = "string to search for in the resource")
-    @QueryParam("searchTerm") String searchTerm,
+    @Schema(description = "string to search for in the resource", maxLength = 100)
+    @QueryParam("searchTerm")
+    @Size(max = 100)
+    String searchTerm,
 
     @Schema(description = "Column filters in the form '<column>:<value>[,<value>]', multiple filters separated by ';'. Values of the "
         + "same column are combined with OR, filters on different columns with AND. Duplicate values are ignored. "
