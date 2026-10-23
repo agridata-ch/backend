@@ -50,7 +50,6 @@ public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
       new FilterField(AGB_ACCEPTANCE_STATUS_EXPRESSION, value -> AgbAcceptanceStatusEnum.valueOf(value).name());
 
   private static final List<SearchField> SEARCHABLE_FIELDS = List.of(FIELD_EMAIL, FIELD_GIVEN_NAME, FIELD_FAMILY_NAME, FIELD_PHONE_NUMBER);
-  private static final List<List<SearchField>> COMBINED_FIELDS = List.of(List.of(FIELD_GIVEN_NAME, FIELD_FAMILY_NAME));
   private static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       EMAIL, FIELD_EMAIL,
       GIVEN_NAME, FIELD_GIVEN_NAME,
@@ -73,7 +72,6 @@ public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
             .baseWhere("function('jsonb_exists', rolesAtLastLogin, :role) = true")
             .baseParams(Map.of("role", role))
             .searchableFields(SEARCHABLE_FIELDS)
-            .combinedFields(COMBINED_FIELDS)
             .sortableFields(SORTABLE_FIELDS)
             .build()
     );

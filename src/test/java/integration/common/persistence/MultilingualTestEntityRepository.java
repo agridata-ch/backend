@@ -18,10 +18,6 @@ public class MultilingualTestEntityRepository extends BaseSearchRepository<Multi
       SearchField.simple("code")
   );
 
-  public static final List<List<SearchField>> COMBINED_FIELDS = List.of(
-      List.of(SearchField.translated("name"), SearchField.translated("description"))
-  );
-
   public static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "name", SearchField.translated("name"),
       "code", SearchField.simple("code")
@@ -30,7 +26,6 @@ public class MultilingualTestEntityRepository extends BaseSearchRepository<Multi
   public PageResponseDto<MultilingualTestEntity> search(ResourceQueryDto query, String category) {
     var spec = SearchSpec.builder()
         .searchableFields(SEARCHABLE_FIELDS)
-        .combinedFields(COMBINED_FIELDS)
         .sortableFields(SORTABLE_FIELDS);
     if (category != null) {
       spec.baseWhere("category = :category").baseParams(Map.of("category", category));
