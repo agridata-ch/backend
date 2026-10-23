@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Converts the supported rich-text (HTML) subset stored in the request purpose
-    (p, strong, em, u, ul, ol, li) into XSL-FO, so the markup renders as formatted
-    text (paragraphs, bold, italic, underline, bulleted and numbered lists) instead of being
+    (p, br, strong, em, u, ul, ol, li) into XSL-FO, so the markup renders as formatted
+    text (paragraphs, line breaks, bold, italic, underline, bulleted and numbered lists) instead of being
     printed as escaped source. Unknown elements are unwrapped; text nodes are copied
     verbatim by the built-in templates, which keeps legacy plain-text purposes intact.
 -->
@@ -30,6 +30,11 @@
         <fo:block space-after="2mm">
             <xsl:apply-templates mode="richtext"/>
         </fo:block>
+    </xsl:template>
+
+    <!-- A hard line break (<br/>): an empty fo:block forces a line break. Consecutive breaks collapse into one. -->
+    <xsl:template match="br" mode="richtext">
+        <fo:block/>
     </xsl:template>
 
     <xsl:template match="strong" mode="richtext">
@@ -67,13 +72,22 @@
         </fo:list-block>
     </xsl:template>
 
+    <!-- Honours the editor's start attribute (first number); anything invalid falls back to 1. -->
     <xsl:template match="ol" mode="richtext">
+        <xsl:variable name="start">
+            <xsl:choose>
+                <xsl:when test="number(@start) &gt;= 1">
+                    <xsl:value-of select="floor(@start)"/>
+                </xsl:when>
+                <xsl:otherwise>1</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <fo:list-block xsl:use-attribute-sets="list-block">
             <xsl:for-each select="li">
                 <fo:list-item xsl:use-attribute-sets="list-item">
                     <fo:list-item-label end-indent="label-end()">
                         <fo:block>
-                            <xsl:number value="position()" format="1."/>
+                            <xsl:number value="$start + position() - 1" format="1."/>
                         </fo:block>
                     </fo:list-item-label>
                     <fo:list-item-body start-indent="body-start()">
