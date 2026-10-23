@@ -18,9 +18,6 @@ public class TestEntityRepository extends BaseSearchRepository<TestEntity, Long>
       SearchField.simple("description"),
       SearchField.simple("category")
   );
-  public static final List<List<SearchField>> COMBINED_FIELDS = List.of(
-      List.of(SearchField.simple("firstName"), SearchField.simple("name"))
-  );
   public static final Map<String, SearchField> SORTABLE_FIELDS = Map.of(
       "firstName", SearchField.simple("firstName"),
       "name", SearchField.simple("name"),
@@ -31,7 +28,6 @@ public class TestEntityRepository extends BaseSearchRepository<TestEntity, Long>
   public PageResponseDto<TestEntity> searchEntitiesByCategory(ResourceQueryDto query, String category) {
     var spec = SearchSpec.builder()
         .searchableFields(FIELDS)
-        .combinedFields(COMBINED_FIELDS)
         .sortableFields(SORTABLE_FIELDS);
     if (category != null) {
       spec.baseWhere("category = :category").baseParams(Map.of("category", category));
