@@ -46,8 +46,7 @@ public abstract class BaseSearchRepository<T, I> implements PanacheRepositoryBas
 
     var searchClause = JpaUtil.createContainsWhereClause(
         resourceQuery.searchTerm(),
-        spec.searchableFields().stream().map(field -> field.toHql(language)).toList(),
-        spec.combinedFields().stream().map(group -> group.stream().map(field -> field.toHql(language)).toList()).toList()
+        spec.searchableFields().stream().map(field -> field.toHql(language)).toList()
     );
 
     var columnFilterClause = createColumnFilterWhereClause(resourceQuery.columnFilters(), spec.filterableFields());
@@ -132,7 +131,7 @@ public abstract class BaseSearchRepository<T, I> implements PanacheRepositoryBas
   /**
    * Merge the base, search and column filter parameters. A name used by more than one of them would
    * silently bind the wrong value, so a collision fails fast with a {@link SearchSpecificationException}:
-   * base parameters must not use the {@code paramfull}/{@code param<n>} names of the search clause nor
+   * base parameters must not use the {@code param<n>} names of the search clause nor
    * the {@code columnFilter<n>} names of the column filter clause. A collision can only be caused by a
    * faulty {@link SearchSpec}, never by the request.
    */

@@ -161,6 +161,22 @@ class BaseSearchRepositoryTest {
             .build(),
 
         TestCase.builder()
+            .name("Combined search 'jo do hn' with more tokens than fields (every token must match, should match John Doe)")
+            .category(null)
+            .searchTerm("jo do hn")
+            .expectedCount(1)
+            .expectedTotalElements(1)
+            .build(),
+
+        TestCase.builder()
+            .name("Combined search 'John Doe Smith' should not match because 'Smith' matches neither field of John Doe")
+            .category(null)
+            .searchTerm("John Doe Smith")
+            .expectedCount(0)
+            .expectedTotalElements(0)
+            .build(),
+
+        TestCase.builder()
             .name("Combined search 'John Smith' should not match because no such user with given first and last name")
             .category(null)
             .searchTerm("John Smith")
