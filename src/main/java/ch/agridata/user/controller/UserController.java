@@ -15,6 +15,7 @@ import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
+import ch.agridata.user.dto.AgbAcceptanceOverviewDto;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.dto.UserInfoDto;
@@ -178,6 +179,27 @@ public class UserController {
       @BeanParam @Valid ResourceQueryDto resourceQueryDto
   ) {
     return userService.getProducers(resourceQueryDto);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
+  @Path("/agb-acceptances")
+  @Operation(
+      operationId = "getAgbAcceptances",
+      description = "Returns the AGB acceptance state of all users who accepted the AGB at least once. "
+          + "The search term is matched against "
+          + "the UID, with or without '-' and '.' separators. Supports the filter 'status' (ACCEPTED, TRANSITION_PERIOD, PENDING), "
+          + "pagination and sorting on 'givenName', 'familyName', 'email', 'uid' and 'lastAcceptedAgbDate' (default: uid,familyName)."
+  )
+  @Parameter(name = "resourceQueryDto",
+      description = "Query parameters",
+      schema = @Schema(implementation = ResourceQueryDto.class))
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({ADMIN_ROLE, SUPPORT_ROLE})
+  public PageResponseDto<AgbAcceptanceOverviewDto> getAgbAcceptances(
+      @BeanParam @Valid ResourceQueryDto resourceQueryDto
+  ) {
+    return userService.getAgbAcceptances(resourceQueryDto);
   }
 
 }
