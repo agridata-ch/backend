@@ -59,6 +59,28 @@ class ContractRevisionPurposeFoRenderingTest {
   }
 
   @Test
+  void givenHardBreaksInPurpose_whenTransformed_thenRendersEmptyBlocks() throws Exception {
+    String fo = transformToFo("<p>Erste Zeile<br><br>Dritte Zeile</p>");
+
+    assertThat(fo).contains("Erste Zeile<fo:block/><fo:block/>Dritte Zeile")
+        .doesNotContain("<br");
+  }
+
+  @Test
+  void givenOrderedListWithStart_whenTransformed_thenNumbersFromStart() throws Exception {
+    String fo = transformToFo("<ol start=\"3\"><li><p>Erster</p></li><li><p>Zweiter</p></li></ol>");
+
+    assertThat(fo).contains(">3.<").contains(">4.<");
+  }
+
+  @Test
+  void givenOrderedListWithInvalidStart_whenTransformed_thenNumbersFromOne() throws Exception {
+    String fo = transformToFo("<ol start=\"0\"><li><p>Erster</p></li></ol>");
+
+    assertThat(fo).contains(">1.<");
+  }
+
+  @Test
   void givenPlainTextPurpose_whenParsed_thenFailsFast() {
     assertThatThrownBy(() -> RichTextHtmlParser.toElement("de", "Nur einfacher Text"))
         .isInstanceOf(RichTextParseException.class);
