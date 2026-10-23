@@ -52,4 +52,14 @@ class RichTextHtmlParserTest {
     assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(5);
     assertThat(element.getElementsByTagName("li").getLength()).isEqualTo(1);
   }
+
+  @Test
+  void givenEditorHardBreaks_toElement_parsesAsBrElements() {
+    var html = "<p>Les données sont notamment utilisées pour :&nbsp;<br>• identifier ;&nbsp;<br/>• vérifier</p>";
+
+    var element = RichTextHtmlParser.toElement("fr", html);
+
+    assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(1);
+    assertThat(element.getElementsByTagName("br").getLength()).isEqualTo(2);
+  }
 }
