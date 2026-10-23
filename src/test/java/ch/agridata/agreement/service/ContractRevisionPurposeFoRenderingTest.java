@@ -59,6 +59,32 @@ class ContractRevisionPurposeFoRenderingTest {
   }
 
   @Test
+  void givenConsecutiveHardBreaksInPurpose_whenTransformed_thenRendersOneLineSeparatorEach()
+      throws Exception {
+    String fo = transformToFo("<p>Erste Zeile<br><br>Dritte Zeile</p>");
+
+    assertThat(fo).contains("Erste Zeile  Dritte Zeile")
+        .doesNotContain("<br");
+  }
+
+  @Test
+  void givenOrderedListWithStartAndType_whenTransformed_thenNumbersAccordingly() throws Exception {
+    String fo = transformToFo(
+        "<ol start=\"3\" type=\"a\"><li><p>Erster</p></li><li><p>Zweiter</p></li></ol>"
+            + "<ol type=\"I\"><li><p>Dritter</p></li></ol>");
+
+    assertThat(fo).contains(">c.<").contains(">d.<").contains(">I.<");
+  }
+
+  @Test
+  void givenOrderedListWithInvalidStartAndType_whenTransformed_thenFallsBackToDecimalFromOne()
+      throws Exception {
+    String fo = transformToFo("<ol start=\"0\" type=\"x\"><li><p>Erster</p></li></ol>");
+
+    assertThat(fo).contains(">1.<");
+  }
+
+  @Test
   void givenPlainTextPurpose_whenParsed_thenFailsFast() {
     assertThatThrownBy(() -> RichTextHtmlParser.toElement("de", "Nur einfacher Text"))
         .isInstanceOf(RichTextParseException.class);

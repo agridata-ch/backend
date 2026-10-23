@@ -2,6 +2,7 @@ package ch.agridata.common.utils;
 
 import ch.agridata.common.exceptions.RichTextParseException;
 import java.io.StringReader;
+import java.util.regex.Pattern;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,7 +16,7 @@ import org.xml.sax.InputSource;
 /**
  * Parses stored rich-text (HTML) fragments into DOM elements so they can be marshalled verbatim into
  * an XML source tree instead of being emitted as escaped text. The rich text originates from the
- * front-end editor and uses a small, well-formed XHTML subset (p, strong, em, u, ul, ol, li). Content
+ * front-end editor and uses a small XHTML subset (p, br, strong, em, u, ul, ol, li). Content
  * that is not well-formed XML, or that is bare text not wrapped in markup, is rejected with a
  * {@link RichTextParseException} rather than silently rendered as-is, so non-HTML data fails fast
  * instead of leaking raw text into the PDF.
@@ -24,10 +25,16 @@ import org.xml.sax.InputSource;
  * {@code U+00A0} non-breaking space is serialized) is not defined in XML, so it is rewritten to its
  * numeric character reference {@code &#160;} before parsing.
  *
- * @CommentLastReviewed 2026-09-25
+ * <p>The editor serializes hard line breaks (Shift+Enter, or pasted text containing line breaks) as
+ * the HTML void element {@code <br>}, which is not well-formed XML, so it is rewritten to the
+ * self-closing {@code <br/>} before parsing.
+ *
+ * @CommentLastReviewed 2026-10-23
  */
 @UtilityClass
 public class RichTextHtmlParser {
+
+  private static final Pattern HTML_LINE_BREAK = Pattern.compile("<br\\s*/?>", Pattern.CASE_INSENSITIVE);
 
   /**
    * Wraps the given HTML fragment in an element named {@code tagName} and returns it as a DOM element
@@ -40,7 +47,9 @@ public class RichTextHtmlParser {
    * @throws RichTextParseException if the fragment is not well-formed XHTML or is bare (non-markup) text
    */
   public static Element toElement(String tagName, String html) {
-    String content = html == null ? "" : html.replace("&nbsp;", "&#160;");
+    String content = html == null
+        ? ""
+        : HTML_LINE_BREAK.matcher(html.replace("&nbsp;", "&#160;")).replaceAll("<br/>");
     DocumentBuilder builder = newSecureBuilder();
 
     Element element;
