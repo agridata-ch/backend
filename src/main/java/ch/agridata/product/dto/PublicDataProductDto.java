@@ -11,10 +11,10 @@ import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Public, client-facing view of a data product. It exposes only the display information required to list publicly available data products
- * and deliberately omits internal integration details (REST client, URL, request/path templates).
+ * Public, client-facing detail view of a data product. It extends the listing information of {@link PublicDataProductSummaryDto} with the
+ * details field and technical information.
  *
- * @CommentLastReviewed 2026-08-06
+ * @CommentLastReviewed 2026-10-26
  */
 @Builder
 public record PublicDataProductDto(
@@ -86,7 +86,30 @@ public record PublicDataProductDto(
     @Schema(
         description = "Legal basis for the pricing of this data product, if payment is required"
     )
-    TranslationDto pricingBasis
+    TranslationDto pricingBasis,
+
+    @Schema(
+        description = "Path template for the request",
+        examples = {"/farm-data/uid/{{uid}}"}
+    )
+    String restClientPathTemplate,
+
+    @Schema(
+        description = "Body template for the request",
+        examples = {
+            """
+                {
+                  "surveyYear": "{{year}}",
+                  "ids": {
+                    "ber": "{{bur}}"
+                  },
+                  "dataTypes": {
+                    "structureType": ["animalData"]
+                  }
+                }"""
+        }
+    )
+    String restClientRequestTemplate
 )
 
     implements Serializable {
