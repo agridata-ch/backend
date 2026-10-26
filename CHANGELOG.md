@@ -1,3 +1,9 @@
+## [1.22.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.3...v1.22.0-rc.4) (2026-10-26)
+
+### Features
+
+* **user:** Add getAgbAcceptances-endpoint ([22da163](https://github.com/agridata-ch/backend/commit/22da163d85e9f5c628c61d5cce6502b4a8bf6adc)), closes [DIGIB2-1531](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1531)
+
 ## [1.22.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.2...v1.22.0-rc.3) (2026-10-26)
 
 ### Features
