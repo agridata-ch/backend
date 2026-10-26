@@ -39,9 +39,6 @@ class BuildProviderRequestTaskTest {
   @Mock
   DataProviderRestClient dataProviderRestClient;
 
-  @Mock
-  OverrideTvdConsumerUidTask overrideTvdConsumerUidTask;
-
   @Captor
   ArgumentCaptor<DataProviderRestClient.Headers> headersCaptor;
 
