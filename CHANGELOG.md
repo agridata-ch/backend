@@ -1,3 +1,9 @@
+## [1.22.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.4...v1.22.0-rc.5) (2026-10-26)
+
+### Features
+
+* **user:** fix search with more words than fields ([66e9f54](https://github.com/agridata-ch/backend/commit/66e9f54cf021fc56cb7e5831d3f1e1c491504edc)), closes [DIGIB2-1531](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1531)
+
 ## [1.22.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.3...v1.22.0-rc.4) (2026-10-26)
 
 ### Features
