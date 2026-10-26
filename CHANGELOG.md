@@ -1,3 +1,9 @@
+## [1.22.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.2...v1.22.0-rc.3) (2026-10-26)
+
+### Features
+
+* **datatransfer:** remove consumer uid mechanism ([8395711](https://github.com/agridata-ch/backend/commit/83957115aa5207c6e0f995376b84804e9c65bcc1)), closes [DIGIB2-1582](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1582)
+
 ## [1.22.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.1...v1.22.0-rc.2) (2026-10-26)
 
 ### Bug Fixes
