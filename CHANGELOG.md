@@ -1,3 +1,9 @@
+## [1.22.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.1...v1.22.0-rc.2) (2026-10-26)
+
+### Bug Fixes
+
+* **deps:** update quarkus ([07e8824](https://github.com/agridata-ch/backend/commit/07e88246601efe6eb8a2fc6b6d34156a9df8c8bd)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
 ## [1.22.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.1-rc.1...v1.22.0-rc.1) (2026-10-21)
 
 ### Features
