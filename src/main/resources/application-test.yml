@@ -10,6 +10,7 @@ agridata:
   tvd:
     health-check:
       authorization-token: secret
+      authorization-token-zo-api: secret
   bur-register:
     username: agridata
     password: secret
