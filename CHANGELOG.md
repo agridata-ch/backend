@@ -1,3 +1,9 @@
+## [1.22.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.5...v1.22.0-rc.6) (2026-10-27)
+
+### Features
+
+* **health:** add zo-api health probe and add system code to dto ([5a06aad](https://github.com/agridata-ch/backend/commit/5a06aadeac369b206c11833502a383a0d40af76f)), closes [DIGIB2-1711](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1711)
+
 ## [1.22.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.4...v1.22.0-rc.5) (2026-10-26)
 
 ### Features
