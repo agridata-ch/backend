@@ -9,7 +9,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2025-08-25
  */
-
 @Schema(description = "Data transfer object representing an uid")
 @Builder
 public record UidDto(

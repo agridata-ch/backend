@@ -46,7 +46,6 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
  *
  * @CommentLastReviewed 2026-09-01
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 @Slf4j

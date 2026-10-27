@@ -18,6 +18,7 @@ import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -88,7 +89,7 @@ class UserUpdateTest {
         .isEqualTo(UserInfoDto.builder()
             .agateLoginId(CONSUMER_INCOMPLETE_ATTRIBUTES.getAgateLoginId())
             .ktIdP(null)
-            .uid("CHE101708094")
+            .uid(Uid.CHE101708094.name())
             .givenName("Lea")
             .familyName("Consumer")
             .email("lea.consumer@local.only.agridata.ch")

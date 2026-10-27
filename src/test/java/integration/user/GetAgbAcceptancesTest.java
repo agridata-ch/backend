@@ -39,9 +39,9 @@ import org.junit.jupiter.api.Test;
 class GetAgbAcceptancesTest {
 
   private static final String PATH = UserController.PATH + "/agb-acceptances";
-  private static final String UID_BIO_SUISSE = "CHE101708094";
-  private static final String UID_IP_SUISSE = "CHE110013660";
-  private static final String UID_PROVIDER = "CHE113614519";
+  private static final String UID_BIO_SUISSE = CONSUMER_BIO_SUISSE.getCompanyUids().getFirst().name();
+  private static final String UID_IP_SUISSE = CONSUMER_IP_SUISSE.getCompanyUids().getFirst().name();
+  private static final String UID_PROVIDER = PROVIDER_1.getCompanyUids().getFirst().name();
 
   private final Flyway flyway;
   private final EntityManager entityManager;

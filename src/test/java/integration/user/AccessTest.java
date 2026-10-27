@@ -8,8 +8,10 @@ import static ch.agridata.common.utils.AuthenticationUtil.SUPPORT_ROLE;
 import static integration.testutils.AccessTestUtils.HttpMethod.GET;
 import static integration.testutils.AccessTestUtils.HttpMethod.POST;
 
+import ch.agridata.user.controller.AgbRevisionAdminController;
 import ch.agridata.user.controller.UserController;
 import integration.testutils.AccessTestUtils;
+import integration.testutils.TestDataIdentifiers.AgbRevision;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,12 @@ class AccessTest {
         CONSUMER_ROLE, PROVIDER_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET,
         UserController.PATH + "/agb-acceptances", ADMIN_ROLE, SUPPORT_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET,
+        AgbRevisionAdminController.PATH, ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(GET,
+        AgbRevisionAdminController.PATH + "/" + AgbRevision.VERSION_1_4, ADMIN_ROLE);
+    AccessTestUtils.assertForbiddenForAllExcept(POST,
+        AgbRevisionAdminController.PATH, ADMIN_ROLE);
   }
 
 }

@@ -410,6 +410,7 @@
                                 <arguments>
                                     <argument>ch.agridata.agreement.dto.DataRequestUpdateDto</argument>
                                     <argument>ch.agridata.product.dto.DataProductUpdateDto</argument>
+                                    <argument>ch.agridata.user.dto.AgbRevisionCreateDto</argument>
                                 </arguments>
                             </configuration>
                         </execution>
