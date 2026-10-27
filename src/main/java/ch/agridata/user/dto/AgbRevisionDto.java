@@ -11,7 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-07-16
  */
-
 @Schema(description = "Data transfer object representing an agb revision")
 @Builder
 public record AgbRevisionDto(
@@ -30,12 +29,14 @@ public record AgbRevisionDto(
     @Schema(description = "Date and time from which the agb revision is valid")
     LocalDateTime validFrom,
 
+    @Schema(description = "Date and time until which the agb revision is valid. Null for the currently active revision")
+    LocalDateTime validTo,
+
     @Schema(description = "Date and time from which the agb revision enforces consent")
     LocalDateTime enforceConsentFrom,
 
     @Schema(description = "Data transfer object representing an agb text")
     AgbTextDto agbText
-
 ) {
 
 }

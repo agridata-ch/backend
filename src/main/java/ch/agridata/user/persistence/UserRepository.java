@@ -11,6 +11,7 @@ import ch.agridata.common.persistence.FilterField;
 import ch.agridata.common.persistence.SearchField;
 import ch.agridata.common.persistence.SearchSpec;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +22,6 @@ import java.util.UUID;
  *
  * @CommentLastReviewed 2025-09-08
  */
-
 @ApplicationScoped
 public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
 
@@ -108,5 +108,21 @@ public class UserRepository extends BaseSearchRepository<UserEntity, UUID> {
         "function('jsonb_exists', rolesAtLastLogin, :role) = true and uid = :uid",
         Map.of("role", role, "uid", uid)
     ).list();
+  }
+
+  /**
+   * Sets {@code enforceAgbAcceptanceFrom} to the given date for all users with one of the given roles whose current value is null or
+   * later than the given date.
+   */
+  public void bringForwardEnforceAgbAcceptanceFrom(LocalDateTime enforceFrom, String firstRole, String secondRole) {
+    update(
+        """
+            enforceAgbAcceptanceFrom = :enforceFrom
+            where (function('jsonb_exists', rolesAtLastLogin, :firstRole) = true
+                or function('jsonb_exists', rolesAtLastLogin, :secondRole) = true)
+              and (enforceAgbAcceptanceFrom is null or enforceAgbAcceptanceFrom > :enforceFrom)
+            """,
+        Map.of("enforceFrom", enforceFrom, "firstRole", firstRole, "secondRole", secondRole)
+    );
   }
 }

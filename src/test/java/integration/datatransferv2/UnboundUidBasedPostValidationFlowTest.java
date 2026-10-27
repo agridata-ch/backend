@@ -35,7 +35,7 @@ class UnboundUidBasedPostValidationFlowTest {
   private static final String UIDS_HEADER_MISSING_MSG =
       "AGRIDATA-RESPONSE-PRODUCER-UIDS header is not present in provider response";
   // Consumer UID returned by the provider in the response header when CONSUMER_BLV_WITHOUT_UID calls without a UID in token
-  private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = "CHE403244345";
+  private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = Uid.CHE403244345.name();
 
   private static final Identifier<DataProductEntity> PRODUCT_UID_BASED = DataProduct.UUID_593913AC;
 

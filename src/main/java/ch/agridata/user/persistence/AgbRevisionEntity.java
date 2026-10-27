@@ -23,7 +23,6 @@ import org.hibernate.type.SqlTypes;
  *
  * @CommentLastReviewed 2026-07-16
  */
-
 @Entity
 @Table(name = "agb_revision")
 @SQLDelete(sql = "UPDATE agb_revision SET archived = true WHERE id = ?")
@@ -54,5 +53,5 @@ public class AgbRevisionEntity extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "agb_text")
   @Valid
-  private AgbTextDto agbText;
+  private AgbTranslationDto agbText;
 }

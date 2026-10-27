@@ -1,7 +1,5 @@
 package integration.user;
 
-import static ch.agridata.user.dto.LegalFormEnum.EINFACHE_GESELLSCHAFT;
-import static ch.agridata.user.dto.LegalFormEnum.NATUERLICHE_PERSON;
 import static integration.testutils.TestUserEnum.ADMIN;
 import static integration.testutils.TestUserEnum.PRODUCER_AGIS_NO_UID_TVD_UNAVAILABLE;
 import static integration.testutils.TestUserEnum.PRODUCER_AGIS_TVD_UNAVAILABLE;
@@ -16,6 +14,7 @@ import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.user.controller.UserController;
 import ch.agridata.user.dto.UidDto;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers.Uid;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -91,10 +90,9 @@ class UidAuthorizationTest {
 
     assertThat(actualResult).usingRecursiveComparison()
         .ignoringCollectionOrder()
-        .isEqualTo(List.of(
-            new UidDto("CHE102000001", "Jonas Testmann", NATUERLICHE_PERSON),
-            new UidDto("CHE102000002", "Testpartner GmbH", EINFACHE_GESELLSCHAFT)
-        ));
+        .isEqualTo(Stream.of(Uid.CHE102000001, Uid.CHE102000002)
+                       .map(uid -> new UidDto(uid.name(), uid.getUidName(), uid.getLegalForm()))
+                       .toList());
   }
 
   static Stream<Arguments> unavailableServiceDataProvider() {

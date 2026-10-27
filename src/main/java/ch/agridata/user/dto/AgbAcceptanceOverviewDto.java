@@ -10,7 +10,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-10-20
  */
-
 @Schema(description = "AGB acceptance state of a user")
 public record AgbAcceptanceOverviewDto(
     @Schema(
@@ -55,8 +54,10 @@ public record AgbAcceptanceOverviewDto(
     )
     String lastAcceptedAgbVersion,
 
-    @Schema(description = "AGB acceptance status: ACCEPTED if no acceptance is pending, TRANSITION_PERIOD while "
-        + "the acceptance deadline lies in the future, PENDING once it has passed.")
+    @Schema(
+        description = "AGB acceptance status: ACCEPTED if no acceptance is pending, TRANSITION_PERIOD while "
+            + "the acceptance deadline lies in the future, PENDING once it has passed."
+    )
     AgbAcceptanceStatusEnum status
 ) {
 

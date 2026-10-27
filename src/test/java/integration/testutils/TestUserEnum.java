@@ -1,11 +1,15 @@
 package integration.testutils;
 
 import static integration.testutils.TestDataIdentifiers.Uid.CHE101000001;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE101708094;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE102000001;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE102000002;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE103000001;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE103000002;
 import static integration.testutils.TestDataIdentifiers.Uid.CHE104000002;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE110013660;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE113614519;
+import static integration.testutils.TestDataIdentifiers.Uid.CHE403244345;
 import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199984051;
 import static integration.testutils.TestDataIdentifiers.Uid.ZZZ199984068;
 
@@ -100,7 +104,7 @@ public enum TestUserEnum {
       "consumer",
       "Emilia",
       "Bio Suisse",
-      List.of(),
+      List.of(CHE101708094),
       "20154600",
       null
   ),
@@ -108,7 +112,7 @@ public enum TestUserEnum {
       "consumer-ip-suisse",
       "Tim",
       "Consumer",
-      List.of(),
+      List.of(CHE110013660),
       "900000",
       null
   ),
@@ -116,7 +120,7 @@ public enum TestUserEnum {
       "consumer-blv-1",
       "Maria",
       "BLV",
-      List.of(),
+      List.of(CHE403244345),
       "3477588",
       null
   ),
@@ -140,7 +144,7 @@ public enum TestUserEnum {
       "provider-1",
       "Anna",
       "Provider",
-      List.of(),
+      List.of(CHE113614519),
       "3477553",
       null
   ),

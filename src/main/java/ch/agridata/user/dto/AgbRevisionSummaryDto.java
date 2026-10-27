@@ -10,9 +10,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-10-01
  */
-
 @Schema(description = "Overview of an agb revision without the agb text")
-public record AgbRevisionOverviewDto(
+public record AgbRevisionSummaryDto(
     @Schema(
         description = "Unique identifier of the agb revision",
         examples = {"3fa85f64-5717-4562-b3fc-2c963f66afb7"}

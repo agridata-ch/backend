@@ -16,7 +16,6 @@ import org.mapstruct.ReportingPolicy;
  *
  * @CommentLastReviewed 2025-08-27
  */
-
 @Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserMapper {
 

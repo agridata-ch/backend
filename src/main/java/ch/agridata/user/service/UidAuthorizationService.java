@@ -20,7 +20,6 @@ import org.jspecify.annotations.NonNull;
  *
  * @CommentLastReviewed 2025-12-29
  */
-
 @ApplicationScoped
 @RequiredArgsConstructor
 @Slf4j

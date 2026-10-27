@@ -17,7 +17,6 @@ import java.util.UUID;
  *
  * @CommentLastReviewed 2026-10-01
  */
-
 @ApplicationScoped
 public class AgbRevisionRepository extends BaseSearchRepository<AgbRevisionEntity, UUID> {
 
@@ -32,12 +31,22 @@ public class AgbRevisionRepository extends BaseSearchRepository<AgbRevisionEntit
     return findPage(query, SearchSpec.builder().sortableFields(SORTABLE_FIELDS).build());
   }
 
+  public boolean existsByVersion(String version) {
+    return count("version", version) > 0;
+  }
+
+  public Optional<AgbRevisionEntity> findOpenRevision() {
+    return find("validTo is null").singleResultOptional();
+  }
+
   public Optional<AgbRevisionEntity> findValidRevisionAt(LocalDateTime dateTimeNow) {
-    return find("""
+    return find(
+        """
             archived = false
             and validFrom <= :dateTimeNow
-            and (validTo is null or validTo >= :dateTimeNow)
+            and (validTo is null or validTo > :dateTimeNow)
             """,
-        Map.of("dateTimeNow", dateTimeNow)).singleResultOptional();
+        Map.of("dateTimeNow", dateTimeNow)
+    ).singleResultOptional();
   }
 }
