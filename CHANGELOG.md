@@ -1,3 +1,9 @@
+## [1.22.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.7...v1.22.0-rc.8) (2026-10-27)
+
+### Features
+
+* **health:** use authorization token for ZO-API ([915e7a1](https://github.com/agridata-ch/backend/commit/915e7a1a9c36b05a96398291eafb59e3ecbd2646)), closes [DIGIB2-1711](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1711)
+
 ## [1.22.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.6...v1.22.0-rc.7) (2026-10-27)
 
 ### Features
