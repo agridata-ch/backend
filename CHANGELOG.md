@@ -1,3 +1,9 @@
+## [1.22.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.6...v1.22.0-rc.7) (2026-10-27)
+
+### Features
+
+* **data-request:** add technical info to public data catalog ([06af5de](https://github.com/agridata-ch/backend/commit/06af5ded9259766216bbca85cefed5e78b5ca72a)), closes [DIGIB2-1717](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1717)
+
 ## [1.22.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.5...v1.22.0-rc.6) (2026-10-27)
 
 ### Features
