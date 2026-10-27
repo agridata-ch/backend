@@ -41,5 +41,6 @@ public enum ActionEnum {
   CONTRACT_PDF_ELECTRONICALLY_SIGNED,
 
   // terms
-  AGBS_ACCEPTED
+  AGBS_ACCEPTED,
+  AGB_PUBLISHED
 }

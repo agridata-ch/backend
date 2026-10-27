@@ -55,13 +55,13 @@ import org.jboss.resteasy.reactive.RestResponse;
  *
  * @CommentLastReviewed 2025-10-15
  */
-
 @Path(PATH)
 @Slf4j
 @RequiredArgsConstructor
 @Tag(
     name = "Users",
-    description = "Provides access to UIDs and BURs authorized for specific data producers, based on their ktIdP or UID.")
+    description = "Provides access to UIDs and BURs authorized for specific data producers, based on their ktIdP or UID."
+)
 @RunOnVirtualThread
 public class UserController {
 
@@ -78,7 +78,8 @@ public class UserController {
   @Path("/authorized-uids")
   @Operation(
       operationId = "getAuthorizedUids",
-      description = "Retrieves all UIDs authorized for the currently authenticated data producer.")
+      description = "Retrieves all UIDs authorized for the currently authenticated data producer."
+  )
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE})
@@ -93,12 +94,14 @@ public class UserController {
           description = "The agateLoginId of the producer (only relevant for admin users)",
           example = "1234567"
       )
-      @QueryParam("agate-login-id") String agateLoginId) {
+      @QueryParam("agate-login-id") String agateLoginId
+  ) {
     return switch (actingRoleHolder.getRole()) {
       case ADMIN -> uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
       case PRODUCER, SUPPORT -> uidAuthorizationService.getAuthorizedUids(
           identity.getKtIdpOrImpersonatedKtIdP(),
-          identity.getAgateLoginIdOrImpersonatedAgateLoginId());
+          identity.getAgateLoginIdOrImpersonatedAgateLoginId()
+      );
       default -> throw new ForbiddenException();
     };
   }
@@ -108,7 +111,8 @@ public class UserController {
   @Path("/uids/{uid}/authorized-burs")
   @Operation(
       operationId = "getAuthorizedBursByUid",
-      description = "Retrieves all BURs authorized for the given UID. Accessible to consumers and admin users.")
+      description = "Retrieves all BURs authorized for the given UID. Accessible to consumers and admin users."
+  )
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
@@ -121,7 +125,8 @@ public class UserController {
   @Path("/user-info")
   @Operation(
       operationId = "getUserInfo",
-      description = "Retrieves user-info for the currently authenticated user.")
+      description = "Retrieves user-info for the currently authenticated user."
+  )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
   public UserInfoDto getUserInfo() {
@@ -136,7 +141,8 @@ public class UserController {
   @Path("/preferences")
   @Operation(
       operationId = "updateUserPreferences",
-      description = "updates preferences for the currently authenticated user.")
+      description = "updates preferences for the currently authenticated user."
+  )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
@@ -151,7 +157,8 @@ public class UserController {
   @Path("/agb-revisions/{agb-revision-id}/accept")
   @Operation(
       operationId = "acceptAgb",
-      description = "Records acceptance of the current AGB revision for the currently authenticated user.")
+      description = "Records acceptance of the current AGB revision for the currently authenticated user."
+  )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, PROVIDER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.NO_CONTENT)
@@ -160,7 +167,8 @@ public class UserController {
           description = "The id of the AGB revision the user is accepting.",
           example = "3fa85f64-5717-4562-b3fc-2c963f66afb7"
       )
-      @PathParam("agb-revision-id") UUID agbRevisionId) {
+      @PathParam("agb-revision-id") UUID agbRevisionId
+  ) {
     userService.acceptCurrentAgb(agbRevisionId);
   }
 
@@ -169,10 +177,13 @@ public class UserController {
   @Path("/producers")
   @Operation(
       operationId = "getProducers",
-      description = "Retrieves users matching the given query parameters.")
-  @Parameter(name = "resourceQueryDto",
+      description = "Retrieves users matching the given query parameters."
+  )
+  @Parameter(
+      name = "resourceQueryDto",
       description = "Query parameters",
-      schema = @Schema(implementation = ResourceQueryDto.class))
+      schema = @Schema(implementation = ResourceQueryDto.class)
+  )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({SUPPORT_ROLE})
   public PageResponseDto<UserInfoDto> getProducers(
@@ -191,9 +202,11 @@ public class UserController {
           + "Supports the filter 'status' (ACCEPTED, TRANSITION_PERIOD, PENDING), "
           + "pagination and sorting on 'givenName', 'familyName', 'email', 'uid' and 'lastAcceptedAgbDate' (default: uid,familyName)."
   )
-  @Parameter(name = "resourceQueryDto",
+  @Parameter(
+      name = "resourceQueryDto",
       description = "Query parameters",
-      schema = @Schema(implementation = ResourceQueryDto.class))
+      schema = @Schema(implementation = ResourceQueryDto.class)
+  )
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({ADMIN_ROLE, SUPPORT_ROLE})
   public PageResponseDto<AgbAcceptanceOverviewDto> getAgbAcceptances(

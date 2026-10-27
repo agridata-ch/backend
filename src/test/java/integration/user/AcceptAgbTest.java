@@ -12,6 +12,7 @@ import ch.agridata.user.controller.UserController;
 import ch.agridata.user.dto.UserInfoDto;
 import integration.auditing.utils.AuditLogTestUtils;
 import integration.testutils.AuthTestUtils;
+import integration.testutils.TestDataIdentifiers.AgbRevision;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import jakarta.ws.rs.core.Response;
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class AcceptAgbTest {
 
-  private static final UUID CURRENT_AGB_REVISION_ID = UUID.fromString("e1ae6e9d-9b01-4f31-9b99-f18e445c0532");
+  private static final UUID CURRENT_AGB_REVISION_ID = AgbRevision.VERSION_1_4.uuid();
 
   private final AuditLogTestUtils auditLogTestUtils;
 
@@ -52,7 +53,7 @@ class AcceptAgbTest {
         .statusCode(200)
         .body("lastAcceptedAgbDate", notNullValue())
         .extract()
-        .as(new TypeRef<UserInfoDto>() {
+        .as(new TypeRef<>() {
         });
 
     assertThat(userInfo.lastAcceptedAgbRevisionId()).isEqualTo(CURRENT_AGB_REVISION_ID);

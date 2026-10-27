@@ -6,6 +6,7 @@ import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static org.hamcrest.Matchers.equalTo;
 
 import ch.agridata.burregister.controller.BurRegisterController;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +16,10 @@ class BurRegisterControllerTest {
   @Test
   void givenValidRequest_whenGetByUid_thenValidResponse() {
     requestAs(ADMIN).when()
-        .get(BurRegisterController.PATH + "/search/CHE113614519")
+        .get(BurRegisterController.PATH + "/search/" + Uid.CHE113614519.name())
         .then()
         .statusCode(200)
-        .body("uid", equalTo("CHE113614519"))
+        .body("uid", equalTo(Uid.CHE113614519.name()))
         .body("legalName", equalTo("Bundesamt für Landwirtschaft BLW"))
         .body("address.street", equalTo("Schwarzenburgstrasse 165"));
   }
@@ -29,7 +30,7 @@ class BurRegisterControllerTest {
         .get(BurRegisterController.PATH + "/search")
         .then()
         .statusCode(200)
-        .body("uid", equalTo("CHE403244345"))
+        .body("uid", equalTo(Uid.CHE403244345.name()))
         .body("address.city", equalTo("Liebefeld"));
   }
 
