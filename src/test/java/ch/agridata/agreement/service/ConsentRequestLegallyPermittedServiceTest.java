@@ -2,20 +2,17 @@ package ch.agridata.agreement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agis.dto.AgisFarmType;
-import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.BurDto;
-import io.quarkus.arc.Arc;
-import io.quarkus.arc.ArcContainer;
-import io.quarkus.arc.ManagedContext;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,12 +20,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,33 +40,23 @@ class ConsentRequestLegallyPermittedServiceTest {
   @Mock
   private UserApi userApi;
   @Mock
-  private AgridataSecurityIdentity identity;
-  @Mock
-  private ManagedContext context;
-  @Mock
-  private ArcContainer container;
+  private BackgroundTaskRunner backgroundTaskRunner;
 
   private ConsentRequestLegallyPermittedService service;
-  private MockedStatic<Arc> arc;
 
   @BeforeEach
   void setUp() {
-    service = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, identity, true, 10);
-    lenient().when(container.requestContext()).thenReturn(context);
-    arc = mockStatic(Arc.class);
-    arc.when(Arc::container).thenReturn(container);
-  }
-
-  @AfterEach
-  void tearDown() {
-    arc.close();
+    service = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, backgroundTaskRunner, true, 10);
+    lenient().when(backgroundTaskRunner.wrapForAsync(any(), any(Runnable.class))).thenAnswer(invocation -> invocation.getArgument(1));
   }
 
   @Test
-  void givenUid_whenCreateForUid_thenRunsAsTechnicalUserAndCreatesWithoutBur() throws Exception {
-    invoke("createForUid", DATA_REQUEST_ID, UID);
+  void givenUid_whenEnqueueUidBased_thenCreatesWithoutBurAsTechnicalUser() {
+    service.enqueueUidBased(DATA_REQUEST_ID, UID);
+    service.awaitAllProcessed();
 
-    verify(identity).setRunAsUserId(ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT);
+    verify(backgroundTaskRunner).wrapForAsync(
+        eq(ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT), any(Runnable.class));
     verify(consentRequestCreationService).createLegallyPermittedConsentRequestIfMissing(DATA_REQUEST_ID, UID, null, null);
   }
 
@@ -122,7 +107,8 @@ class ConsentRequestLegallyPermittedServiceTest {
 
   @Test
   void givenDisabled_whenEnqueue_thenNothingIsSubmitted() throws Exception {
-    var disabledService = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, identity, false, 10);
+    var disabledService = new ConsentRequestLegallyPermittedService(
+        consentRequestCreationService, agisApi, userApi, backgroundTaskRunner, false, 10);
     var field = ConsentRequestLegallyPermittedService.class.getDeclaredField("executor");
     field.setAccessible(true);
     var executor = (ThreadPoolExecutor) field.get(disabledService);

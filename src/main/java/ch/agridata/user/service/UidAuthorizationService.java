@@ -55,7 +55,7 @@ public class UidAuthorizationService {
           "Could not determine authorized UIDs because one or more external services are unavailable"
       );
     }
-    log.error("No UIDs found for ktIdP={} and agateLoginId={}, sync may still be in progress", ktIdP, agateLoginId);
+    log.warn("No UIDs found for ktIdP={} and agateLoginId={}, sync may still be in progress", ktIdP, agateLoginId);
     throw new UidMissingException("No UID is currently associated with this account; synchronization may still be in progress");
   }
 

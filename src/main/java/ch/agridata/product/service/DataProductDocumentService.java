@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.product.dto.DataProductDocumentMetadataDto;
 import ch.agridata.product.dto.DocumentDownloadDto;
 import ch.agridata.product.mapper.DataProductDocumentMapper;
@@ -11,7 +12,6 @@ import ch.agridata.product.persistence.DataProductDocumentEntity;
 import ch.agridata.product.persistence.DataProductDocumentRepository;
 import ch.agridata.product.persistence.DataProductRepository;
 import ch.agridata.product.persistence.DocumentScanStatusEnum;
-import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -31,7 +31,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 /**
@@ -58,12 +57,12 @@ public class DataProductDocumentService {
   private final DataProductDocumentRepository dataProductDocumentRepository;
   private final DataProductDocumentMapper dataProductDocumentMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final BackgroundTaskRunner backgroundTaskRunner;
   private final DataProductRepository dataProductRepository;
   private final DataProductAccessGuard dataProductAccessGuard;
   private final DataProductDocumentScanService dataProductDocumentScanService;
   private final PdfValidator pdfValidator;
   private final DataProductDocumentStorageService dataProductDocumentStorageService;
-  private final ManagedExecutor managedExecutor;
 
   @RolesAllowed({PROVIDER_ROLE})
   public DataProductDocumentMetadataDto addDataProductDocumentAsProvider(UUID dataProductId, FileUpload fileUpload) {
@@ -113,7 +112,8 @@ public class DataProductDocumentService {
       // Capture the user ID while the request context is still active; the async poll runs later.
       runAsyncAsUser(
           agridataSecurityIdentity.getUserId(),
-          () -> dataProductDocumentScanService.pollUntilScanned(documentId));
+          () -> dataProductDocumentScanService.pollUntilScanned(documentId)
+      );
       return dto;
     } catch (Exception e) {
       safeDeleteOrphan(documentId);
@@ -133,23 +133,21 @@ public class DataProductDocumentService {
    * Captures the current user ID from the active HTTP request context and submits the given task
    * to the virtual thread executor. The task runs on a fresh virtual thread with a newly activated
    * request context, in which the captured user ID is set as {@code runAsUserId} on
-   * {@link AgridataSecurityIdentity}. This allows the {@code AuditingEntityListener} to resolve
-   * {@code modifiedBy} correctly even though the original request context is no longer active.
+   * {@link AgridataSecurityIdentity} (see {@link BackgroundTaskRunner}). This allows the
+   * {@code AuditingEntityListener} to resolve {@code modifiedBy} correctly even though the original
+   * request context is no longer active.
    * Exceptions thrown by the task are logged and not rethrown.
    */
   private void runAsyncAsUser(UUID userId, Runnable task) {
-    managedExecutor.submit(() -> {
-      var requestContext = Arc.container().requestContext();
-      requestContext.activate();
-      try {
-        agridataSecurityIdentity.setRunAsUserId(userId);
-        task.run();
-      } catch (RuntimeException e) {
-        log.error("Async task as user {} failed", userId, e);
-      } finally {
-        requestContext.deactivate();
-      }
-    });
+    backgroundTaskRunner.runAsync(
+        userId, () -> {
+          try {
+            task.run();
+          } catch (RuntimeException e) {
+            log.error("Polling until scanned as async task as user {} failed", userId, e);
+          }
+        }
+    );
   }
 
 
