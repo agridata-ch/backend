@@ -81,6 +81,32 @@ controller  →  service  →  persistence
 Naming pattern: `V{YEAR}.{MM}.{DD}_{TICKET}__description.sql`  
 Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 
+### Logging
+
+`AuditingApi` is for important business events (share requestId)
+The following interfaces to other systems are automatically logged:
+
+- Incoming requests/responses (`PreSecurityLogFilter`)
+- Outgoing REST calls (`RestClientLoggingFilter`)
+- Exceptions (`ExceptionHandler`)
+
+Add explicit `@Slf4j` logs only where the automatic ones are blind:
+
+- Background work (`@Scheduled`, executors, event observers): INFO per run, DEBUG per item, ERROR per failure
+- System decisions not in request/response: fallbacks, skips, degraded mode (WARN); non-REST integrations (AWS SDK); multi-step external
+  protocols
+
+Rules:
+
+- Levels: ERROR = action required; WARN = handled anomaly; INFO = milestones; DEBUG = diagnosis
+- Bodies only at DEBUG/TRACE
+- No PII or secrets; technical IDs okay
+- Log exceptions once (handle+log or rethrow, unless adding context to `ExceptionHandler`)
+- Run background work (jobs, executors) through `BackgroundTaskRunner`, which sets request context, run-as user and logging context
+  and cleans them up afterward
+- Use `kv(...)` for searchable fields in JSON logs
+- Flag touched services with missing logs for discussion
+
 ---
 
 ## Testing
@@ -118,6 +144,7 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
 
 - Most external systems (AGIS, Burweb, TVD Animal Tracing, TVD ZO, BIT Signature, AControl, Data Providers) are REST clients
   configured under `quarkus.rest-client.*` in `application.yml`. Only Burweb uses REST client to access a SOAP-API.
+    - REST client calls are logged automatically by `RestClientLoggingFilter`; non-REST integrations (AWS SDK) need explicit logs.
     - BIT and AControl use mTLS (PKCS12).
     - AGIS DTOs are OpenAPI-generated in `ch.agridata.agis.dto`.
     - WireMock stubs for all external calls live in `src/test/resources/wiremock/`.
@@ -142,3 +169,4 @@ Example: `V2026.02.16_466__add_uid_field_to_data_provider_table.sql`
     - Prefer readability over cleverness
 - Write the minimum code that solves the task and matches surrounding style.
     - Keep changes surgical: edit only what the task requires.
+- Never commit for me, let me read through my work myself.

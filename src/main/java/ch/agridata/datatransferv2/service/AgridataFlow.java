@@ -26,9 +26,11 @@ public class AgridataFlow {
   static final String PROVIDER_REQUEST_TASK = "Provider Request";
   static final String RESPONSE_STREAMING_TASK = "Response Streaming";
 
-  public Response run(AgridataContext context,
-                      List<UnaryOperator<AgridataContext>> tasksBefore,
-                      List<UnaryOperator<AgridataContext>> tasksAfter) {
+  public Response run(
+      AgridataContext context,
+      List<UnaryOperator<AgridataContext>> tasksBefore,
+      List<UnaryOperator<AgridataContext>> tasksAfter
+  ) {
 
     log.debug("Starting flow for productId={}, flowType={}", context.getProductId(), context.getFlowEnum());
 
@@ -43,7 +45,8 @@ public class AgridataFlow {
 
   private void runTasks(
       AgridataContext context,
-      List<UnaryOperator<AgridataContext>> tasks) {
+      List<UnaryOperator<AgridataContext>> tasks
+  ) {
     for (UnaryOperator<AgridataContext> task : tasks) {
       long taskStart = System.nanoTime();
       String taskName = task.getClass().getSimpleName();
@@ -53,15 +56,16 @@ public class AgridataFlow {
       } catch (RuntimeException ex) {
         context.getFlowTiming().addTask(taskName, FlowTiming.Responsibility.AGRIDATA, taskStart);
         context.getFlowTiming().setFailedTask(taskName);
-        log.warn("Task {} failed: {} | context: {}", taskName, ex.getMessage(), context);
         throw ex;
       }
       context.getFlowTiming().addTask(taskName, FlowTiming.Responsibility.AGRIDATA, taskStart);
     }
   }
 
-  private Response proxy(AgridataContext context,
-                         List<UnaryOperator<AgridataContext>> tasksAfter) {
+  private Response proxy(
+      AgridataContext context,
+      List<UnaryOperator<AgridataContext>> tasksAfter
+  ) {
 
     log.debug("Calling upstream provider");
     long providerStart = System.nanoTime();

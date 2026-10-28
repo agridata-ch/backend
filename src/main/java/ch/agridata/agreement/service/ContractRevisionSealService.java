@@ -8,7 +8,7 @@ import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.bit.api.BitSignatureApi;
 import ch.agridata.common.security.AgridataSecurityIdentity;
-import io.quarkus.arc.Arc;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.context.ManagedExecutor;
 
 /**
  * Seals a contract revision PDF using the BIT evidence Signing API. Sealing is performed
@@ -37,7 +36,7 @@ public class ContractRevisionSealService {
   private final ContractRevisionQueryService contractRevisionQueryService;
   private final ContractRevisionMapper contractRevisionMapper;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
-  private final ManagedExecutor managedExecutor;
+  private final BackgroundTaskRunner backgroundTaskRunner;
   private final ContractRevisionStorageService contractRevisionStorageService;
   private final AuditingService auditingService;
 
@@ -78,26 +77,25 @@ public class ContractRevisionSealService {
       entity.setSealState(SealAttemptState.IN_PROGRESS);
       entity.setSealStartedAt(LocalDateTime.now());
     });
+    // Capture the user ID while the HTTP request context is still active; the seal runs later.
     runAsyncAsUser(agridataSecurityIdentity.getUserId(), () -> performSeal(contractRevisionId, email));
   }
 
   /**
-   * Captures the current user ID from the active HTTP request context and submits the given task
-   * to the managed executor. The task runs in a fresh request context with the captured user ID
-   * set as {@code scheduledJobUserId}, allowing the {@code AuditingEntityListener} to set
-   * {@code modifiedBy} correctly even though the original request context is no longer active.
+   * Submits the given task for background execution. It runs as the given user in a fresh request context (see
+   * {@link BackgroundTaskRunner}), allowing the {@code AuditingEntityListener} to set {@code modifiedBy} correctly even though the
+   * original request context is no longer active.
    */
   private void runAsyncAsUser(UUID userId, Runnable task) {
-    managedExecutor.submit(() -> {
-      var requestContext = Arc.container().requestContext();
-      requestContext.activate();
-      try {
-        agridataSecurityIdentity.setRunAsUserId(userId);
-        task.run();
-      } finally {
-        requestContext.deactivate();
-      }
-    });
+    backgroundTaskRunner.runAsync(
+        userId, () -> {
+          try {
+            task.run();
+          } catch (RuntimeException e) {
+            log.error("Performing seal async task as user {} failed", userId, e);
+          }
+        }
+    );
   }
 
   private boolean isInProgress(ContractRevisionEntity entity) {

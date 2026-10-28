@@ -214,7 +214,7 @@ public class FarmerUidProvider {
         );
 
     if (name.isPresent()) {
-      log.debug("Resolved name for UID {}: {}", uid, name.get());
+      log.debug("Resolved name for UID {}", uid);
     } else {
       log.warn("Could not resolve name for UID {}", uid);
     }
