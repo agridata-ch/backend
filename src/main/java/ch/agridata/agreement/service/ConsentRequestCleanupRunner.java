@@ -2,7 +2,6 @@ package ch.agridata.agreement.service;
 
 import ch.agridata.agreement.dto.ConsentRequestCleanupResultDto;
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
@@ -19,10 +18,9 @@ import lombok.RequiredArgsConstructor;
  * <p>Both callers go through the same PostgreSQL advisory lock, so the cleanup never runs twice in
  * parallel — neither job versus manual trigger, nor across container instances.
  *
- * <p>The technical cleanup user is applied for every run, regardless of who triggered it, so that
- * the {@code modifiedBy} of the affected consent requests is identical for scheduled and manual
- * runs. Note that this overrides the identity of the current request context: callers that need the
- * triggering user must read it before invoking this runner.
+ * <p>Callers are expected to run this under {@link #USER_ID_SCHEDULED_CLEANUP_JOB} (see
+ * {@code BackgroundTaskRunner}), regardless of who triggered it, so that the {@code modifiedBy} of
+ * the affected consent requests is identical for scheduled and manual runs.
  *
  * <p>The cleanup window defaults to the last two completed days (matching the scheduled job's
  * original behaviour) when {@code fromInclusive}/{@code toInclusive} are {@code null}, but a caller
@@ -46,7 +44,6 @@ public class ConsentRequestCleanupRunner {
 
   private final AdvisoryLockExecutor advisoryLockExecutor;
   private final ConsentRequestCleanupService cleanupService;
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
   private final Clock clock;
 
   /**
@@ -70,8 +67,6 @@ public class ConsentRequestCleanupRunner {
           "fromInclusive (%s) must not be after toInclusive (%s).".formatted(effectiveFrom, effectiveTo),
           Response.Status.BAD_REQUEST);
     }
-
-    agridataSecurityIdentity.setRunAsUserId(USER_ID_SCHEDULED_CLEANUP_JOB);
 
     long startedAt = System.nanoTime();
 
