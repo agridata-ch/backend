@@ -1,3 +1,9 @@
+## [1.22.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.8...v1.22.0-rc.9) (2026-10-28)
+
+### Features
+
+* **deps:** update guava ([8aa31c5](https://github.com/agridata-ch/backend/commit/8aa31c560fcfc4bfd13f38abda7de175a935ded2)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
 ## [1.22.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.7...v1.22.0-rc.8) (2026-10-27)
 
 ### Features
