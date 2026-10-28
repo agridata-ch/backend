@@ -23,7 +23,7 @@
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.5.0</archunit-junit5.version>
         <wiremock.version>1.7.0</wiremock.version>
-        <guava.version>33.7.1-jre</guava.version>
+        <guava.version>33.7.2-jre</guava.version>
         <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
         <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.42</swagger-parser.version>
