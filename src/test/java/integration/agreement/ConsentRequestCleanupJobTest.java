@@ -73,13 +73,15 @@ class ConsentRequestCleanupJobTest {
         .toList())
         .containsExactlyInAnyOrderElementsOf(affectedIds);
 
+    assertThat(latestLogs.stream().map(AuditLogEntity::getRequestId).distinct()).hasSize(1);
+
     assertThat(auditLogTestUtils.getLatestAuditLogEntry(8)).isNull();
   }
 
   private void assertTerminationAuditEntry(AuditLogEntity log) {
     assertThat(log.getEntityTypeCode()).isEqualTo(CONSENT_REQUEST.name());
     assertThat(log.getActionCode()).isEqualTo(CONSENT_REQUEST_TERMINATED.name());
-    assertThat(log.getRequestId()).isNull();
+    assertThat(log.getRequestId()).isNotBlank();
     assertThat(log.getActorId()).isEqualTo(CONSENT_REQUEST_CLEANUP_JOB.getActorId());
     assertThat(log.getActorTypeCode()).isEqualTo(SYSTEM);
   }

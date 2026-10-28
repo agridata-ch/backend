@@ -1,7 +1,6 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.LOCK_KEY;
-import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,7 +15,6 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agreement.dto.ConsentRequestCleanupOutcomeDto;
 import ch.agridata.agreement.dto.ConsentRequestCleanupResultDto;
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.time.Clock;
@@ -33,9 +31,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for {@link ConsentRequestCleanupRunner}. Verifies that the cleanup runs under the
- * shared advisory lock, that the technical cleanup user is applied, that an explicit window is
- * passed through unchanged, that an omitted window defaults to the last two completed days, and
- * that a reversed window is rejected before any state is touched.
+ * shared advisory lock, that an explicit window is passed through unchanged, that an omitted window
+ * defaults to the last two completed days, and that a reversed window is rejected before any state
+ * is touched.
  *
  * @CommentLastReviewed 2026-09-08
  */
@@ -49,8 +47,6 @@ class ConsentRequestCleanupRunnerTest {
   AdvisoryLockExecutor advisoryLockExecutor;
   @Mock
   ConsentRequestCleanupService cleanupService;
-  @Mock
-  AgridataSecurityIdentity agridataSecurityIdentity;
 
   ConsentRequestCleanupRunner runner;
 
@@ -60,7 +56,7 @@ class ConsentRequestCleanupRunnerTest {
     Instant fixedNow = LocalDate.of(2026, 2, 19).atStartOfDay(ZURICH).toInstant();
     Clock clock = Clock.fixed(fixedNow, ZURICH);
 
-    runner = new ConsentRequestCleanupRunner(advisoryLockExecutor, cleanupService, agridataSecurityIdentity, clock);
+    runner = new ConsentRequestCleanupRunner(advisoryLockExecutor, cleanupService, clock);
   }
 
   @Test
@@ -115,7 +111,7 @@ class ConsentRequestCleanupRunnerTest {
   }
 
   @Test
-  void whenRunCleanupIfNotRunning_thenRunsUnderTheSharedLockKeyAsTheTechnicalCleanupUser() {
+  void whenRunCleanupIfNotRunning_thenRunsUnderTheSharedLockKey() {
     when(cleanupService.cleanup(any(), any())).thenReturn(
         ConsentRequestCleanupOutcomeDto.builder()
             .fromInclusive(LocalDate.of(2026, 2, 17))
@@ -126,9 +122,10 @@ class ConsentRequestCleanupRunnerTest {
 
     runner.runCleanupIfNotRunning(null, null);
 
-    verify(agridataSecurityIdentity).setRunAsUserId(USER_ID_SCHEDULED_CLEANUP_JOB);
-    verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(),
-        any(Supplier.class));
+    verify(advisoryLockExecutor).runIfLockAvailable(
+        eq(LOCK_KEY), anyString(),
+        any(Supplier.class)
+    );
   }
 
   @Test
@@ -152,7 +149,7 @@ class ConsentRequestCleanupRunnerTest {
         .extracting(ex -> ((WebApplicationException) ex).getResponse().getStatus())
         .isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
 
-    verifyNoInteractions(agridataSecurityIdentity, advisoryLockExecutor, cleanupService);
+    verifyNoInteractions(advisoryLockExecutor, cleanupService);
   }
 
   @Test

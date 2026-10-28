@@ -1,6 +1,7 @@
 package ch.agridata.agreement.controller;
 
 import static ch.agridata.agreement.controller.ConsentRequestController.PATH;
+import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static ch.agridata.common.openapi.ApiSubsetConstants.DATA_CONSUMER;
 import static ch.agridata.common.openapi.ApiSubsetConstants.MOBILE_APP;
 import static ch.agridata.common.openapi.ApiSubsetConstants.WEB_APP;
@@ -21,6 +22,7 @@ import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.ConsentRequestStateService;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -78,6 +80,7 @@ public class ConsentRequestController {
   private final ConsentRequestCleanupRunner consentRequestCleanupRunner;
   private final AuditingService auditingService;
   private final AgridataSecurityIdentity identity;
+  private final BackgroundTaskRunner backgroundTaskRunner;
   private final ActingRoleHolder actingRoleHolder;
 
   /**
@@ -195,12 +198,14 @@ public class ConsentRequestController {
       @Parameter(description = "Last day of the window to clean up (inclusive). Defaults to yesterday.")
       @QueryParam("toInclusive") @Valid LocalDate toInclusive
   ) {
-    // Read the identity and audit the trigger before the runner replaces it with the technical cleanup user.
     var triggeredBy = identity.getUserId();
     auditingService.logConsentRequestCleanupTriggered();
     log.info("consent request cleanup manually triggered by user {}.", triggeredBy);
 
-    var result = consentRequestCleanupRunner.runCleanupIfNotRunning(fromInclusive, toInclusive)
+    var result = backgroundTaskRunner.runAs(
+            USER_ID_SCHEDULED_CLEANUP_JOB,
+            () -> consentRequestCleanupRunner.runCleanupIfNotRunning(fromInclusive, toInclusive)
+        )
         .orElseThrow(() -> new WebApplicationException(
             "A consent request cleanup is already running.", Response.Status.CONFLICT
         ));

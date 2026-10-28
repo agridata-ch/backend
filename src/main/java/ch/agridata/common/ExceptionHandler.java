@@ -100,7 +100,7 @@ public class ExceptionHandler {
 
   @ServerExceptionMapper(UidMissingException.class)
   public Response handleUidMissingException(UidMissingException ex) {
-    log.error("UidMissingException: {}", ex.getMessage(), ex);
+    log.warn("UidMissingException: {}", ex.getMessage());
     return Response.status(Status.BAD_GATEWAY)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse(DEFAULT_EXCEPTION_MESSAGE, ex.getMessage(), ExceptionEnum.UID_MISSING))

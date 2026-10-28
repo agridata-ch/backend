@@ -1,10 +1,9 @@
 package ch.agridata.agreement.service;
 
 import ch.agridata.agis.api.AgisApi;
-import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.BurDto;
-import io.quarkus.arc.Arc;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class ConsentRequestLegallyPermittedService {
   private final ConsentRequestCreationService consentRequestCreationService;
   private final AgisApi agisApi;
   private final UserApi userApi;
-  private final AgridataSecurityIdentity identity;
+  private final BackgroundTaskRunner backgroundTaskRunner;
   private final boolean enabled;
   private final ExecutorService executor;
   // Keys (dataRequestId + producer) of tasks currently queued or in progress, to skip duplicate submissions.
@@ -51,13 +50,14 @@ public class ConsentRequestLegallyPermittedService {
       ConsentRequestCreationService consentRequestCreationService,
       AgisApi agisApi,
       UserApi userApi,
-      AgridataSecurityIdentity identity,
+      BackgroundTaskRunner backgroundTaskRunner,
       @ConfigProperty(name = "agridata.agreement.legally-permitted-consent.enabled", defaultValue = "true") boolean enabled,
-      @ConfigProperty(name = "agridata.agreement.legally-permitted-consent.queue-capacity") int queueCapacity) {
+      @ConfigProperty(name = "agridata.agreement.legally-permitted-consent.queue-capacity") int queueCapacity
+  ) {
     this.consentRequestCreationService = consentRequestCreationService;
     this.agisApi = agisApi;
     this.userApi = userApi;
-    this.identity = identity;
+    this.backgroundTaskRunner = backgroundTaskRunner;
     this.enabled = enabled;
     // Single worker on purpose: keeps the AGIS BUR->UID lookups sequential so the external API is not hit in too many parallel bursts.
     this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(queueCapacity));
@@ -82,13 +82,13 @@ public class ConsentRequestLegallyPermittedService {
       return;
     }
     try {
-      executor.execute(() -> {
+      backgroundTaskRunner.runAsyncAs(USER_ID_LEGALLY_PERMITTED_CONSENT, () -> {
         try {
           work.run();
         } finally {
           pending.remove(key);
         }
-      });
+      }, executor);
       log.debug("Legally permitted consent request queued: dataRequestId={}, {}", dataRequestId, producer);
     } catch (RejectedExecutionException _) {
       pending.remove(key);
@@ -97,29 +97,30 @@ public class ConsentRequestLegallyPermittedService {
   }
 
   private void createForUid(UUID dataRequestId, String uid) {
-    runInRequestContext(dataRequestId, "uid=" + uid, () ->
-        consentRequestCreationService.createLegallyPermittedConsentRequestIfMissing(dataRequestId, uid, null, null));
+    createOrLogFailure(
+        dataRequestId, "uid=" + uid, () ->
+            consentRequestCreationService.createLegallyPermittedConsentRequestIfMissing(dataRequestId, uid, null, null)
+    );
   }
 
   private void createForBur(UUID dataRequestId, String bur) {
-    runInRequestContext(dataRequestId, "bur=" + bur, () -> {
-      var uid = agisApi.fetchFarmForBur(bur)
-          .orElseThrow(() -> new IllegalStateException("No farm found in AGIS for bur " + bur))
-          .getUid();
-      var relationSince = userApi.getAuthorizedBurs(uid).stream()
-          .filter(authorizedBur -> bur.equals(authorizedBur.bur()))
-          .map(BurDto::relationSince)
-          .findFirst()
-          .orElseThrow(() -> new IllegalStateException("Bur " + bur + " is not among the authorized burs of uid " + uid));
-      consentRequestCreationService.createLegallyPermittedConsentRequestIfMissing(dataRequestId, uid, bur, relationSince);
-    });
+    createOrLogFailure(
+        dataRequestId, "bur=" + bur, () -> {
+          var uid = agisApi.fetchFarmForBur(bur)
+              .orElseThrow(() -> new IllegalStateException("No farm found in AGIS for bur " + bur))
+              .getUid();
+          var relationSince = userApi.getAuthorizedBurs(uid).stream()
+              .filter(authorizedBur -> bur.equals(authorizedBur.bur()))
+              .map(BurDto::relationSince)
+              .findFirst()
+              .orElseThrow(() -> new IllegalStateException("Bur " + bur + " is not among the authorized burs of uid " + uid));
+          consentRequestCreationService.createLegallyPermittedConsentRequestIfMissing(dataRequestId, uid, bur, relationSince);
+        }
+    );
   }
 
-  private void runInRequestContext(UUID dataRequestId, String producer, Runnable work) {
-    var requestContext = Arc.container().requestContext();
-    requestContext.activate();
+  private void createOrLogFailure(UUID dataRequestId, String producer, Runnable work) {
     try {
-      identity.setRunAsUserId(USER_ID_LEGALLY_PERMITTED_CONSENT);
       work.run();
       log.debug("Created legally permitted consent request for dataRequestId={}, {}", dataRequestId, producer);
     } catch (Exception e) {
@@ -128,8 +129,6 @@ public class ConsentRequestLegallyPermittedService {
       } else {
         log.error("Failed to create legally permitted consent request for dataRequestId={}, {}", dataRequestId, producer, e);
       }
-    } finally {
-      requestContext.deactivate();
     }
   }
 

@@ -23,7 +23,7 @@ public class PreSecurityMdcFilter {
   public static final String REQUEST_ID_MDC_FIELD = "requestId";
   public static final String API_MDC_FIELD = "api";
   public static final String REQUEST_START_NANOS_KEY = "request.startNanos";
-  private static final String USER_ID_MDC_FIELD = "agridataUserId";
+  public static final String USER_ID_MDC_FIELD = "agridataUserId";
 
   // Higher numbers = higher priority (runs earlier)
   @RouteFilter(1501)

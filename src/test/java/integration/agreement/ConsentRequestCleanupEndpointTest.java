@@ -94,6 +94,10 @@ class ConsentRequestCleanupEndpointTest {
     assertThat(terminationEntries)
         .extracting(AuditLogEntity::getEntityId)
         .doesNotContainNull();
+    // the cleanup runs in a fresh request context but under the request id of the triggering HTTP request
+    assertThat(terminationEntries)
+        .extracting(AuditLogEntity::getRequestId)
+        .containsOnly(triggerEntries.getFirst().getRequestId());
   }
 
   @Test
