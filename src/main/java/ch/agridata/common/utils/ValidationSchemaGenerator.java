@@ -447,22 +447,6 @@ public class ValidationSchemaGenerator {
   }
 
   /**
-   * Used as a validation group marker for validating the patching operation executed by a provider
-   *
-   * @CommentLastReviewed 2026-07-21
-   */
-  public interface PatchAsProvider extends Default {
-  }
-
-  /**
-   * Used as a validation group marker for validating the patching operation executed by an admin
-   *
-   * @CommentLastReviewed 2026-07-21
-   */
-  public interface PatchAsAdmin extends Default {
-  }
-
-  /**
    * Carries the state that is threaded unchanged through the recursive schema traversal: the active validation groups and the set of
    * already visited paths used to guard against infinite recursion.
    *
