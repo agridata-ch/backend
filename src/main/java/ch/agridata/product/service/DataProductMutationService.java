@@ -4,6 +4,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.ADMIN_ROLE;
 import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.actingrole.ActingRoleEnum;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductUpdateDto;
@@ -35,9 +36,11 @@ import org.openapitools.jackson.nullable.JsonNullable;
  * Service class for managing and mutating data product entities. Provides functionality for adding,
  * updating, patching and deleting data product drafts either as a data provider or as an administrator.
  * Deleting a draft cascades to its documents (see {@link DataProductDocumentService}).
- * Enforces role-based access control and performs necessary validations for consistency and security.
+ * Enforces role-based access control and performs necessary validations for consistency and security. Which role may change which
+ * field in which state is defined in {@link DataProductFieldPermission}; PUT replaces a draft as a whole, PATCH changes single fields of
+ * a draft or an active product.
  *
- * @CommentLastReviewed 2026-07-29
+ * @CommentLastReviewed 2026-10-28
  */
 
 @ApplicationScoped
@@ -85,14 +88,14 @@ public class DataProductMutationService {
 
   @Transactional
   @RolesAllowed(PROVIDER_ROLE)
-  public DataProductDto patchActiveDataProductAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    return patchActive(dataProductId, updateDto, asCurrentProvider(), ValidationSchemaGenerator.PatchAsProvider.class);
+  public DataProductDto patchDataProductAsProvider(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    return patch(dataProductId, updateDto, asCurrentProvider(), ActingRoleEnum.PROVIDER);
   }
 
   @Transactional
   @RolesAllowed(ADMIN_ROLE)
-  public DataProductDto patchActiveDataProductAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
-    return patchActive(dataProductId, updateDto, asAdmin(), ValidationSchemaGenerator.PatchAsAdmin.class);
+  public DataProductDto patchDataProductAsAdmin(@NotNull UUID dataProductId, @NotNull DataProductUpdateDto updateDto) {
+    return patch(dataProductId, updateDto, asAdmin(), ActingRoleEnum.ADMIN);
   }
 
   @Transactional
@@ -107,19 +110,28 @@ public class DataProductMutationService {
     return updateDraft(dataProductId, updateDto, asAdmin());
   }
 
-  private DataProductDto patchActive(UUID dataProductId, DataProductUpdateDto updateDto, Resolver resolver, Class<?> validationGroup) {
-    validate(updateDto, validationGroup);
-
+  private DataProductDto patch(UUID dataProductId, DataProductUpdateDto updateDto, Resolver resolver, ActingRoleEnum role) {
     var entity = resolver.dataProduct().apply(dataProductId);
-    verifyState(entity, DataProductStateEnum.ACTIVE);
+    DataProductFieldPermission.verifyEditable(updateDto, role, entity.getStateCode());
 
-    // Only touch the rest client when the field is present: an omitted restClientId leaves the current association untouched,
-    // while an explicit null clears it (the resolver returns null for a null id).
+    // Only touch the associations when the field is present: an omitted id leaves the current association untouched, while an
+    // explicit null clears it (the resolver returns null for a null id).
+    if (isPresent(updateDto.dataSourceSystemId())) {
+      assignDataSourceSystem(entity, resolver.dataSourceSystem().apply(updateDto.dataSourceSystemId().get()));
+    }
     if (isPresent(updateDto.restClientId())) {
       entity.setRestClient(resolver.restClient().apply(updateDto.restClientId().get()));
     }
 
-    return patch(updateDto, entity);
+    verifyRestClientOwnership(entity);
+    dataProductMapper.patchEntity(updateDto, entity);
+    // A draft may stay incomplete. An active product must still be complete once the client's changes are in: a violation throws
+    // ConstraintViolationException, which rolls back the transaction and discards the mutations made to the managed entity.
+    if (entity.getStateCode() == DataProductStateEnum.ACTIVE) {
+      validate(dataProductMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
+    }
+    // No .persist() called, because the entity is already managed by the persistence context.
+    return dataProductMapper.toDto(entity);
   }
 
   private DataProductDto updateDraft(UUID dataProductId, DataProductUpdateDto updateDto, Resolver resolver) {
@@ -129,6 +141,13 @@ public class DataProductMutationService {
     var dataSourceSystem = resolver.dataSourceSystem().apply(orNull(updateDto.dataSourceSystemId()));
     var restClient = resolver.restClient().apply(orNull(updateDto.restClientId()));
 
+    assignDataSourceSystem(entity, dataSourceSystem);
+    entity.setRestClient(restClient);
+
+    return applyAndPersist(updateDto, entity);
+  }
+
+  private void assignDataSourceSystem(DataProductEntity entity, DataSourceSystemEntity dataSourceSystem) {
     entity.setDataSourceSystem(dataSourceSystem);
 
     // dataProviderUid is only updated when a new dataSourceSystem is assigned.
@@ -137,25 +156,12 @@ public class DataProductMutationService {
     if (dataSourceSystem != null) {
       entity.setDataProviderUid(dataSourceSystem.getDataProvider().getUid());
     }
-    entity.setRestClient(restClient);
-
-    return applyAndPersist(updateDto, entity);
   }
 
   private DataProductDto applyAndPersist(DataProductUpdateDto updateDto, DataProductEntity entity) {
     verifyRestClientOwnership(entity);
     dataProductMapper.updateEntity(updateDto, entity);
     dataProductRepository.persist(entity);
-    return dataProductMapper.toDto(entity);
-  }
-
-  private DataProductDto patch(DataProductUpdateDto updateDto, DataProductEntity entity) {
-    verifyRestClientOwnership(entity);
-    dataProductMapper.patchEntity(updateDto, entity);
-    // Validated after the patch is applied: an active product must still be complete once the client's changes are in. A violation
-    // throws ConstraintViolationException, which rolls back the transaction and discards the mutations made to the managed entity.
-    validate(dataProductMapper.toUpdateDto(entity), ValidationSchemaGenerator.Submit.class);
-    // No .persist() called, because the entity is already managed by the persistence context.
     return dataProductMapper.toDto(entity);
   }
 
