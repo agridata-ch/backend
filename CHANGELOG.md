@@ -1,3 +1,9 @@
+## [1.22.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.9...v1.22.0-rc.10) (2026-10-29)
+
+### Features
+
+* **product:** Consolidate data-product-update permission-checks and allow PATCH on dataproducts in state DRAFT ([22236f4](https://github.com/agridata-ch/backend/commit/22236f4298129f8df68d505d1d6c0997d33f946f)), closes [DIGIB2-1712](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1712)
+
 ## [1.22.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.8...v1.22.0-rc.9) (2026-10-28)
 
 ### Features
