@@ -1,10 +1,10 @@
-### get UID register data of the company the consumer is registered with
-GET {{baseUrl}}/uid-register/v1/search
+### get BurWeb data of the company the consumer is registered with
+GET {{baseUrl}}/bur-register/v1/search
 Authorization: Bearer {{$auth.token("consumer")}}
 Content-Type: application/json
 
 > {%
-    client.test("find uid in uid register", function () {
+    client.test("find uid in bur register", function () {
         client.assert(response.status === 200, "Expected Response status is 200, got: " + response.status)
 
     })
@@ -55,13 +55,13 @@ Authorization: Bearer {{$auth.token("consumer")}}
 Content-Type: application/json
 
 {
-    "products": [
-        "{{productId}}",
-        "{{productId2}}"
-    ],
-    "title": {
-        "de": ""
-    }
+  "products": [
+    "{{productId}}",
+    "{{productId2}}"
+  ],
+  "title": {
+    "de": ""
+  }
 }
 
 > {%
@@ -78,13 +78,13 @@ Authorization: Bearer {{$auth.token("consumer")}}
 Content-Type: application/json
 
 {
-    "products": [
-        "{{productId}}",
-        "{{productId3}}"
-    ],
-    "title": {
-        "de": "test data request"
-    }
+  "products": [
+    "{{productId}}",
+    "{{productId3}}"
+  ],
+  "title": {
+    "de": "test data request"
+  }
 }
 
 > {%
@@ -135,33 +135,33 @@ Authorization: Bearer {{$auth.token("consumer")}}
 Content-Type: application/json
 
 {
-    "description": {
-        "de": "test data request description",
-        "fr": "test data request description",
-        "it": "test data request description"
-    },
-    "products": [
-        "{{productId}}"
-    ],
-    "title": {
-        "de": "test data request",
-        "fr": "test data request",
-        "it": "test data request"
-    },
-    "purpose": {
-        "de": "test purpose",
-        "fr": "test purpose",
-        "it": "test purpose"
-    },
-      "dataConsumerDisplayName": "Bio Suisse",
-      "dataConsumerUid": 106506215,
-      "dataConsumerCity": "Basel",
-      "dataConsumerZip": "4052",
-      "dataConsumerStreet": "Peter Merian-Str. 34",
-      "dataConsumerCountry": "CH",
-      "contactEmailAddress": "test@biosuisse.ch",
-      "contactPhoneNumber": "+41 61 555 55 55",
-      "targetGroup": "Bio Suisse Mitglieder"
+  "description": {
+    "de": "test data request description",
+    "fr": "test data request description",
+    "it": "test data request description"
+  },
+  "products": [
+    "{{productId}}"
+  ],
+  "title": {
+    "de": "test data request",
+    "fr": "test data request",
+    "it": "test data request"
+  },
+  "purpose": {
+    "de": "test purpose",
+    "fr": "test purpose",
+    "it": "test purpose"
+  },
+  "dataConsumerDisplayName": "Bio Suisse",
+  "dataConsumerUid": 106506215,
+  "dataConsumerCity": "Basel",
+  "dataConsumerZip": "4052",
+  "dataConsumerStreet": "Peter Merian-Str. 34",
+  "dataConsumerCountry": "CH",
+  "contactEmailAddress": "test@biosuisse.ch",
+  "contactPhoneNumber": "+41 61 555 55 55",
+  "targetGroup": "Bio Suisse Mitglieder"
 }
 
 > {%

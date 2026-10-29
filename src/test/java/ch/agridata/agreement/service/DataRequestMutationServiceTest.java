@@ -16,10 +16,10 @@ import ch.agridata.agreement.mapper.DataRequestMapper;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
+import ch.agridata.burregister.api.BurRegisterServiceApi;
+import ch.agridata.burregister.dto.BurRegisterOrganisationDto;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.product.api.DataProductApi;
-import ch.agridata.uidregister.api.UidRegisterServiceApi;
-import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ class DataRequestMutationServiceTest {
   @Mock
   private DataRequestRepository dataRequestRepository;
   @Mock
-  private UidRegisterServiceApi uidRegisterServiceApi;
+  private BurRegisterServiceApi burRegisterServiceApi;
   @Mock
   private AgridataSecurityIdentity agridataSecurityIdentity;
   @Mock
@@ -60,7 +60,7 @@ class DataRequestMutationServiceTest {
   @Test
   void givenValidInput_whenCreateDataRequestDraft_thenReturnMappedDto() {
     DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder().build();
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
     var expectedDto = DataRequestTestUtils.dataRequestDtoBuilder().build();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
@@ -68,7 +68,7 @@ class DataRequestMutationServiceTest {
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getActiveProductById(PRODUCT_ID))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(PRODUCT_ID).build());
@@ -158,14 +158,14 @@ class DataRequestMutationServiceTest {
     DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(deprecatedProductId))
         .build();
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getActiveProductById(deprecatedProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(deprecatedProductId).deprecatedSince(LocalDateTime.of(2026, 3, 6, 0, 0))
@@ -183,7 +183,7 @@ class DataRequestMutationServiceTest {
     DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(agisProductId, tvdProductId))
         .build();
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
@@ -191,7 +191,7 @@ class DataRequestMutationServiceTest {
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getActiveProductById(agisProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(agisProductId).dataSourceSystemCode("AGIS").build());
@@ -210,14 +210,14 @@ class DataRequestMutationServiceTest {
     DataRequestUpdateDto updateDto = DataRequestTestUtils.updateDtoBuilder()
         .products(List.of(publicLawProductId, consentProductId))
         .build();
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getActiveProductById(publicLawProductId))
         .thenReturn(DataRequestTestUtils.dataProductDtoBuilder(publicLawProductId)
@@ -238,14 +238,14 @@ class DataRequestMutationServiceTest {
         .products(List.of(inexistentProductId))
         .build();
 
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataProductApi.getActiveProductById(inexistentProductId))
         .thenThrow(new NotFoundException(inexistentProductId.toString()));
@@ -283,14 +283,14 @@ class DataRequestMutationServiceTest {
         .products(List.of())
         .build();
 
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
         uidSearchResult.uid(),
         DataRequestEntity.DataRequestStateEnum.DRAFT
     )).thenReturn(0L);
-    when(uidRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
+    when(burRegisterServiceApi.getByUidOfCurrentUser()).thenReturn(uidSearchResult);
     when(humanFriendlyIdService.getHumanFriendlyIdForDataRequest()).thenReturn("AB57");
     when(dataRequestEnrichmentService.toEnrichedDto(any(DataRequestEntity.class)))
         .thenReturn(expectedDto);
@@ -305,7 +305,7 @@ class DataRequestMutationServiceTest {
   @Test
   void given10DraftsExist_whenCreateDataRequestDraft_thenThrowValidationException() {
     DataRequestUpdateDto dto = DataRequestTestUtils.updateDtoBuilder().build();
-    UidRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
+    BurRegisterOrganisationDto uidSearchResult = DataRequestTestUtils.buildUidSearchResult();
 
     when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(dataRequestRepository.countByDataConsumerUidAndState(
