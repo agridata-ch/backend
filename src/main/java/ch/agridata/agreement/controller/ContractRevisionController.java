@@ -22,7 +22,6 @@ import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -39,6 +38,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
