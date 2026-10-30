@@ -9,9 +9,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-07-16
  */
-
 @Builder
-public record AgbTextDto(
+public record AgbTranslationDto(
     @Schema(
         examples = {"<h1>AGB</h2>"}
     )

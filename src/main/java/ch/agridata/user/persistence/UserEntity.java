@@ -27,14 +27,15 @@ import org.hibernate.type.SqlTypes;
  *
  * @CommentLastReviewed 2026-06-10
  */
-
 @Entity
-@Table(name = "users", //Using plural 'users' because 'user' is a reserved keyword in PostgreSQL
+@Table(
+    name = "users", //Using plural 'users' because 'user' is a reserved keyword in PostgreSQL
     indexes = {
         @Index(name = "idx_users_kt_id_p", columnList = "kt_id_p"),
         @Index(name = "idx_users_agate_login_id", columnList = "agate_login_id"),
         @Index(name = "idx_users_uid", columnList = "uid"),
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE users SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder

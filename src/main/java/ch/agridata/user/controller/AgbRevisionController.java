@@ -23,7 +23,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @CommentLastReviewed 2026-07-16
  */
-
 @Path(PATH)
 @Slf4j
 @RequiredArgsConstructor

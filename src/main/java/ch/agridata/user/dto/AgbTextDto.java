@@ -9,7 +9,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @CommentLastReviewed 2026-07-16
  */
-
 @Builder
 public record AgbTextDto(
     @Schema(

@@ -41,7 +41,7 @@ class UidBasedPreValidationFlowTest {
             {
               "surveyYear" : "2024",
               "ids" : {
-                "uid" : "CHE103000001"
+                "uid" : "%s"
               },
               "dataTypes" : {
                 "structureType" : [ "animalData" ]
@@ -50,7 +50,7 @@ class UidBasedPreValidationFlowTest {
                 "finalData" : false
               }
             }
-            """)));
+            """.formatted(Uid.CHE103000001.name()))));
   }
 
   @Test

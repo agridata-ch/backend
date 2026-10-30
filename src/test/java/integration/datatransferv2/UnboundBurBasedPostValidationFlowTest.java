@@ -12,6 +12,7 @@ import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers.Bur;
 import integration.testutils.TestDataIdentifiers.DataProduct;
 import integration.testutils.TestDataIdentifiers.Identifier;
+import integration.testutils.TestDataIdentifiers.Uid;
 import integration.testutils.TestUserEnum;
 import io.quarkiverse.wiremock.devservice.ConnectWireMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -35,7 +36,7 @@ class UnboundBurBasedPostValidationFlowTest {
   private static final String BURS_HEADER_MISSING_MSG =
       "AGRIDATA-RESPONSE-PRODUCER-BURS header is not present in provider response";
   // Consumer UID returned by the provider in the response header when CONSUMER_BLV_WITHOUT_UID calls without a UID in token
-  private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = "CHE403244345";
+  private static final String CONSUMER_BLV_WITHOUT_UID_CONSUMER_UID = Uid.CHE403244345.name();
 
   private static final Identifier<DataProductEntity> PRODUCT_BUR_BASED = DataProduct.UUID_6319423C;
 

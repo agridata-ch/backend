@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.burregister.dto.BurRegisterAddressDto;
 import ch.agridata.burregister.service.BurRegisterService;
+import integration.testutils.TestDataIdentifiers.Uid;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,11 @@ class BurRegisterServiceIntegrationTest {
 
   @Test
   void getByUid() {
-    var result = burRegisterService.getByUid("CHE101708094");
+    var result = burRegisterService.getByUid(Uid.CHE101708094.name());
 
     assertThat(result.name()).isEqualTo("INTERNATIONAL CERTIFICATION BIO SUISSE AG");
     assertThat(result.legalName()).isEqualTo("INTERNATIONAL CERTIFICATION BIO SUISSE AG");
-    assertThat(result.uid()).isEqualTo("CHE101708094");
+    assertThat(result.uid()).isEqualTo(Uid.CHE101708094.name());
     assertThat(result.address()).isEqualTo(new BurRegisterAddressDto("Peter Merian-Strasse 34", "4052", "Basel", "CH"));
   }
 

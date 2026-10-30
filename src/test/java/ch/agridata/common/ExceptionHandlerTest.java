@@ -9,6 +9,8 @@ import ch.agridata.common.dto.DataProviderExceptionDto;
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
+import ch.agridata.common.exceptions.AgbVersionAlreadyExistsException;
+import ch.agridata.common.exceptions.AgbVersionNotNewerException;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataProviderUnavailableException;
@@ -253,6 +255,38 @@ class ExceptionHandlerTest {
     assertThat(response.getHeaderString(HttpHeaders.RETRY_AFTER)).isEqualTo("10");
     assertThat(dto.message()).isEqualTo("Export capacity exhausted");
     assertThat(dto.type()).isEqualTo(ExceptionEnum.EXPORT_CAPACITY_EXHAUSTED);
+  }
+
+  @ParameterizedTest(name = "handleAgbVersionAlreadyExistsException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleAgbVersionAlreadyExistsException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+
+    Response response = exceptionHandler.handleAgbVersionAlreadyExistsException(new AgbVersionAlreadyExistsException("version 1.4 exists"));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.CONFLICT.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo("AGB version already exists");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.AGB_VERSION_ALREADY_EXISTS);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "version 1.4 exists" : null);
+  }
+
+  @ParameterizedTest(name = "handleAgbVersionNotNewerException, debug={0}")
+  @ValueSource(booleans = {false, true})
+  void handleAgbVersionNotNewerException(boolean debug) {
+    exceptionHandler.returnDebug = debug;
+
+    Response response = exceptionHandler.handleAgbVersionNotNewerException(new AgbVersionNotNewerException("1.0 is not newer than 1.2"));
+    ExceptionDto dto = (ExceptionDto) response.getEntity();
+
+    assertThat(response.getStatus()).isEqualTo(Response.Status.CONFLICT.getStatusCode());
+    assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    assertThat(dto.message()).isEqualTo("AGB version is not newer than the current version");
+    assertThat(dto.type()).isEqualTo(ExceptionEnum.AGB_VERSION_NOT_NEWER);
+    assertThat(dto.requestId()).isEqualTo("test-request-id");
+    assertThat(dto.debugMessage()).isEqualTo(debug ? "1.0 is not newer than 1.2" : null);
   }
 
   @ParameterizedTest(name = "handleValidationException, debug={0}")
