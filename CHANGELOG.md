@@ -1,3 +1,9 @@
+## [1.22.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.11...v1.22.0-rc.12) (2026-10-30)
+
+### Bug Fixes
+
+* **cicd:** Disable provenance for docker build. ([df31c3c](https://github.com/agridata-ch/backend/commit/df31c3ce611de147e2b6a384a0ec90001fb73167)), closes [DIGIB2-1818](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1818)
+
 ## [1.22.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.10...v1.22.0-rc.11) (2026-10-29)
 
 ### Features
