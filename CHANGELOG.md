@@ -1,3 +1,9 @@
+## [1.22.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.13...v1.22.0-rc.14) (2026-11-02)
+
+### Features
+
+* **agb:** add creating agb revision, get single agb ([da50625](https://github.com/agridata-ch/backend/commit/da5062592af04a654f8f694797013e291c5527ab)), closes [DIGIB2-1532](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1532)
+
 ## [1.22.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.12...v1.22.0-rc.13) (2026-11-02)
 
 ### Bug Fixes
