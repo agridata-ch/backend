@@ -1,3 +1,9 @@
+## [1.22.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.14...v1.22.0-rc.15) (2026-11-03)
+
+### Features
+
+* **burweb:** replace uid-register references with bur-register and update related documentation ([acd0c0d](https://github.com/agridata-ch/backend/commit/acd0c0d37aee07b7d94727b4a38c6be88e7fa17e)), closes [DIGIB2-621](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-621)
+
 ## [1.22.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.13...v1.22.0-rc.14) (2026-11-02)
 
 ### Features
