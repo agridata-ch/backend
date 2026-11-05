@@ -18,5 +18,7 @@ public enum ExceptionEnum {
   DATA_PROVIDER_ERROR,
   EXPORT_LIMIT_EXCEEDED,
   EXPORT_CAPACITY_EXHAUSTED,
+  AGB_VERSION_ALREADY_EXISTS,
+  AGB_VERSION_NOT_NEWER,
   MAINTENANCE // Used by the AWS load balancer to indicate that the service is temporarily unavailable due to maintenance
 }

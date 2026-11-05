@@ -2,13 +2,11 @@ package ch.agridata.product.dto;
 
 import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
-import ch.agridata.common.validation.Absent;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.validation.valueextraction.Unwrapping;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -17,9 +15,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.openapitools.jackson.nullable.JsonNullable;
 
 /**
- * Single request body shared by every data-product mutation: create (POST), full replace of a draft (PUT) and partial update of an
- * active product (PATCH). The rules for <em>which</em> fields may be set are not hard-coded per endpoint but expressed through Bean
- * Validation groups, so the same record can serve all three verbs:
+ * Single request body shared by every data-product mutation: create (POST), full replace of a draft (PUT) and partial update (PATCH).
+ * The annotations here only describe the <em>shape</em> of valid data, expressed through Bean Validation groups:
  *
  * <ul>
  *   <li><b>Default group (no {@code groups} attribute)</b> &ndash; format checks such as {@code @Size} and nested {@code @Valid} that
@@ -29,26 +26,20 @@ import org.openapitools.jackson.nullable.JsonNullable;
  *       constraint reads as "if you send it, it must not be null" and still lets a draft leave the field out entirely.</li>
  *   <li><b>{@link ValidationSchemaGenerator.Submit}</b> &ndash; completeness ({@code @NotNull}): the fields that must be present before a
  *       product can go live. This is <em>not</em> checked while the product is a draft, but at the {@code DRAFT -> ACTIVE} transition
- *       (activation) and again on every PATCH, where it is applied to the <em>resulting</em> state so an active product cannot be
- *       patched back into an incomplete one. A draft may therefore be saved incomplete via POST/PUT and completed later.</li>
- *   <li><b>{@link ValidationSchemaGenerator.PatchAsProvider} / {@link ValidationSchemaGenerator.PatchAsAdmin}</b> &ndash; immutability
- *       rules for PATCH, which is only allowed on an <em>active</em> product. An {@link Absent} in one of these groups marks a field that
- *       the given role may no longer change once the product is active (admins may change more than providers). A field without such an
- *       {@link Absent} stays editable while active. The constraint requires the property to be <em>omitted</em> rather than merely
- *       {@code null}: an explicit {@code null} would clear the field, which is just as much a change as overwriting it.</li>
+ *       (activation) and again on every PATCH of an active product, where it is applied to the <em>resulting</em> state so an active
+ *       product cannot be patched back into an incomplete one. A draft may therefore be saved incomplete and completed later.</li>
  * </ul>
  *
- * <p>PUT is restricted to draft products and PATCH to active products (enforced in the service layer); the validation group applied to
- * a given request follows directly from that split.
+ * <p><em>Who</em> may change which field in which state is not part of this DTO; see
+ * {@code ch.agridata.product.service.DataProductFieldPermission}.
  *
  * <p>Every field is wrapped in {@link JsonNullable} so a PATCH can distinguish an <em>omitted</em> field (absent from the JSON body,
  * {@link JsonNullable#isPresent()} is {@code false} &ndash; leave the current value untouched) from an <em>explicit {@code null}</em>
  * (present with a {@code null} value &ndash; clear the field). {@code @JsonInclude(NON_ABSENT)} keeps undefined values out of the
  * serialized body. Bean Validation constraints are applied to the wrapped value through a registered {@code JsonNullable} value
- * extractor, so an omitted field is skipped by every constraint (including {@code @NotNull}) as before. {@link Absent} is the one
- * exception: it opts out of the unwrapping via {@link Unwrapping.Skip} precisely because it has to see whether the property was sent.
+ * extractor, so an omitted field is skipped by every constraint (including {@code @NotNull}).
  *
- * @CommentLastReviewed 2026-09-11
+ * @CommentLastReviewed 2026-10-28
  */
 @Schema(description = "Data transfer object representing a data product")
 @Builder
@@ -57,27 +48,20 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Name of the data product"
     )
-    // Editable while active by admins, but locked for providers (only @Absent for PatchAsProvider).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
-    @Absent(groups = ValidationSchemaGenerator.PatchAsProvider.class, payload = Unwrapping.Skip.class)
     JsonNullable<@Valid DataProductNameDto> name,
 
     @Schema(
         description = "Description of the data product"
     )
-    // Editable while active by admins, but locked for providers (only @Absent for PatchAsProvider).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
-    @Absent(groups = ValidationSchemaGenerator.PatchAsProvider.class, payload = Unwrapping.Skip.class)
     JsonNullable<@Valid DataProductDescriptionDto> description,
 
     @Schema(
         description = "UUID of DataSourceSystem",
         examples = "5335d715-e95c-4777-a424-ab73f2ff5618"
     )
-    // Bound at draft time; immutable once active for every role (@Absent for both patch groups).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
-    @Absent(groups = ValidationSchemaGenerator.PatchAsProvider.class, payload = Unwrapping.Skip.class)
-    @Absent(groups = ValidationSchemaGenerator.PatchAsAdmin.class, payload = Unwrapping.Skip.class)
     JsonNullable<UUID> dataSourceSystemId,
 
     @Schema(
@@ -138,11 +122,8 @@ public record DataProductUpdateDto(
         description = "If a consent is required for this data product",
         examples = "true"
     )
-    // Bound at draft time; immutable once active for every role (@Absent for both patch groups).
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @NotNull
-    @Absent(groups = ValidationSchemaGenerator.PatchAsProvider.class, payload = Unwrapping.Skip.class)
-    @Absent(groups = ValidationSchemaGenerator.PatchAsAdmin.class, payload = Unwrapping.Skip.class)
     JsonNullable<Boolean> consentRequired,
 
     @Schema(

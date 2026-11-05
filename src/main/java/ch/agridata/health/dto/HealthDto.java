@@ -28,12 +28,14 @@ public record HealthDto(
   }
 
   /**
-   * Status of a single data source system: its provider's name, its own name, and its current health.
+   * Status of a single data source system: its code, its provider's name, its own name, and its current health.
    *
-   * @CommentLastReviewed 2026-08-11
+   * @CommentLastReviewed 2026-10-20
    */
   @Schema(description = "Health status of a single data source system")
   public record DataProviderStatus(
+      @Schema(description = "Code identifying the data source system")
+      String systemCode,
       @Schema(description = "Name of the data provider operating the system")
       TranslationDto providerName,
       @Schema(description = "Name of the data source system")

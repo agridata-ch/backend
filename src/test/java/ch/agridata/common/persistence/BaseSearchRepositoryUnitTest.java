@@ -178,11 +178,11 @@ class BaseSearchRepositoryUnitTest {
     assertThat(repository.capturedQuery)
         .startsWith("select dp from DataProductEntity dp")
         .contains("where (dp.dataProviderUid = :providerUid)")
-        .contains("LOWER(function('jsonb_extract_path_text', dp.name, 'de')) LIKE :paramfull")
-        .contains("LOWER(code) LIKE :paramfull");
+        .contains("LOWER(function('jsonb_extract_path_text', dp.name, 'de')) LIKE :param0")
+        .contains("LOWER(code) LIKE :param0");
     assertThat(repository.capturedParams)
         .containsKey("providerUid")
-        .containsKey("paramfull");
+        .containsKey("param0");
   }
 
   @Test
@@ -191,7 +191,7 @@ class BaseSearchRepositoryUnitTest {
     repository.searchWithoutSelect(query(null, "apfel", SupportedLanguage.IT), SORTABLE_FIELDS);
 
     assertThat(repository.capturedQuery)
-        .contains("LOWER(function('jsonb_extract_path_text', dp.name, 'it')) LIKE :paramfull");
+        .contains("LOWER(function('jsonb_extract_path_text', dp.name, 'it')) LIKE :param0");
   }
 
   @Test

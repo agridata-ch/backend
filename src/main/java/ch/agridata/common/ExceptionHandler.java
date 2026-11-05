@@ -6,6 +6,8 @@ import ch.agridata.common.dto.DataProviderExceptionDto;
 import ch.agridata.common.dto.ExceptionDto;
 import ch.agridata.common.dto.ExceptionEnum;
 import ch.agridata.common.dto.ExternalServiceExceptionDto;
+import ch.agridata.common.exceptions.AgbVersionAlreadyExistsException;
+import ch.agridata.common.exceptions.AgbVersionNotNewerException;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
 import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataProviderUnavailableException;
@@ -175,6 +177,24 @@ public class ExceptionHandler {
         .type(MediaType.APPLICATION_JSON_TYPE)
         .header(HttpHeaders.RETRY_AFTER, ex.getRetryAfterSeconds())
         .entity(createResponse("Export capacity exhausted", ex.getMessage(), ExceptionEnum.EXPORT_CAPACITY_EXHAUSTED))
+        .build();
+  }
+
+  @ServerExceptionMapper(AgbVersionAlreadyExistsException.class)
+  public Response handleAgbVersionAlreadyExistsException(AgbVersionAlreadyExistsException ex) {
+    log.warn("AgbVersionAlreadyExistsException: {}", ex.getMessage());
+    return Response.status(Status.CONFLICT)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("AGB version already exists", ex.getMessage(), ExceptionEnum.AGB_VERSION_ALREADY_EXISTS))
+        .build();
+  }
+
+  @ServerExceptionMapper(AgbVersionNotNewerException.class)
+  public Response handleAgbVersionNotNewerException(AgbVersionNotNewerException ex) {
+    log.warn("AgbVersionNotNewerException: {}", ex.getMessage());
+    return Response.status(Status.CONFLICT)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("AGB version is not newer than the current version", ex.getMessage(), ExceptionEnum.AGB_VERSION_NOT_NEWER))
         .build();
   }
 

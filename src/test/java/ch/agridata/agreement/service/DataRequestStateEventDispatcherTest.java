@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestSta
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
@@ -113,6 +114,16 @@ class DataRequestStateEventDispatcherTest {
     verifyNoInteractions(notificationService);
   }
 
+  @Test
+  void givenActiveToTerminationPending_whenDispatchConsumer_thenLogTerminationRequested() {
+    var entity = entity();
+
+    service.dispatchConsumerStatusTransition(entity, ACTIVE, TERMINATION_PENDING);
+
+    verify(auditingService).logDataRequestTerminationRequested(entity);
+    verifyNoInteractions(notificationService);
+  }
+
   // ── dispatchProviderStatusTransition ─────────────────────────────────────
 
   @Test
@@ -123,5 +134,15 @@ class DataRequestStateEventDispatcherTest {
 
     verify(auditingService).logDataRequestReleasedByProvider(entity.getId());
     verify(notificationService).queueDataRequestReadyForActivation(entity);
+  }
+
+  @Test
+  void givenActiveToTerminationPending_whenDispatchProvider_thenLogTerminationRequested() {
+    var entity = entity();
+
+    service.dispatchProviderStatusTransition(entity, ACTIVE, TERMINATION_PENDING);
+
+    verify(auditingService).logDataRequestTerminationRequested(entity);
+    verifyNoInteractions(notificationService);
   }
 }

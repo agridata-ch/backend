@@ -3,6 +3,7 @@ package ch.agridata.agreement.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +61,8 @@ public record DataRequestDto(
     DataRequestTitleDto title,
 
     @Schema(
-        description = "Description of the data request ")
+        description = "Description of the data request "
+    )
     DataRequestDescriptionDto description,
 
     @Schema(
@@ -81,7 +83,16 @@ public record DataRequestDto(
     DataRequestStateEnum stateCode,
 
     @Schema(
-        description = "LegalName of the data consumer taken from the uid register",
+        description = "Last day on which a terminated data request is still valid (inclusive end of the notice period). "
+            + "Only set once the data request has been terminated",
+        examples = {"2027-01-13"},
+        type = SchemaType.STRING,
+        format = "date"
+    )
+    LocalDate terminationPeriodUntil,
+
+    @Schema(
+        description = "LegalName of the data consumer taken from BurWeb",
         examples = {"Bio Suisse, Vereinigung Schweizer Biolandbau-Organisationen"}
     )
     @Size(max = 255)

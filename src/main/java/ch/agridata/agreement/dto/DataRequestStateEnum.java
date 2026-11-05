@@ -16,4 +16,6 @@ public enum DataRequestStateEnum {
   TO_BE_ACTIVATED,
   ACTIVE,
   PAUSED,
+  TERMINATION_PENDING,
+  TERMINATED,
 }

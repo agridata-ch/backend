@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -103,7 +105,10 @@ class PublicDataProductControllerTest {
         .body("totalItems", equalTo(1))
         .body("items[0].name.de", equalTo(uniqueName))
         .body("items[0].stateCode", equalTo("ACTIVE"))
-        .body("items[0].flowCode", equalTo(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION.name()))
+        .body("items[0].dataSourceSystem.dataProvider.name.de", notNullValue())
+        .body("items[0]", not(hasKey("flowCode")))
+        .body("items[0]", not(hasKey("restClientPathTemplate")))
+        .body("items[0]", not(hasKey("restClientRequestTemplate")))
         .body("items[0].restClient", nullValue())
         .body("items[0].restClientPathTemplate", nullValue())
         .body("items[0].restClientRequestTemplate", nullValue())
@@ -138,6 +143,9 @@ class PublicDataProductControllerTest {
         .body("id", equalTo(productId.toString()))
         .body("stateCode", equalTo("ACTIVE"))
         .body("name.de", equalTo(uniqueName))
+        .body("flowCode", equalTo(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION.name()))
+        .body("restClientPathTemplate", equalTo("path/template"))
+        .body("restClientRequestTemplate", equalTo("{\"someKey\":\"someValue\"}"))
         .body("consentRequired", notNullValue());
   }
 

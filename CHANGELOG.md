@@ -1,3 +1,99 @@
+## [1.22.0-rc.15](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.14...v1.22.0-rc.15) (2026-11-03)
+
+### Features
+
+* **burweb:** replace uid-register references with bur-register and update related documentation ([acd0c0d](https://github.com/agridata-ch/backend/commit/acd0c0d37aee07b7d94727b4a38c6be88e7fa17e)), closes [DIGIB2-621](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-621)
+
+## [1.22.0-rc.14](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.13...v1.22.0-rc.14) (2026-11-02)
+
+### Features
+
+* **agb:** add creating agb revision, get single agb ([da50625](https://github.com/agridata-ch/backend/commit/da5062592af04a654f8f694797013e291c5527ab)), closes [DIGIB2-1532](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1532)
+
+## [1.22.0-rc.13](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.12...v1.22.0-rc.13) (2026-11-02)
+
+### Bug Fixes
+
+* **deps:** update dependencies ([aaef1ab](https://github.com/agridata-ch/backend/commit/aaef1ab881e552927f58a4eec3c4d39a0f5bd1ff)), closes [DIGIB2-1814](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1814)
+
+## [1.22.0-rc.12](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.11...v1.22.0-rc.12) (2026-10-30)
+
+### Bug Fixes
+
+* **cicd:** Disable provenance for docker build. ([df31c3c](https://github.com/agridata-ch/backend/commit/df31c3ce611de147e2b6a384a0ec90001fb73167)), closes [DIGIB2-1818](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1818)
+
+## [1.22.0-rc.11](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.10...v1.22.0-rc.11) (2026-10-29)
+
+### Features
+
+* **product:** Consolidate data-product-update permission-checks and allow PATCH on dataproducts in state DRAFT ([5740e49](https://github.com/agridata-ch/backend/commit/5740e499fefed720c008bd6c8e3ff7d2b26af6ed)), closes [DIGIB2-1712](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1712)
+
+## [1.22.0-rc.10](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.9...v1.22.0-rc.10) (2026-10-29)
+
+### Features
+
+* **product:** Consolidate data-product-update permission-checks and allow PATCH on dataproducts in state DRAFT ([22236f4](https://github.com/agridata-ch/backend/commit/22236f4298129f8df68d505d1d6c0997d33f946f)), closes [DIGIB2-1712](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1712)
+
+## [1.22.0-rc.9](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.8...v1.22.0-rc.9) (2026-10-28)
+
+### Features
+
+* **deps:** update guava ([8aa31c5](https://github.com/agridata-ch/backend/commit/8aa31c560fcfc4bfd13f38abda7de175a935ded2)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
+## [1.22.0-rc.8](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.7...v1.22.0-rc.8) (2026-10-27)
+
+### Features
+
+* **health:** use authorization token for ZO-API ([915e7a1](https://github.com/agridata-ch/backend/commit/915e7a1a9c36b05a96398291eafb59e3ecbd2646)), closes [DIGIB2-1711](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1711)
+
+## [1.22.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.6...v1.22.0-rc.7) (2026-10-27)
+
+### Features
+
+* **data-request:** add technical info to public data catalog ([06af5de](https://github.com/agridata-ch/backend/commit/06af5ded9259766216bbca85cefed5e78b5ca72a)), closes [DIGIB2-1717](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1717)
+
+## [1.22.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.5...v1.22.0-rc.6) (2026-10-27)
+
+### Features
+
+* **health:** add zo-api health probe and add system code to dto ([5a06aad](https://github.com/agridata-ch/backend/commit/5a06aadeac369b206c11833502a383a0d40af76f)), closes [DIGIB2-1711](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1711)
+
+## [1.22.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.4...v1.22.0-rc.5) (2026-10-26)
+
+### Features
+
+* **user:** fix search with more words than fields ([66e9f54](https://github.com/agridata-ch/backend/commit/66e9f54cf021fc56cb7e5831d3f1e1c491504edc)), closes [DIGIB2-1531](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1531)
+
+## [1.22.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.3...v1.22.0-rc.4) (2026-10-26)
+
+### Features
+
+* **user:** Add getAgbAcceptances-endpoint ([22da163](https://github.com/agridata-ch/backend/commit/22da163d85e9f5c628c61d5cce6502b4a8bf6adc)), closes [DIGIB2-1531](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1531)
+
+## [1.22.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.2...v1.22.0-rc.3) (2026-10-26)
+
+### Features
+
+* **datatransfer:** remove consumer uid mechanism ([8395711](https://github.com/agridata-ch/backend/commit/83957115aa5207c6e0f995376b84804e9c65bcc1)), closes [DIGIB2-1582](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1582)
+
+## [1.22.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.22.0-rc.1...v1.22.0-rc.2) (2026-10-26)
+
+### Bug Fixes
+
+* **deps:** update quarkus ([07e8824](https://github.com/agridata-ch/backend/commit/07e88246601efe6eb8a2fc6b6d34156a9df8c8bd)), closes [DIGIB2-XXX](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-XXX)
+
+## [1.22.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.1-rc.1...v1.22.0-rc.1) (2026-10-21)
+
+### Features
+
+* **data-request:** add terminating data-requests ([56854bb](https://github.com/agridata-ch/backend/commit/56854bb120c38e36ccbe8e193eb82a9c4ab4e038)), closes [DIGIB2-329](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-329)
+
+## [1.21.1-rc.1](https://github.com/agridata-ch/backend/compare/v1.21.0...v1.21.1-rc.1) (2026-10-20)
+
+### Bug Fixes
+
+* **deps:** fix trivy findings ([228d1ed](https://github.com/agridata-ch/backend/commit/228d1ed1adfc67107a78ffad634b669e5cc03c80))
+
 ## [1.21.0](https://github.com/agridata-ch/backend/compare/v1.20.0...v1.21.0) (2026-10-19)
 
 ### Features

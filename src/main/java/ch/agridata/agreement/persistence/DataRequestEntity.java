@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,12 @@ import org.hibernate.type.SqlTypes;
  * @CommentLastReviewed 2026-09-02
  */
 @Entity
-@Table(name = "data_request",
+@Table(
+    name = "data_request",
     indexes = {
         @Index(name = "idx_data_request_data_consumer_uid", columnList = "data_consumer_uid")
-    })
+    }
+)
 @SQLDelete(sql = "UPDATE data_request SET archived = true WHERE id = ?")
 @SQLRestriction("archived = false")
 @Builder
@@ -122,6 +125,9 @@ public class DataRequestEntity extends AuditableEntity {
   @Column(name = "submission_date")
   private LocalDateTime submissionDate;
 
+  @Column(name = "termination_period_until")
+  private LocalDate terminationPeriodUntil;
+
   @Column(name = "valid_redirect_uri_regex", length = 255)
   private String validRedirectUriRegex;
 
@@ -162,5 +168,7 @@ public class DataRequestEntity extends AuditableEntity {
     TO_BE_ACTIVATED,
     ACTIVE,
     PAUSED,
+    TERMINATION_PENDING,
+    TERMINATED,
   }
 }

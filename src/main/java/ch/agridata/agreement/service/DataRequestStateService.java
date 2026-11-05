@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestSta
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_PROVIDER;
@@ -28,6 +29,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -62,8 +65,11 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_ACTIVATED, DRAFT, Set.of(Actor.CONSUMER)),
       new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN)),
       new AllowedTransition(ACTIVE, PAUSED, Set.of(Actor.ADMIN)),
-      new AllowedTransition(PAUSED, ACTIVE, Set.of(Actor.ADMIN))
+      new AllowedTransition(PAUSED, ACTIVE, Set.of(Actor.ADMIN)),
+      new AllowedTransition(ACTIVE, TERMINATION_PENDING, Set.of(Actor.CONSUMER, Actor.PROVIDER))
   );
+
+  private static final int TERMINATION_NOTICE_PERIOD_MONTHS = 3;
 
   private enum Actor {
     CONSUMER, ADMIN, SYSTEM, PROVIDER
@@ -82,6 +88,7 @@ public class DataRequestStateService {
   private final DataRequestEnrichmentService dataRequestEnrichmentService;
   private final ContractRevisionInitializationService contractRevisionInitializationService;
   private final ContractRevisionMutationService contractRevisionMutationService;
+  private final Clock clock;
 
   @Transactional
   @RolesAllowed(CONSUMER_ROLE)
@@ -146,6 +153,9 @@ public class DataRequestStateService {
       entity.setSubmissionDate(LocalDateTime.now());
     } else if (newStateCode == TO_BE_SIGNED_BY_CONSUMER) {
       contractRevisionInitializationService.createAndAssignInitialRevision(entity);
+    } else if (newStateCode == TERMINATION_PENDING) {
+      // plusMonths clamps to the last day of the month, e.g. 30.11. -> 28.02.
+      entity.setTerminationPeriodUntil(LocalDate.now(clock).plusMonths(TERMINATION_NOTICE_PERIOD_MONTHS));
     }
 
     dataRequestRepository.persist(entity);

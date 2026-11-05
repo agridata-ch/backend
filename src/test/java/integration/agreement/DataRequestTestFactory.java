@@ -44,12 +44,18 @@ public class DataRequestTestFactory {
         .description(DataRequestDescriptionDto.builder().de("Beschreibung lang genug").build())
         .purpose(new DataRequestPurposeDto(
             "<p>Zweck mit <strong>fett</strong>, <em>kursiv</em> und <u>unterstrichen</u>.</p>"
+                + "<p>Zeile eins<br>Zeile zwei<br><br>Zeile vier<br/><br/><br/>Zeile sieben</p>"
                 + "<ul><li><p>Punkt eins</p></li><li><p>Punkt zwei</p></li></ul>"
-                + "<ol><li><p>Schritt eins</p></li><li><p>Schritt zwei</p></li></ol>",
+                + "<ol><li><p>Schritt eins</p></li><li><p>Schritt zwei</p></li></ol>"
+                + "<ol start=\"3\"><li><p>Schritt drei</p></li></ol>",
             "<p>But avec <strong>gras</strong>, <em>italique</em> et <u>souligné</u>.</p>"
-                + "<ul><li><p>Point un</p></li></ul><ol><li><p>Etape un</p></li></ol>",
+                + "<p>Ligne un<br>Ligne deux<br><br>Ligne quatre<br/><br/><br/>Ligne sept</p>"
+                + "<ul><li><p>Point un</p></li></ul><ol><li><p>Etape un</p></li></ol>"
+                + "<ol start=\"2\"><li><p>Etape deux</p></li></ol>",
             "<p>Scopo con <strong>grassetto</strong>, <em>corsivo</em> e <u>sottolineato</u>.</p>"
-                + "<ul><li><p>Punto uno</p></li></ul><ol><li><p>Passo uno</p></li></ol>"))
+                + "<p>Riga uno<br>Riga due<br><br>Riga quattro<br/><br/><br/>Riga sette</p>"
+                + "<ul><li><p>Punto uno</p></li></ul><ol><li><p>Passo uno</p></li></ol>"
+                + "<ol start=\"2\"><li><p>Passo due</p></li></ol>"))
         .products(List.of(TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid()))
         .dataConsumerCity("Bern")
         .dataConsumerCountry("CH")

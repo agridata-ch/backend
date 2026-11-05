@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
  *
  * @CommentLastReviewed 2025-08-25
  */
-
 @Provider
 @ApplicationScoped
 @RequiredArgsConstructor

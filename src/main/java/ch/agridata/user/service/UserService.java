@@ -13,6 +13,8 @@ import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.dto.SupportedLanguage;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.user.dto.AgbAcceptanceOverviewDto;
+import ch.agridata.user.dto.AgbAcceptanceStatusEnum;
 import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserNotificationInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
@@ -54,6 +56,41 @@ public class UserService {
   public PageResponseDto<UserInfoDto> getProducers(ResourceQueryDto resourceQueryDto) {
     var pagedProducerEntities = userRepository.findByRoleAtLastLogin(resourceQueryDto, PRODUCER_ROLE);
     return userMapper.toPagedUserInfoDto(pagedProducerEntities);
+  }
+
+  @RolesAllowed({ADMIN_ROLE, SUPPORT_ROLE})
+  public PageResponseDto<AgbAcceptanceOverviewDto> getAgbAcceptances(ResourceQueryDto resourceQueryDto) {
+    var builder = resourceQueryDto.toBuilder();
+    if (resourceQueryDto.sortParams() == null || resourceQueryDto.sortParams().isEmpty()) {
+      builder.sortParams(List.of("uid", "familyName"));
+    }
+
+    var page = userRepository.findAgbAcceptancePage(builder.build());
+    var versionsById = agbRevisionService.getVersionsById();
+    var now = LocalDateTime.now(clock);
+
+    return new PageResponseDto<>(
+        page.items().stream()
+            .map(user -> userMapper.toAgbAcceptanceOverviewDto(
+                user,
+                versionsById.get(user.getLastAcceptedAgbRevisionId()),
+                toAgbAcceptanceStatus(user, now)))
+            .toList(),
+        page.totalItems(),
+        page.totalPages(),
+        page.currentPage(),
+        page.pageSize()
+    );
+  }
+
+  // Must match the status filter expression in UserRepository#findAgbAcceptancePage
+  private static AgbAcceptanceStatusEnum toAgbAcceptanceStatus(UserEntity user, LocalDateTime now) {
+    if (user.getEnforceAgbAcceptanceFrom() == null) {
+      return AgbAcceptanceStatusEnum.ACCEPTED;
+    }
+    return user.getEnforceAgbAcceptanceFrom().isAfter(now)
+        ? AgbAcceptanceStatusEnum.TRANSITION_PERIOD
+        : AgbAcceptanceStatusEnum.PENDING;
   }
 
   @Transactional

@@ -3,9 +3,11 @@ FROM amazoncorretto:25-alpine3.24
 ENV LANGUAGE='en_US:en'
 
 # CVE-2026-14456: ensure patched libcrypto3 and libssl3 version (>=3.5.8-r0).
+# CVE-2026-88806, CVE-2026-88807, CVE-2026-94286: ensure patched libx11, libxrender and libxtst versions.
 # amazoncorretto:25-alpine3.24 ships vulnerable versions of these packages.
 # TODO This line can be removed once a newer amazoncorretto base image includes patched versions.
-RUN apk add --no-cache "libcrypto3>=3.5.8-r0" "libssl3>=3.5.8-r0"
+RUN apk add --no-cache "libcrypto3>=3.5.8-r0" "libssl3>=3.5.8-r0" \
+    "libx11>=1.8.14-r0" "libxrender>=0.9.13-r0" "libxtst>=1.2.6-r0"
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY target/quarkus-app/lib/ /deployments/lib/

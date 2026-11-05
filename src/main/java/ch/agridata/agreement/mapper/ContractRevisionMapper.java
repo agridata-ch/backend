@@ -8,11 +8,11 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.SignatureTypeEnum;
+import ch.agridata.burregister.dto.BurRegisterOrganisationDto;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.common.persistence.TranslationPersistenceDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
-import ch.agridata.uidregister.dto.UidRegisterOrganisationDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -64,7 +64,7 @@ public interface ContractRevisionMapper {
   @Mapping(target = "systemLegalBasis", source = "dataSourceSystemDto.legalBasis")
   @Mapping(target = "dataProducts", source = "dataProductDtos", qualifiedByName = "mapDataProductToName")
   ContractRevisionEntity toInitialEntity(DataRequestEntity dataRequest,
-                                         UidRegisterOrganisationDto dataProvider,
+                                         BurRegisterOrganisationDto dataProvider,
                                          DataSourceSystemDto dataSourceSystemDto,
                                          List<DataProductDto> dataProductDtos
   );

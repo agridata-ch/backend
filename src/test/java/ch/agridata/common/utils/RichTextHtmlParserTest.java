@@ -25,6 +25,14 @@ class RichTextHtmlParserTest {
   }
 
   @Test
+  void givenNull_toElement_returnsEmptyWrappingElement() {
+    var element = RichTextHtmlParser.toElement("de", null);
+
+    assertThat(element.getTagName()).isEqualTo("de");
+    assertThat(element.hasChildNodes()).isFalse();
+  }
+
+  @Test
   void givenWellFormedMarkup_toElement_returnsWrappingElement() {
     var element = RichTextHtmlParser.toElement("it", "<p>ciao</p>");
     assertThat(element.getTagName()).isEqualTo("it");
@@ -51,5 +59,15 @@ class RichTextHtmlParserTest {
     assertThat(element.getTagName()).isEqualTo("de");
     assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(5);
     assertThat(element.getElementsByTagName("li").getLength()).isEqualTo(1);
+  }
+
+  @Test
+  void givenEditorHardBreaks_toElement_parsesAsBrElements() {
+    var html = "<p>Les données sont notamment utilisées pour :&nbsp;<br>• identifier ;&nbsp;<br/>• vérifier</p>";
+
+    var element = RichTextHtmlParser.toElement("fr", html);
+
+    assertThat(element.getElementsByTagName("p").getLength()).isEqualTo(1);
+    assertThat(element.getElementsByTagName("br").getLength()).isEqualTo(2);
   }
 }

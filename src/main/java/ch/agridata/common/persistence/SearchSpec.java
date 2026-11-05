@@ -20,12 +20,11 @@ import lombok.Builder;
  *                         E.g. {@code "dp.dataProviderUid = :providerUid"}.
  * @param baseParams       Parameters for the base WHERE clause.
  *                         E.g. {@code Map.of("providerUid", "CHE-123")}.
- * @param searchableFields Fields searched individually by the search term.
+ * @param searchableFields Fields searched by the search term: every word of the term must be contained in at
+ *                         least one of them, in any order.
  *                         E.g. {@code [SearchField.translated("dp.name"), SearchField.simple("dp.code")]}:
- *                         search term "milk" matches products whose value (in the request language) contains it.
- * @param combinedFields   Groups of fields searched together by the search term.
- *                         E.g. for search term "john doe" and a group {@code [firstName, lastName]}
- *                         any permutation of "john" and "doe" across firstName and lastName will match.
+ *                         search term "milk p-1" matches products whose name (in the request language) or code
+ *                         contains "milk" and whose name or code contains "p-1".
  * @param filterableFields Whitelist mapping API filter keys to filterable columns; an unknown key throws.
  *                         E.g. {@code Map.of("dataProviderId", FilterField.uuid("p.id"))}:
  *                         {@code ?filter=dataProviderId:<uuid>,<uuid>} keeps products of either provider.
@@ -42,7 +41,6 @@ public record SearchSpec(
     String baseWhere,
     Map<String, Object> baseParams,
     List<SearchField> searchableFields,
-    List<List<SearchField>> combinedFields,
     Map<String, FilterField> filterableFields,
     Map<String, SearchField> sortableFields,
     String sortTieBreaker
@@ -51,7 +49,6 @@ public record SearchSpec(
   public SearchSpec {
     baseParams = baseParams != null ? baseParams : Map.of();
     searchableFields = searchableFields != null ? searchableFields : List.of();
-    combinedFields = combinedFields != null ? combinedFields : List.of();
     filterableFields = filterableFields != null ? filterableFields : Map.of();
     sortableFields = sortableFields != null ? sortableFields : Map.of();
     sortTieBreaker = sortTieBreaker != null ? sortTieBreaker : "id";

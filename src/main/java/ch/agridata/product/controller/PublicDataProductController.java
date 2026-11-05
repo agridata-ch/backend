@@ -9,6 +9,7 @@ import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.product.dto.DataProductDocumentMetadataDto;
 import ch.agridata.product.dto.DocumentDownloadDto;
 import ch.agridata.product.dto.PublicDataProductDto;
+import ch.agridata.product.dto.PublicDataProductSummaryDto;
 import ch.agridata.product.service.DataProductDocumentService;
 import ch.agridata.product.service.DataProductQueryService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -63,7 +64,7 @@ public class PublicDataProductController {
   )
   @Produces(MediaType.APPLICATION_JSON)
   @PermitAll
-  public PageResponseDto<PublicDataProductDto> getPublicDataProductsPaginated(
+  public PageResponseDto<PublicDataProductSummaryDto> getPublicDataProductsPaginated(
       @BeanParam @Valid ResourceQueryDto queryDto
   ) {
     return dataProductQueryService.getPublicDataProductsPaged(queryDto);
@@ -74,7 +75,7 @@ public class PublicDataProductController {
   @Path("/{id}")
   @Operation(
       operationId = "getPublicDataProduct",
-      description = "Retrieves a single publicly available data product. Publicly accessible."
+      description = "Retrieves a single publicly available data product, including its technical information. Publicly accessible."
   )
   @Produces(MediaType.APPLICATION_JSON)
   @PermitAll

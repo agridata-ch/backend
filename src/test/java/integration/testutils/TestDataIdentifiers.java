@@ -4,6 +4,8 @@ import static ch.agridata.user.dto.LegalFormEnum.AKTIENGESELLSCHAFT;
 import static ch.agridata.user.dto.LegalFormEnum.EINFACHE_GESELLSCHAFT;
 import static ch.agridata.user.dto.LegalFormEnum.EQUIDENEIGENTUEMER;
 import static ch.agridata.user.dto.LegalFormEnum.NATUERLICHE_PERSON;
+import static ch.agridata.user.dto.LegalFormEnum.OEFF_RECHT_KOERPERSCHAFT_VERWALTUNG;
+import static ch.agridata.user.dto.LegalFormEnum.VEREIN;
 
 import ch.agridata.agreement.persistence.ConsentRequestEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
@@ -11,6 +13,7 @@ import ch.agridata.product.persistence.DataProductEntity;
 import ch.agridata.product.persistence.DataProviderEntity;
 import ch.agridata.product.persistence.DataSourceSystemEntity;
 import ch.agridata.user.dto.LegalFormEnum;
+import ch.agridata.user.persistence.AgbRevisionEntity;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,13 @@ public class TestDataIdentifiers {
     public @NotNull String toString() {
       return uuid.toString();
     }
+  }
+
+  public static class AgbRevision {
+    /**
+     * The revision that is current after the migrations, before any test publishes a new one.
+     */
+    public static final Identifier<AgbRevisionEntity> VERSION_1_4 = id("e1ae6e9d-9b01-4f31-9b99-f18e445c0532");
   }
 
   public static class DataRequest {
@@ -157,6 +167,7 @@ public class TestDataIdentifiers {
   @Getter
   @RequiredArgsConstructor
   public enum Uid {
+    // Producer
     CHE101000001("Erika Musterfrau", NATUERLICHE_PERSON),
     CHE102000001("Jonas Testmann", NATUERLICHE_PERSON),
     CHE102000002("Testpartner GmbH", EINFACHE_GESELLSCHAFT),
@@ -164,7 +175,15 @@ public class TestDataIdentifiers {
     CHE103000002("Testfirma GmbH", EINFACHE_GESELLSCHAFT),
     CHE104000002("Testbetrieb AG", AKTIENGESELLSCHAFT),
     ZZZ199984051("Lara Beispiel", EQUIDENEIGENTUEMER),
-    ZZZ199984068("Nico Demomann", EQUIDENEIGENTUEMER);
+    ZZZ199984068("Nico Demomann", EQUIDENEIGENTUEMER),
+
+    // Consumer
+    CHE101708094("Bio Suisse", VEREIN),
+    CHE110013660("IP-Suisse", VEREIN),
+    CHE403244345("BLV", OEFF_RECHT_KOERPERSCHAFT_VERWALTUNG),
+
+    // Provider
+    CHE113614519("Provider", AKTIENGESELLSCHAFT);
 
     private final String uidName;
     private final LegalFormEnum legalForm;

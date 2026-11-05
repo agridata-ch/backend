@@ -8,6 +8,7 @@ import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.dto.PublicDataProductDto;
+import ch.agridata.product.dto.PublicDataProductSummaryDto;
 import ch.agridata.product.mapper.DataProductMapper;
 import ch.agridata.product.mapper.DataSourceSystemMapper;
 import ch.agridata.product.persistence.DataProductRepository;
@@ -59,10 +60,10 @@ public class DataProductQueryService implements DataProductApi {
     return dataProductRepository.findAllActive().stream().map(dataProductMapper::toDto).toList();
   }
 
-  public PageResponseDto<PublicDataProductDto> getPublicDataProductsPaged(ResourceQueryDto queryDto) {
+  public PageResponseDto<PublicDataProductSummaryDto> getPublicDataProductsPaged(ResourceQueryDto queryDto) {
     var pagedEntities = dataProductRepository.findActivePaged(queryDto);
 
-    return dataProductMapper.toPagedPublicDataProductDto(pagedEntities);
+    return dataProductMapper.toPagedPublicDataProductSummaryDto(pagedEntities);
   }
 
   public PublicDataProductDto getPublicDataProduct(UUID dataProductId) {

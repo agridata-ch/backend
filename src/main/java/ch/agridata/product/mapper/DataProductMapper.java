@@ -13,6 +13,7 @@ import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import ch.agridata.product.dto.PublicDataProductDto;
+import ch.agridata.product.dto.PublicDataProductSummaryDto;
 import ch.agridata.product.dto.RestClientMethodCodeEnum;
 import ch.agridata.product.persistence.DataProductEntity;
 import java.util.List;
@@ -54,7 +55,9 @@ public interface DataProductMapper {
 
   PublicDataProductDto toPublicDto(DataProductEntity dataProductEntity);
 
-  PageResponseDto<PublicDataProductDto> toPagedPublicDataProductDto(PageResponseDto<DataProductEntity> pagedEntities);
+  PublicDataProductSummaryDto toPublicSummaryDto(DataProductEntity dataProductEntity);
+
+  PageResponseDto<PublicDataProductSummaryDto> toPagedPublicDataProductSummaryDto(PageResponseDto<DataProductEntity> pagedEntities);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "deprecatedSince", ignore = true)
@@ -66,8 +69,10 @@ public interface DataProductMapper {
   @Mapping(target = "stateCode", ignore = true)
   @Mapping(target = "dataSourceSystem", ignore = true)
   @Mapping(target = "restClient", ignore = true)
-  @Mapping(target = "restClientIdentifierCode",
-      expression = "java(entity.getRestClient() != null ? entity.getRestClient().getCode() : null)")
+  @Mapping(
+      target = "restClientIdentifierCode",
+      expression = "java(entity.getRestClient() != null ? entity.getRestClient().getCode() : null)"
+  )
   @Mapping(target = "dataProviderUid", ignore = true)
   void updateEntity(DataProductUpdateDto dto, @MappingTarget DataProductEntity entity);
 

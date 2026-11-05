@@ -1,15 +1,13 @@
 package ch.agridata.common.utils;
 
-import com.google.common.collect.Collections2;
 import io.quarkus.panache.common.Sort;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -21,7 +19,6 @@ import lombok.experimental.UtilityClass;
 public class JpaUtil {
 
   private static final String PARAM_PREFIX = "param";
-  public static final String PARAM_FULL_SEARCH_STRING = "paramfull";
   public static final String DUMMY_WHERE_CLAUSE = "1=1";
 
   /**
@@ -55,58 +52,33 @@ public class JpaUtil {
   }
 
   /**
-   * Create WHERE clause for a SQL query that checks if any of the specified fields contains
-   * the searchTerm string or any of its tokens.
+   * Create WHERE clause for a SQL query that matches if every whitespace-separated token of the searchTerm
+   * is contained in at least one of the specified fields, in any order,
+   * e.g. "anna maria muster" matches firstName "Anna Maria" and name "Muster".
    * The search is case-insensitive and uses the SQL LIKE operator with wildcards.
    *
-   * @param searchTerm     The searchTerm string to search for.
-   * @param fields         The list of fields to search in.
-   * @param combinedFields A list of lists, where each sublist contains fields that should be combined
-   *                       in a single WHERE clause using AND.
+   * @param searchTerm The searchTerm string to search for.
+   * @param fields     The list of fields to search in.
    * @return A Where clause.
    */
-  public static WhereClause createContainsWhereClause(String searchTerm, List<String> fields, List<List<String>> combinedFields) {
-    if (searchTerm == null) {
-      return new WhereClause(DUMMY_WHERE_CLAUSE, Map.of());
-    }
-    String cleanedInput = cleanSearchString(searchTerm);
-    var parameters = createParametersFromSearchTermTokens(cleanedInput);
-    var tokenParameterNames = parameters.keySet().stream().filter(parameter -> !parameter.equals(PARAM_FULL_SEARCH_STRING)).toList();
-
-    var simpleWhereClauses = fields.stream()
-        .map(field ->
-            createWhereClause(field, PARAM_FULL_SEARCH_STRING)
-        );
-
-    var combinedWhereClauses = combinedFields.stream()
-        .flatMap(subset -> createWhereClauseForPermutationOfCombinedFields(subset, tokenParameterNames));
-
-    var whereClause = Stream.of(simpleWhereClauses, combinedWhereClauses)
-        .flatMap(s -> s)
-        .filter(Objects::nonNull)
-        .collect(Collectors.joining(" OR "));
-    if (whereClause.isEmpty()) {
+  public static WhereClause createContainsWhereClause(String searchTerm, List<String> fields) {
+    if (searchTerm == null || fields.isEmpty()) {
       return createDummyWhereClause();
     }
-    return new WhereClause(whereClause, parameters);
+    // A repeated token adds no condition, as every token must match anyway
+    var tokens = Arrays.stream(cleanSearchString(searchTerm).split("\\s+")).distinct().toList();
+    var clauses = new ArrayList<String>();
+    var parameters = new HashMap<String, Object>();
 
-  }
-
-  private static Stream<String> createWhereClauseForPermutationOfCombinedFields(List<String> fields, List<String> parameterNames) {
-    return Collections2.permutations(fields).stream().map(
-        perm -> createWhereClauseForCombinedFields(perm, parameterNames)
-    ).filter(Objects::nonNull);
-  }
-
-  private static String createWhereClauseForCombinedFields(List<String> fields, List<String> parameterNames) {
-    if (fields == null || fields.isEmpty() || parameterNames == null || parameterNames.isEmpty() || fields.size() > parameterNames.size()) {
-      return null;
+    for (var i = 0; i < tokens.size(); i++) {
+      var parameterName = PARAM_PREFIX + i;
+      parameters.put(parameterName, createContainsValue(tokens.get(i)));
+      clauses.add(fields.stream()
+          .map(field -> createWhereClause(field, parameterName))
+          .collect(Collectors.joining(" OR ", "(", ")")));
     }
-    var combinationWhereClauses = new ArrayList<String>();
-    for (var i = 0; i < fields.size(); i++) {
-      combinationWhereClauses.add(createWhereClause(fields.get(i), parameterNames.get(i)));
-    }
-    return String.join(" AND ", combinationWhereClauses);
+
+    return new WhereClause(String.join(" AND ", clauses), parameters);
   }
 
   private static String createWhereClause(String field, String parameterName) {
@@ -123,27 +95,6 @@ public class JpaUtil {
         .replace("%", "")
         .replace("_", "")
         .replace("*", "");
-  }
-
-  private Map<String, Object> createParametersFromSearchTermTokens(String input) {
-    var parameters = new HashMap<String, Object>();
-
-    if (input == null) {
-      return parameters;
-    }
-
-    String cleanedInput = cleanSearchString(input);
-    parameters.put(PARAM_FULL_SEARCH_STRING, createContainsValue(cleanedInput));
-
-    List<String> tokens = List.of(input.split("\\s+"));
-
-    if (tokens.size() > 1) {
-      for (int i = 0; i < tokens.size(); i++) {
-        parameters.put(PARAM_PREFIX + i, createContainsValue(tokens.get(i)));
-      }
-    }
-
-    return parameters;
   }
 
   private static String createContainsValue(String value) {

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.21.0</version>
+    <version>1.22.0-rc.15</version>
 
     <properties>
         <compiler-plugin.version>3.16.0</compiler-plugin.version>
@@ -13,7 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.40.1</quarkus.platform.version>
+        <quarkus.platform.version>3.40.1.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.6.0</surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
@@ -22,13 +22,12 @@
         <assertj.version>3.27.7</assertj.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <archunit-junit5.version>1.5.0</archunit-junit5.version>
-        <wiremock.version>1.7.0</wiremock.version>
-        <guava.version>33.7.1-jre</guava.version>
+        <wiremock.version>1.8.1</wiremock.version>
+        <guava.version>33.7.2-jre</guava.version>
         <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
-        <swagger-annotations.version>2.2.46</swagger-annotations.version>
         <swagger-parser.version>2.1.42</swagger-parser.version>
         <pdfbox.version>3.0.7</pdfbox.version>
-        <fop-core.version>2.11</fop-core.version>
+        <fop-core.version>2.12</fop-core.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 
         <!-- plugin versions -->
@@ -37,7 +36,7 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>14.3.0</checkstyle.version>
         <dependency-check-maven.version>13.0.0</dependency-check-maven.version>
-        <openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
+        <openapi-generator-maven-plugin.version>7.26.0</openapi-generator-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <license-maven-plugin.version>2.7.0</license-maven-plugin.version>
     </properties>
@@ -92,11 +91,6 @@
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
                 <version>${jetbrains-annotations.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
@@ -240,10 +234,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-virtual-threads</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -420,6 +410,7 @@
                                 <arguments>
                                     <argument>ch.agridata.agreement.dto.DataRequestUpdateDto</argument>
                                     <argument>ch.agridata.product.dto.DataProductUpdateDto</argument>
+                                    <argument>ch.agridata.user.dto.AgbRevisionCreateDto</argument>
                                 </arguments>
                             </configuration>
                         </execution>

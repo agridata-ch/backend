@@ -56,10 +56,17 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     return getEntityManager().createQuery(
             "SELECT DISTINCT dr.id FROM DataRequestEntity dr JOIN dr.dataProducts dp "
                 + "WHERE dr.dataConsumerUid = :dataConsumerUid "
-                + "AND dr.stateCode = :stateCode "
-                + "AND dp.dataProductId = :productId", UUID.class)
+                + "AND dr.stateCode IN (:stateCodes) "
+                + "AND dp.dataProductId = :productId", UUID.class
+        )
         .setParameter(DATA_CONSUMER_UID, dataConsumerUid)
-        .setParameter("stateCode", DataRequestEntity.DataRequestStateEnum.ACTIVE)
+        .setParameter(
+            "stateCodes",
+            Set.of(
+                DataRequestEntity.DataRequestStateEnum.ACTIVE,
+                DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING
+            )
+        )
         .setParameter("productId", productId)
         .getResultList();
   }
@@ -108,8 +115,10 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
   }
 
   public long archiveDraftByIdAndConsumerUid(UUID id, String consumerUid) {
-    return update("archived = true where id = ?1 and dataConsumerUid = ?2 and stateCode = ?3 and archived = false",
-        id, consumerUid, DataRequestEntity.DataRequestStateEnum.DRAFT);
+    return update(
+        "archived = true where id = ?1 and dataConsumerUid = ?2 and stateCode = ?3 and archived = false",
+        id, consumerUid, DataRequestEntity.DataRequestStateEnum.DRAFT
+    );
   }
 
   public boolean existsByIdAndConsumerUid(UUID id, String consumerUid) {
