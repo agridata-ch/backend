@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ public class AgridataSecurityIdentity {
    * dedicated identity for auditing and traceability when no regular user
    * context is available.
    */
+  @Getter
   @Setter
   private UUID runAsUserId;
 

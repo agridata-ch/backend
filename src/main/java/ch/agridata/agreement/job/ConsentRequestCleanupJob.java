@@ -1,9 +1,11 @@
 package ch.agridata.agreement.job;
 
+import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
+
 import ch.agridata.agreement.service.ConsentRequestCleanupRunner;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -24,11 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class ConsentRequestCleanupJob {
 
   private final ConsentRequestCleanupRunner cleanupRunner;
+  private final BackgroundTaskRunner backgroundTaskRunner;
 
   // 02:15 every day (Quartz cron)
   @Scheduled(cron = "0 15 2 * * ?")
-  @ActivateRequestContext
   public void run() {
-    cleanupRunner.runCleanupIfNotRunning(null, null);
+    backgroundTaskRunner.runInNewRequest(USER_ID_SCHEDULED_CLEANUP_JOB, () -> cleanupRunner.runCleanupIfNotRunning(null, null));
   }
 }

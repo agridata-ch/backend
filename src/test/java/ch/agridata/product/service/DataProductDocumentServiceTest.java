@@ -3,6 +3,7 @@ package ch.agridata.product.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.product.dto.DataProductDocumentMetadataDto;
 import ch.agridata.product.mapper.DataProductDocumentMapper;
 import ch.agridata.product.persistence.DataProductDocumentEntity;
@@ -30,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -62,7 +63,7 @@ class DataProductDocumentServiceTest {
   @Mock
   DataProductDocumentStorageService dataProductDocumentStorageService;
   @Mock
-  ManagedExecutor managedExecutor;
+  BackgroundTaskRunner backgroundTaskRunner;
   @Mock
   FileUpload fileUpload;
   @Mock
@@ -155,9 +156,9 @@ class DataProductDocumentServiceTest {
         verify(dataProductDocumentStorageService).upload(persisted.getId(), FILE_CONTENT);
         verify(dataProductDocumentStorageService, never()).delete(any(UUID.class));
 
-        // Scan polling is submitted asynchronously; the runnable itself needs an Arc container
+        // Scan polling is submitted asynchronously as the uploading user; the runnable itself needs an Arc container
         // and is deliberately not executed here.
-        verify(managedExecutor).submit(any(Runnable.class));
+        verify(backgroundTaskRunner).runAsync(eq(USER_ID), any(Runnable.class));
       }
     }
 
@@ -189,7 +190,7 @@ class DataProductDocumentServiceTest {
           .hasMessageContaining("maximum size");
 
       verifyNoInteractions(pdfValidator, dataProductDocumentStorageService,
-          dataProductDocumentRepository, managedExecutor);
+          dataProductDocumentRepository, backgroundTaskRunner);
     }
 
     @Test
@@ -203,7 +204,7 @@ class DataProductDocumentServiceTest {
           .isInstanceOf(ValidationException.class)
           .hasMessage("not a pdf");
 
-      verifyNoInteractions(dataProductDocumentStorageService, dataProductDocumentRepository, managedExecutor);
+      verifyNoInteractions(dataProductDocumentStorageService, dataProductDocumentRepository, backgroundTaskRunner);
     }
 
     @Test
@@ -215,7 +216,7 @@ class DataProductDocumentServiceTest {
           .isInstanceOf(ValidationException.class)
           .hasMessageContaining("at most");
 
-      verifyNoInteractions(dataProductDocumentStorageService, managedExecutor);
+      verifyNoInteractions(dataProductDocumentStorageService, backgroundTaskRunner);
     }
 
     @Test
@@ -239,7 +240,7 @@ class DataProductDocumentServiceTest {
         verify(dataProductDocumentStorageService).upload(documentIdCaptor.capture(), any(byte[].class));
         verify(dataProductDocumentStorageService).delete(documentIdCaptor.getValue());
         verify(dataProductDocumentRepository, never()).persist(any(DataProductDocumentEntity.class));
-        verifyNoInteractions(managedExecutor);
+        verifyNoInteractions(backgroundTaskRunner);
       }
     }
 
@@ -260,7 +261,7 @@ class DataProductDocumentServiceTest {
         verify(dataProductDocumentStorageService).upload(documentIdCaptor.capture(), any(byte[].class));
         verify(dataProductDocumentStorageService).delete(documentIdCaptor.getValue());
 
-        verifyNoInteractions(managedExecutor, dataProductDocumentScanService);
+        verifyNoInteractions(backgroundTaskRunner, dataProductDocumentScanService);
       }
     }
 
