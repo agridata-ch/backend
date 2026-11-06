@@ -52,7 +52,7 @@ public class NotificationQueueWorkerJob {
 
   @Scheduled(cron = "0 0/10 * * * ?")
   public void run() {
-    backgroundTaskRunner.runInNewRequest(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
+    backgroundTaskRunner.runAs(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
   }
 
   /**
@@ -64,7 +64,7 @@ public class NotificationQueueWorkerJob {
    * active.
    */
   void onBatchQueued(@Observes(during = TransactionPhase.AFTER_SUCCESS) NotificationBatchQueuedEvent event) {
-    backgroundTaskRunner.runAsync(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
+    backgroundTaskRunner.runAsyncAs(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
   }
 
   private void tryAcquireLockAndRun() {

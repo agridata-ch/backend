@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
 import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.product.service.DataProductDocumentScanService;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,10 +42,8 @@ class DataProductScanRecoveryJobTest {
 
   @Test
   void whenRun_thenRecoversUnderOwnLockKeyAsTechnicalUser() {
-    doAnswer(invocation -> {
-      invocation.getArgument(1, Runnable.class).run();
-      return null;
-    }).when(backgroundTaskRunner).runInNewRequest(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Runnable.class));
+    doAnswer(invocation -> invocation.getArgument(1, Supplier.class).get())
+        .when(backgroundTaskRunner).runAs(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Supplier.class));
     when(advisoryLockExecutor.runIfLockAvailable(anyLong(), anyString(), any(Runnable.class)))
         .thenAnswer(invocation -> {
           invocation.getArgument(2, Runnable.class).run();
@@ -53,7 +52,7 @@ class DataProductScanRecoveryJobTest {
 
     job.run();
 
-    verify(backgroundTaskRunner).runInNewRequest(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Runnable.class));
+    verify(backgroundTaskRunner).runAs(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Supplier.class));
     verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(), any(Runnable.class));
     verify(dataProductDocumentScanService).recoverStalePendingScans();
   }
