@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,10 @@ class ConsentRequestLegallyPermittedServiceTest {
   @BeforeEach
   void setUp() {
     service = new ConsentRequestLegallyPermittedService(consentRequestCreationService, agisApi, userApi, backgroundTaskRunner, true, 10);
-    lenient().when(backgroundTaskRunner.wrapForAsync(any(), any(Runnable.class))).thenAnswer(invocation -> invocation.getArgument(1));
+    lenient().doAnswer(invocation -> {
+      invocation.getArgument(2, Executor.class).execute(invocation.getArgument(1, Runnable.class));
+      return null;
+    }).when(backgroundTaskRunner).runAsyncAs(any(), any(Runnable.class), any(Executor.class));
   }
 
   @Test
@@ -55,8 +59,8 @@ class ConsentRequestLegallyPermittedServiceTest {
     service.enqueueUidBased(DATA_REQUEST_ID, UID);
     service.awaitAllProcessed();
 
-    verify(backgroundTaskRunner).wrapForAsync(
-        eq(ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT), any(Runnable.class));
+    verify(backgroundTaskRunner).runAsyncAs(
+        eq(ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT), any(Runnable.class), any(Executor.class));
     verify(consentRequestCreationService).createLegallyPermittedConsentRequestIfMissing(DATA_REQUEST_ID, UID, null, null);
   }
 

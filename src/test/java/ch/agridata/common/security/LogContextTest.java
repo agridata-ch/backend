@@ -23,14 +23,15 @@ class LogContextTest {
   }
 
   @Test
-  void whenRunWith_thenSetsRequestIdAndGivenUserIdOnlyDuringWork() {
+  void whenCallWith_thenSetsRequestIdAndGivenUserIdOnlyDuringWork() {
     var requestIdDuringWork = new AtomicReference<>();
     var userIdDuringWork = new AtomicReference<>();
 
-    new LogContext("request-1").runWith(
+    new LogContext("request-1").callWith(
         USER_ID, () -> {
           requestIdDuringWork.set(MDC.get(REQUEST_ID_MDC_FIELD));
           userIdDuringWork.set(MDC.get(USER_ID_MDC_FIELD));
+          return null;
         }
     );
 
@@ -41,12 +42,12 @@ class LogContextTest {
   }
 
   @Test
-  void givenWorkThrows_runWith_restoresPreviousValues() {
+  void givenWorkThrows_callWith_restoresPreviousValues() {
     MDC.put(REQUEST_ID_MDC_FIELD, "previous-request");
     MDC.put(USER_ID_MDC_FIELD, "previous-user");
     var logContext = new LogContext("request-1");
 
-    assertThatThrownBy(() -> logContext.runWith(
+    assertThatThrownBy(() -> logContext.callWith(
         USER_ID, () -> {
           throw new IllegalStateException("boom");
         }
@@ -57,11 +58,11 @@ class LogContextTest {
   }
 
   @Test
-  void whenRunWithOnPooledThread_thenLeavesNothingBehindForNextTask() throws Exception {
+  void whenCallWithOnPooledThread_thenLeavesNothingBehindForNextTask() throws Exception {
     var logContext = new LogContext("request-1");
 
     try (var executor = Executors.newSingleThreadExecutor()) {
-      executor.submit(() -> logContext.runWith(USER_ID, () -> {})).get();
+      executor.submit(() -> logContext.callWith(USER_ID, () -> null)).get();
 
       assertThat(executor.submit(() -> MDC.get(REQUEST_ID_MDC_FIELD)).get()).isNull();
       assertThat(executor.submit(() -> MDC.get(USER_ID_MDC_FIELD)).get()).isNull();
@@ -89,10 +90,5 @@ class LogContextTest {
   @Test
   void givenNoRequestIdInLoggingContext_current_startsNewRequest() {
     assertThat(LogContext.onCurrentRequestId().requestId()).isNotBlank();
-  }
-
-  @Test
-  void whenNewRequest_thenUsesFreshRequestIdEachTime() {
-    assertThat(LogContext.newRequest().requestId()).isNotEqualTo(LogContext.newRequest().requestId());
   }
 }

@@ -49,7 +49,7 @@ class NotificationQueueWorkerJobTest {
     lenient().doAnswer(invocation -> {
       invocation.getArgument(1, Runnable.class).run();
       return null;
-    }).when(backgroundTaskRunner).runInNewRequest(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
+    }).when(backgroundTaskRunner).runAs(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
   }
 
   @Test
@@ -62,7 +62,7 @@ class NotificationQueueWorkerJobTest {
 
     job.run();
 
-    verify(backgroundTaskRunner).runInNewRequest(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
+    verify(backgroundTaskRunner).runAs(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
     verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(), any(Runnable.class));
     verify(notificationProcessBatchService).processPendingBatches();
   }

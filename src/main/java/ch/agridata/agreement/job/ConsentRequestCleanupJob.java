@@ -31,6 +31,6 @@ public class ConsentRequestCleanupJob {
   // 02:15 every day (Quartz cron)
   @Scheduled(cron = "0 15 2 * * ?")
   public void run() {
-    backgroundTaskRunner.runInNewRequest(USER_ID_SCHEDULED_CLEANUP_JOB, () -> cleanupRunner.runCleanupIfNotRunning(null, null));
+    backgroundTaskRunner.runAs(USER_ID_SCHEDULED_CLEANUP_JOB, () -> cleanupRunner.runCleanupIfNotRunning(null, null));
   }
 }

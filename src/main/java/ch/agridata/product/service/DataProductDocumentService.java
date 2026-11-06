@@ -139,7 +139,7 @@ public class DataProductDocumentService {
    * Exceptions thrown by the task are logged and not rethrown.
    */
   private void runAsyncAsUser(UUID userId, Runnable task) {
-    backgroundTaskRunner.runAsync(
+    backgroundTaskRunner.runAsyncAs(
         userId, () -> {
           try {
             task.run();

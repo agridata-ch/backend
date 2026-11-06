@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import ch.agridata.agreement.service.ConsentRequestCleanupRunner;
 import ch.agridata.common.security.BackgroundTaskRunner;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,10 +35,8 @@ class ConsentRequestCleanupJobTest {
 
   @Test
   void whenRun_thenDelegatesToSharedCleanupRunnerAsTechnicalUser() {
-    doAnswer(invocation -> {
-      invocation.getArgument(1, Runnable.class).run();
-      return null;
-    }).when(backgroundTaskRunner).runInNewRequest(eq(USER_ID_SCHEDULED_CLEANUP_JOB), any(Runnable.class));
+    doAnswer(invocation -> invocation.getArgument(1, Supplier.class).get())
+        .when(backgroundTaskRunner).runAs(eq(USER_ID_SCHEDULED_CLEANUP_JOB), any(Supplier.class));
 
     job.run();
 

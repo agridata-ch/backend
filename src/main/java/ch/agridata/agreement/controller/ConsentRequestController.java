@@ -202,7 +202,7 @@ public class ConsentRequestController {
     auditingService.logConsentRequestCleanupTriggered();
     log.info("consent request cleanup manually triggered by user {}.", triggeredBy);
 
-    var result = backgroundTaskRunner.callInCurrentRequest(
+    var result = backgroundTaskRunner.runAs(
             USER_ID_SCHEDULED_CLEANUP_JOB,
             () -> consentRequestCleanupRunner.runCleanupIfNotRunning(fromInclusive, toInclusive)
         )
