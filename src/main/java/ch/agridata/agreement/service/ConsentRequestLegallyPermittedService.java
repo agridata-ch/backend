@@ -82,15 +82,13 @@ public class ConsentRequestLegallyPermittedService {
       return;
     }
     try {
-      executor.execute(backgroundTaskRunner.wrapForAsync(
-          USER_ID_LEGALLY_PERMITTED_CONSENT, () -> {
-            try {
-              work.run();
-            } finally {
-              pending.remove(key);
-            }
-          }
-      ));
+      backgroundTaskRunner.runAsyncAs(USER_ID_LEGALLY_PERMITTED_CONSENT, () -> {
+        try {
+          work.run();
+        } finally {
+          pending.remove(key);
+        }
+      }, executor);
       log.debug("Legally permitted consent request queued: dataRequestId={}, {}", dataRequestId, producer);
     } catch (RejectedExecutionException _) {
       pending.remove(key);

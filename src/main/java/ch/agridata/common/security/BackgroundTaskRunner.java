@@ -4,26 +4,29 @@ import io.quarkus.arc.Arc;
 import io.smallrye.context.api.ManagedExecutorConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.context.ThreadContext;
 
 /**
- * Single entry point to run work as a given user outside a regular HTTP request, e.g. in scheduled jobs or on executor threads. For the
- * work it provides a request context, sets the run-as user on {@link AgridataSecurityIdentity} (used for {@code modifiedBy} and audit
- * entries) and, via {@link LogContext}, {@code requestId} and {@code agridataUserId} in the logging context. The same user id feeds both,
- * so logs, audit entries and {@code modifiedBy} always refer to the same request and user. Everything is restored afterward, so nothing
- * leaks to the next task on a pooled thread.
+ * Single entry point to run work as a given user, e.g. in scheduled jobs, on executor threads or as a technical user within an HTTP
+ * request. The work always runs in a fresh request context, in which the run-as user is set on {@link AgridataSecurityIdentity} (used for
+ * {@code modifiedBy} and audit entries), and, via {@link LogContext}, with {@code requestId} and {@code agridataUserId} in the logging
+ * context. The same user id feeds both, so logs, audit entries and {@code modifiedBy} always refer to the same request and user.
  *
- * <p>The methods differ in when and where the work runs and which request it belongs to:
+ * <p>The fresh request context is terminated afterward, so its request-scoped beans (e.g. the Hibernate session) are destroyed, and a
+ * request context that was active before is restored. The caller's own request context and identity are never modified. The logging
+ * context is restored as well, so nothing leaks to the next task on a pooled thread.
+ *
+ * <p>The request id is taken from the thread that calls the runner, or a new one is started if there is none (e.g. in scheduled jobs).
+ *
  * <ul>
- *   <li>{@link #runInNewRequest}: now, on the current thread, as a new request (scheduled jobs).</li>
- *   <li>{@link #runAsync}: later, on this runner's executor, as part of the caller's request.</li>
- *   <li>{@link #wrapForAsync}: like {@code runAsync}, but for callers with their own executor.</li>
- *   <li>{@link #callInCurrentRequest}: now, on the current thread, within the caller's request; only the user is switched.</li>
+ *   <li>{@link #runAs}: now, on the current thread.</li>
+ *   <li>{@link #runAsyncAs}: later, on this runner's executor or on the given one.</li>
  * </ul>
  *
- * @CommentLastReviewed 2026-11-04
+ * @CommentLastReviewed 2026-11-06
  */
 @ApplicationScoped
 public class BackgroundTaskRunner {
@@ -44,91 +47,61 @@ public class BackgroundTaskRunner {
   }
 
   /**
-   * Runs the work now, on the current thread, as a new request: new request id, fresh request context and the given user. Use for entry
-   * points that have no request of their own, e.g. scheduled jobs.
+   * Runs the work now, on the current thread, as the given user in a fresh request context and returns its result.
    */
-  public void runInNewRequest(UUID userId, Runnable work) {
-    LogContext.newRequest().runWith(userId, () -> runInFreshRequestContextAs(userId, work));
+  public <T> T runAs(UUID userId, Supplier<T> work) {
+    return run(LogContext.onCurrentRequestId(), userId, work);
   }
 
   /**
-   * Runs the work now, on the current thread, within the current request: same request id and same request context (one is activated
-   * only if none is active). Only the user is switched to the given one for the duration of the work and restored afterward. Returns
-   * the result of the work.
+   * Like {@link #runAs(UUID, Supplier)}, for work without a result.
    */
-  public <T> T callInCurrentRequest(UUID userId, Supplier<T> work) {
-    return LogContext.onCurrentRequestId().callWith(userId, () -> runInCurrentRequestContextAs(userId, work));
+  public void runAs(UUID userId, Runnable work) {
+    runAs(userId, asSupplier(work));
   }
 
   /**
-   * Runs the work later, on this runner's executor, as the given user and as part of the caller's request: it logs under the request id
-   * of the calling thread, but in a fresh request context, because the caller's context ends with the caller's request. Returns
-   * immediately without waiting for the work. Call it on the thread whose request the work belongs to, e.g. the HTTP request thread.
+   * Runs the work later, on this runner's executor, as the given user in a fresh request context. Returns immediately without waiting for
+   * the work. Call it on the thread whose request the work belongs to, e.g. the HTTP request thread.
    */
-  public void runAsync(UUID userId, Runnable work) {
-    managedExecutor.execute(wrapForAsync(userId, work));
+  public void runAsyncAs(UUID userId, Runnable work) {
+    runAsyncAs(userId, work, managedExecutor);
   }
 
   /**
-   * Like {@link #runAsync}, but for callers with their own executor. Nothing runs yet: this returns a {@code Runnable} that the caller
-   * hands to its executor. When the executor runs it, the work executes as the given user in a fresh request context, under the request
-   * id of the thread that called this method. Call it on the thread whose request the work belongs to, e.g. the HTTP request thread.
+   * Like {@link #runAsyncAs(UUID, Runnable)}, but on the given executor, e.g. one with its own throttling. Exceptions of
+   * {@link Executor#execute} (e.g. a rejection) are passed on to the caller.
    */
-  public Runnable wrapForAsync(UUID userId, Runnable work) {
-    // Captured here on the submitting thread: the returned runnable runs on a thread with a different logging context.
+  public void runAsyncAs(UUID userId, Runnable work, Executor executor) {
+    // Captured here on the submitting thread: the work runs on a thread with a different logging context.
     var logContext = LogContext.onCurrentRequestId();
-    return () -> logContext.runWith(userId, () -> runInFreshRequestContextAs(userId, work));
+    executor.execute(() -> run(logContext, userId, asSupplier(work)));
   }
 
-  private void runInFreshRequestContextAs(UUID userId, Runnable work) {
-    runInFreshRequestContextAs(
-        userId, () -> {
-          work.run();
-          return null;
-        }
-    );
+  private <T> T run(LogContext logContext, UUID userId, Supplier<T> work) {
+    return logContext.callWith(userId, () -> callInFreshRequestContextAs(userId, work));
   }
 
-  /**
-   * Always activates a new request context: on executor threads the request context of the submitting request may be propagated and
-   * still be active, but it ends together with that request. A request context that was active before is restored afterward.
-   */
-  private <T> void runInFreshRequestContextAs(UUID userId, Supplier<T> work) {
+  private <T> T callInFreshRequestContextAs(UUID userId, Supplier<T> work) {
     var requestContext = Arc.container().requestContext();
     var previousState = requestContext.isActive() ? requestContext.getState() : null;
     requestContext.activate();
     try {
-      runAs(userId, work);
+      // The identity bean belongs to the fresh request context and is destroyed with it, so there is nothing to restore.
+      identity.setRunAsUserId(userId);
+      return work.get();
     } finally {
-      requestContext.deactivate();
+      requestContext.terminate();
       if (previousState != null) {
         requestContext.activate(previousState);
       }
     }
   }
 
-  private <T> T runInCurrentRequestContextAs(UUID userId, Supplier<T> work) {
-    var requestContext = Arc.container().requestContext();
-    var activated = !requestContext.isActive();
-    if (activated) {
-      requestContext.activate();
-    }
-    try {
-      return runAs(userId, work);
-    } finally {
-      if (activated) {
-        requestContext.deactivate();
-      }
-    }
-  }
-
-  private <T> T runAs(UUID userId, Supplier<T> work) {
-    var previousUserId = identity.getRunAsUserId();
-    try {
-      identity.setRunAsUserId(userId);
-      return work.get();
-    } finally {
-      identity.setRunAsUserId(previousUserId);
-    }
+  private static Supplier<Void> asSupplier(Runnable work) {
+    return () -> {
+      work.run();
+      return null;
+    };
   }
 }

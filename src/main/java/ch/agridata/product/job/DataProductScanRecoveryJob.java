@@ -41,7 +41,7 @@ public class DataProductScanRecoveryJob {
   // Every 5 minutes (Quartz cron)
   @Scheduled(cron = "0 0/5 * * * ?")
   public void run() {
-    backgroundTaskRunner.runInNewRequest(
+    backgroundTaskRunner.runAs(
         USER_ID_DOCUMENT_SCAN_RECOVERY_JOB,
         () -> advisoryLockExecutor.runIfLockAvailable(LOCK_KEY, TASK_NAME, dataProductDocumentScanService::recoverStalePendingScans)
     );

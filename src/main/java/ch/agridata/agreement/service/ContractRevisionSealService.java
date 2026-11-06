@@ -87,7 +87,7 @@ public class ContractRevisionSealService {
    * original request context is no longer active.
    */
   private void runAsyncAsUser(UUID userId, Runnable task) {
-    backgroundTaskRunner.runAsync(
+    backgroundTaskRunner.runAsyncAs(
         userId, () -> {
           try {
             task.run();

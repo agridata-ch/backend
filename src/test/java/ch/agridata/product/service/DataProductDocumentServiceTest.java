@@ -158,7 +158,7 @@ class DataProductDocumentServiceTest {
 
         // Scan polling is submitted asynchronously as the uploading user; the runnable itself needs an Arc container
         // and is deliberately not executed here.
-        verify(backgroundTaskRunner).runAsync(eq(USER_ID), any(Runnable.class));
+        verify(backgroundTaskRunner).runAsyncAs(eq(USER_ID), any(Runnable.class));
       }
     }
 
