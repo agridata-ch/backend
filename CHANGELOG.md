@@ -1,3 +1,9 @@
+## [1.23.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.22.0...v1.23.0-rc.1) (2026-11-10)
+
+### Features
+
+* **user:** add endpoint to retrieve UID by BUR ([31f650a](https://github.com/agridata-ch/backend/commit/31f650aee234f6d1a0f251ba4ab4472f6ba2a595)), closes [DIGIB2-1828](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1828)
+
 ## [1.22.0](https://github.com/agridata-ch/backend/compare/v1.21.0...v1.22.0) (2026-11-05)
 
 ### Features
