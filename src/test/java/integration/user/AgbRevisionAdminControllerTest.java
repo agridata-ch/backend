@@ -7,6 +7,7 @@ import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_A;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
@@ -267,6 +268,33 @@ class AgbRevisionAdminControllerTest {
         .post(PATH)
         .then()
         .statusCode(400);
+  }
+
+  @Test
+  void givenAgbTextWithHeadings_whenCreate_thenCreated() {
+    var body = createBody(nextVersion(), null);
+    body.put("agbText", Map.of("de", "<h1>AGB</h1><h2>1.</h2><h3>1.1</h3><p>de</p>", "fr", "<p>fr</p>", "it", "<p>it</p>"));
+    AuthTestUtils.requestAs(TestUserEnum.ADMIN)
+        .contentType(ContentType.JSON)
+        .body(body)
+        .when()
+        .post(PATH)
+        .then()
+        .statusCode(201);
+  }
+
+  @Test
+  void givenAgbTextWithUnsupportedHtmlTag_whenCreate_thenBadRequest() {
+    var body = createBody(nextVersion(), null);
+    body.put("agbText", Map.of("de", "<h4>AGB</h4>", "fr", "<p>fr</p>", "it", "<p>it</p>"));
+    AuthTestUtils.requestAs(TestUserEnum.ADMIN)
+        .contentType(ContentType.JSON)
+        .body(body)
+        .when()
+        .post(PATH)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("agbText.de"));
   }
 
   @Test

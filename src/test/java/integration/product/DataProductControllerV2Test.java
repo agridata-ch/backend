@@ -31,6 +31,7 @@ import ch.agridata.product.dto.DataProductDocumentMetadataDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductExtendedDescriptionDto;
 import ch.agridata.product.dto.DataProductNameDto;
+import ch.agridata.product.dto.DataProductPricingBasisDto;
 import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
 import ch.agridata.product.dto.DocumentScanStatusEnum;
@@ -383,8 +384,8 @@ class DataProductControllerV2Test {
   @ParameterizedTest
   @CsvSource({"PROVIDER_1, true", "PROVIDER_1, false", "ADMIN, true", "ADMIN, false"})
   void givenPaymentRequired_whenAddDataProductDraft_thenValuePersisted(TestUserEnum user, boolean paymentRequired) {
-    DataProductDescriptionDto pricingBasis = paymentRequired
-        ? new DataProductDescriptionDto("Gebühren Deutsch", "Redevances Francais", "Tassazione Italiano")
+    DataProductPricingBasisDto pricingBasis = paymentRequired
+        ? new DataProductPricingBasisDto("<p>Gebühren Deutsch</p>", "<p>Redevances Francais</p>", "<p>Tassazione Italiano</p>")
         : null;
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(paymentRequired))
@@ -416,7 +417,7 @@ class DataProductControllerV2Test {
         .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
         .links(JsonNullable.of(
             List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
-        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "<p>Descrizione tecnica italiano</p>")))
         .restClientId(JsonNullable.of(restClientId))
         .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
         .restClientPathTemplate(JsonNullable.of("path/template"))
@@ -1387,8 +1388,8 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
     patchExpectingOk(user, productId, DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(true))
-        .pricingBasis(JsonNullable.of(new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
-            "Tassazione per chiamata")))
+        .pricingBasis(JsonNullable.of(new DataProductPricingBasisDto("<p>Gebühren pro Abruf</p>", "<p>Redevances par appel</p>",
+            "<p>Tassazione per chiamata</p>")))
         .build());
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
@@ -1412,8 +1413,8 @@ class DataProductControllerV2Test {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(user, existingProduct);
 
-    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
-        "Tassazione per chiamata");
+    DataProductPricingBasisDto pricingBasis = new DataProductPricingBasisDto("<p>Gebühren pro Abruf</p>", "<p>Redevances par appel</p>",
+        "<p>Tassazione per chiamata</p>");
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(true))
         .pricingBasis(JsonNullable.of(pricingBasis))
@@ -1654,6 +1655,25 @@ class DataProductControllerV2Test {
         .get(DataProductControllerV2.PATH + "/" + productId + "/documents/" + document.id())
         .then()
         .statusCode(200);
+  }
+
+  @SneakyThrows
+  @Test
+  void givenRichTextWithUnsupportedHtmlTag_whenAddDataProductDraft_thenReturnBadRequest() {
+    DataProductUpdateDto dto = DataProductUpdateDto.builder()
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("<p onclick=\"x\">De</p>", null, null)))
+        .pricingBasis(JsonNullable.of(new DataProductPricingBasisDto(null, "<img src=x onerror=alert(1)>", null)))
+        .build();
+
+    AuthTestUtils.requestAs(TestUserEnum.PROVIDER_1)
+        .contentType(ContentType.JSON)
+        .when()
+        .body(MAPPER.writeValueAsString(dto))
+        .post(DataProductControllerV2.PATH)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("extendedDescription"))
+        .body("debugMessage", containsString("pricingBasis"));
   }
 
   @SneakyThrows

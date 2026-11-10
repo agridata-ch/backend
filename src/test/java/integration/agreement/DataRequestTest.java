@@ -277,6 +277,14 @@ class DataRequestTest {
   }
 
   @Test
+  void givenPurposeWithUnsupportedHtmlTag_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
+        .purpose(new DataRequestPurposeDto("<p>Zweck</p><script>alert(1)</script>", "<p>But</p>", "<p>Scopo</p>"))
+        .build();
+    createDataRequestAs(dto, CONSUMER_BIO_SUISSE).then().statusCode(400);
+  }
+
+  @Test
   void givenDraftWithInvalidProduct_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto invalidDto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(NONEXISTENT_PRODUCT_UUID))

@@ -47,15 +47,15 @@ public class DataRequestTestFactory {
                 + "<p>Zeile eins<br>Zeile zwei<br><br>Zeile vier<br/><br/><br/>Zeile sieben</p>"
                 + "<ul><li><p>Punkt eins</p></li><li><p>Punkt zwei</p></li></ul>"
                 + "<ol><li><p>Schritt eins</p></li><li><p>Schritt zwei</p></li></ol>"
-                + "<ol start=\"3\"><li><p>Schritt drei</p></li></ol>",
+                + "<ol><li><p>Schritt drei</p></li></ol>",
             "<p>But avec <strong>gras</strong>, <em>italique</em> et <u>souligné</u>.</p>"
                 + "<p>Ligne un<br>Ligne deux<br><br>Ligne quatre<br/><br/><br/>Ligne sept</p>"
                 + "<ul><li><p>Point un</p></li></ul><ol><li><p>Etape un</p></li></ol>"
-                + "<ol start=\"2\"><li><p>Etape deux</p></li></ol>",
+                + "<ol><li><p>Etape deux</p></li></ol>",
             "<p>Scopo con <strong>grassetto</strong>, <em>corsivo</em> e <u>sottolineato</u>.</p>"
                 + "<p>Riga uno<br>Riga due<br><br>Riga quattro<br/><br/><br/>Riga sette</p>"
                 + "<ul><li><p>Punto uno</p></li></ul><ol><li><p>Passo uno</p></li></ol>"
-                + "<ol start=\"2\"><li><p>Passo due</p></li></ol>"))
+                + "<ol><li><p>Passo due</p></li></ol>"))
         .products(List.of(TestDataIdentifiers.DataProduct.UUID_085E4B72.uuid()))
         .dataConsumerCity("Bern")
         .dataConsumerCountry("CH")

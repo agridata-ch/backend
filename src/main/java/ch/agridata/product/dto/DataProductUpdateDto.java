@@ -137,7 +137,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Pricing basis of the data product"
     )
-    JsonNullable<@Valid DataProductDescriptionDto> pricingBasis
+    JsonNullable<@Valid DataProductPricingBasisDto> pricingBasis
 
 ) {
 

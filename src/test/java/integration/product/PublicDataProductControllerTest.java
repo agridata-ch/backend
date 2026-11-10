@@ -498,7 +498,7 @@ class PublicDataProductControllerTest {
         .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
         .links(JsonNullable.of(
             List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
-        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "<p>Descrizione tecnica italiano</p>")))
         .restClientId(JsonNullable.of(restClientId))
         .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
         .restClientPathTemplate(JsonNullable.of("path/template"))

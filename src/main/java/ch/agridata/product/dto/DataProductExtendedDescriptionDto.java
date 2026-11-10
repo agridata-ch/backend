@@ -1,19 +1,22 @@
 package ch.agridata.product.dto;
 
 import ch.agridata.common.utils.ValidationSchemaGenerator;
+import ch.agridata.common.validation.RichText;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.groups.Default;
 import lombok.Builder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * Represents the multilingual extended description of a DataProduct.
+ * Represents the multilingual extended description of a DataProduct. The extended description is rich text and may only contain
+ * the tags supported by the WYSIWYG editor.
  *
- * @CommentLastReviewed 2026-07-23
+ * @CommentLastReviewed 2026-11-09
  */
 
 @Builder
 public record DataProductExtendedDescriptionDto(
+    @RichText(groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "German extended description of the data product",
@@ -25,6 +28,7 @@ public record DataProductExtendedDescriptionDto(
     )
     String de,
 
+    @RichText(groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "French extended description of the data product",
@@ -36,6 +40,7 @@ public record DataProductExtendedDescriptionDto(
     )
     String fr,
 
+    @RichText(groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Size(max = 10000, groups = {Default.class, ValidationSchemaGenerator.Submit.class})
     @Schema(
         description = "Italian extended description of the data product",

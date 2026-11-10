@@ -8,6 +8,7 @@ import ch.agridata.product.dto.DataProductDescriptionDto;
 import ch.agridata.product.dto.DataProductDto;
 import ch.agridata.product.dto.DataProductExtendedDescriptionDto;
 import ch.agridata.product.dto.DataProductNameDto;
+import ch.agridata.product.dto.DataProductPricingBasisDto;
 import ch.agridata.product.dto.DataProductProviderConfigurationDto;
 import ch.agridata.product.dto.DataProductStateEnum;
 import ch.agridata.product.dto.DataProductUpdateDto;
@@ -97,11 +98,15 @@ public interface DataProductMapper {
 
   TranslationPersistenceDto toTranslationPersistenceDto(DataProductExtendedDescriptionDto translationDto);
 
+  TranslationPersistenceDto toTranslationPersistenceDto(DataProductPricingBasisDto translationDto);
+
   DataProductNameDto toNameDto(TranslationPersistenceDto translation);
 
   DataProductDescriptionDto toDescriptionDto(TranslationPersistenceDto translation);
 
   DataProductExtendedDescriptionDto toExtendedDescriptionDto(TranslationPersistenceDto translation);
+
+  DataProductPricingBasisDto toPricingBasisDto(TranslationPersistenceDto translation);
 
   List<LinkPersistenceDto> toLinkPersistenceDtos(List<LinkDto> links);
 
