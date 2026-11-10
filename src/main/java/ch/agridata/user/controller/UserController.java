@@ -15,6 +15,7 @@ import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
+import ch.agridata.common.validation.BurValidation;
 import ch.agridata.user.dto.AgbAcceptanceOverviewDto;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.UidDto;
@@ -26,6 +27,7 @@ import ch.agridata.user.service.UserService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.ForbiddenException;
@@ -80,7 +82,6 @@ public class UserController {
       operationId = "getAuthorizedUids",
       description = "Retrieves all UIDs authorized for the currently authenticated data producer."
   )
-  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE})
   @EnableActingRoleHolder
@@ -122,6 +123,22 @@ public class UserController {
 
   @GET
   @ApiSubset({WEB_APP})
+  @Path("/burs/{bur}/uid")
+  @Operation(
+      operationId = "getUidByBur",
+      description = "Retrieves the UID that owns the given BUR. Accessible to consumers."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed(CONSUMER_ROLE)
+  public UidDto getUidByBur(
+      @PathParam("bur")
+      @Parameter(description = "BUR of the producer", example = "A12345678", required = true)
+      @Pattern(regexp = BurValidation.BUR_REGEX, message = BurValidation.BUR_FORMAT_MESSAGE) String bur) {
+    return burAuthorizationService.getUidByBur(bur);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP})
   @Path("/user-info")
   @Operation(
       operationId = "getUserInfo",
@@ -143,6 +160,7 @@ public class UserController {
       operationId = "updateUserPreferences",
       description = "updates preferences for the currently authenticated user."
   )
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE})
   @ResponseStatus(RestResponse.StatusCode.CREATED)
