@@ -1,3 +1,9 @@
+## [1.23.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.1...v1.23.0-rc.2) (2026-11-12)
+
+### Features
+
+* **user:** add bur_to_uid to wiremock ([14d3d0d](https://github.com/agridata-ch/backend/commit/14d3d0de08f8d0eb6bbb947fc0964436cbfff855)), closes [DIGIB2-1828](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1828)
+
 ## [1.23.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.22.0...v1.23.0-rc.1) (2026-11-10)
 
 ### Features
