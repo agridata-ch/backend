@@ -1,7 +1,6 @@
 package ch.agridata.agreement.service;
 
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_SIGNED_BY_CONSUMER;
-import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_CLEANUP_TRIGGERED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_DECLINED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_GRANTED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_REOPENED;
@@ -25,6 +24,7 @@ import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_REJECTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_CONSUMER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_RELEASED_BY_PROVIDER;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_SUBMITTED;
+import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_TERMINATION_PERIOD_STARTED;
 import static ch.agridata.auditing.api.ActionEnum.DATA_REQUEST_WITHDRAWN;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
@@ -38,7 +38,7 @@ import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.auditing.api.EntityTypeEnum;
-import ch.agridata.auditing.api.SystemActorEnum;
+import ch.agridata.common.security.SystemActorEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +66,15 @@ public class AuditingService {
     }
   }
 
+  public void logConsentRequestTermination(UUID entityId) {
+    api.logSystemAction(
+        ActionEnum.CONSENT_REQUEST_TERMINATED,
+        EntityTypeEnum.CONSENT_REQUEST,
+        entityId,
+        SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB
+    );
+  }
+
   public void logDataRequestSubmitted(UUID entityId) {
     api.logUserAction(DATA_REQUEST_SUBMITTED, DATA_REQUEST, entityId);
   }
@@ -76,6 +85,10 @@ public class AuditingService {
 
   public void logDataRequestApproved(UUID entityId) {
     api.logUserAction(DATA_REQUEST_APPROVED, DATA_REQUEST, entityId);
+  }
+
+  public void logDataRequestWithdrawn(UUID entityId) {
+    api.logUserAction(DATA_REQUEST_WITHDRAWN, DATA_REQUEST, entityId);
   }
 
   public void logDataRequestActivated(UUID entityId) {
@@ -90,30 +103,12 @@ public class AuditingService {
     api.logUserAction(DATA_REQUEST_REACTIVATED, DATA_REQUEST, entityId);
   }
 
-  public void logDataRequestTerminationRequested(DataRequestEntity dataRequest) {
+  public void logDataRequestTerminationPeriodStarted(DataRequestEntity dataRequest) {
     api.logUserAction(DATA_REQUEST_TERMINATION_PERIOD_STARTED, DATA_REQUEST, dataRequest.getId());
   }
 
-  public void logDataRequestWithdrawn(UUID entityId) {
-    api.logUserAction(DATA_REQUEST_WITHDRAWN, DATA_REQUEST, entityId);
-  }
-
   public void logDataRequestTerminated(UUID entityId) {
-    api.logSystemAction(
-        ActionEnum.CONSENT_REQUEST_TERMINATED,
-        EntityTypeEnum.CONSENT_REQUEST,
-        entityId,
-        SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB
-    );
-  }
-
-  /**
-   * Records that a user manually triggered the consent request cleanup. The consent requests that
-   * are terminated by the run itself are audited separately via {@link #logDataRequestTerminated}
-   * with the system actor, so this entry only captures who started the run.
-   */
-  public void logConsentRequestCleanupTriggered() {
-    api.logUserAction(CONSENT_REQUEST_CLEANUP_TRIGGERED, CONSENT_REQUEST, null);
+    api.logSystemAction(DATA_REQUEST_TERMINATED, DATA_REQUEST, entityId, SystemActorEnum.DATA_REQUEST_TERMINATION_JOB);
   }
 
   public void logContractRevisionSigned(UUID contractRevisionId, SignatureSlotCodeEnum signatureSlotCodeEnum) {

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agreement.dto.ConsentRequestCleanupOutcomeDto;
 import ch.agridata.agreement.dto.ConsentRequestCleanupResultDto;
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
+import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.time.Clock;
@@ -47,6 +49,10 @@ class ConsentRequestCleanupRunnerTest {
   AdvisoryLockExecutor advisoryLockExecutor;
   @Mock
   ConsentRequestCleanupService cleanupService;
+  @Mock
+  BackgroundTaskRunner backgroundTaskRunner;
+  @Mock
+  AgridataSecurityIdentity identity;
 
   ConsentRequestCleanupRunner runner;
 
@@ -56,7 +62,9 @@ class ConsentRequestCleanupRunnerTest {
     Instant fixedNow = LocalDate.of(2026, 2, 19).atStartOfDay(ZURICH).toInstant();
     Clock clock = Clock.fixed(fixedNow, ZURICH);
 
-    runner = new ConsentRequestCleanupRunner(advisoryLockExecutor, cleanupService, clock);
+    runner = new ConsentRequestCleanupRunner(
+        advisoryLockExecutor, cleanupService, clock, backgroundTaskRunner, identity
+    );
   }
 
   @Test

@@ -9,6 +9,7 @@ import ch.agridata.agreement.api.ConsentRequestApi;
 import ch.agridata.agreement.dto.ConsentRequestFundamentalViewDto;
 import ch.agridata.agreement.persistence.ConsentRequestFundamentalViewEntity;
 import ch.agridata.agreement.service.ConsentRequestLegallyPermittedService;
+import ch.agridata.common.security.SystemActorEnum;
 import ch.agridata.datatransferv2.controller.DataTransferController;
 import ch.agridata.product.persistence.DataProductEntity;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -73,13 +74,13 @@ class LegallyPermittedConsentTest {
                 PRODUCER_BUR,
                 RELATION_SINCE.toLocalDate(),
                 LEGALLY_PERMITTED,
-                ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT),
+                SystemActorEnum.LEGALLY_PERMITTED_CONSENT.getUserId()),
             tuple(
                 PRODUCER_UID.name(),
                 null,
                 LocalDate.of(1970, 1, 1),
                 LEGALLY_PERMITTED,
-                ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT));
+                SystemActorEnum.LEGALLY_PERMITTED_CONSENT.getUserId()));
 
     // A repeated fetch must not create a duplicate
     fetchProduct(DataRequest.BLV_ZO_CONSENT_FREE.uuid()).then().statusCode(200);
@@ -107,7 +108,7 @@ class LegallyPermittedConsentTest {
             null,
             LocalDate.of(1970, 1, 1),
             LEGALLY_PERMITTED,
-            ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT));
+            SystemActorEnum.LEGALLY_PERMITTED_CONSENT.getUserId()));
   }
 
   @Test

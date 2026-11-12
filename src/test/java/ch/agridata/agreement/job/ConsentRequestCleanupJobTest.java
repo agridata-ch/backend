@@ -1,6 +1,6 @@
 package ch.agridata.agreement.job;
 
-import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
+import static ch.agridata.common.security.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -36,7 +36,7 @@ class ConsentRequestCleanupJobTest {
   @Test
   void whenRun_thenDelegatesToSharedCleanupRunnerAsTechnicalUser() {
     doAnswer(invocation -> invocation.getArgument(1, Supplier.class).get())
-        .when(backgroundTaskRunner).runAs(eq(USER_ID_SCHEDULED_CLEANUP_JOB), any(Supplier.class));
+        .when(backgroundTaskRunner).runAs(eq(CONSENT_REQUEST_CLEANUP_JOB.getUserId()), any(Supplier.class));
 
     job.run();
 

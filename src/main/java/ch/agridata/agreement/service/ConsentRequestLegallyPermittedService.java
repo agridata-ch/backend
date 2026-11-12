@@ -2,6 +2,7 @@ package ch.agridata.agreement.service;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.common.security.BackgroundTaskRunner;
+import ch.agridata.common.security.SystemActorEnum;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.BurDto;
 import jakarta.annotation.PreDestroy;
@@ -32,10 +33,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 @Slf4j
 public class ConsentRequestLegallyPermittedService {
-
-  // Dedicated technical user ID recorded as createdBy on the auto-generated consent requests
-  // (traceability/auditing). The corresponding user entry must exist in the users table.
-  public static final UUID USER_ID_LEGALLY_PERMITTED_CONSENT = UUID.fromString("c39129a1-9035-4497-909f-3ee3488cf022");
 
   private final ConsentRequestCreationService consentRequestCreationService;
   private final AgisApi agisApi;
@@ -82,7 +79,7 @@ public class ConsentRequestLegallyPermittedService {
       return;
     }
     try {
-      backgroundTaskRunner.runAsyncAs(USER_ID_LEGALLY_PERMITTED_CONSENT, () -> {
+      backgroundTaskRunner.runAsyncAs(SystemActorEnum.LEGALLY_PERMITTED_CONSENT.getUserId(), () -> {
         try {
           work.run();
         } finally {

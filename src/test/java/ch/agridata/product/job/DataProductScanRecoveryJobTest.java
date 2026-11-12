@@ -1,7 +1,7 @@
 package ch.agridata.product.job;
 
+import static ch.agridata.common.security.SystemActorEnum.DOCUMENT_SCAN_RECOVERY_JOB;
 import static ch.agridata.product.job.DataProductScanRecoveryJob.LOCK_KEY;
-import static ch.agridata.product.job.DataProductScanRecoveryJob.USER_ID_DOCUMENT_SCAN_RECOVERY_JOB;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -43,7 +43,7 @@ class DataProductScanRecoveryJobTest {
   @Test
   void whenRun_thenRecoversUnderOwnLockKeyAsTechnicalUser() {
     doAnswer(invocation -> invocation.getArgument(1, Supplier.class).get())
-        .when(backgroundTaskRunner).runAs(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Supplier.class));
+        .when(backgroundTaskRunner).runAs(eq(DOCUMENT_SCAN_RECOVERY_JOB.getUserId()), any(Supplier.class));
     when(advisoryLockExecutor.runIfLockAvailable(anyLong(), anyString(), any(Runnable.class)))
         .thenAnswer(invocation -> {
           invocation.getArgument(2, Runnable.class).run();
@@ -52,7 +52,7 @@ class DataProductScanRecoveryJobTest {
 
     job.run();
 
-    verify(backgroundTaskRunner).runAs(eq(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB), any(Supplier.class));
+    verify(backgroundTaskRunner).runAs(eq(DOCUMENT_SCAN_RECOVERY_JOB.getUserId()), any(Supplier.class));
     verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(), any(Runnable.class));
     verify(dataProductDocumentScanService).recoverStalePendingScans();
   }

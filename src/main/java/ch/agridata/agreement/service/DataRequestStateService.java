@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestSta
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.DRAFT;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.IN_REVIEW;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.PAUSED;
+import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TERMINATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_ACTIVATED;
 import static ch.agridata.agreement.persistence.DataRequestEntity.DataRequestStateEnum.TO_BE_RELEASED_BY_CONSUMER;
@@ -66,7 +67,8 @@ public class DataRequestStateService {
       new AllowedTransition(TO_BE_ACTIVATED, ACTIVE, Set.of(Actor.ADMIN)),
       new AllowedTransition(ACTIVE, PAUSED, Set.of(Actor.ADMIN)),
       new AllowedTransition(PAUSED, ACTIVE, Set.of(Actor.ADMIN)),
-      new AllowedTransition(ACTIVE, TERMINATION_PENDING, Set.of(Actor.CONSUMER, Actor.PROVIDER))
+      new AllowedTransition(ACTIVE, TERMINATION_PENDING, Set.of(Actor.CONSUMER, Actor.PROVIDER)),
+      new AllowedTransition(TERMINATION_PENDING, TERMINATED, Set.of(Actor.SYSTEM))
   );
 
   private static final int TERMINATION_NOTICE_PERIOD_MONTHS = 3;
@@ -137,6 +139,10 @@ public class DataRequestStateService {
 
   public void transitionToPendingReleaseByProvider(DataRequestEntity entity) {
     setStateTo(entity, TO_BE_RELEASED_BY_PROVIDER, Actor.SYSTEM);
+  }
+
+  public void transitionToTerminated(DataRequestEntity entity) {
+    setStateTo(entity, TERMINATED, Actor.SYSTEM);
   }
 
   private DataRequestDto setStateTo(DataRequestEntity entity, DataRequestEntity.DataRequestStateEnum newStateCode, Actor actor) {

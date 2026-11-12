@@ -7,10 +7,10 @@ import static ch.agridata.common.filters.PreSecurityMdcFilter.REQUEST_ID_MDC_FIE
 import ch.agridata.auditing.api.ActionEnum;
 import ch.agridata.auditing.api.AuditingApi;
 import ch.agridata.auditing.api.EntityTypeEnum;
-import ch.agridata.auditing.api.SystemActorEnum;
 import ch.agridata.auditing.persistence.AuditLogEntity;
 import ch.agridata.auditing.persistence.AuditLogRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.SystemActorEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
@@ -37,9 +37,11 @@ public class AuditingApiImpl implements AuditingApi {
 
   @Override
   @Transactional
-  public void logUserAction(ActionEnum actionCode,
-                            EntityTypeEnum entityTypeCode,
-                            UUID entityId) {
+  public void logUserAction(
+      ActionEnum actionCode,
+      EntityTypeEnum entityTypeCode,
+      UUID entityId
+  ) {
     var userId = identity.getUserId();
     if (userId == null) {
       throw new NotFoundException();
@@ -58,14 +60,16 @@ public class AuditingApiImpl implements AuditingApi {
 
   @Override
   @Transactional
-  public void logSystemAction(ActionEnum actionCode,
-                              EntityTypeEnum entityTypeCode,
-                              UUID entityId,
-                              SystemActorEnum systemActor) {
+  public void logSystemAction(
+      ActionEnum actionCode,
+      EntityTypeEnum entityTypeCode,
+      UUID entityId,
+      SystemActorEnum systemActor
+  ) {
     var auditLog = AuditLogEntity.builder()
         .timestamp(LocalDateTime.now(clock))
         .actorTypeCode(SYSTEM)
-        .actorId(systemActor.getActorId())
+        .actorId(systemActor.getLoggingActorId())
         .actionCode(actionCode.name())
         .entityTypeCode(entityTypeCode.name())
         .entityId(entityId)

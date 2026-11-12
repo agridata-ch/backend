@@ -72,9 +72,9 @@ class ConsentRequestTerminatorTest {
 
     assertThat(terminated).isEqualTo(3L);
     verify(consentRequestRepository).terminateByIdsReturningPairs(List.of(id1, id2, id3), BATCH_SIZE, terminatedAt);
-    verify(auditingService).logDataRequestTerminated(id1);
-    verify(auditingService).logDataRequestTerminated(id2);
-    verify(auditingService).logDataRequestTerminated(id3);
+    verify(auditingService).logConsentRequestTermination(id1);
+    verify(auditingService).logConsentRequestTermination(id2);
+    verify(auditingService).logConsentRequestTermination(id3);
   }
 
   @Test

@@ -127,6 +127,8 @@ Rules:
   `@ConnectWireMock`. Call `wireMock.resetToDefaultMappings()` in `@BeforeEach`.
 - Authenticated HTTP: `AuthTestUtils.requestAs(TestUserEnum.CONSUMER_BIO_SUISSE).when().get(…)`.
 - Access-control tests: `AccessTestUtils.assertForbiddenForAllExcept(GET, path, PRODUCER_ROLE, ADMIN_ROLE)`.
+    - Put them in the `AccessTest` of the endpoint's package (e.g. `integration.agreement.AccessTest`), one entry per endpoint, never in
+      feature tests. Add one for every new or changed endpoint.
 - Type-safe test fixture IDs live in `TestDataIdentifiers` (e.g., `TestDataIdentifiers.DataRequest.BIO_SUISSE_01`).
 
 ---
@@ -169,4 +171,6 @@ Rules:
     - Prefer readability over cleverness
 - Write the minimum code that solves the task and matches surrounding style.
     - Keep changes surgical: edit only what the task requires.
+    - This limits your own initiative, not mine: Don't flag me widening the scope.
+    - If you spot something outside the scope worth changing, mention it briefly.
 - Never commit for me, let me read through my work myself.

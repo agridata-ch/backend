@@ -1,7 +1,7 @@
 package ch.agridata.notification.job;
 
+import static ch.agridata.common.security.SystemActorEnum.NOTIFICATION_QUEUE_WORKER;
 import static ch.agridata.notification.job.NotificationQueueWorkerJob.LOCK_KEY;
-import static ch.agridata.notification.job.NotificationQueueWorkerJob.USER_ID_QUEUE_WORKER_JOB;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,7 +49,7 @@ class NotificationQueueWorkerJobTest {
     lenient().doAnswer(invocation -> {
       invocation.getArgument(1, Runnable.class).run();
       return null;
-    }).when(backgroundTaskRunner).runAs(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
+    }).when(backgroundTaskRunner).runAs(eq(NOTIFICATION_QUEUE_WORKER.getUserId()), any(Runnable.class));
   }
 
   @Test
@@ -62,7 +62,7 @@ class NotificationQueueWorkerJobTest {
 
     job.run();
 
-    verify(backgroundTaskRunner).runAs(eq(USER_ID_QUEUE_WORKER_JOB), any(Runnable.class));
+    verify(backgroundTaskRunner).runAs(eq(NOTIFICATION_QUEUE_WORKER.getUserId()), any(Runnable.class));
     verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(), any(Runnable.class));
     verify(notificationProcessBatchService).processPendingBatches();
   }
