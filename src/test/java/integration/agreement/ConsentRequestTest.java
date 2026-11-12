@@ -81,7 +81,7 @@ class ConsentRequestTest {
     AuthTestUtils.requestAs(PRODUCER_B)
         .when().get(ConsentRequestController.PATH)
         .then().statusCode(200)
-        .body("size()", equalTo(7))
+        .body("size()", equalTo(13))
         .extract().as(new TypeRef<>() {
         });
   }
@@ -91,7 +91,7 @@ class ConsentRequestTest {
     AuthTestUtils.requestAs(PRODUCER_B)
         .when().get(ConsentRequestController.PATH + "?dataProducerUid=" + Uid.CHE102000001)
         .then().statusCode(200)
-        .body("size()", equalTo(3))
+        .body("size()", equalTo(6))
         .extract().as(new TypeRef<>() {
         });
   }

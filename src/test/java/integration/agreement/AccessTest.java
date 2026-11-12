@@ -105,6 +105,9 @@ class AccessTest {
 
     AccessTestUtils.assertForbiddenForAllExcept(PUT, DataRequestController.PATH_V1 + "/1/signature-type",
         CONSUMER_ROLE, PROVIDER_ROLE);
+
+    AccessTestUtils.assertForbiddenForAllExcept(POST, DataRequestController.PATH_V1 + "/termination",
+        ADMIN_ROLE);
   }
 
 }

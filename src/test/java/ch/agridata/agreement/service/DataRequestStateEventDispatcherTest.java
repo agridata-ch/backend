@@ -120,7 +120,7 @@ class DataRequestStateEventDispatcherTest {
 
     service.dispatchConsumerStatusTransition(entity, ACTIVE, TERMINATION_PENDING);
 
-    verify(auditingService).logDataRequestTerminationRequested(entity);
+    verify(auditingService).logDataRequestTerminationPeriodStarted(entity);
     verifyNoInteractions(notificationService);
   }
 
@@ -142,7 +142,7 @@ class DataRequestStateEventDispatcherTest {
 
     service.dispatchProviderStatusTransition(entity, ACTIVE, TERMINATION_PENDING);
 
-    verify(auditingService).logDataRequestTerminationRequested(entity);
+    verify(auditingService).logDataRequestTerminationPeriodStarted(entity);
     verifyNoInteractions(notificationService);
   }
 }

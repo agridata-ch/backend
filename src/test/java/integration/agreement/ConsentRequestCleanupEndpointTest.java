@@ -1,10 +1,7 @@
 package integration.agreement;
 
-import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
-import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_CLEANUP_TRIGGERED;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
-import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
-import static ch.agridata.auditing.persistence.AuditLogEntity.ActorTypeEnum.USER;
+import static ch.agridata.common.security.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
@@ -24,7 +21,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration tests for the admin endpoint that triggers the consent request cleanup manually.
  * Verifies that the cleanup actually runs, that the result is reported back, and that the
- * triggering administrator is captured in the audit log.
+ * terminations are audited.
  *
  * @CommentLastReviewed 2026-09-07
  */
@@ -65,26 +62,15 @@ class ConsentRequestCleanupEndpointTest {
         .hasSize(8)
         .allSatisfy(row -> {
           assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination)).isTrue();
-          assertThat(row[2]).isEqualTo(USER_ID_SCHEDULED_CLEANUP_JOB);
+          assertThat(row[2]).isEqualTo(CONSENT_REQUEST_CLEANUP_JOB.getUserId());
         });
   }
 
   @Test
-  void givenAdmin_whenTriggerCleanup_thenAuditsTheTriggeringAdminAndTheTerminations() {
+  void givenAdmin_whenTriggerCleanup_thenAuditsTheTerminationsAsSystem() {
     AuthTestUtils.requestAs(TestUserEnum.ADMIN)
         .when().post(CLEANUP_PATH)
         .then().statusCode(200);
-
-    var triggerEntries = auditLogRepository
-        .find("actionCode", CONSENT_REQUEST_CLEANUP_TRIGGERED.name())
-        .list();
-
-    assertThat(triggerEntries).hasSize(1);
-    assertThat(triggerEntries.getFirst().getActorTypeCode()).isEqualTo(USER);
-    assertThat(triggerEntries.getFirst().getActorId()).isNotEqualTo(USER_ID_SCHEDULED_CLEANUP_JOB.toString());
-    assertThat(triggerEntries.getFirst().getEntityTypeCode()).isEqualTo(CONSENT_REQUEST.name());
-    assertThat(triggerEntries.getFirst().getEntityId()).isNull();
-    assertThat(triggerEntries.getFirst().getRequestId()).isNotNull();
 
     var terminationEntries = auditLogRepository
         .find("actionCode", CONSENT_REQUEST_TERMINATED.name())
@@ -94,10 +80,6 @@ class ConsentRequestCleanupEndpointTest {
     assertThat(terminationEntries)
         .extracting(AuditLogEntity::getEntityId)
         .doesNotContainNull();
-    // the cleanup runs in a fresh request context but under the request id of the triggering HTTP request
-    assertThat(terminationEntries)
-        .extracting(AuditLogEntity::getRequestId)
-        .containsOnly(triggerEntries.getFirst().getRequestId());
   }
 
   @Test

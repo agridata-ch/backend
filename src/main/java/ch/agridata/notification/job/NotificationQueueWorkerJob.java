@@ -2,13 +2,13 @@ package ch.agridata.notification.job;
 
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
 import ch.agridata.common.security.BackgroundTaskRunner;
+import ch.agridata.common.security.SystemActorEnum;
 import ch.agridata.notification.service.NotificationBatchQueuedEvent;
 import ch.agridata.notification.service.NotificationProcessBatchService;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -39,11 +39,6 @@ public class NotificationQueueWorkerJob {
    * Randomly generated long value for the advisory lock key.
    */
   public static final long LOCK_KEY = 8416790142436573057L;
-  /**
-   * Dedicated technical user ID for this scheduled job (traceability/auditing).
-   * The corresponding user entry must exist in the users table.
-   */
-  public static final UUID USER_ID_QUEUE_WORKER_JOB = UUID.fromString("9fc651e8-def0-4456-a8d4-7d4c9d3dfc04");
   public static final String TASK_NAME = "notification queue worker job";
 
   private final BackgroundTaskRunner backgroundTaskRunner;
@@ -52,7 +47,7 @@ public class NotificationQueueWorkerJob {
 
   @Scheduled(cron = "0 0/10 * * * ?")
   public void run() {
-    backgroundTaskRunner.runAs(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
+    backgroundTaskRunner.runAs(SystemActorEnum.NOTIFICATION_QUEUE_WORKER.getUserId(), this::tryAcquireLockAndRun);
   }
 
   /**
@@ -64,7 +59,7 @@ public class NotificationQueueWorkerJob {
    * active.
    */
   void onBatchQueued(@Observes(during = TransactionPhase.AFTER_SUCCESS) NotificationBatchQueuedEvent event) {
-    backgroundTaskRunner.runAsyncAs(USER_ID_QUEUE_WORKER_JOB, this::tryAcquireLockAndRun);
+    backgroundTaskRunner.runAsyncAs(SystemActorEnum.NOTIFICATION_QUEUE_WORKER.getUserId(), this::tryAcquireLockAndRun);
   }
 
   private void tryAcquireLockAndRun() {

@@ -1,9 +1,12 @@
 package ch.agridata.archunit;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
+import ch.agridata.common.security.BackgroundTaskRunner;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -118,6 +121,15 @@ class ModuleArchitectureTest {
         .and(not(resideInAnyPackage("ch.agridata.common..")))
         .should().resideInAnyPackage(knownLayerPatterns.toArray(String[]::new))
         .because("all classes (except common) must reside in a known layer: " + INTRA_MODULE_ALLOWED.keySet())
+        .check(CLASSES);
+  }
+
+  @Test
+  void controllers_must_not_run_background_work_directly() {
+    noClasses()
+        .that().resideInAnyPackage(MAIN_PACKAGE + "..controller..")
+        .should().dependOnClassesThat(assignableTo(BackgroundTaskRunner.class).or(resideInAnyPackage(MAIN_PACKAGE + "..job..")))
+        .because("controllers must go through a service to run background work or jobs")
         .check(CLASSES);
   }
 

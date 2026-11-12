@@ -1,0 +1,9 @@
+### Trigger the data request termination job (TERMINATION_PENDING -> TERMINATED once the notice period has passed)
+POST {{baseUrl}}/agreement/v1/data-requests/termination
+Authorization: Bearer {{$auth.token("admin")}}
+
+> {%
+    client.test("Termination job runs", function () {
+        client.assert(response.status === 200, "Expected 200, got: " + response.status)
+    })
+%}

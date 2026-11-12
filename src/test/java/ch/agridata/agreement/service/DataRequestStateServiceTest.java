@@ -461,6 +461,26 @@ class DataRequestStateServiceTest {
     verifyNoInteractions(dataRequestStateEventDispatcher);
   }
 
+  @Test
+  void givenTerminationPendingRequest_whenTransitionToTerminated_thenStateIsTerminated() {
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING);
+
+    dataRequestStateService.transitionToTerminated(entity);
+
+    assertThat(entity.getStateCode()).isEqualTo(DataRequestEntity.DataRequestStateEnum.TERMINATED);
+    verify(repository).persist(entity);
+  }
+
+  @Test
+  void givenActiveRequest_whenTransitionToTerminated_thenThrowError() {
+    var entity = buildEntity();
+    entity.setStateCode(DataRequestEntity.DataRequestStateEnum.ACTIVE);
+
+    assertThatThrownBy(() -> dataRequestStateService.transitionToTerminated(entity))
+        .isInstanceOf(IllegalStateException.class);
+  }
+
   private void fixClockAt(LocalDate date) {
     when(clock.instant()).thenReturn(date.atStartOfDay(ZoneOffset.UTC).toInstant());
     when(clock.getZone()).thenReturn(ZoneOffset.UTC);

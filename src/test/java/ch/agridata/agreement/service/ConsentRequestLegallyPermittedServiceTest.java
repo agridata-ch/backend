@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agis.dto.AgisFarmType;
 import ch.agridata.common.security.BackgroundTaskRunner;
+import ch.agridata.common.security.SystemActorEnum;
 import ch.agridata.user.api.UserApi;
 import ch.agridata.user.dto.BurDto;
 import java.lang.reflect.Method;
@@ -62,7 +63,7 @@ class ConsentRequestLegallyPermittedServiceTest {
     service.awaitAllProcessed();
 
     verify(backgroundTaskRunner).runAsyncAs(
-        eq(ConsentRequestLegallyPermittedService.USER_ID_LEGALLY_PERMITTED_CONSENT), any(Runnable.class), eq(executorOf(service)));
+        eq(SystemActorEnum.LEGALLY_PERMITTED_CONSENT.getUserId()), any(Runnable.class), eq(executorOf(service)));
     verify(consentRequestCreationService).createLegallyPermittedConsentRequestIfMissing(DATA_REQUEST_ID, UID, null, null);
   }
 

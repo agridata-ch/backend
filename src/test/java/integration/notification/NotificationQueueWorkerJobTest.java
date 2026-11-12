@@ -46,7 +46,7 @@ class NotificationQueueWorkerJobTest {
   @ConfigProperty(name = "quarkus.ses.endpoint-override")
   String sesEndpoint;
 
-  private static final String RECIPIENT_EMAIL = "smoke-test@agridata.local";
+  private static final String RECIPIENT_EMAIL = "smoke-test@local.agridata.ch";
   private static final String EXPECTED_SUBJECT = "Neuer Antrag zur Kontrolle eingereicht";
 
   private final AgridataSecurityIdentity agridataSecurityIdentity;
