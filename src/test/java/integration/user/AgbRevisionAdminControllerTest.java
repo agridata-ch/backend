@@ -7,6 +7,7 @@ import static integration.testutils.TestUserEnum.CONSUMER_IP_SUISSE;
 import static integration.testutils.TestUserEnum.PRODUCER_A;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
@@ -306,6 +307,36 @@ class AgbRevisionAdminControllerTest {
         .post(PATH)
         .then()
         .statusCode(400);
+  }
+
+  @Test
+  void givenHeadingsInAgbText_whenCreate_thenCreated() {
+    var body = createBody(nextVersion(), null);
+    body.put("agbText", Map.of("de", "<h1>AGB</h1><h2>1. Geltungsbereich</h2><p>Text</p>", "fr", "<h1>CG</h1>", "it", "<h1>CG</h1>"));
+
+    AuthTestUtils.requestAs(TestUserEnum.ADMIN)
+        .contentType(ContentType.JSON)
+        .body(body)
+        .when()
+        .post(PATH)
+        .then()
+        .statusCode(201);
+  }
+
+  @Test
+  void givenScriptInAgbText_whenCreate_thenBadRequest() {
+    var body = createBody(nextVersion(), null);
+    body.put("agbText", Map.of("de", "<h1>AGB</h1>", "fr", "<h1>CG</h1><script>alert(1)</script>", "it", "<h1>CG</h1>"));
+
+    AuthTestUtils.requestAs(TestUserEnum.ADMIN)
+        .contentType(ContentType.JSON)
+        .body(body)
+        .when()
+        .post(PATH)
+        .then()
+        .statusCode(400)
+        .body("debugMessage", containsString("agbText.fr"))
+        .body("debugMessage", containsString("must only contain the allowed rich-text elements"));
   }
 
   // the major version of the current revision plus one, which is always newer than the current revision

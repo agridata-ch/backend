@@ -39,7 +39,7 @@ public class DataRequestTestUtils {
     return DataRequestUpdateDto.builder()
         .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
         .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
-        .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
+        .purpose(new DataRequestPurposeDto("<p>Purpose DE</p>", "<p>Purpose FR</p>", "<p>Purpose IT</p>"))
         .products(List.of(PRODUCT_ID));
   }
 
@@ -47,7 +47,7 @@ public class DataRequestTestUtils {
     return DataRequestDto.builder()
         .title(new DataRequestTitleDto("Title DE", "Title FR", "Title IT"))
         .description(new DataRequestDescriptionDto("Desc DE", "Desc FR", "Desc IT"))
-        .purpose(new DataRequestPurposeDto("Purpose DE", "Purpose FR", "Purpose IT"))
+        .purpose(new DataRequestPurposeDto("<p>Purpose DE</p>", "<p>Purpose FR</p>", "<p>Purpose IT</p>"))
         .products(List.of(PRODUCT_ID));
   }
 
