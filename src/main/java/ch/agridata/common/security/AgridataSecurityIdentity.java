@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 /**
@@ -25,7 +24,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @RequestScoped
 @RequiredArgsConstructor
-@Slf4j
 public class AgridataSecurityIdentity {
 
   public static final String ACCESS_TOKEN_CLAIM_AGATE_LOGIN_ID = "loginid";
