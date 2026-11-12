@@ -1,6 +1,7 @@
 package ch.agridata.user.dto;
 
 import ch.agridata.common.utils.ValidationSchemaGenerator;
+import ch.agridata.common.validation.RichText;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -38,6 +39,7 @@ public record AgbRevisionCreateDto(
     @Schema(description = "Text of the agb revision in all languages", required = true)
     @NotNull
     @Valid
+    @RichText(allowHeadings = true)
     AgbTextDto agbText
 ) {
 

@@ -2,6 +2,7 @@ package ch.agridata.agreement.dto;
 
 import ch.agridata.common.utils.ValidationSchemaGenerator;
 import ch.agridata.common.validation.IsoCountryCode;
+import ch.agridata.common.validation.RichText;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -42,6 +43,7 @@ public record DataRequestUpdateDto(
     )
     @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Valid
+    @RichText
     DataRequestPurposeDto purpose,
 
     @Schema(
