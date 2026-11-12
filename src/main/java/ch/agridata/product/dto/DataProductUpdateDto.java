@@ -2,6 +2,7 @@ package ch.agridata.product.dto;
 
 import ch.agridata.common.dto.LinkDto;
 import ch.agridata.common.utils.ValidationSchemaGenerator;
+import ch.agridata.common.validation.RichText;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
@@ -116,7 +117,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Extended product details"
     )
-    JsonNullable<@Valid DataProductExtendedDescriptionDto> extendedDescription,
+    JsonNullable<@Valid @RichText DataProductExtendedDescriptionDto> extendedDescription,
 
     @Schema(
         description = "If a consent is required for this data product",
@@ -137,7 +138,7 @@ public record DataProductUpdateDto(
     @Schema(
         description = "Pricing basis of the data product"
     )
-    JsonNullable<@Valid DataProductDescriptionDto> pricingBasis
+    JsonNullable<@Valid @RichText DataProductDescriptionDto> pricingBasis
 
 ) {
 
