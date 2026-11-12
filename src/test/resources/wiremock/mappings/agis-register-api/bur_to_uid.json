@@ -1,0 +1,268 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99910002" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXA0002", "agisIdB": 10377021, "ber": "A99910002", "uid": "CHE101000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99910003" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXA0003", "agisIdB": 10377022, "ber": "A99910003", "uid": "CHE101000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99910004" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXA0004", "agisIdB": 10377023, "ber": "A99910004", "uid": "CHE101000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99910005" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXA0005", "agisIdB": 10377024, "ber": "A99910005", "uid": "CHE101000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99920004" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXB0004", "agisIdB": 10377025, "ber": "A99920004", "uid": "CHE102000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99920005" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXB0005", "agisIdB": 10377026, "ber": "A99920005", "uid": "CHE102000002" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99920006" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXB0006", "agisIdB": 10377027, "ber": "A99920006", "uid": "CHE102000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99930004" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXC0004", "agisIdB": 10377028, "ber": "A99930004", "uid": "CHE103000001" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99930005" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXC0005", "agisIdB": 10377029, "ber": "A99930005", "uid": "CHE103000002" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99940003" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXD0003", "agisIdB": 10377031, "ber": "A99940003", "uid": "CHE104000002" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/agis/register-data/2/register",
+        "bodyPatterns": [
+          { "matchesJsonPath": { "expression": "$.farmSearchParameters.ber", "equalTo": "A99940004" } }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "relationDepth": "allRelations",
+          "dataAmount": [],
+          "resultOffset": { "from": 0, "to": 1, "totalHits": 1 },
+          "personFarmTree": {
+            "relevantPersons": { "person": [] },
+            "personRelations": { "person": [] },
+            "relevantFarms": { "farm": [ { "ktIdB": "FLXXD0004", "agisIdB": 10377032, "ber": "A99940004", "uid": "CHE104000002" } ] },
+            "farmRelations": { "farm": [] }
+          }
+        }
+      }
+    }
+  ]
+}
