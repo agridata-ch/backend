@@ -1,3 +1,9 @@
+## [1.23.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.2...v1.23.0-rc.3) (2026-11-13)
+
+### Features
+
+* **agb-revision:** add validation annotations for AGB text and version fields ([c04115d](https://github.com/agridata-ch/backend/commit/c04115d1b7018f92cbf8592fa403e6dec29479d6)), closes [DIGIB2-1532](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1532)
+
 ## [1.23.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.1...v1.23.0-rc.2) (2026-11-12)
 
 ### Features
