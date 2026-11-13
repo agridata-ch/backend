@@ -54,6 +54,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -586,6 +587,46 @@ class DataProductControllerV2Test {
         .statusCode(200).extract().as(DataProductDto.class);
 
     assertThat(updatedDataProduct.name().de()).isEqualTo(updateRequest.name().get().de());
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(strings = {"pricingBasis", "extendedDescription"})
+  void givenDraftAndEditorHtmlInRichTextField_whenPatch_thenOk(String field) {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+    var html = "<p><strong>fett</strong><br><em>kursiv</em></p><ol start=\"2\"><li><p>zwei</p></li></ol>";
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of(field, Map.of("de", html))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then().statusCode(200);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(strings = {"pricingBasis", "extendedDescription"})
+  void givenDraftAndDisallowedHtmlInRichTextField_whenPatch_thenBadRequest(String field) {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of(field, Map.of("de", "<p onclick=\"alert(1)\">x</p>"))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then()
+        .statusCode(400)
+        .body("message", equalTo("Validation failed"))
+        .body("debugMessage", containsString(field))
+        .body("debugMessage", containsString("must only contain the allowed rich-text elements"));
+  }
+
+  @SneakyThrows
+  @Test
+  void givenDraftAndHtmlInPlainTextDescription_whenPatch_thenNotValidatedAsRichText() {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of("description", Map.of("de", "<b>kein Rich-Text</b>"))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then().statusCode(200);
   }
 
   @SneakyThrows

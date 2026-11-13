@@ -29,6 +29,7 @@
         <pdfbox.version>3.0.7</pdfbox.version>
         <fop-core.version>2.12</fop-core.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <jsoup.version>1.23.2</jsoup.version>
 
         <!-- plugin versions -->
         <quarkus-maven-plugin.version>${quarkus.platform.version}</quarkus-maven-plugin.version>
@@ -106,6 +107,11 @@
                 <groupId>org.openapitools</groupId>
                 <artifactId>jackson-databind-nullable</artifactId>
                 <version>${jackson-databind-nullable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.parser.v3</groupId>
@@ -246,6 +252,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.parser.v3</groupId>

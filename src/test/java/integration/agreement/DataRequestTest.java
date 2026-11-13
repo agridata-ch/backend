@@ -269,6 +269,18 @@ class DataRequestTest {
   }
 
   @Test
+  void givenDraftWithScriptInPurpose_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
+        .purpose(new DataRequestPurposeDto("<p>Zweck</p>", "<p>But</p><script>alert(1)</script>", "<p>Scopo</p>"))
+        .build();
+
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
+        .statusCode(400)
+        .body("debugMessage", containsString("purpose.fr"))
+        .body("debugMessage", containsString("must only contain the allowed rich-text elements"));
+  }
+
+  @Test
   void givenDraftWithDeprecatedProduct_whenPost_thenReturnBadRequest() {
     DataRequestUpdateDto dto = DataRequestTestFactory.getPartialDataRequestUpdateDtoBuilder()
         .products(List.of(UUID_147E8C40.uuid()))
