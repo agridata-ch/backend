@@ -128,6 +128,10 @@ public class ContractRevisionEntity extends AuditableEntity {
   @Column(name = "data_product", nullable = false)
   private List<@Valid TranslationPersistenceDto> dataProducts;
 
+  // Version of the contract template the PDF was rendered with (stored as version number, e.g. "1.0")
+  @Column(name = "contract_template_version", length = 20, nullable = false)
+  private String contractTemplateVersion;
+
   // Signature information
 
   @Column(name = "consumer_signature_user_id1")

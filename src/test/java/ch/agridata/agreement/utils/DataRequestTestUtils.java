@@ -9,6 +9,7 @@ import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.SignatureTypeEnum;
+import ch.agridata.agreement.service.ContractTemplateVersionEnum;
 import ch.agridata.burregister.dto.BurRegisterOrganisationDto;
 import ch.agridata.common.dto.TranslationDto;
 import ch.agridata.product.dto.DataProductDto;
@@ -81,6 +82,7 @@ public class DataRequestTestUtils {
     return ContractRevisionEntity.builder()
         .id(CONTRACT_REVISION_ID)
         .dataRequest(dataRequest)
+        .contractTemplateVersion(ContractTemplateVersionEnum.current().getVersion())
         .build();
   }
 }
