@@ -54,6 +54,7 @@ public class ContractRevisionInitializationService {
             dataSourceSystem,
             dataProductDtos
         );
+    revision.setContractTemplateVersion(ContractTemplateVersionEnum.current().getVersion());
     contractRevisionPdfService.generateAndUploadPdf(revision);
     contractRevisionRepository.persist(revision);
     dataRequest.setCurrentContractRevisionId(revision.getId());

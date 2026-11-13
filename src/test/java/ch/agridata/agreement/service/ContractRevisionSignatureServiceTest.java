@@ -4,7 +4,9 @@ import static ch.agridata.agreement.utils.DataRequestTestUtils.CONTRACT_REVISION
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -17,6 +19,7 @@ import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.agreement.persistence.SignatureTypeEnum;
 import ch.agridata.agreement.utils.DataRequestTestUtils;
+import ch.agridata.common.exceptions.ContractTemplateOutdatedException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import io.quarkus.oidc.UserInfo;
 import jakarta.validation.ValidationException;
@@ -141,6 +144,41 @@ class ContractRevisionSignatureServiceTest {
         .hasMessageContaining("no longer current");
 
     verifyNoInteractions(dataRequestStateService);
+  }
+
+  @Test
+  void givenOutdatedContractTemplate_whenSignContractRevisionAsConsumer_thenThrowContractTemplateOutdatedException() {
+    existingRevision.setContractTemplateVersion("0.9");
+    setupSecurityContext();
+    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
+        .thenReturn(Optional.of(existingRevision));
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevisionAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(ContractTemplateOutdatedException.class);
+
+    verifyNoInteractions(otpChallengeService, contractRevisionPdfService, dataRequestStateService);
+    verify(contractRevisionRepository, never()).persist(any(ContractRevisionEntity.class));
+    assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(CONTRACT_REVISION_ID);
+  }
+
+  @Test
+  void givenOutdatedContractTemplate_whenSignContractRevisionAsProvider_thenThrowContractTemplateOutdatedException() {
+    existingRevision.setContractTemplateVersion("0.9");
+    setupSecurityContext();
+    when(contractRevisionRepository.findByIdOptional(CONTRACT_REVISION_ID))
+        .thenReturn(Optional.of(existingRevision));
+    when(contractRevisionQueryService.isAssignedToCurrentProvider(existingRevision)).thenReturn(true);
+
+    assertThatThrownBy(
+        () -> signatureService.signContractRevisionAsProvider(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_PROVIDER_01, VERIFICATION_ID,
+            OTP_CODE))
+        .isInstanceOf(ContractTemplateOutdatedException.class);
+
+    verifyNoInteractions(otpChallengeService, contractRevisionPdfService, dataRequestStateService);
+    verify(contractRevisionRepository, never()).persist(any(ContractRevisionEntity.class));
+    assertThat(dataRequest.getCurrentContractRevisionId()).isEqualTo(CONTRACT_REVISION_ID);
   }
 
   @Test

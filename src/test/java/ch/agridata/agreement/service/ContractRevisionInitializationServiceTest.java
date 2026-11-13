@@ -83,6 +83,7 @@ class ContractRevisionInitializationServiceTest {
     assertSame(revision, result);
     assertSame(revision.getId(), dataRequest.getCurrentContractRevisionId());
     assertEquals("Provider Name", revision.getDataProviderName());
+    assertEquals(ContractTemplateVersionEnum.current().getVersion(), revision.getContractTemplateVersion());
 
     verify(contractRevisionMapper).toInitialEntity(
         same(dataRequest),
