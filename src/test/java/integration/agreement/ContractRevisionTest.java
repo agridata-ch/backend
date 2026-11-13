@@ -12,6 +12,7 @@ import static integration.testutils.TestUserEnum.CONSUMER_BLV_1;
 import static integration.testutils.TestUserEnum.CONSUMER_BLV_2;
 import static integration.testutils.TestUserEnum.PROVIDER_1;
 import static integration.testutils.TestUserEnum.PROVIDER_2;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -22,6 +23,7 @@ import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.common.dto.ExceptionEnum;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
 import io.quarkus.test.junit.QuarkusTest;
@@ -35,7 +37,11 @@ import org.junit.jupiter.api.Test;
 @RequiredArgsConstructor
 class ContractRevisionTest {
 
+  private static final String OUTDATED_CONTRACT_TEMPLATE_VERSION = "0.9";
+
   private final Flyway flyway;
+  private final ContractRevisionTestHelper contractRevisionTestHelper;
+  private final OtpTestHelper otpTestHelper;
 
   @BeforeEach
   void setUp() {
@@ -143,6 +149,53 @@ class ContractRevisionTest {
         .body("challengeId", notNullValue())
         .body("maskedPhoneNumber", notNullValue())
         .body("retryAfterSeconds", equalTo(30));
+  }
+
+  @Test
+  void givenOutdatedContractTemplate_whenInitiateChallengeAsConsumer_thenReturn409() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID revisionId = dataRequest.currentContractRevisionId();
+    contractRevisionTestHelper.setContractTemplateVersion(revisionId, OUTDATED_CONTRACT_TEMPLATE_VERSION);
+
+    requestOtpChallengeAs(revisionId.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BIO_SUISSE)
+        .then()
+        .statusCode(409)
+        .body("type", equalTo(ExceptionEnum.CONTRACT_TEMPLATE_OUTDATED.name()));
+  }
+
+  @Test
+  void givenOutdatedContractTemplate_whenInitiateChallengeAsProvider_thenReturn409() {
+    DataRequestDto dataRequest = createReadyForSigningByProviderDataRequest(CONSUMER_BLV_1, CONSUMER_BLV_2);
+    UUID revisionId = dataRequest.currentContractRevisionId();
+    contractRevisionTestHelper.setContractTemplateVersion(revisionId, OUTDATED_CONTRACT_TEMPLATE_VERSION);
+
+    requestOtpChallengeAs(revisionId.toString(), SignatureSlotCodeEnum.DATA_PROVIDER_01, PROVIDER_1)
+        .then()
+        .statusCode(409)
+        .body("type", equalTo(ExceptionEnum.CONTRACT_TEMPLATE_OUTDATED.name()));
+  }
+
+  @Test
+  void givenTemplateOutdatedAfterChallengeRequested_whenVerifyOtp_thenReturn409AndKeepCurrentRevision() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+    UUID revisionId = dataRequest.currentContractRevisionId();
+    OtpChallengeDto challenge = requestOtpChallengeAs(revisionId.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, CONSUMER_BIO_SUISSE)
+        .as(OtpChallengeDto.class);
+    otpTestHelper.overrideOtpHashForCode(challenge.challengeId(), OtpTestHelper.FIXED_OTP_CODE);
+    contractRevisionTestHelper.setContractTemplateVersion(revisionId, OUTDATED_CONTRACT_TEMPLATE_VERSION);
+
+    verifyOtpChallenge(revisionId.toString(), SignatureSlotCodeEnum.DATA_CONSUMER_01, challenge.challengeId(),
+        OtpTestHelper.FIXED_OTP_CODE, CONSUMER_BIO_SUISSE)
+        .then()
+        .statusCode(409)
+        .body("type", equalTo(ExceptionEnum.CONTRACT_TEMPLATE_OUTDATED.name()));
+
+    AuthTestUtils.requestAs(ADMIN).given()
+        .when()
+        .get(ContractRevisionController.PATH + "/" + revisionId)
+        .then()
+        .statusCode(200)
+        .body("consumerSignatures", empty());
   }
 
   @Test

@@ -79,6 +79,8 @@ public class ContractRevisionPdfService {
   }
 
   public void generateAndUploadPdf(ContractRevisionEntity contractRevisionEntity) {
+    // Set centrally here so the stored version always matches the template the PDF is rendered with
+    contractRevisionEntity.setContractTemplateVersion(ContractTemplateVersionEnum.current().getVersion());
     byte[] pdf = generatePdf(contractRevisionEntity);
     contractRevisionStorageService.upload(contractRevisionEntity.getId(), pdf);
   }

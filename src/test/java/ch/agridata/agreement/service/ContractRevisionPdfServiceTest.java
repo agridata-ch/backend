@@ -120,6 +120,7 @@ class ContractRevisionPdfServiceTest {
 
     verify(transformer).transform(any(Source.class), any(Result.class));
     verify(contractRevisionStorageService).upload(eq(entity.getId()), any(byte[].class));
+    assertThat(entity.getContractTemplateVersion()).isEqualTo(ContractTemplateVersionEnum.current().getVersion());
   }
 
   @Test

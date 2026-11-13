@@ -5,6 +5,7 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
+import ch.agridata.agreement.persistence.ContractRevisionEntity;
 import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
@@ -31,8 +32,9 @@ public class ContractRevisionOtpChallengeService {
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode
   ) {
-    verifyConsumerOwnership(contractRevisionId);
+    var contractRevision = verifyConsumerOwnership(contractRevisionId);
     verifyConsumerSlot(signatureSlotCode);
+    ContractTemplateVersionEnum.verifyIsCurrent(contractRevision.getContractTemplateVersion());
     return buildOtpChallenge(contractRevisionId, signatureSlotCode);
   }
 
@@ -43,6 +45,9 @@ public class ContractRevisionOtpChallengeService {
   ) {
     verifyIsAssignedToCurrentProvider(contractRevisionId);
     verifyProviderSlot(signatureSlotCode);
+    var contractRevision = contractRevisionRepository.findByIdOptional(contractRevisionId)
+        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
+    ContractTemplateVersionEnum.verifyIsCurrent(contractRevision.getContractTemplateVersion());
     return buildOtpChallenge(contractRevisionId, signatureSlotCode);
   }
 
@@ -75,8 +80,8 @@ public class ContractRevisionOtpChallengeService {
     }
   }
 
-  private void verifyConsumerOwnership(UUID contractRevisionId) {
-    contractRevisionRepository
+  private ContractRevisionEntity verifyConsumerOwnership(UUID contractRevisionId) {
+    return contractRevisionRepository
         .findByIdAndDataConsumerUid(
             contractRevisionId,
             agridataSecurityIdentity.getUidOrElseThrow()

@@ -9,6 +9,7 @@ import ch.agridata.common.dto.ExternalServiceExceptionDto;
 import ch.agridata.common.exceptions.AgbVersionAlreadyExistsException;
 import ch.agridata.common.exceptions.AgbVersionNotNewerException;
 import ch.agridata.common.exceptions.ConsentNotGrantedException;
+import ch.agridata.common.exceptions.ContractTemplateOutdatedException;
 import ch.agridata.common.exceptions.DataProviderException;
 import ch.agridata.common.exceptions.DataProviderUnavailableException;
 import ch.agridata.common.exceptions.ExportCapacityExhaustedException;
@@ -195,6 +196,15 @@ public class ExceptionHandler {
     return Response.status(Status.CONFLICT)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .entity(createResponse("AGB version is not newer than the current version", ex.getMessage(), ExceptionEnum.AGB_VERSION_NOT_NEWER))
+        .build();
+  }
+
+  @ServerExceptionMapper(ContractTemplateOutdatedException.class)
+  public Response handleContractTemplateOutdatedException(ContractTemplateOutdatedException ex) {
+    log.warn("ContractTemplateOutdatedException: {}", ex.getMessage());
+    return Response.status(Status.CONFLICT)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .entity(createResponse("Contract template is outdated", ex.getMessage(), ExceptionEnum.CONTRACT_TEMPLATE_OUTDATED))
         .build();
   }
 
