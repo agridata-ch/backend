@@ -5,11 +5,9 @@ import static ch.agridata.common.utils.AuthenticationUtil.PROVIDER_ROLE;
 
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
-import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.NotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class ContractRevisionOtpChallengeService {
   private final OtpChallengeService otpChallengeService;
   private final AgridataSecurityIdentity agridataSecurityIdentity;
-  private final ContractRevisionRepository contractRevisionRepository;
   private final ContractRevisionQueryService contractRevisionQueryService;
 
   @RolesAllowed({CONSUMER_ROLE})
@@ -31,8 +28,9 @@ public class ContractRevisionOtpChallengeService {
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode
   ) {
-    verifyConsumerOwnership(contractRevisionId);
+    var contractRevision = contractRevisionQueryService.getAsConsumer(contractRevisionId);
     verifyConsumerSlot(signatureSlotCode);
+    ContractTemplateVersionEnum.verifyIsCurrent(contractRevision.getContractTemplateVersion());
     return buildOtpChallenge(contractRevisionId, signatureSlotCode);
   }
 
@@ -41,8 +39,9 @@ public class ContractRevisionOtpChallengeService {
       UUID contractRevisionId,
       SignatureSlotCodeEnum signatureSlotCode
   ) {
-    verifyIsAssignedToCurrentProvider(contractRevisionId);
+    var contractRevision = contractRevisionQueryService.getAsProvider(contractRevisionId);
     verifyProviderSlot(signatureSlotCode);
+    ContractTemplateVersionEnum.verifyIsCurrent(contractRevision.getContractTemplateVersion());
     return buildOtpChallenge(contractRevisionId, signatureSlotCode);
   }
 
@@ -62,26 +61,11 @@ public class ContractRevisionOtpChallengeService {
     );
   }
 
-  private void verifyIsAssignedToCurrentProvider(UUID contractRevisionId) {
-    if (!contractRevisionQueryService.isAssignedToCurrentProvider(contractRevisionId)) {
-      throw new NotFoundException(contractRevisionId.toString());
-    }
-  }
-
   private static void verifyConsumerSlot(SignatureSlotCodeEnum signatureSlotCode) {
     if (signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_01
         && signatureSlotCode != SignatureSlotCodeEnum.DATA_CONSUMER_02) {
       throw new IllegalArgumentException("Invalid consumer signature slot id=" + signatureSlotCode);
     }
-  }
-
-  private void verifyConsumerOwnership(UUID contractRevisionId) {
-    contractRevisionRepository
-        .findByIdAndDataConsumerUid(
-            contractRevisionId,
-            agridataSecurityIdentity.getUidOrElseThrow()
-        )
-        .orElseThrow(() -> new NotFoundException(contractRevisionId.toString()));
   }
 
   private static void verifyProviderSlot(SignatureSlotCodeEnum signatureSlotCode) {
