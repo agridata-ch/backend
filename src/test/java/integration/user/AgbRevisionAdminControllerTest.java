@@ -291,6 +291,23 @@ class AgbRevisionAdminControllerTest {
         .statusCode(400);
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"de", "fr", "it"})
+  void givenBlankLanguageText_whenCreate_thenBadRequest(String language) {
+    var body = createBody(nextVersion(), null);
+    var agbText = new HashMap<>(Map.of("de", "<p>de</p>", "fr", "<p>fr</p>", "it", "<p>it</p>"));
+    agbText.put(language, " ");
+    body.put("agbText", agbText);
+
+    AuthTestUtils.requestAs(TestUserEnum.ADMIN)
+        .contentType(ContentType.JSON)
+        .body(body)
+        .when()
+        .post(PATH)
+        .then()
+        .statusCode(400);
+  }
+
   // the major version of the current revision plus one, which is always newer than the current revision
   private String nextVersion() {
     var currentVersion = AuthTestUtils.requestAs(TestUserEnum.ADMIN)
