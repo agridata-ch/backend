@@ -1,5 +1,6 @@
 package ch.agridata.user.dto;
 
+import ch.agridata.common.utils.ValidationSchemaGenerator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public record AgbRevisionCreateDto(
         required = true
     )
     @NotBlank
+    @NotNull(groups = ValidationSchemaGenerator.Submit.class)
     @Size(max = 20)
     @Pattern(regexp = "^\\d{1,9}(\\.\\d{1,9}){1,9}$", message = "Version must consist of at least 2 dot separated numbers, e.g. 1.5")
     String version,
