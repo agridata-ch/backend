@@ -85,12 +85,4 @@ public class ContractRevisionQueryService {
   public boolean isAssignedToCurrentProvider(ContractRevisionEntity contractRevision) {
     return dataRequestQueryService.isAssignedToCurrentProvider(contractRevision.getDataRequest());
   }
-
-  @RolesAllowed(PROVIDER_ROLE)
-  public boolean isAssignedToCurrentProvider(UUID contractRevisionId) {
-    return contractRevisionRepository.findByIdOptional(contractRevisionId)
-        .map(this::isAssignedToCurrentProvider)
-        .orElse(false);
-  }
-
 }
