@@ -1,3 +1,9 @@
+## [1.23.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.3...v1.23.0-rc.4) (2026-11-16)
+
+### Features
+
+* **architecture:** implement logging strategy, add BackgroundTaskRunner ([9008c44](https://github.com/agridata-ch/backend/commit/9008c448053d030c3863c46d0deaa8fb66adaa5d)), closes [DIGIB2-1824](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1824)
+
 ## [1.23.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.2...v1.23.0-rc.3) (2026-11-13)
 
 ### Features
