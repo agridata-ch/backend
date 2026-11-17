@@ -1,3 +1,9 @@
+## [1.23.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.4...v1.23.0-rc.5) (2026-11-17)
+
+### Bug Fixes
+
+* **validation:** restrict allowed html-tags for wysiwyg-fields ([cc8678e](https://github.com/agridata-ch/backend/commit/cc8678ec9bb71e16cdff4ba2e376edcefde5edfd)), closes [DIGIB2-1732](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1732)
+
 ## [1.23.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.3...v1.23.0-rc.4) (2026-11-16)
 
 ### Features
