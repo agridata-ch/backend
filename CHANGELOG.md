@@ -1,3 +1,9 @@
+## [1.23.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.6...v1.23.0-rc.7) (2026-11-18)
+
+### Bug Fixes
+
+* **agreement:** show BUR for individual consent requests of consent request aggregation ([89fcce8](https://github.com/agridata-ch/backend/commit/89fcce892d5cb90ea7aef054f2fbd6e295ab87f7)), closes [DIGIB2-1851](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1851)
+
 ## [1.23.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.5...v1.23.0-rc.6) (2026-11-18)
 
 ### Features
