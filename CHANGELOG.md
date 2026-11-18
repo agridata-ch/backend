@@ -1,3 +1,9 @@
+## [1.23.0-rc.6](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.5...v1.23.0-rc.6) (2026-11-18)
+
+### Features
+
+* **data-request:** add terminate data-requests after pending period jobs ([cecebc5](https://github.com/agridata-ch/backend/commit/cecebc5075b5a653e565d893524cfdf1e474420b)), closes [DIGIB2-1692](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1692)
+
 ## [1.23.0-rc.5](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.4...v1.23.0-rc.5) (2026-11-17)
 
 ### Bug Fixes
