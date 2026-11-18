@@ -73,17 +73,24 @@ class ConsentRequestAggregationMapperTest {
   }
 
   @Test
-  void summaryConsentRequests_carryIdAndState() {
-    var group = List.of(consentRequest(CR1, GRANTED, dateTime(2), dateTime(3), "BUR1", null));
+  void summaryConsentRequests_carryIdStateAndBur() {
+    var group = List.of(
+        consentRequest(CR1, GRANTED, dateTime(2), dateTime(3), "BUR1", null),
+        consentRequest(CR2, OPENED, dateTime(2), dateTime(3), null, null)
+    );
 
     var result = mapper.toConsentRequestAggregationSummaryDto(group, SUMMARY_DATA_REQUEST);
 
     assertThat(result.consentRequests())
-        .singleElement()
-        .satisfies(consentRequest -> {
-          assertThat(consentRequest.id()).isEqualTo(CR1);
-          assertThat(consentRequest.stateCode()).isEqualTo(ConsentRequestStateEnum.GRANTED);
-        });
+        .extracting(
+            ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::id,
+            ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::stateCode,
+            ConsentRequestAggregationSummaryDto.ConsentRequestStateDto::dataProducerBur
+        )
+        .containsExactlyInAnyOrder(
+            tuple(CR1, ConsentRequestStateEnum.GRANTED, "BUR1"),
+            tuple(CR2, ConsentRequestStateEnum.OPENED, null)
+        );
   }
 
   @Test
