@@ -55,6 +55,7 @@ public class ContractRevisionSignatureService {
             .orElseThrow(() -> new ValidationException("Contract revision not found"));
 
     verifyContractRevisionIsCurrent(contractRevisionId, revisionToSign);
+    ContractTemplateVersionEnum.verifyIsCurrent(revisionToSign.getContractTemplateVersion());
     verifySlotNotAlreadySigned(revisionToSign, signatureSlotCode);
     verifyUserHasNotSignedAlready(revisionToSign, agridataSecurityIdentity.getUserId());
     verifySignatureSlotOrder(revisionToSign, signatureSlotCode);
@@ -114,6 +115,7 @@ public class ContractRevisionSignatureService {
 
     verifyIsAssignedToCurrentProvider(revisionToSign);
     verifyContractRevisionIsCurrent(contractRevisionId, revisionToSign);
+    ContractTemplateVersionEnum.verifyIsCurrent(revisionToSign.getContractTemplateVersion());
     verifySlotNotAlreadySigned(revisionToSign, signatureSlotCode);
     verifyUserHasNotSignedAlready(revisionToSign, agridataSecurityIdentity.getUserId());
     verifySignatureSlotOrder(revisionToSign, signatureSlotCode);
