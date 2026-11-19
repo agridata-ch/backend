@@ -4,18 +4,18 @@ import static ch.agridata.agreement.utils.DataRequestTestUtils.CONTRACT_REVISION
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.persistence.ContractRevisionEntity;
-import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.OtpChallengeEntity;
+import ch.agridata.common.exceptions.ContractTemplateOutdatedException;
 import ch.agridata.common.security.AgridataSecurityIdentity;
 import jakarta.ws.rs.NotFoundException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,26 +37,22 @@ class ContractRevisionOtpChallengeServiceTest {
   private AgridataSecurityIdentity agridataSecurityIdentity;
 
   @Mock
-  private ContractRevisionRepository contractRevisionRepository;
-
-  @Mock
   private ContractRevisionQueryService contractRevisionQueryService;
 
-  private static final String USER_UID = "012345678";
   private static final UUID USER_ID = UUID.randomUUID();
   private static final String PHONE = "+41791234567";
+  private static final String OUTDATED_VERSION = "0.9";
 
   @Test
   void givenValidInput_whenCreateOtpChallenge_thenReturnDto() {
     SignatureSlotCodeEnum slotCode = SignatureSlotCodeEnum.DATA_CONSUMER_01;
     LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
 
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
     when(agridataSecurityIdentity.getMobileNumberOrElseThrow()).thenReturn(PHONE);
 
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
-        .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
+    when(contractRevisionQueryService.getAsConsumer(CONTRACT_REVISION_ID))
+        .thenReturn(currentRevision());
 
     OtpChallengeEntity challengeEntity = OtpChallengeEntity.builder()
         .id(UUID.randomUUID())
@@ -79,9 +75,8 @@ class ContractRevisionOtpChallengeServiceTest {
 
   @Test
   void givenContractNotFound_whenCreateOtpChallenge_thenThrowValidationException() {
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
-        .thenReturn(Optional.empty());
+    when(contractRevisionQueryService.getAsConsumer(CONTRACT_REVISION_ID))
+        .thenThrow(new NotFoundException(CONTRACT_REVISION_ID.toString()));
 
     assertThatThrownBy(
         () -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID,
@@ -93,9 +88,8 @@ class ContractRevisionOtpChallengeServiceTest {
   @ParameterizedTest
   @EnumSource(value = SignatureSlotCodeEnum.class, names = {"DATA_PROVIDER_01", "DATA_PROVIDER_02"})
   void givenInvalidSlotIdByConsumer_whenCreateOtpChallenge_thenThrowIllegalArgumentException(SignatureSlotCodeEnum signatureSlotCode) {
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(CONTRACT_REVISION_ID, USER_UID))
-        .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
+    when(contractRevisionQueryService.getAsConsumer(CONTRACT_REVISION_ID))
+        .thenReturn(currentRevision());
 
     assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, signatureSlotCode))
         .isInstanceOf(IllegalArgumentException.class)
@@ -105,8 +99,8 @@ class ContractRevisionOtpChallengeServiceTest {
   @ParameterizedTest
   @EnumSource(value = SignatureSlotCodeEnum.class, names = {"DATA_CONSUMER_01", "DATA_CONSUMER_02"})
   void givenInvalidSlotIdByProvider_whenCreateOtpChallenge_thenThrowIllegalArgumentException(SignatureSlotCodeEnum signatureSlotCode) {
-    when(contractRevisionQueryService.isAssignedToCurrentProvider(CONTRACT_REVISION_ID))
-        .thenReturn(true);
+    when(contractRevisionQueryService.getAsProvider(CONTRACT_REVISION_ID))
+        .thenReturn(currentRevision());
 
     assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(CONTRACT_REVISION_ID,
         signatureSlotCode))
@@ -116,8 +110,8 @@ class ContractRevisionOtpChallengeServiceTest {
 
   @Test
   void givenContractNotAssignedToCurrentProvider_whenCreateOptChallenge_thenThrowValidationException() {
-    when(contractRevisionQueryService.isAssignedToCurrentProvider(CONTRACT_REVISION_ID))
-        .thenReturn(false);
+    when(contractRevisionQueryService.getAsProvider(CONTRACT_REVISION_ID))
+        .thenThrow(new NotFoundException(CONTRACT_REVISION_ID.toString()));
 
     assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(CONTRACT_REVISION_ID,
         SignatureSlotCodeEnum.DATA_PROVIDER_01))
@@ -126,13 +120,34 @@ class ContractRevisionOtpChallengeServiceTest {
   }
 
   @Test
+  void givenOutdatedContractTemplate_whenCreateOtpChallengeAsConsumer_thenThrowContractTemplateOutdatedException() {
+    when(contractRevisionQueryService.getAsConsumer(CONTRACT_REVISION_ID))
+        .thenReturn(ContractRevisionEntity.builder().contractTemplateVersion(OUTDATED_VERSION).build());
+
+    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID,
+        SignatureSlotCodeEnum.DATA_CONSUMER_01))
+        .isInstanceOf(ContractTemplateOutdatedException.class);
+    verifyNoInteractions(otpChallengeService);
+  }
+
+  @Test
+  void givenOutdatedContractTemplate_whenCreateOtpChallengeAsProvider_thenThrowContractTemplateOutdatedException() {
+    when(contractRevisionQueryService.getAsProvider(CONTRACT_REVISION_ID))
+        .thenReturn(ContractRevisionEntity.builder().contractTemplateVersion(OUTDATED_VERSION).build());
+
+    assertThatThrownBy(() -> contractRevisionOtpChallengeService.createOtpChallengeAsProvider(CONTRACT_REVISION_ID,
+        SignatureSlotCodeEnum.DATA_PROVIDER_01))
+        .isInstanceOf(ContractTemplateOutdatedException.class);
+    verifyNoInteractions(otpChallengeService);
+  }
+
+  @Test
   void givenShortPhoneNumber_whenCreateOtpChallenge_thenMaskCorrectly() {
     String shortPhone = "123";
-    when(agridataSecurityIdentity.getUidOrElseThrow()).thenReturn(USER_UID);
     when(agridataSecurityIdentity.getUserId()).thenReturn(USER_ID);
     when(agridataSecurityIdentity.getMobileNumberOrElseThrow()).thenReturn(shortPhone);
-    when(contractRevisionRepository.findByIdAndDataConsumerUid(any(), any()))
-        .thenReturn(Optional.of(ContractRevisionEntity.builder().build()));
+    when(contractRevisionQueryService.getAsConsumer(any()))
+        .thenReturn(currentRevision());
 
     OtpChallengeEntity challengeEntity = OtpChallengeEntity.builder()
         .phoneNumberSnapshot(shortPhone)
@@ -145,5 +160,11 @@ class ContractRevisionOtpChallengeServiceTest {
         contractRevisionOtpChallengeService.createOtpChallengeAsConsumer(CONTRACT_REVISION_ID, SignatureSlotCodeEnum.DATA_CONSUMER_01);
 
     assertThat(result.maskedPhoneNumber()).isEqualTo("****");
+  }
+
+  private static ContractRevisionEntity currentRevision() {
+    return ContractRevisionEntity.builder()
+        .contractTemplateVersion(ContractTemplateVersionEnum.current().getVersion())
+        .build();
   }
 }
