@@ -1,3 +1,18 @@
+## [1.23.0](https://github.com/agridata-ch/backend/compare/v1.22.0...v1.23.0) (2026-11-19)
+
+### Features
+
+* **agb-revision:** add validation annotations for AGB text and version fields ([c04115d](https://github.com/agridata-ch/backend/commit/c04115d1b7018f92cbf8592fa403e6dec29479d6)), closes [DIGIB2-1532](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1532)
+* **architecture:** implement logging strategy, add BackgroundTaskRunner ([9008c44](https://github.com/agridata-ch/backend/commit/9008c448053d030c3863c46d0deaa8fb66adaa5d)), closes [DIGIB2-1824](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1824)
+* **data-request:** add terminate data-requests after pending period jobs ([cecebc5](https://github.com/agridata-ch/backend/commit/cecebc5075b5a653e565d893524cfdf1e474420b)), closes [DIGIB2-1692](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1692)
+* **user:** add bur_to_uid to wiremock ([14d3d0d](https://github.com/agridata-ch/backend/commit/14d3d0de08f8d0eb6bbb947fc0964436cbfff855)), closes [DIGIB2-1828](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1828)
+* **user:** add endpoint to retrieve UID by BUR ([31f650a](https://github.com/agridata-ch/backend/commit/31f650aee234f6d1a0f251ba4ab4472f6ba2a595)), closes [DIGIB2-1828](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1828)
+
+### Bug Fixes
+
+* **agreement:** show BUR for individual consent requests of consent request aggregation ([89fcce8](https://github.com/agridata-ch/backend/commit/89fcce892d5cb90ea7aef054f2fbd6e295ab87f7)), closes [DIGIB2-1851](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1851)
+* **validation:** restrict allowed html-tags for wysiwyg-fields ([cc8678e](https://github.com/agridata-ch/backend/commit/cc8678ec9bb71e16cdff4ba2e376edcefde5edfd)), closes [DIGIB2-1732](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1732)
+
 ## [1.23.0-rc.7](https://github.com/agridata-ch/backend/compare/v1.23.0-rc.6...v1.23.0-rc.7) (2026-11-18)
 
 ### Bug Fixes
