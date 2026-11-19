@@ -54,6 +54,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -384,7 +385,7 @@ class DataProductControllerV2Test {
   @CsvSource({"PROVIDER_1, true", "PROVIDER_1, false", "ADMIN, true", "ADMIN, false"})
   void givenPaymentRequired_whenAddDataProductDraft_thenValuePersisted(TestUserEnum user, boolean paymentRequired) {
     DataProductDescriptionDto pricingBasis = paymentRequired
-        ? new DataProductDescriptionDto("Gebühren Deutsch", "Redevances Francais", "Tassazione Italiano")
+        ? new DataProductDescriptionDto("<p>Gebühren Deutsch</p>", "<p>Redevances Francais</p>", "<p>Tassazione Italiano</p>")
         : null;
     DataProductUpdateDto requestDataProductUpdate = DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(paymentRequired))
@@ -416,7 +417,7 @@ class DataProductControllerV2Test {
         .description(JsonNullable.of(new DataProductDescriptionDto("Beschreibung Deutsch", "Desciption Francais", "Descriptione Italiano")))
         .links(JsonNullable.of(
             List.of(new LinkDto("https://example1.com", "Example Link 1"), new LinkDto("https://example2.com", "Example Link 2"))))
-        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "Descrizione tecnica italiano")))
+        .extendedDescription(JsonNullable.of(new DataProductExtendedDescriptionDto("", "", "<p>Descrizione tecnica italiano</p>")))
         .restClientId(JsonNullable.of(restClientId))
         .flowCode(JsonNullable.of(FlowCodeEnum.UNBOUND_BUR_BASED_POST_VALIDATION))
         .restClientPathTemplate(JsonNullable.of("path/template"))
@@ -586,6 +587,46 @@ class DataProductControllerV2Test {
         .statusCode(200).extract().as(DataProductDto.class);
 
     assertThat(updatedDataProduct.name().de()).isEqualTo(updateRequest.name().get().de());
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(strings = {"pricingBasis", "extendedDescription"})
+  void givenDraftAndEditorHtmlInRichTextField_whenPatch_thenOk(String field) {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+    var html = "<p><strong>fett</strong><br><em>kursiv</em></p><ol start=\"2\"><li><p>zwei</p></li></ol>";
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of(field, Map.of("de", html))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then().statusCode(200);
+  }
+
+  @SneakyThrows
+  @ParameterizedTest
+  @ValueSource(strings = {"pricingBasis", "extendedDescription"})
+  void givenDraftAndDisallowedHtmlInRichTextField_whenPatch_thenBadRequest(String field) {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of(field, Map.of("de", "<p onclick=\"alert(1)\">x</p>"))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then()
+        .statusCode(400)
+        .body("message", equalTo("Validation failed"))
+        .body("debugMessage", containsString(field))
+        .body("debugMessage", containsString("must only contain the allowed rich-text elements"));
+  }
+
+  @SneakyThrows
+  @Test
+  void givenDraftAndDisallowedHtmlInPlainTextDescription_whenPatch_thenOk() {
+    UUID existingProductId = createEmptyDraft(PROVIDER_1);
+
+    AuthTestUtils.requestAs(PROVIDER_1).given().contentType(ContentType.JSON)
+        .body(MAPPER.writeValueAsString(Map.of("description", Map.of("de", "<p onclick=\"alert(1)\">x</p>"))))
+        .when().patch(DataProductControllerV2.PATH + "/" + existingProductId)
+        .then().statusCode(200);
   }
 
   @SneakyThrows
@@ -1387,8 +1428,8 @@ class DataProductControllerV2Test {
     UUID productId = createActiveDataProduct(user, existingProduct);
     patchExpectingOk(user, productId, DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(true))
-        .pricingBasis(JsonNullable.of(new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
-            "Tassazione per chiamata")))
+        .pricingBasis(JsonNullable.of(new DataProductDescriptionDto("<p>Gebühren pro Abruf</p>", "<p>Redevances par appel</p>",
+            "<p>Tassazione per chiamata</p>")))
         .build());
 
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
@@ -1412,8 +1453,8 @@ class DataProductControllerV2Test {
     DataProductUpdateDto existingProduct = getDataProductUpdateDto(UUID_5335D715.uuid(), UUID_B1398C9D.uuid());
     UUID productId = createActiveDataProduct(user, existingProduct);
 
-    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("Gebühren pro Abruf", "Redevances par appel",
-        "Tassazione per chiamata");
+    DataProductDescriptionDto pricingBasis = new DataProductDescriptionDto("<p>Gebühren pro Abruf</p>", "<p>Redevances par appel</p>",
+        "<p>Tassazione per chiamata</p>");
     DataProductUpdateDto updateDto = DataProductUpdateDto.builder()
         .paymentRequired(JsonNullable.of(true))
         .pricingBasis(JsonNullable.of(pricingBasis))

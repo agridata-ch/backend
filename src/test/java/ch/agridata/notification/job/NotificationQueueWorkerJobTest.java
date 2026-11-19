@@ -1,18 +1,20 @@
 package ch.agridata.notification.job;
 
+import static ch.agridata.common.security.SystemActorEnum.NOTIFICATION_QUEUE_WORKER;
 import static ch.agridata.notification.job.NotificationQueueWorkerJob.LOCK_KEY;
-import static ch.agridata.notification.job.NotificationQueueWorkerJob.USER_ID_QUEUE_WORKER_JOB;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
-import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
 import ch.agridata.notification.service.NotificationProcessBatchService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,13 +36,21 @@ class NotificationQueueWorkerJobTest {
   private AdvisoryLockExecutor advisoryLockExecutor;
 
   @Mock
-  private AgridataSecurityIdentity securityIdentity;
+  private BackgroundTaskRunner backgroundTaskRunner;
 
   @Mock
   private NotificationProcessBatchService notificationProcessBatchService;
 
   @InjectMocks
   private NotificationQueueWorkerJob job;
+
+  @BeforeEach
+  void runWorkDirectly() {
+    lenient().doAnswer(invocation -> {
+      invocation.getArgument(1, Runnable.class).run();
+      return null;
+    }).when(backgroundTaskRunner).runAs(eq(NOTIFICATION_QUEUE_WORKER.getUserId()), any(Runnable.class));
+  }
 
   @Test
   void givenLockAcquired_whenRun_thenDelegatesToProcessBatchServiceAsTechnicalUser() {
@@ -52,7 +62,7 @@ class NotificationQueueWorkerJobTest {
 
     job.run();
 
-    verify(securityIdentity).setRunAsUserId(USER_ID_QUEUE_WORKER_JOB);
+    verify(backgroundTaskRunner).runAs(eq(NOTIFICATION_QUEUE_WORKER.getUserId()), any(Runnable.class));
     verify(advisoryLockExecutor).runIfLockAvailable(eq(LOCK_KEY), anyString(), any(Runnable.class));
     verify(notificationProcessBatchService).processPendingBatches();
   }

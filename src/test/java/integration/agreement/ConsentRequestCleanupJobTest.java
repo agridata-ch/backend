@@ -1,10 +1,9 @@
 package integration.agreement;
 
-import static ch.agridata.agreement.service.ConsentRequestCleanupRunner.USER_ID_SCHEDULED_CLEANUP_JOB;
 import static ch.agridata.auditing.api.ActionEnum.CONSENT_REQUEST_TERMINATED;
 import static ch.agridata.auditing.api.EntityTypeEnum.CONSENT_REQUEST;
-import static ch.agridata.auditing.api.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
 import static ch.agridata.auditing.persistence.AuditLogEntity.ActorTypeEnum.SYSTEM;
+import static ch.agridata.common.security.SystemActorEnum.CONSENT_REQUEST_CLEANUP_JOB;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.agridata.agreement.job.ConsentRequestCleanupJob;
@@ -46,7 +45,7 @@ class ConsentRequestCleanupJobTest {
           assertThat(row[0]).isInstanceOf(UUID.class);
           assertThat(((LocalDateTime) row[1]).isAfter(dateTimeBeforeTermination));
           assertThat(((LocalDateTime) row[2]).isEqual((LocalDateTime) row[1]));
-          assertThat(row[3].equals(USER_ID_SCHEDULED_CLEANUP_JOB));
+          assertThat(row[3].equals(CONSENT_REQUEST_CLEANUP_JOB.getUserId()));
         });
 
     List<UUID> affectedIds = rows.stream()
@@ -73,14 +72,16 @@ class ConsentRequestCleanupJobTest {
         .toList())
         .containsExactlyInAnyOrderElementsOf(affectedIds);
 
+    assertThat(latestLogs.stream().map(AuditLogEntity::getRequestId).distinct()).hasSize(1);
+
     assertThat(auditLogTestUtils.getLatestAuditLogEntry(8)).isNull();
   }
 
   private void assertTerminationAuditEntry(AuditLogEntity log) {
     assertThat(log.getEntityTypeCode()).isEqualTo(CONSENT_REQUEST.name());
     assertThat(log.getActionCode()).isEqualTo(CONSENT_REQUEST_TERMINATED.name());
-    assertThat(log.getRequestId()).isNull();
-    assertThat(log.getActorId()).isEqualTo(CONSENT_REQUEST_CLEANUP_JOB.getActorId());
+    assertThat(log.getRequestId()).isNotBlank();
+    assertThat(log.getActorId()).isEqualTo(CONSENT_REQUEST_CLEANUP_JOB.getLoggingActorId());
     assertThat(log.getActorTypeCode()).isEqualTo(SYSTEM);
   }
 }

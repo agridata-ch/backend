@@ -1,12 +1,11 @@
 package ch.agridata.product.job;
 
 import ch.agridata.common.persistence.AdvisoryLockExecutor;
-import ch.agridata.common.security.AgridataSecurityIdentity;
+import ch.agridata.common.security.BackgroundTaskRunner;
+import ch.agridata.common.security.SystemActorEnum;
 import ch.agridata.product.service.DataProductDocumentScanService;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.control.ActivateRequestContext;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -30,21 +29,18 @@ import lombok.RequiredArgsConstructor;
 public class DataProductScanRecoveryJob {
   // Randomly generated long value for the advisory lock key.
   public static final long LOCK_KEY = 8961254816372858291L;
-  // Dedicated technical user ID for this scheduled job (traceability/auditing).
-  // The corresponding user entry must exist in the users table.
-  public static final UUID USER_ID_DOCUMENT_SCAN_RECOVERY_JOB = UUID.fromString("5bb8cb23-6091-4dc1-b2c0-58aac774f832");
   public static final String TASK_NAME = "data product scan recovery job";
 
-  private final AgridataSecurityIdentity agridataSecurityIdentity;
+  private final BackgroundTaskRunner backgroundTaskRunner;
   private final AdvisoryLockExecutor advisoryLockExecutor;
   private final DataProductDocumentScanService dataProductDocumentScanService;
 
   // Every 5 minutes (Quartz cron)
   @Scheduled(cron = "0 0/5 * * * ?")
-  @ActivateRequestContext
   public void run() {
-    agridataSecurityIdentity.setRunAsUserId(USER_ID_DOCUMENT_SCAN_RECOVERY_JOB);
-
-    advisoryLockExecutor.runIfLockAvailable(LOCK_KEY, TASK_NAME, dataProductDocumentScanService::recoverStalePendingScans);
+    backgroundTaskRunner.runAs(
+        SystemActorEnum.DOCUMENT_SCAN_RECOVERY_JOB.getUserId(),
+        () -> advisoryLockExecutor.runIfLockAvailable(LOCK_KEY, TASK_NAME, dataProductDocumentScanService::recoverStalePendingScans)
+    );
   }
 }

@@ -42,7 +42,7 @@ public class DataProductDocumentScanService {
    * long-polling metadata endpoint.
    *
    * <p><b>Caller contract:</b> must be invoked inside an active request context with the
-   * uploading user's identity set as {@code runAsUserId} (see {@code RequestContextExecutor}),
+   * uploading user's identity set as {@code runAsUserId} (see {@code BackgroundTaskRunner}),
    * otherwise the {@code AuditingEntityListener} cannot populate {@code modifiedBy} on the
    * status update.
    */

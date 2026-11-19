@@ -68,7 +68,7 @@ class AgbRevisionServiceTest {
   void givenNewVersionWithConsent_whenCreateRevision_thenCloseOpenRevisionInsertNewAndLog() {
     var now = LocalDateTime.now(FIXED_CLOCK);
     var enforceFrom = now.toLocalDate().plusDays(10).atStartOfDay();
-    var createDto = new AgbRevisionCreateDto("2.0", enforceFrom, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("2.0", enforceFrom, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var open = AgbRevisionEntity.builder().version("1.4").build();
     var created = new AgbRevisionEntity();
     var detailDto = mock(AgbRevisionDto.class);
@@ -90,7 +90,7 @@ class AgbRevisionServiceTest {
 
   @Test
   void givenNewVersionWithoutConsent_whenCreateRevision_thenUsersAreNotUpdated() {
-    var createDto = new AgbRevisionCreateDto("2.0", null, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("2.0", null, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     when(agbRevisionRepository.findOpenRevision()).thenReturn(Optional.empty());
     when(agbRevisionMapper.toEntity(createDto)).thenReturn(new AgbRevisionEntity());
 
@@ -101,7 +101,7 @@ class AgbRevisionServiceTest {
 
   @Test
   void givenExistingVersion_whenCreateRevision_thenThrowAndDoNotPersist() {
-    var createDto = new AgbRevisionCreateDto("1.4", null, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("1.4", null, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     when(agbRevisionRepository.existsByVersion("1.4")).thenReturn(true);
 
     assertThatThrownBy(() -> agbRevisionService.createRevision(createDto)).isInstanceOf(AgbVersionAlreadyExistsException.class);
@@ -111,7 +111,7 @@ class AgbRevisionServiceTest {
   @ParameterizedTest
   @CsvSource({"1.0, 1.2", "1.2, 2.0", "1.9, 1.10", "1.2, 1.2.0", "2.0, 2.0"})
   void givenVersionNotNewerThanOpenRevision_whenCreateRevision_thenThrowAndDoNotPersist(String publishedVersion, String currentVersion) {
-    var createDto = new AgbRevisionCreateDto(publishedVersion, null, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto(publishedVersion, null, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var open = AgbRevisionEntity.builder().version(currentVersion).build();
     when(agbRevisionRepository.findOpenRevision()).thenReturn(Optional.of(open));
 
@@ -122,7 +122,7 @@ class AgbRevisionServiceTest {
   @Test
   void givenEnforceDateOnEarlierDay_whenCreateRevision_thenThrowIllegalArgument() {
     var lastMinuteOfYesterday = LocalDateTime.now(FIXED_CLOCK).toLocalDate().atStartOfDay().minusNanos(1);
-    var createDto = new AgbRevisionCreateDto("2.0", lastMinuteOfYesterday, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("2.0", lastMinuteOfYesterday, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
 
     assertThatThrownBy(() -> agbRevisionService.createRevision(createDto)).isInstanceOf(IllegalArgumentException.class);
     verify(agbRevisionRepository, never()).persist(any(AgbRevisionEntity.class));
@@ -132,7 +132,7 @@ class AgbRevisionServiceTest {
   @ValueSource(longs = {0, 1, 60})
   void givenEnforceTimeEarlierToday_whenCreateRevision_thenClampToNow(long minutesInThePast) {
     var now = LocalDateTime.now(FIXED_CLOCK);
-    var createDto = new AgbRevisionCreateDto("2.0", now.minusMinutes(minutesInThePast), new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("2.0", now.minusMinutes(minutesInThePast), new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var created = new AgbRevisionEntity();
     when(agbRevisionMapper.toEntity(createDto)).thenReturn(created);
 
@@ -145,7 +145,7 @@ class AgbRevisionServiceTest {
   @Test
   void givenEnforceDateLaterToday_whenCreateRevision_thenKeepRequestedDate() {
     var later = LocalDateTime.now(FIXED_CLOCK).plusMinutes(5);
-    var createDto = new AgbRevisionCreateDto("2.0", later, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("2.0", later, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var created = new AgbRevisionEntity();
     when(agbRevisionMapper.toEntity(createDto)).thenReturn(created);
 
@@ -157,7 +157,7 @@ class AgbRevisionServiceTest {
 
   @Test
   void givenNewerVersionAndNoOpenRevision_whenCreateRevision_thenPersist() {
-    var createDto = new AgbRevisionCreateDto("1.0", null, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto("1.0", null, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var created = new AgbRevisionEntity();
     when(agbRevisionRepository.findOpenRevision()).thenReturn(Optional.empty());
     when(agbRevisionMapper.toEntity(createDto)).thenReturn(created);
@@ -170,7 +170,7 @@ class AgbRevisionServiceTest {
   @ParameterizedTest
   @CsvSource({"1.5, 1.4", "1.10, 1.9", "2.0, 1.99", "1.2.1, 1.2"})
   void givenNewerVersion_whenCreateRevision_thenPersist(String publishedVersion, String currentVersion) {
-    var createDto = new AgbRevisionCreateDto(publishedVersion, null, new AgbTextDto("de", "fr", "it"));
+    var createDto = new AgbRevisionCreateDto(publishedVersion, null, new AgbTextDto("<p>de</p>", "<p>fr</p>", "<p>it</p>"));
     var created = new AgbRevisionEntity();
     when(agbRevisionRepository.findOpenRevision()).thenReturn(Optional.of(AgbRevisionEntity.builder().version(currentVersion).build()));
     when(agbRevisionMapper.toEntity(createDto)).thenReturn(created);

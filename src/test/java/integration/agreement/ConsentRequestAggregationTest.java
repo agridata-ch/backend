@@ -65,7 +65,7 @@ class ConsentRequestAggregationTest {
     AuthTestUtils.requestAs(PRODUCER_A)
         .when().get(ConsentRequestAggregationController.PATH + "?dataProducerUid=" + TestDataIdentifiers.Uid.CHE101000001)
         .then().statusCode(200)
-        .body("size()", equalTo(8))
+        .body("size()", equalTo(11))
         .extract().as(new TypeRef<>() {
         });
   }
@@ -217,7 +217,7 @@ class ConsentRequestAggregationTest {
         });
 
     assertThat(aggregations)
-        .hasSize(7)
+        .hasSize(10)
         .extracting(ConsentRequestAggregationSummaryDto::id)
         .doesNotContain(TestDataIdentifiers.DataRequest.BIO_SUISSE_01.uuid());
   }

@@ -9,8 +9,10 @@ import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.BurParentLinkDto;
 import ch.agridata.user.dto.FarmTypeEnum;
+import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.utils.AgisPersonFarmTreeUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +78,13 @@ public class BurAuthorizationService {
         .map(farm -> mapToBurDto(farm, resolutionContext))
         .flatMap(Optional::stream)
         .toList();
+  }
+
+  public UidDto getUidByBur(@NonNull String bur) {
+    return agisApi.fetchFarmForBur(bur)
+        .map(AgisFarmType::getUid)
+        .map(uid -> UidDto.builder().uid(uid).build())
+        .orElseThrow(() -> new NotFoundException("No UID found for bur " + bur));
   }
 
   private Optional<BurDto> mapToBurDto(@NonNull AgisFarmType farm, ResolutionContext context) {

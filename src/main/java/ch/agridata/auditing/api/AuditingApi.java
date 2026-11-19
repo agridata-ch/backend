@@ -1,5 +1,6 @@
 package ch.agridata.auditing.api;
 
+import ch.agridata.common.security.SystemActorEnum;
 import java.util.UUID;
 
 /**

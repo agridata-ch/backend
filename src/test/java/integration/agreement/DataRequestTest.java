@@ -71,7 +71,7 @@ class DataRequestTest {
   void givenConsumer_whenGetDataRequests_thenOnlyConsumerDataRequestsReturned() {
     AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(3));
+        .body("size()", equalTo(6));
   }
 
   @Test
@@ -80,7 +80,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(9));
+        .body("size()", equalTo(12));
   }
 
   @Test
@@ -89,7 +89,7 @@ class DataRequestTest {
         .statusCode(201).extract().path("id");
     AuthTestUtils.requestAs(PROVIDER_1).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
-        .body("size()", equalTo(6));
+        .body("size()", equalTo(9));
   }
 
   @Test
@@ -266,6 +266,18 @@ class DataRequestTest {
         .products(List.of(UUID_46F8A883.uuid(), UUID_6319423C.uuid()))
         .build();
     createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then().statusCode(400);
+  }
+
+  @Test
+  void givenDraftWithScriptInPurpose_whenPost_thenReturnBadRequest() {
+    DataRequestUpdateDto invalidDto = getPartialDataRequestUpdateDtoBuilder()
+        .purpose(new DataRequestPurposeDto("<p>Zweck</p>", "<p>But</p><script>alert(1)</script>", "<p>Scopo</p>"))
+        .build();
+
+    createDataRequestAs(invalidDto, CONSUMER_BIO_SUISSE).then()
+        .statusCode(400)
+        .body("debugMessage", containsString("purpose.fr"))
+        .body("debugMessage", containsString("must only contain the allowed rich-text elements"));
   }
 
   @Test

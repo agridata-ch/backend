@@ -63,7 +63,7 @@ public class DataRequestStateEventDispatcher {
       auditingService.logDataRequestReleasedByConsumer(entity.getId());
       notificationService.queueDataRequestReadyForProviderSigning(entity);
     } else if (oldStateCode == ACTIVE && newStateCode == TERMINATION_PENDING) {
-      auditingService.logDataRequestTerminationRequested(entity);
+      auditingService.logDataRequestTerminationPeriodStarted(entity);
     }
   }
 
@@ -76,7 +76,7 @@ public class DataRequestStateEventDispatcher {
       auditingService.logDataRequestReleasedByProvider(entity.getId());
       notificationService.queueDataRequestReadyForActivation(entity);
     } else if (oldStateCode == ACTIVE && newStateCode == TERMINATION_PENDING) {
-      auditingService.logDataRequestTerminationRequested(entity);
+      auditingService.logDataRequestTerminationPeriodStarted(entity);
     }
   }
 

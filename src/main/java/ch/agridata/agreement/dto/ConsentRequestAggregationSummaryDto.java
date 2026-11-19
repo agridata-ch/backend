@@ -77,9 +77,9 @@ public record ConsentRequestAggregationSummaryDto(
     List<ConsentRequestStateDto> consentRequests
 ) {
   /**
-   * Provides the state of a consent request.
+   * Provides the state of a consent request and whether it is UID- or BUR-based.
    *
-   * @CommentLastReviewed 2026-08-12
+   * @CommentLastReviewed 2026-11-18
    */
   public record ConsentRequestStateDto(
       @Schema(
@@ -88,6 +88,12 @@ public record ConsentRequestAggregationSummaryDto(
       )
       @NotNull
       UUID id,
+
+      @Schema(
+          description = "BUR of the data producer; null for UID-based consent requests",
+          examples = {"A99910003"}
+      )
+      String dataProducerBur,
 
       @Schema(
           description = "State of the consent request",

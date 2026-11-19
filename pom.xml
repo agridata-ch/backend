@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.agridata</groupId>
     <artifactId>backend</artifactId>
-    <version>1.22.0</version>
+    <version>1.23.0-rc.7</version>
 
     <properties>
         <compiler-plugin.version>3.16.0</compiler-plugin.version>
@@ -246,6 +246,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.parser.v3</groupId>

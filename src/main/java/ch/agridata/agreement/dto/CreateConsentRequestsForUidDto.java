@@ -1,5 +1,6 @@
 package ch.agridata.agreement.dto;
 
+import ch.agridata.common.validation.BurValidation;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
@@ -35,8 +36,8 @@ public record CreateConsentRequestsForUidDto(
     List<
         @NotNull
         @Pattern(
-            regexp = "^[A-Za-z0-9]{8,9}$",
-            message = "Invalid BUR format. Expected 8 to 9 alphanumeric characters."
+            regexp = BurValidation.BUR_REGEX,
+            message = BurValidation.BUR_FORMAT_MESSAGE
         )
         String> burs
 ) {

@@ -14,6 +14,7 @@ import ch.agridata.agreement.dto.ConsentRequestStatusSummaryDto;
 import ch.agridata.agreement.dto.CreateConsentRequestsForUidDto;
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.dto.DataRequestStateEnum;
+import ch.agridata.agreement.dto.DataRequestTerminationResultDto;
 import ch.agridata.agreement.dto.DataRequestUpdateDto;
 import ch.agridata.agreement.dto.DataRequestValidRedirectUriRegexUpdateDto;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
@@ -25,6 +26,7 @@ import ch.agridata.agreement.service.DataRequestMutationService;
 import ch.agridata.agreement.service.DataRequestQueryService;
 import ch.agridata.agreement.service.DataRequestSignatureTypeMutationService;
 import ch.agridata.agreement.service.DataRequestStateService;
+import ch.agridata.agreement.service.DataRequestTerminationRunner;
 import ch.agridata.common.dto.PageResponseDto;
 import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
@@ -55,7 +57,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -70,7 +71,6 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  * @CommentLastReviewed 2026-09-02
  */
 
-@Slf4j
 @Path("")
 @RequiredArgsConstructor
 @Tag(
@@ -94,6 +94,7 @@ public class DataRequestController {
   private final ConsentRequestExportService consentRequestExportService;
   private final ActingRoleHolder actingRoleHolder;
   private final DataRequestSignatureTypeMutationService dataRequestSignatureTypeMutationService;
+  private final DataRequestTerminationRunner dataRequestTerminationRunner;
 
   @GET
   @ApiSubset({WEB_APP, DATA_CONSUMER, DATA_PROVIDER})
@@ -437,5 +438,20 @@ public class DataRequestController {
     return Response.ok(export.content(), "text/csv; charset=UTF-8")
         .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", export.fileName()))
         .build();
+  }
+  
+  @POST
+  @ApiSubset({WEB_APP})
+  @Path(PATH_V1 + "/termination")
+  @Operation(
+      operationId = "triggerDataRequestTermination",
+      description = "Triggers the termination of data requests whose termination period has expired, which otherwise runs as a "
+          + "scheduled nightly job, and waits for it to finish. Only accessible to administrators. The run is guarded by the same "
+          + "cluster-wide advisory lock as the scheduled job, so a conflict is reported if a run is already in progress."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({ADMIN_ROLE})
+  public DataRequestTerminationResultDto triggerDataRequestTermination() {
+    return dataRequestTerminationRunner.triggerTerminationManually();
   }
 }

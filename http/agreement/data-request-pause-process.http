@@ -1,0 +1,81 @@
+### Prerequisite: reset the test data (state of BIO_SUISSE_02 is ACTIVE afterwards)
+POST {{baseUrl}}/test-data/reset
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+> {%
+  client.test("Test data reset", function () {
+    client.assert(response.status === 204, "Expected status 204, got: " + response.status);
+  });
+%}
+
+### 1. Data transfer works for the active data request (consent of CHE103000001 exists only for BIO_SUISSE_02)
+GET {{baseUrl}}/data-transfer/v2/product/085e4b72-964d-4bd5-a3c9-224d8c5585af/data?uid=CHE103000001&year=2024
+Authorization: Bearer {{$auth.token("consumer")}}
+
+> {%
+  client.test("Data transfer works while active", function () {
+    client.assert(response.status === 200, "Expected status 200, got: " + response.status);
+  });
+%}
+
+### 2. Admin pauses the data request
+PUT {{baseUrl}}/agreement/v1/data-requests/81ae8571-9497-413a-99c5-237e72621ca7/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"PAUSED"
+
+> {%
+  client.test("Data request is paused", function () {
+    client.assert(response.status === 200, "Expected status 200, got: " + response.status);
+    client.assert(response.body.stateCode === "PAUSED", "Expected PAUSED, got: " + response.body.stateCode);
+  });
+%}
+
+### 3. Data transfer is forbidden while paused
+GET {{baseUrl}}/data-transfer/v2/product/085e4b72-964d-4bd5-a3c9-224d8c5585af/data?uid=CHE103000001&year=2024
+Authorization: Bearer {{$auth.token("consumer")}}
+
+> {%
+  client.test("Data transfer is forbidden while paused", function () {
+    client.assert(response.status === 403, "Expected status 403, got: " + response.status);
+  });
+%}
+
+### 4. Consumer must not reactivate
+PUT {{baseUrl}}/agreement/v1/data-requests/81ae8571-9497-413a-99c5-237e72621ca7/status
+Authorization: Bearer {{$auth.token("consumer")}}
+Content-Type: application/json
+
+"ACTIVE"
+
+> {%
+  client.test("Consumer cannot reactivate", function () {
+    client.assert(response.status >= 400 && response.status < 500, "Expected 4xx, got: " + response.status);
+  });
+%}
+
+### 5. Admin reactivates the data request
+PUT {{baseUrl}}/agreement/v1/data-requests/81ae8571-9497-413a-99c5-237e72621ca7/status
+Authorization: Bearer {{$auth.token("admin")}}
+Content-Type: application/json
+
+"ACTIVE"
+
+> {%
+  client.test("Data request is active again", function () {
+    client.assert(response.status === 200, "Expected status 200, got: " + response.status);
+    client.assert(response.body.stateCode === "ACTIVE", "Expected ACTIVE, got: " + response.body.stateCode);
+  });
+%}
+
+### 6. Data transfer works again after reactivation
+GET {{baseUrl}}/data-transfer/v2/product/085e4b72-964d-4bd5-a3c9-224d8c5585af/data?uid=CHE103000001&year=2024
+Authorization: Bearer {{$auth.token("consumer")}}
+
+> {%
+  client.test("Data transfer works again after reactivation", function () {
+    client.assert(response.status === 200, "Expected status 200, got: " + response.status);
+  });
+%}

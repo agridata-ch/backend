@@ -2,6 +2,7 @@ package ch.agridata.agreement.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class DataRequestRepository implements PanacheRepositoryBase<DataRequestEntity, UUID> {
-  private static final String PARAM_STATE_CODE = "state_code";
+  private static final String STATE_CODE = "state_code";
   private static final String DATA_CONSUMER_UID = "dataConsumerUid";
 
   public Optional<DataRequestEntity> findByIdAndDataConsumerUid(UUID id, String dataConsumerUid) {
@@ -80,11 +81,21 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
     ).list();
   }
 
+  public List<DataRequestEntity> findTerminationPeriodExpired(LocalDate today) {
+    return find(
+        "stateCode = :state_code and terminationPeriodUntil < :today",
+        Map.of(
+            STATE_CODE, DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING,
+            "today", today
+        )
+    ).list();
+  }
+
   public List<DataRequestEntity> findAllNotDraft() {
     return find(
         "stateCode <> :state_code",
         Map.of(
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT
+            STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT
         )
     ).list();
   }
@@ -94,7 +105,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         "id = :id and stateCode <> :state_code",
         Map.of(
             "id", id,
-            PARAM_STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT
+            STATE_CODE, DataRequestEntity.DataRequestStateEnum.DRAFT
         )
     )
         .firstResultOptional();
@@ -109,7 +120,7 @@ public class DataRequestRepository implements PanacheRepositoryBase<DataRequestE
         "dataConsumerUid = :dataConsumerUid and stateCode = :state_code",
         Map.of(
             DATA_CONSUMER_UID, dataConsumerUid,
-            PARAM_STATE_CODE, state
+            STATE_CODE, state
         )
     );
   }

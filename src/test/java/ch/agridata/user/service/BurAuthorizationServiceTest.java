@@ -21,12 +21,14 @@ import ch.agridata.agis.dto.AgisRelevantFarms;
 import ch.agridata.agis.dto.AgisRelevantPersons;
 import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.user.dto.BurDto;
+import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,6 +58,20 @@ class BurAuthorizationServiceTest {
 
   @InjectMocks
   BurAuthorizationService burAuthorizationService;
+
+  @Test
+  void givenFarmForBur_whenGetUidByBur_thenReturnUid() {
+    when(agisApi.fetchFarmForBur(PARENT_BER)).thenReturn(Optional.of(farm(PARENT_BER).uid(UID)));
+
+    assertThat(burAuthorizationService.getUidByBur(PARENT_BER).uid()).isEqualTo(UID);
+  }
+
+  @Test
+  void givenNoFarmForBur_whenGetUidByBur_thenNotFound() {
+    when(agisApi.fetchFarmForBur(PARENT_BER)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> burAuthorizationService.getUidByBur(PARENT_BER)).isInstanceOf(NotFoundException.class);
+  }
 
   @Test
   void givenFarmWithFarmToPersonRelation_whenGetAuthorizedBurs_thenRelationSinceFromThatRelation() {

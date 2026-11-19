@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.ses.model.SesException;
 public class EmailSesService implements EmailApi {
 
   public static final String UTF_8 = "UTF-8";
-  public static final List<String> ALLOWED_EMAIL_DOMAINS_NON_PROD = List.of("agridata.local", "blw.admin.ch", "dev.agridata.ch");
+  public static final List<String> ALLOWED_EMAIL_DOMAINS_NON_PROD = List.of("local.agridata.ch", "blw.admin.ch", "dev.agridata.ch");
   public static final List<String> NON_PROD_PROFILES = List.of("local", "test", "develop", "testing", "integration");
 
   @ConfigProperty(name = "agridata.email.sender-address")
@@ -39,7 +39,7 @@ public class EmailSesService implements EmailApi {
 
   @Override
   public void submitEmail(String to, String subject, String htmlBody) {
-    if (emailFeatureDisabled(to) || emailReceiverDisallowedInProfile(to)) {
+    if (emailFeatureDisabled() || emailReceiverDisallowedInProfile(to)) {
       return;
     }
 
@@ -52,18 +52,18 @@ public class EmailSesService implements EmailApi {
           .build();
 
       SendEmailResponse response = sesClient.sendEmail(request);
-      log.info("Email sent to {}. MessageId: {}", to, response.messageId());
+      log.info("Email sent. MessageId: {}", response.messageId());
 
     } catch (SesException e) {
-      log.error("Failed to send email via AWS SES to {}: {}", to, e.awsErrorDetails().errorMessage());
+      log.error("Failed to send email via AWS SES: {}", e.awsErrorDetails().errorMessage());
       throw new ExternalWebServiceException("Failed to submit email. Error: " + e.awsErrorDetails(), e);
     }
   }
 
   // TODO: Remove this feature flag once it’s enabled in all environments.
-  private boolean emailFeatureDisabled(String to) {
+  private boolean emailFeatureDisabled() {
     if (!emailEnabled) {
-      log.debug("Email sending is disabled (agridata.email.enabled=false). Skipping email to {}.", to);
+      log.debug("Email sending is disabled (agridata.email.enabled=false). Skipping email.");
       return true;
     }
     return false;
@@ -73,9 +73,9 @@ public class EmailSesService implements EmailApi {
     var toDomain = to.split("@")[1];
     if (NON_PROD_PROFILES.contains(activeProfile) && !ALLOWED_EMAIL_DOMAINS_NON_PROD.contains(toDomain)) {
       log.debug(
-          "Non-production profile '{}': suppressing email to '{}'. Only domains '{}' are permitted outside production.",
+          "Non-production profile '{}': suppressing email to domain '{}'. Only domains '{}' are permitted outside production.",
           activeProfile,
-          to,
+          toDomain,
           ALLOWED_EMAIL_DOMAINS_NON_PROD
       );
       return true;

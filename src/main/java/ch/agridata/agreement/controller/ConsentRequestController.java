@@ -14,13 +14,11 @@ import ch.agridata.agreement.dto.ConsentRequestCreatedDto;
 import ch.agridata.agreement.dto.ConsentRequestProducerViewDto;
 import ch.agridata.agreement.dto.ConsentRequestStateEnum;
 import ch.agridata.agreement.dto.CreateConsentRequestDto;
-import ch.agridata.agreement.service.AuditingService;
 import ch.agridata.agreement.service.ConsentRequestCleanupRunner;
 import ch.agridata.agreement.service.ConsentRequestCreationService;
 import ch.agridata.agreement.service.ConsentRequestQueryService;
 import ch.agridata.agreement.service.ConsentRequestStateService;
 import ch.agridata.common.openapi.ApiSubset;
-import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -37,14 +35,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -59,7 +54,6 @@ import org.jboss.resteasy.reactive.RestResponse;
  */
 
 @Path(PATH)
-@Slf4j
 @RequiredArgsConstructor
 @Tag(
     name = "Consent Requests",
@@ -76,8 +70,6 @@ public class ConsentRequestController {
   private final ConsentRequestCreationService consentRequestCreationService;
   private final ConsentRequestStateService consentRequestStateService;
   private final ConsentRequestCleanupRunner consentRequestCleanupRunner;
-  private final AuditingService auditingService;
-  private final AgridataSecurityIdentity identity;
   private final ActingRoleHolder actingRoleHolder;
 
   /**
@@ -195,25 +187,6 @@ public class ConsentRequestController {
       @Parameter(description = "Last day of the window to clean up (inclusive). Defaults to yesterday.")
       @QueryParam("toInclusive") @Valid LocalDate toInclusive
   ) {
-    // Read the identity and audit the trigger before the runner replaces it with the technical cleanup user.
-    var triggeredBy = identity.getUserId();
-    auditingService.logConsentRequestCleanupTriggered();
-    log.info("consent request cleanup manually triggered by user {}.", triggeredBy);
-
-    var result = consentRequestCleanupRunner.runCleanupIfNotRunning(fromInclusive, toInclusive)
-        .orElseThrow(() -> new WebApplicationException(
-            "A consent request cleanup is already running.", Response.Status.CONFLICT
-        ));
-
-    log.info(
-        "consent request cleanup triggered by user {} terminated {} consent requests for {} - {} in {} ms.",
-        triggeredBy,
-        result.terminatedConsentRequestCount(),
-        result.fromInclusive(),
-        result.toInclusive(),
-        result.durationMs()
-    );
-
-    return result;
+    return consentRequestCleanupRunner.triggerCleanupJobManually(fromInclusive, toInclusive);
   }
 }
