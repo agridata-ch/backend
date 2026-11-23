@@ -1,3 +1,9 @@
+## [1.24.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.23.0...v1.24.0-rc.1) (2026-11-23)
+
+### Features
+
+* **agreement:** add versioning for contract-template ([9bda23a](https://github.com/agridata-ch/backend/commit/9bda23a3d635c02ebe80195e5e059271dcb1648e)), closes [DIGIB2-1857](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1857)
+
 ## [1.23.0](https://github.com/agridata-ch/backend/compare/v1.22.0...v1.23.0) (2026-11-19)
 
 ### Features
