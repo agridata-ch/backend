@@ -10,6 +10,7 @@ import ch.agridata.agreement.dto.ConsentRequestAggregationDto;
 import ch.agridata.agreement.dto.ConsentRequestAggregationSummaryDto;
 import ch.agridata.agreement.service.ConsentRequestAggregationService;
 import ch.agridata.common.openapi.ApiSubset;
+import ch.agridata.common.validation.UidValidation;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -22,7 +23,6 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -35,7 +35,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 
 @Path(PATH)
-@Slf4j
 @RequiredArgsConstructor
 @Tag(
     name = "Consent Request Aggregations",
@@ -64,8 +63,8 @@ public class ConsentRequestAggregationController {
       )
       @NotBlank(message = "dataProducerUid is required")
       @Pattern(
-          regexp = "^(?:CHE|ZZZ)\\d{9}$",
-          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
+          regexp = UidValidation.UID_REGEX,
+          message = UidValidation.UID_FORMAT_MESSAGE
       )
       @QueryParam("dataProducerUid") String dataProducerUid
   ) {
@@ -91,8 +90,8 @@ public class ConsentRequestAggregationController {
       )
       @NotBlank(message = "dataProducerUid is required")
       @Pattern(
-          regexp = "^(?:CHE|ZZZ)\\d{9}$",
-          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
+          regexp = UidValidation.UID_REGEX,
+          message = UidValidation.UID_FORMAT_MESSAGE
       )
       @QueryParam("dataProducerUid") String dataProducerUid
   ) {

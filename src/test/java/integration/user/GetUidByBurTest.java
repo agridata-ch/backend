@@ -32,7 +32,10 @@ class GetUidByBurTest {
 
   @Test
   void givenKnownBur_whenGetUidByBur_thenReturnUid() {
-    stubAgisFarms(BUR, "{ \"ktIdB\": \"FLTEST0001\", \"agisIdB\": 1, \"ber\": \"%s\", \"uid\": \"%s\" }".formatted(BUR, Uid.CHE102000001.name()));
+    stubAgisFarms(
+        BUR,
+        "{ \"ktIdB\": \"FLTEST0001\", \"agisIdB\": 1, \"ber\": \"%s\", \"uid\": \"%s\" }".formatted(BUR, Uid.CHE102000001.name())
+    );
 
     var result = AuthTestUtils.requestAs(CONSUMER_BLV_1).when().get(PATH, BUR)
         .then().statusCode(200).extract().as(UidDto.class);

@@ -22,25 +22,51 @@ class AccessTest {
 
   @Test
   void testAccess() {
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/authorized-uids", PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/uids/1/authorized-burs", CONSUMER_ROLE, ADMIN_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/burs/A99920004/uid", CONSUMER_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/producers", SUPPORT_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(POST,
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/authorized-uids", PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/uids/CHE101000001/authorized-burs", CONSUMER_ROLE, ADMIN_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/burs/A99920004/uid", CONSUMER_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/uids/CHE101000001/farm-overview", PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/user-info", PRODUCER_ROLE, CONSUMER_ROLE, ADMIN_ROLE, SUPPORT_ROLE, PROVIDER_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/producers", SUPPORT_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        POST,
         UserController.PATH + "/agb-revisions/73b2f303-2e87-4970-b82d-c5a6e296f1ec/accept",
-        CONSUMER_ROLE, PROVIDER_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        UserController.PATH + "/agb-acceptances", ADMIN_ROLE, SUPPORT_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        AgbRevisionAdminController.PATH, ADMIN_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(GET,
-        AgbRevisionAdminController.PATH + "/" + AgbRevision.VERSION_1_4, ADMIN_ROLE);
-    AccessTestUtils.assertForbiddenForAllExcept(POST,
-        AgbRevisionAdminController.PATH, ADMIN_ROLE);
+        CONSUMER_ROLE, PROVIDER_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        UserController.PATH + "/agb-acceptances", ADMIN_ROLE, SUPPORT_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        AgbRevisionAdminController.PATH, ADMIN_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        GET,
+        AgbRevisionAdminController.PATH + "/" + AgbRevision.VERSION_1_4, ADMIN_ROLE
+    );
+    AccessTestUtils.assertForbiddenForAllExcept(
+        POST,
+        AgbRevisionAdminController.PATH, ADMIN_ROLE
+    );
   }
 
 }

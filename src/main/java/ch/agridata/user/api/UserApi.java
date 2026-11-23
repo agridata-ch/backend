@@ -5,6 +5,7 @@ import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.dto.UserNotificationInfoDto;
 import jakarta.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 
 /**
@@ -17,6 +18,8 @@ public interface UserApi {
   List<BurDto> getAuthorizedBurs(@NonNull String uid);
 
   List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId);
+
+  Optional<UidDto> findUidIfAuthorized(@NonNull String uid, @Nullable String ktIdP, @Nullable String agateLoginId);
 
   List<UserNotificationInfoDto> getAdminsNotificationInfos();
 

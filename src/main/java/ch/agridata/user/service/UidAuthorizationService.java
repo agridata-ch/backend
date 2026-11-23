@@ -8,6 +8,7 @@ import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,16 @@ public class UidAuthorizationService {
     }
     log.warn("No UIDs found for ktIdP={} and agateLoginId={}, sync may still be in progress", ktIdP, agateLoginId);
     throw new UidMissingException("No UID is currently associated with this account; synchronization may still be in progress");
+  }
+
+  /**
+   * Returns the given UID if the user identified by KT_ID_P and/or AGATE login id is authorized for it. The caller decides how to react
+   * when it is not (e.g. 403, 404 or an empty result).
+   */
+  public Optional<UidDto> findUidIfAuthorized(@NonNull String uid, @Nullable String ktIdP, @Nullable String agateLoginId) {
+    return getAuthorizedUids(ktIdP, agateLoginId).stream()
+        .filter(uidDto -> uid.equals(uidDto.uid()))
+        .findFirst();
   }
 
   private ProviderResult getFarmerServiceAuthorizedUids(@NonNull String ktIdP) {

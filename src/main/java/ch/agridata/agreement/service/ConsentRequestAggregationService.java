@@ -43,7 +43,7 @@ public class ConsentRequestAggregationService {
   public List<ConsentRequestAggregationSummaryDto> getConsentRequestAggregationsAsCurrentDataProducer(
       @NotNull String dataProducerUid
   ) {
-    if (!isAuthorized(dataProducerUid)) {
+    if (isNotAuthorized(dataProducerUid)) {
       return List.of();
     }
 
@@ -55,7 +55,8 @@ public class ConsentRequestAggregationService {
         .stream()
         .map(consentRequestEntities -> aggregationMapper.toConsentRequestAggregationSummaryDto(
             consentRequestEntities,
-            dataRequestMapper.toDataRequestSummaryDto(consentRequestEntities.getFirst().getDataRequest())))
+            dataRequestMapper.toDataRequestSummaryDto(consentRequestEntities.getFirst().getDataRequest())
+        ))
         .sorted(Comparator.comparing(
                 ConsentRequestAggregationSummaryDto::requestDate,
                 Comparator.nullsLast(Comparator.naturalOrder())
@@ -70,7 +71,7 @@ public class ConsentRequestAggregationService {
       @NotNull String dataProducerUid,
       @NotNull UUID dataRequestId
   ) {
-    if (!isAuthorized(dataProducerUid)) {
+    if (isNotAuthorized(dataProducerUid)) {
       throw new NotFoundException(dataRequestId.toString());
     }
 
@@ -99,8 +100,12 @@ public class ConsentRequestAggregationService {
         .isEmpty();
   }
 
-  private boolean isAuthorized(String dataProducerUid) {
-    return getAuthorizedUids().contains(dataProducerUid);
+  private boolean isNotAuthorized(String dataProducerUid) {
+    return userApi.findUidIfAuthorized(
+        dataProducerUid,
+        identity.getKtIdpOrImpersonatedKtIdP(),
+        identity.getAgateLoginIdOrImpersonatedAgateLoginId()
+    ).isEmpty();
   }
 
   private Set<String> getAuthorizedUids() {
