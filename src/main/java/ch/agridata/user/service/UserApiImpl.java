@@ -7,6 +7,7 @@ import ch.agridata.user.dto.UserNotificationInfoDto;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,11 @@ public class UserApiImpl implements UserApi {
   @Override
   public List<UidDto> getAuthorizedUids(@Nullable String ktIdP, @Nullable String agateLoginId) {
     return uidAuthorizationService.getAuthorizedUids(ktIdP, agateLoginId);
+  }
+
+  @Override
+  public Optional<UidDto> findUidIfAuthorized(@NonNull String uid, @Nullable String ktIdP, @Nullable String agateLoginId) {
+    return uidAuthorizationService.findUidIfAuthorized(uid, ktIdP, agateLoginId);
   }
 
   @Override

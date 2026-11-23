@@ -1,6 +1,7 @@
 package ch.agridata.agreement.dto;
 
 import ch.agridata.common.validation.BurValidation;
+import ch.agridata.common.validation.UidValidation;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
@@ -23,8 +24,8 @@ public record CreateConsentRequestsForUidDto(
     )
     @NotNull
     @Pattern(
-        regexp = "^(?:CHE|ZZZ)\\d{9}$",
-        message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
+        regexp = UidValidation.UID_REGEX,
+        message = UidValidation.UID_FORMAT_MESSAGE
     )
     String uid,
 

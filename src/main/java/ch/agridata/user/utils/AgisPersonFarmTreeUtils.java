@@ -1,15 +1,21 @@
 package ch.agridata.user.utils;
 
+import ch.agridata.agis.dto.AgisAddressType;
+import ch.agridata.agis.dto.AgisContactType;
 import ch.agridata.agis.dto.AgisFarmChildRelations;
 import ch.agridata.agis.dto.AgisFarmParentRelations;
 import ch.agridata.agis.dto.AgisFarmToPersonRelations;
 import ch.agridata.agis.dto.AgisFarmType;
 import ch.agridata.agis.dto.AgisKtIdBRelationType;
 import ch.agridata.agis.dto.AgisKtIdPRelationType;
+import ch.agridata.agis.dto.AgisMailAddressType;
+import ch.agridata.agis.dto.AgisPersonFarmResponseType;
 import ch.agridata.agis.dto.AgisPersonFarmTreeType;
 import ch.agridata.agis.dto.AgisPersonToFarmRelations;
 import ch.agridata.agis.dto.AgisPersonType;
 import ch.agridata.agis.dto.AgisRelevantFarms;
+import ch.agridata.agis.dto.AgisRelevantPersons;
+import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.user.dto.BurParentLinkDto;
 import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -114,5 +120,30 @@ public class AgisPersonFarmTreeUtils {
     return Optional.ofNullable(farm.getFarmChildRelations())
         .map(AgisFarmChildRelations::getFarmChildRelation)
         .orElseGet(List::of);
+  }
+
+  /**
+   * Returns the relevant person of a tree fetched by UID. AGIS sometimes omits the UID on the person object, so a person without UID is
+   * accepted as well. Safety net only: since AGIS was queried by this UID, the response should contain exactly this one person.
+   */
+  public static Optional<AgisPersonType> findRelevantPersonByUid(AgisPersonFarmTreeType personFarmTree, String uid) {
+    return Optional.ofNullable(personFarmTree.getRelevantPersons())
+        .map(AgisRelevantPersons::getPerson)
+        .stream()
+        .flatMap(List::stream)
+        .filter(p -> p.getUid() == null || p.getUid().equals(uid))
+        .findFirst();
+  }
+
+  public static AgisPersonFarmTreeType getPersonFarmTree(AgisPersonFarmResponseType response) {
+    return Optional.ofNullable(response)
+        .map(AgisPersonFarmResponseType::getPersonFarmTree)
+        .orElseThrow(() -> new ExternalWebServiceException("invalid response from AGIS: no personFarmTree found", null));
+  }
+
+  public static Optional<AgisMailAddressType> getPostalAddress(AgisPersonType person) {
+    return Optional.ofNullable(person.getContact())
+        .map(AgisContactType::getAddress)
+        .map(AgisAddressType::getPostalAddress);
   }
 }

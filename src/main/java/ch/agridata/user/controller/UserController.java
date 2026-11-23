@@ -16,12 +16,15 @@ import ch.agridata.common.security.AgridataSecurityIdentity;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
 import ch.agridata.common.validation.BurValidation;
+import ch.agridata.common.validation.UidValidation;
 import ch.agridata.user.dto.AgbAcceptanceOverviewDto;
 import ch.agridata.user.dto.BurDto;
+import ch.agridata.user.dto.FarmOverviewDto;
 import ch.agridata.user.dto.UidDto;
 import ch.agridata.user.dto.UserInfoDto;
 import ch.agridata.user.dto.UserPreferencesDto;
 import ch.agridata.user.service.BurAuthorizationService;
+import ch.agridata.user.service.FarmOverviewService;
 import ch.agridata.user.service.UidAuthorizationService;
 import ch.agridata.user.service.UserService;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -42,7 +45,6 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -58,7 +60,6 @@ import org.jboss.resteasy.reactive.RestResponse;
  * @CommentLastReviewed 2025-10-15
  */
 @Path(PATH)
-@Slf4j
 @RequiredArgsConstructor
 @Tag(
     name = "Users",
@@ -74,6 +75,7 @@ public class UserController {
   private final UidAuthorizationService uidAuthorizationService;
   private final BurAuthorizationService burAuthorizationService;
   private final UserService userService;
+  private final FarmOverviewService farmOverviewService;
 
   @GET
   @ApiSubset({WEB_APP, MOBILE_APP})
@@ -117,7 +119,10 @@ public class UserController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed({CONSUMER_ROLE, ADMIN_ROLE})
-  public List<BurDto> getAuthorizedBursByUid(@PathParam("uid") String uid) {
+  public List<BurDto> getAuthorizedBursByUid(
+      @PathParam("uid")
+      @Pattern(regexp = UidValidation.UID_REGEX, message = UidValidation.UID_FORMAT_MESSAGE) String uid
+  ) {
     return burAuthorizationService.getAuthorizedBurs(uid);
   }
 
@@ -133,8 +138,35 @@ public class UserController {
   public UidDto getUidByBur(
       @PathParam("bur")
       @Parameter(description = "BUR of the producer", example = "A12345678", required = true)
-      @Pattern(regexp = BurValidation.BUR_REGEX, message = BurValidation.BUR_FORMAT_MESSAGE) String bur) {
+      @Pattern(regexp = BurValidation.BUR_REGEX, message = BurValidation.BUR_FORMAT_MESSAGE) String bur
+  ) {
     return burAuthorizationService.getUidByBur(bur);
+  }
+
+  @GET
+  @ApiSubset({WEB_APP, MOBILE_APP})
+  @Path("/uids/{uid}/farm-overview")
+  @Operation(
+      operationId = "getFarmOverview",
+      description = "Retrieves the company and its authorized farms (BUR, KT_ID_B, farm type, address) for the given UID."
+  )
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed({PRODUCER_ROLE, SUPPORT_ROLE, ADMIN_ROLE})
+  @EnableActingRoleHolder
+  public FarmOverviewDto getFarmOverview(
+      @PathParam("uid")
+      @Parameter(description = "UID of the company", example = "CHE123456789", required = true)
+      @Pattern(regexp = UidValidation.UID_REGEX, message = UidValidation.UID_FORMAT_MESSAGE) String uid
+  ) {
+    return switch (actingRoleHolder.getRole()) {
+      case ADMIN -> farmOverviewService.getFarmOverview(uid);
+      case PRODUCER, SUPPORT -> farmOverviewService.getFarmOverviewForProducer(
+          uid,
+          identity.getKtIdpOrImpersonatedKtIdP(),
+          identity.getAgateLoginIdOrImpersonatedAgateLoginId()
+      );
+      default -> throw new ForbiddenException();
+    };
   }
 
   @GET

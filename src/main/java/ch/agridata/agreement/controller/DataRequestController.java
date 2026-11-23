@@ -32,6 +32,7 @@ import ch.agridata.common.dto.ResourceQueryDto;
 import ch.agridata.common.openapi.ApiSubset;
 import ch.agridata.common.security.actingrole.ActingRoleHolder;
 import ch.agridata.common.security.actingrole.EnableActingRoleHolder;
+import ch.agridata.common.validation.UidValidation;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -234,8 +235,8 @@ public class DataRequestController {
           example = "CHE123456789"
       )
       @Pattern(
-          regexp = "^(?:CHE|ZZZ)\\d{9}$",
-          message = "Invalid UID format. Expected format is 'CHE' or 'ZZZ' followed by 9 digits."
+          regexp = UidValidation.UID_REGEX,
+          message = UidValidation.UID_FORMAT_MESSAGE
       )
       @PathParam("uid") String uid
   ) {

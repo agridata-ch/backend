@@ -2,10 +2,8 @@ package ch.agridata.user.service;
 
 import ch.agridata.agis.api.AgisApi;
 import ch.agridata.agis.dto.AgisFarmType;
-import ch.agridata.agis.dto.AgisPersonFarmResponseType;
+import ch.agridata.agis.dto.AgisPersonFarmTreeType;
 import ch.agridata.agis.dto.AgisPersonType;
-import ch.agridata.agis.dto.AgisRelevantPersons;
-import ch.agridata.common.exceptions.ExternalWebServiceException;
 import ch.agridata.user.dto.BurDto;
 import ch.agridata.user.dto.BurParentLinkDto;
 import ch.agridata.user.dto.FarmTypeEnum;
@@ -43,29 +41,27 @@ public class BurAuthorizationService {
     // it may start with "ZZZ", because that is the uid Identitas assigns to equid owners.
     // Equid owners have no authorized burs, so an empty list is returned.
     if (uid.startsWith("ZZZ")) {
-      log.debug("No authorized burs were fetched from AGIS for uid={} "
-          + "because it belongs to an equid owner (uid starting with \"ZZZ\").", uid);
+      log.debug(
+          "No authorized burs were fetched from AGIS for uid={} "
+              + "because it belongs to an equid owner (uid starting with \"ZZZ\").", uid
+      );
       return new ArrayList<>();
     }
     var personFarmResponse = agisApi.fetchRegisterDataForUid(uid);
 
-    var personFarmTree = Optional.of(personFarmResponse)
-        .map(AgisPersonFarmResponseType::getPersonFarmTree)
-        .orElseThrow(() -> new ExternalWebServiceException("invalid response from AGIS: no personFarmTree found", null));
+    return resolveAuthorizedBursFromPersonFarmTree(uid, AgisPersonFarmTreeUtils.getPersonFarmTree(personFarmResponse));
+  }
 
+  /**
+   * Resolves the authorized BURs from an already fetched AGIS person-farm tree of the given UID.
+   */
+  public List<BurDto> resolveAuthorizedBursFromPersonFarmTree(@NonNull String uid, @NonNull AgisPersonFarmTreeType personFarmTree) {
     var farms = AgisPersonFarmTreeUtils.getRelevantFarms(personFarmTree);
     // Normally the UID alone is enough to match farm-to-person relations. But AGIS sometimes omits the UID on the person object,
     // so we also need the KT_ID_P as a second identifier. We therefore resolve the person from relevantPersons and read its KT_ID_P.
     // Since AGIS was queried by this UID, we assume the returned person is the one with that UID: we match on the UID and accept the
     // person whose UID is missing.
-    var person = Optional.ofNullable(personFarmTree.getRelevantPersons())
-        .map(AgisRelevantPersons::getPerson)
-        .stream()
-        .flatMap(List::stream)
-        // Safety net only: since AGIS was queried by this UID, the response should contain exactly this one person and nothing here
-        // should ever be filtered out. The filter merely guards against unexpected data.
-        .filter(p -> p.getUid() == null || p.getUid().equals(uid))
-        .findFirst();
+    var person = AgisPersonFarmTreeUtils.findRelevantPersonByUid(personFarmTree, uid);
     var resolutionContext = new ResolutionContext(
         uid,
         person.map(AgisPersonType::getKtIdP),

@@ -4,6 +4,7 @@ import static ch.agridata.agreement.persistence.ConsentRequestEntity.StateEnum.G
 import static ch.agridata.user.dto.LegalFormEnum.GMBH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import ch.agridata.user.dto.UidDto;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,8 +65,12 @@ class ConsentRequestAggregationServiceTest {
   void setUp() {
     when(identity.getKtIdpOrImpersonatedKtIdP()).thenReturn("dummyp-kt-id-p-1");
     when(identity.getAgateLoginIdOrImpersonatedAgateLoginId()).thenReturn("agate_user_1");
-    when(userApi.getAuthorizedUids("dummyp-kt-id-p-1", "agate_user_1"))
-        .thenReturn(List.of(new UidDto(AUTH_UID, "Dummy Company 1", GMBH)));
+    var authorizedUid = new UidDto(AUTH_UID, "Dummy Company 1", GMBH);
+    // lenient: the aggregation methods check a single UID, isVisibleToCurrentDataProducer loads all authorized UIDs
+    lenient().when(userApi.findUidIfAuthorized(AUTH_UID, "dummyp-kt-id-p-1", "agate_user_1"))
+        .thenReturn(Optional.of(authorizedUid));
+    lenient().when(userApi.getAuthorizedUids("dummyp-kt-id-p-1", "agate_user_1"))
+        .thenReturn(List.of(authorizedUid));
   }
 
   @Test
