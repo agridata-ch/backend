@@ -14,6 +14,7 @@ import static io.restassured.http.ContentType.MULTIPART;
 
 import ch.agridata.agreement.controller.ConsentRequestController;
 import ch.agridata.agreement.controller.ContractRevisionController;
+import ch.agridata.agreement.controller.ContractTemplateAdminController;
 import ch.agridata.agreement.controller.DataRequestController;
 import integration.testutils.AccessTestUtils;
 import io.quarkus.test.junit.QuarkusTest;
@@ -50,6 +51,12 @@ class AccessTest {
         ADMIN_ROLE);
     AccessTestUtils.assertForbiddenForAllExcept(GET, ContractRevisionController.PATH + "/1/pdf",
         ADMIN_ROLE, PROVIDER_ROLE, CONSUMER_ROLE, PRODUCER_ROLE, SUPPORT_ROLE);
+  }
+
+  @Test
+  void testAccess_ContractTemplateAdminController() {
+    AccessTestUtils.assertForbiddenForAllExcept(GET, ContractTemplateAdminController.PATH,
+        ADMIN_ROLE);
   }
 
   @Test
