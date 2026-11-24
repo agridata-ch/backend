@@ -1,3 +1,9 @@
+## [1.24.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.24.0-rc.1...v1.24.0-rc.2) (2026-11-24)
+
+### Features
+
+* **contract-template:** add endpoint to access contract template versions ([f40d930](https://github.com/agridata-ch/backend/commit/f40d930a46d05ce293afc39bc7cd94d4123eb71e)), closes [DIGIB2-1858](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1858)
+
 ## [1.24.0-rc.1](https://github.com/agridata-ch/backend/compare/v1.23.0...v1.24.0-rc.1) (2026-11-23)
 
 ### Features
