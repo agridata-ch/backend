@@ -28,10 +28,12 @@ import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,11 @@ import org.hibernate.SessionFactory;
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ConsentRequestCreationService {
+
+  private static final Set<DataRequestEntity.DataRequestStateEnum> CONSENT_REQUEST_ALLOWED_STATES = EnumSet.of(
+      DataRequestEntity.DataRequestStateEnum.ACTIVE,
+      DataRequestEntity.DataRequestStateEnum.PAUSED,
+      DataRequestEntity.DataRequestStateEnum.TERMINATION_PENDING);
 
   private final ConsentRequestRepository consentRequestRepository;
   private final ConsentRequestMapper consentRequestMapper;
@@ -193,7 +200,7 @@ public class ConsentRequestCreationService {
   private DataRequestEntity loadActiveDataRequestOfConsumer(UUID dataRequestId, String consumerUid) {
     var dataRequest = dataRequestRepository.findByIdAndDataConsumerUid(dataRequestId, consumerUid)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
-    assertActiveOrPaused(dataRequest);
+    assertOpenForConsentRequests(dataRequest);
     return dataRequest;
   }
 
@@ -203,10 +210,12 @@ public class ConsentRequestCreationService {
         .anyMatch(FlowCodeEnum::isBurBased);
   }
 
-  private void assertActiveOrPaused(DataRequestEntity dataRequest) {
+  private void assertOpenForConsentRequests(DataRequestEntity dataRequest) {
     var stateCode = dataRequest.getStateCode();
-    if (stateCode != DataRequestEntity.DataRequestStateEnum.ACTIVE && stateCode != DataRequestEntity.DataRequestStateEnum.PAUSED) {
-      throw new IllegalStateException("Data request " + dataRequest.getId() + " must be in ACTIVE state to create a consent request.");
+    if (!CONSENT_REQUEST_ALLOWED_STATES.contains(stateCode)) {
+      throw new IllegalStateException(
+          "Data request " + dataRequest.getId() + " must be in one of the states " + CONSENT_REQUEST_ALLOWED_STATES
+              + " to create a consent request.");
     }
   }
 
@@ -251,7 +260,7 @@ public class ConsentRequestCreationService {
   private DataRequestEntity loadActiveDataRequest(UUID dataRequestId) {
     var dataRequest = dataRequestRepository.findByIdOptional(dataRequestId)
         .orElseThrow(() -> new NotFoundException(dataRequestId.toString()));
-    assertActiveOrPaused(dataRequest);
+    assertOpenForConsentRequests(dataRequest);
     return dataRequest;
   }
 
