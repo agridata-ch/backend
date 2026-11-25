@@ -1,3 +1,9 @@
+## [1.24.0-rc.4](https://github.com/agridata-ch/backend/compare/v1.24.0-rc.3...v1.24.0-rc.4) (2026-11-25)
+
+### Features
+
+* **data-request:** termination pending state no longer stops cr creation ([be22a28](https://github.com/agridata-ch/backend/commit/be22a2807aec16a49af7ac0b0e4ffa16d6ce65ef)), closes [DIGIB2-1835](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1835)
+
 ## [1.24.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.24.0-rc.2...v1.24.0-rc.3) (2026-11-25)
 
 ### Features
