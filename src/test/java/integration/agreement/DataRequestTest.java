@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import ch.agridata.agreement.controller.DataRequestController;
 import ch.agridata.agreement.dto.DataRequestAdvantageDto;
@@ -46,6 +47,7 @@ import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestRepository;
+import ch.agridata.agreement.service.ContractTemplateVersionEnum;
 import integration.auditing.utils.AuditLogTestUtils;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestDataIdentifiers;
@@ -81,6 +83,22 @@ class DataRequestTest {
     AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
         .statusCode(200)
         .body("size()", equalTo(12));
+  }
+
+  @Test
+  void givenDataRequestWithContractRevision_whenAdminGetsDataRequests_thenContractTemplateVersionIsReturned() {
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+
+    List<DataRequestDto> dataRequests = AuthTestUtils.requestAs(ADMIN).when().get(DataRequestController.PATH_V1).then()
+        .statusCode(200)
+        .extract().as(new TypeRef<>() {
+        });
+
+    assertThat(dataRequests)
+        .filteredOn(dr -> dr.id().equals(dataRequest.id()))
+        .singleElement()
+        .extracting(DataRequestDto::contractTemplateVersion)
+        .isEqualTo(ContractTemplateVersionEnum.current().getVersion());
   }
 
   @Test
@@ -246,6 +264,30 @@ class DataRequestTest {
         .then()
         .statusCode(200)
         .body("burPresent", equalTo(true));
+  }
+
+  @Test
+  void givenDataRequestWithContractRevision_whenGetDataRequest_thenContractTemplateVersionIsReturned() {
+    // the returned DTO is the response of the admin approval, which assigns the revision
+    DataRequestDto dataRequest = createReadyForSigningByConsumerDataRequestFor(CONSUMER_BIO_SUISSE);
+
+    assertThat(dataRequest.contractTemplateVersion()).isEqualTo(ContractTemplateVersionEnum.current().getVersion());
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + dataRequest.id())
+        .then()
+        .statusCode(200)
+        .body("contractTemplateVersion", equalTo(ContractTemplateVersionEnum.current().getVersion()));
+  }
+
+  @Test
+  void givenDataRequestWithoutContractRevision_whenGetDataRequest_thenContractTemplateVersionIsNull() {
+    String draftId = createDataRequest().then().statusCode(201).extract().path("id");
+
+    AuthTestUtils.requestAs(CONSUMER_BIO_SUISSE).when()
+        .get(DataRequestController.PATH_V1 + "/" + draftId)
+        .then()
+        .statusCode(200)
+        .body("contractTemplateVersion", nullValue());
   }
 
   @Test

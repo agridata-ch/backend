@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  * Represents the complete definition of a data request. It includes identifiers, metadata, consumer details, requested products, and
  * contact information.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-11-25
  */
 
 @Schema(description = "Data transfer object representing a data request")
@@ -195,7 +195,13 @@ public record DataRequestDto(
         examples = "true"
     )
     @NotNull
-    Boolean burPresent
+    Boolean burPresent,
+
+    @Schema(
+        description = "Contract template version of the current contract revision. Null if there is no contract revision yet.",
+        examples = {"1.0"}
+    )
+    String contractTemplateVersion
 ) {
 
 }

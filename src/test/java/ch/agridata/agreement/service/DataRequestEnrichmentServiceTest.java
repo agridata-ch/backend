@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import ch.agridata.agreement.dto.DataRequestDto;
 import ch.agridata.agreement.mapper.DataRequestMapper;
+import ch.agridata.agreement.persistence.ContractRevisionRepository;
 import ch.agridata.agreement.persistence.DataRequestDataProductEntity;
 import ch.agridata.agreement.persistence.DataRequestEntity;
 import ch.agridata.product.api.DataProductApi;
@@ -18,6 +19,7 @@ import ch.agridata.product.dto.DataSourceSystemDto;
 import ch.agridata.product.dto.FlowCodeEnum;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +39,8 @@ class DataRequestEnrichmentServiceTest {
   private DataProductApi dataProductApi;
   @Mock
   private DataRequestMapper mapper;
+  @Mock
+  private ContractRevisionRepository contractRevisionRepository;
 
   @Test
   void givenNullEntity_whenToEnrichedDto_thenReturnNull() {
@@ -53,14 +57,14 @@ class DataRequestEnrichmentServiceTest {
     when(dataProductApi.getActiveProductsByIds(List.of(PRODUCT_ID))).thenReturn(List.of());
 
     var mapped = mock(DataRequestDto.class);
-    when(mapper.toDto(entity, null, false)).thenReturn(mapped);
+    when(mapper.toDto(entity, null, false, null)).thenReturn(mapped);
 
     var result = service.toEnrichedDto(entity);
 
     assertThat(result).isSameAs(mapped);
 
     verify(entity).getDataSourceSystemId();
-    verify(mapper).toDto(entity, null, false);
+    verify(mapper).toDto(entity, null, false, null);
     verifyNoMoreInteractions(mapper);
   }
 
@@ -75,14 +79,14 @@ class DataRequestEnrichmentServiceTest {
     when(dataProductApi.getDataSourceSystem(dataSourceSystemId)).thenReturn(dataSourceSystem);
 
     DataRequestDto mapped = mock(DataRequestDto.class);
-    when(mapper.toDto(entity, dataSourceSystem, false)).thenReturn(mapped);
+    when(mapper.toDto(entity, dataSourceSystem, false, null)).thenReturn(mapped);
 
     DataRequestDto result = service.toEnrichedDto(entity);
 
     assertThat(result).isSameAs(mapped);
 
     verify(dataProductApi).getDataSourceSystem(dataSourceSystemId);
-    verify(mapper).toDto(entity, dataSourceSystem, false);
+    verify(mapper).toDto(entity, dataSourceSystem, false, null);
     verifyNoMoreInteractions(mapper);
   }
 
@@ -98,7 +102,7 @@ class DataRequestEnrichmentServiceTest {
 
     service.toEnrichedDto(entity);
 
-    verify(mapper).toDto(entity, null, false);
+    verify(mapper).toDto(entity, null, false, null);
   }
 
   @Test
@@ -112,7 +116,20 @@ class DataRequestEnrichmentServiceTest {
 
     service.toEnrichedDto(entity);
 
-    verify(mapper).toDto(entity, null, true);
+    verify(mapper).toDto(entity, null, true, null);
+  }
+
+  @Test
+  void givenEntityWithContractRevision_whenToEnrichedDto_thenMapWithContractTemplateVersion() {
+    UUID revisionId = UUID.randomUUID();
+    var entity = entityWithProduct(PRODUCT_ID);
+    when(entity.getCurrentContractRevisionId()).thenReturn(revisionId);
+    when(dataProductApi.getActiveProductsByIds(List.of(PRODUCT_ID))).thenReturn(List.of());
+    when(contractRevisionRepository.findContractTemplateVersionById(revisionId)).thenReturn(Optional.of("1.0"));
+
+    service.toEnrichedDto(entity);
+
+    verify(mapper).toDto(entity, null, false, "1.0");
   }
 
   private DataRequestEntity entityWithProduct(UUID productId) {

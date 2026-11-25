@@ -28,7 +28,7 @@ import org.mapstruct.Named;
  * Handles conversions between data request DTOs and their corresponding persistence entities. It ensures consistency across service and
  * repository layers.
  *
- * @CommentLastReviewed 2025-08-25
+ * @CommentLastReviewed 2026-11-25
  */
 
 @Mapper(componentModel = "jakarta")
@@ -72,7 +72,13 @@ public interface DataRequestMapper {
   @Mapping(target = "dataProviderId", source = "dataSourceSystemDto.dataProvider.id")
   @Mapping(target = "dataSourceSystem", source = "dataSourceSystemDto")
   @Mapping(target = "burPresent", source = "burPresent")
-  DataRequestDto toDto(DataRequestEntity entity, DataSourceSystemDto dataSourceSystemDto, boolean burPresent);
+  @Mapping(target = "contractTemplateVersion", source = "contractTemplateVersion")
+  DataRequestDto toDto(
+      DataRequestEntity entity,
+      DataSourceSystemDto dataSourceSystemDto,
+      boolean burPresent,
+      String contractTemplateVersion
+  );
 
   @Mapping(target = "humanFriendlyId", ignore = true)
   @Mapping(target = "submissionDate", ignore = true)

@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 /**
  * Represents a complete contract revision.
  *
- * @CommentLastReviewed 2026-03-17
+ * @CommentLastReviewed 2026-11-25
  */
 @Builder
 public record ContractRevisionDto(
@@ -84,6 +84,13 @@ public record ContractRevisionDto(
     @Schema(
         description = "Defines the sealing state of the contract"
     )
-    SealAttemptStateEnum sealState
+    SealAttemptStateEnum sealState,
+
+    @Schema(
+        description = "Version of the contract template this revision is based on",
+        examples = {"1.0"}
+    )
+    @NotNull
+    String contractTemplateVersion
 ) {
 }
