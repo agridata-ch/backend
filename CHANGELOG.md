@@ -1,3 +1,9 @@
+## [1.24.0-rc.3](https://github.com/agridata-ch/backend/compare/v1.24.0-rc.2...v1.24.0-rc.3) (2026-11-25)
+
+### Features
+
+* **farm-overview:** add farm-overview request ([14c9d90](https://github.com/agridata-ch/backend/commit/14c9d90d8a2654bd58438665b297462c3d27c83b)), closes [DIGIB2-1827](https://blw-ofag-ufag.atlassian.net/browse/DIGIB2-1827)
+
 ## [1.24.0-rc.2](https://github.com/agridata-ch/backend/compare/v1.24.0-rc.1...v1.24.0-rc.2) (2026-11-24)
 
 ### Features
