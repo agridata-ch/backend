@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTest
 @RequiredArgsConstructor
@@ -56,42 +58,52 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenConsumer_whenCreateConsentRequestsWithBurs_thenUidAndBurRowsCreated() throws JsonProcessingException {
-    var createdConsentRequests = postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
+    var createdConsentRequests = postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
         CreateConsentRequestsForUidDto.builder()
             .uid(Uid.CHE102000001.name())
             .burs(List.of(Bur.CODE_99920004.getCode(), Bur.CODE_99920006.getCode()))
-            .build())
+            .build()
+    )
         .then().statusCode(201)
         .extract().as(new TypeRef<List<ConsentRequestCreatedDto>>() {
         });
 
     assertThat(createdConsentRequests).hasSize(3)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
-            ConsentRequestCreatedDto::isCreated)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated
+        )
         .containsExactlyInAnyOrder(
             tuple(Uid.CHE102000001.name(), null, true),
             tuple(Uid.CHE102000001.name(), Bur.CODE_99920004.getCode(), true),
-            tuple(Uid.CHE102000001.name(), Bur.CODE_99920006.getCode(), true));
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920006.getCode(), true)
+        );
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name()))
         .extracting(row -> row[1], row -> row[2], row -> row[3])
         .containsExactlyInAnyOrder(
             tuple(null, null, null),
             tuple(Bur.CODE_99920004.getCode(), RELATION_SINCE, null),
-            tuple(Bur.CODE_99920006.getCode(), PARENT_RELATION_SINCE, null));
+            tuple(Bur.CODE_99920006.getCode(), PARENT_RELATION_SINCE, null)
+        );
   }
 
   @Test
   void givenConsumer_whenCreateConsentRequestsWithoutBurs_thenOnlyUidRowCreated() throws JsonProcessingException {
-    var createdConsentRequests = postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000002.name()).burs(List.of()).build())
+    var createdConsentRequests = postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000002.name()).burs(List.of()).build()
+    )
         .then().statusCode(201)
         .extract().as(new TypeRef<List<ConsentRequestCreatedDto>>() {
         });
 
     assertThat(createdConsentRequests).hasSize(1)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
-            ConsentRequestCreatedDto::isCreated)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated
+        )
         .containsExactly(tuple(Uid.CHE102000002.name(), null, true));
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000002.name()))
@@ -112,21 +124,26 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenDuplicateBurs_whenCreateConsentRequests_thenSingleBurRowCreated() throws JsonProcessingException {
-    var createdConsentRequests = postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
+    var createdConsentRequests = postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
         CreateConsentRequestsForUidDto.builder()
             .uid(Uid.CHE102000001.name())
             .burs(List.of(Bur.CODE_99920004.getCode(), Bur.CODE_99920004.getCode()))
-            .build())
+            .build()
+    )
         .then().statusCode(201)
         .extract().as(new TypeRef<List<ConsentRequestCreatedDto>>() {
         });
 
     assertThat(createdConsentRequests).hasSize(2)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
-            ConsentRequestCreatedDto::isCreated)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated
+        )
         .containsExactlyInAnyOrder(
             tuple(Uid.CHE102000001.name(), null, true),
-            tuple(Uid.CHE102000001.name(), Bur.CODE_99920004.getCode(), true));
+            tuple(Uid.CHE102000001.name(), Bur.CODE_99920004.getCode(), true)
+        );
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name()))
         .filteredOn(row -> Bur.CODE_99920004.getCode().equals(row[1]))
@@ -136,14 +153,18 @@ class ConsentRequestCreationForDataRequestConsumerTest {
   @Test
   void givenExpiredBurConsentRequest_whenCreateConsentRequests_thenNewActiveRowIsAdded() throws JsonProcessingException {
     // Create a first BUR consent request and then expire it, so only a terminated row remains.
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build()
+    )
         .then().statusCode(201);
     expireBurConsentRequest(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name(), Bur.CODE_99920004.getCode());
 
     // The expired row must not block the request; a new active row is created next to it.
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build()
+    )
         .then().statusCode(201);
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name()))
@@ -154,15 +175,19 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenActiveBurConsentRequest_whenCreateConsentRequestsForSameBur_thenBadRequestAndNothingCreated() throws JsonProcessingException {
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build()
+    )
         .then().statusCode(201);
 
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
         CreateConsentRequestsForUidDto.builder()
             .uid(Uid.CHE102000001.name())
             .burs(List.of(Bur.CODE_99920004.getCode(), Bur.CODE_99920006.getCode()))
-            .build())
+            .build()
+    )
         .then().statusCode(400);
 
     // The whole request is rolled back: the second, previously missing BUR must not have been created.
@@ -173,8 +198,10 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenBurNotBelongingToUid_whenCreateConsentRequests_thenBadRequestAndNothingCreated() throws JsonProcessingException {
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("A00000000")).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("A00000000")).build()
+    )
         .then().statusCode(400);
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name())).isEmpty();
@@ -183,11 +210,13 @@ class ConsentRequestCreationForDataRequestConsumerTest {
   @Test
   void givenMixOfKnownAndUnknownBur_whenCreateConsentRequests_thenBadRequestAndNothingCreated() throws JsonProcessingException {
     // A99920004 belongs to the UID in the AGIS stubs, A00000000 does not.
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
         CreateConsentRequestsForUidDto.builder()
             .uid(Uid.CHE102000001.name())
             .burs(List.of(Bur.CODE_99920004.getCode(), "A00000000"))
-            .build())
+            .build()
+    )
         .then().statusCode(400);
 
     // The BURs are validated before anything is persisted: neither the valid BUR nor the UID row must be created.
@@ -196,8 +225,10 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenMalformedBur_whenCreateConsentRequests_thenBadRequestAndNothingCreated() throws JsonProcessingException {
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("A-0000000")).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of("A-0000000")).build()
+    )
         .then().statusCode(400);
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name())).isEmpty();
@@ -207,40 +238,70 @@ class ConsentRequestCreationForDataRequestConsumerTest {
   void givenDataRequestWithoutBurBasedProducts_whenCreateConsentRequestsWithBurs_thenBadRequestAndNothingCreated()
       throws JsonProcessingException {
     // BIO_SUISSE_02 only contains UID-based data products.
-    postAsBioSuisse(BIO_SUISSE_02.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE101000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build())
+    postAsBioSuisse(
+        BIO_SUISSE_02.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE101000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build()
+    )
         .then().statusCode(400);
 
     assertThat(consentRequestRows(BIO_SUISSE_02.uuid(), Uid.CHE101000001.name())).isEmpty();
   }
 
-  @Test
-  void givenNonActiveDataRequest_whenCreateConsentRequests_thenBadRequestAndNothingCreated() throws JsonProcessingException {
-    QuarkusTransaction.requiringNew().run(() -> entityManager.createNativeQuery("""
-            UPDATE data_request SET state_code = 'IN_REVIEW' WHERE id = :dataRequestId
-            """)
-        .setParameter("dataRequestId", ACONTROL_BIO_SUISSE.uuid())
-        .executeUpdate());
+  @ParameterizedTest
+  @ValueSource(strings = {"ACTIVE", "PAUSED", "TERMINATION_PENDING"})
+  void givenDataRequestStillProvidingData_whenCreateConsentRequests_thenConsentRequestCreated(String stateCode)
+      throws JsonProcessingException {
+    setDataRequestState(ACONTROL_BIO_SUISSE.uuid(), stateCode);
 
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of()).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of()).build()
+    )
+        .then().statusCode(201);
+
+    assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name())).hasSize(1);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"IN_REVIEW", "TERMINATED"})
+  void givenNonActiveDataRequest_whenCreateConsentRequests_thenBadRequestAndNothingCreated(String stateCode)
+      throws JsonProcessingException {
+    setDataRequestState(ACONTROL_BIO_SUISSE.uuid(), stateCode);
+
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of()).build()
+    )
         .then().statusCode(400);
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE102000001.name())).isEmpty();
   }
 
+  private void setDataRequestState(UUID dataRequestId, String stateCode) {
+    QuarkusTransaction.requiringNew().run(() -> entityManager.createNativeQuery("""
+            UPDATE data_request SET state_code = :stateCode WHERE id = :dataRequestId
+            """)
+        .setParameter("stateCode", stateCode)
+        .setParameter("dataRequestId", dataRequestId)
+        .executeUpdate());
+  }
+
   @Test
   void givenExistingUidConsentRequest_whenCreateConsentRequests_thenUidRowIsNotCreatedAgain() throws JsonProcessingException {
     // The test data contains a GRANTED UID consent request for CHE101000001 on ACONTROL_BIO_SUISSE.
-    var createdConsentRequests = postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE101000001.name()).burs(List.of()).build())
+    var createdConsentRequests = postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE101000001.name()).burs(List.of()).build()
+    )
         .then().statusCode(201)
         .extract().as(new TypeRef<List<ConsentRequestCreatedDto>>() {
         });
 
     assertThat(createdConsentRequests)
-        .extracting(ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
-            ConsentRequestCreatedDto::isCreated)
+        .extracting(
+            ConsentRequestCreatedDto::dataProducerUid, ConsentRequestCreatedDto::dataProducerBur,
+            ConsentRequestCreatedDto::isCreated
+        )
         .containsExactly(tuple(Uid.CHE101000001.name(), null, false));
 
     assertThat(consentRequestRows(ACONTROL_BIO_SUISSE.uuid(), Uid.CHE101000001.name()))
@@ -250,8 +311,10 @@ class ConsentRequestCreationForDataRequestConsumerTest {
 
   @Test
   void givenDeclinedUidConsentRequest_whenCreateConsentRequestsWithBurs_thenUidStateIsSyncedWithBurs() throws JsonProcessingException {
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of()).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of()).build()
+    )
         .then().statusCode(201);
     QuarkusTransaction.requiringNew().run(() -> entityManager.createNativeQuery("""
             UPDATE consent_request SET state_code = 'DECLINED'
@@ -261,8 +324,10 @@ class ConsentRequestCreationForDataRequestConsumerTest {
         .setParameter("uid", Uid.CHE102000001.name())
         .executeUpdate());
 
-    postAsBioSuisse(ACONTROL_BIO_SUISSE.uuid(),
-        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build())
+    postAsBioSuisse(
+        ACONTROL_BIO_SUISSE.uuid(),
+        CreateConsentRequestsForUidDto.builder().uid(Uid.CHE102000001.name()).burs(List.of(Bur.CODE_99920004.getCode())).build()
+    )
         .then().statusCode(201);
 
     // The new BUR consent request is OPENED, so the UID consent request must follow it.
@@ -270,7 +335,8 @@ class ConsentRequestCreationForDataRequestConsumerTest {
         .extracting(row -> row[0], row -> row[1])
         .containsExactlyInAnyOrder(
             tuple(null, "OPENED"),
-            tuple(Bur.CODE_99920004.getCode(), "OPENED"));
+            tuple(Bur.CODE_99920004.getCode(), "OPENED")
+        );
   }
 
   @Test
@@ -288,7 +354,8 @@ class ConsentRequestCreationForDataRequestConsumerTest {
         .extracting(row -> row[0], row -> row[1])
         .containsExactlyInAnyOrder(
             tuple(null, "LEGALLY_PERMITTED"),
-            tuple(Bur.CODE_99920004.getCode(), "LEGALLY_PERMITTED"));
+            tuple(Bur.CODE_99920004.getCode(), "LEGALLY_PERMITTED")
+        );
   }
 
   @Test
@@ -303,7 +370,8 @@ class ConsentRequestCreationForDataRequestConsumerTest {
   }
 
   @Test
-  void givenDataRequestOfDifferentConsumer_whenCreateConsentRequestsWithBurs_thenNotFoundAndNothingCreated() throws JsonProcessingException {
+  void givenDataRequestOfDifferentConsumer_whenCreateConsentRequestsWithBurs_thenNotFoundAndNothingCreated()
+      throws JsonProcessingException {
     // Ownership is verified before AGIS: a non-owner posting BURs must get 404, not a BUR-validation error, and persist nothing.
     AuthTestUtils.requestAs(CONSUMER_IP_SUISSE)
         .contentType(JSON)
