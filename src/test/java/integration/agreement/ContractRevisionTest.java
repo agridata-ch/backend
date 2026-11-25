@@ -23,6 +23,7 @@ import ch.agridata.agreement.dto.DataRequestStateEnum;
 import ch.agridata.agreement.dto.OtpChallengeDto;
 import ch.agridata.agreement.dto.SignatureSlotCodeEnum;
 import ch.agridata.agreement.dto.SignatureTypeEnum;
+import ch.agridata.agreement.service.ContractTemplateVersionEnum;
 import ch.agridata.common.dto.ExceptionEnum;
 import integration.testutils.AuthTestUtils;
 import integration.testutils.TestUserEnum;
@@ -59,7 +60,8 @@ class ContractRevisionTest {
         .then()
         .statusCode(200)
         .body("id", equalTo(contractRevisionId.toString()))
-        .body("dataRequestId", equalTo(dataRequest.id().toString()));
+        .body("dataRequestId", equalTo(dataRequest.id().toString()))
+        .body("contractTemplateVersion", equalTo(ContractTemplateVersionEnum.current().getVersion()));
   }
 
   @Test
@@ -86,7 +88,8 @@ class ContractRevisionTest {
         .then()
         .statusCode(200)
         .body("id", equalTo(contractRevisionId.toString()))
-        .body("dataRequestId", equalTo(dataRequest.id().toString()));
+        .body("dataRequestId", equalTo(dataRequest.id().toString()))
+        .body("contractTemplateVersion", equalTo(ContractTemplateVersionEnum.current().getVersion()));
   }
 
   @Test

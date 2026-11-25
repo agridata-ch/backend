@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Manages persistence operations for contract revisions. It allows querying contract revisions by their ID and data consumer UID.
  *
- * @CommentLastReviewed 2026-03-16
+ * @CommentLastReviewed 2026-11-25
  */
 @ApplicationScoped
 public class ContractRevisionRepository implements PanacheRepositoryBase<ContractRevisionEntity, UUID> {
@@ -32,6 +32,12 @@ public class ContractRevisionRepository implements PanacheRepositoryBase<Contrac
             "state_code", DataRequestEntity.DataRequestStateEnum.DRAFT
         )
     ).firstResultOptional();
+  }
+
+  public Optional<String> findContractTemplateVersionById(UUID id) {
+    return find("select cr.contractTemplateVersion from ContractRevisionEntity cr where cr.id = ?1", id)
+        .project(String.class)
+        .firstResultOptional();
   }
 
   public void deleteByDataRequestId(UUID dataRequestId) {

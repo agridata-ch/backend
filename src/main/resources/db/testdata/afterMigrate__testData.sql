@@ -350,6 +350,30 @@ DELETE FROM agb_revision; -- TRUNCATE would fail due to references
     ('b8eadf09-c2be-4f6b-9dd8-ae9f4a67c8b1', false, NOW(), NOW(), 'c3f5eab4-7d69-4a1c-ae83-5f4a9b12d3c6', 'c009a1f9-7c16-4a47-b79a-9c9224ac55d2');
 
     -- ===============================================
+    -- contract_revision (one per data request that is past approval, so the contract template version is displayed)
+    -- Provider address fields are placeholders (the real ones come from the BUR service); ids are random.
+    -- ===============================================
+    INSERT INTO contract_revision (id, archived, created_at, modified_at, data_request_id, data_request_human_friendly_id,
+                                   data_consumer_name, data_consumer_street, data_consumer_zip, data_consumer_city, data_consumer_country,
+                                   data_provider_name, data_provider_street, data_provider_zip, data_provider_city, data_provider_country,
+                                   title, description, purpose, contact_phone_number, contact_email_address, target_group, data_consumer_uid,
+                                   system_name, system_legal_basis, data_product, contract_template_version)
+    SELECT gen_random_uuid(), false, NOW(), NOW(), dr.id, dr.human_friendly_id,
+           dr.data_consumer_legal_name, COALESCE(dr.data_consumer_street, ''), COALESCE(dr.data_consumer_zip, ''), dr.data_consumer_city, dr.data_consumer_country,
+           COALESCE(dp.name ->> 'de', ''), '', '', '', 'CH',
+           dr.title, dr.description, dr.purpose, dr.contact_phone_number, dr.contact_email_address, dr.target_group, dr.data_consumer_uid,
+           dss.name, dss.legal_basis,
+           COALESCE((SELECT jsonb_agg(p.name) FROM data_request_data_product drdp JOIN data_product p ON p.id = drdp.data_product_id WHERE drdp.data_request_id = dr.id), '[]'::jsonb),
+           '1.0'
+    FROM data_request dr
+             JOIN data_source_system dss ON dss.id = dr.data_source_system_id
+             JOIN data_provider dp ON dp.id = dss.data_provider_id
+    WHERE dr.state_code NOT IN ('DRAFT', 'IN_REVIEW');
+
+    UPDATE data_request dr SET current_contract_revision_id = cr.id
+    FROM contract_revision cr WHERE cr.data_request_id = dr.id;
+
+    -- ===============================================
     -- users
     -- ===============================================
     INSERT INTO public.users (
